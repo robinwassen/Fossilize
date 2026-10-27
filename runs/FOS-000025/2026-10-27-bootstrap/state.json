@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "revision": 1,
+  "revision": 2,
   "run_id": "2026-10-27-bootstrap",
   "task_key": "FOS-000025",
   "task_location": "local-docs/specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill",
   "phase": "planning",
   "operation": "planner_dispatch",
-  "status": "ready",
-  "next_action": "Dispatch fresh planner; persist worker ID after launch",
+  "status": "running",
+  "next_action": "Collect planner report and persist versioned plans before implementation",
   "repository": {
     "path": "/home/robin/dev/fossilize",
     "implementation_worktree": "/home/robin/dev/fossilize-harness-FOS-000025",
@@ -20,7 +20,17 @@
   },
   "plan": null,
   "subtasks": [],
-  "attempts": [],
+  "attempts": [
+    {
+      "attempt_id": "planner-1",
+      "role": "planner",
+      "worker_id": "/root/fos25_planner",
+      "input_sha": "643c490",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "status": "running"
+    }
+  ],
   "verification": [],
   "findings": [],
   "limits": {
