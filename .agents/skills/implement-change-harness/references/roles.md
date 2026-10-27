@@ -59,14 +59,24 @@ skipped, vacuous or weakened assertions; the helper cannot infer this from logs.
 Return `verdict` as `accepted`, `changes_required` or `unable_to_verify` and
 criterion-level evidence. An accepted envelope includes `evidence`, `discovered`,
 `executed`, `test_mapping`, `skipped` and `findings` as described in state.md.
-Findings use unique `id`, `status`, concrete `evidence`, location and route:
+Findings use unique `id`, `status`, concrete `evidence`, location, permanent
+`affected_task` attribution and route:
 `implementation` for incorrectly implemented/planned tests, `planner` for missing
 necessary test design, `environment` for unavailable mandatory prerequisites.
+Attribute to the root for task-wide effects, uncertain ownership or multiple units;
+otherwise use one registered unit in the current plan. Omitted attribution retains
+the conservative root-wide meaning of older schema-2 reports. Unknown, empty or
+unregistered scope is rejected. Attribution cannot later be narrowed or reassigned;
+resolve the original finding with concrete recheck evidence.
 Reject with `next_action`; do not change candidate source or self-approve a fix.
 
 In a fresh check, recheck prior findings and return concrete resolution evidence;
 the coordinator records `resolve-finding` while that check is active, before
 accepted report submission. Unsupported/incomplete required gates remain unable
-to verify. A second check after all unit acceptances uses `operation=final`; it
+to verify. A subtask must resolve root-wide findings and those attributed to its
+unit or any dependency. An explicitly unrelated later/independent unit's durable
+finding may remain open while this unit accepts, so its owner can dispatch and
+repair within scope. Every unresolved finding still blocks final acceptance and
+publication. A second check after all unit acceptances uses `operation=final`; it
 independently covers the combined branch and all planned cases. Prior unit
 acceptances alone do not prove integration.

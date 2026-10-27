@@ -807,6 +807,170 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(self.state["final_acceptance"]["candidate_sha"], corrected)
         self.assertEqual(self.state["limits"]["implementation_counts"], {self.root_key: 2})
 
+    def test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair(self):
+        plan = self.split_plan()
+        first, second = [unit["key"] for unit in plan["subtasks"]]
+        plan["subtasks"].reverse()
+        self.launch("planner")
+        self.act("report", dict(self.report(), plan=plan))
+        self.implemented()
+        self.checked()
+        self.launch("implementer")
+        (self.source / "second.py").write_text("def second_value(x):\n    return x+1\n")
+        (self.source / "test_second.py").write_text("import unittest\nfrom second import second_value\nclass Second(unittest.TestCase):\n    def test_second(self):\n        self.assertEqual(second_value(1), 2)\n")
+        (self.source / "test_final.py").write_text("import unittest\nfrom second import second_value\nclass Final(unittest.TestCase):\n    def test_final(self):\n        self.assertEqual(second_value(2), 4)\n")
+        candidate = self.commit_candidate()
+        self.act("report", dict(self.report(), result_candidate_sha=candidate,
+                                test_mapping={"C2": "test_second.py"}, commands=[{"exit_code": 0}]))
+
+        def run(modules):
+            result = subprocess.run([sys.executable, "-B", "-m", "unittest", "-v", *modules],
+                                    cwd=self.source, capture_output=True, text=True, timeout=30)
+            self.assertIn("Ran", result.stderr)
+            return result
+
+        behavior_id = "test_behavior.Behavior.test_value"
+        second_id = "test_second.Second.test_second"
+        final_id = "test_final.Final.test_final"
+
+        def checked_report(modules, mapping):
+            result = run(modules)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            report = self.check_report(result)
+            ids = [test for tests in mapping.values() for test in tests]
+            report.update(discovered=ids, executed=ids,
+                          test_mapping={case: {"location": tests[0].split(".")[0] + ".py:5", "tests": tests}
+                                        for case, tests in mapping.items()})
+            report["evidence"][0]["command"] = [sys.executable, "-B", "-m", "unittest", "-v", *modules]
+            return report
+
+        self.launch("checker")
+        self.act("report", checked_report(["test_second"], {"C2": [second_id]}))
+        self.launch("checker")
+        failure = run(["test_behavior", "test_second", "test_final"])
+        self.assertNotEqual(failure.returncode, 0)
+        self.assertIn("3 != 4", failure.stderr)
+        finding = {"id": "later-only", "affected_task": second, "status": "open",
+                   "route": "implementation", "evidence": failure.stderr}
+        self.act("report", dict(self.report(), verdict="changes_required", findings=[finding],
+                                next_action="repair Second within its unit after renewed prerequisite check"))
+        self.assertEqual(self.state["active_unit"], first)
+        self.assertTrue(all(u["status"] == "ready" and u["accepted"] is None for u in self.state["units"]))
+        self.harness = Harness(self.source, clock=lambda: self.now)
+        self.assertEqual(self.harness.show()["state"], self.state)
+        self.unchanged_rejection("publish-intent", self.intent(), "final acceptance")
+
+        # First honors its scope: return the same commit without fixing Second.
+        unchanged = git(self.source, "rev-parse", "HEAD"), (self.source / "second.py").read_bytes()
+        self.implemented(candidate)
+        self.launch("checker")
+        passing = checked_report(["test_behavior"], {"C1": [behavior_id]})
+        final_probe = dict(passing, operation="final")
+        with self.assertRaisesRegex(Invalid, "unresolved prior finding"):
+            self.harness.evidence(self.state, final_probe, self.harness.store.records(self.tip))
+        self.act("report", passing)
+        self.assertEqual(unchanged, (git(self.source, "rev-parse", "HEAD"), (self.source / "second.py").read_bytes()))
+        self.assertEqual(self.state["findings"], [finding])
+        self.assertEqual(self.state["active_unit"], second)
+        self.assertNotEqual(run(["test_final"]).returncode, 0)
+
+        # Only the dependent implementer changes Second, retaining every assertion.
+        self.launch("implementer")
+        self.assertEqual(self.report()["unit"], second)
+        (self.source / "second.py").write_text("def second_value(x):\n    return x*2\n")
+        git(self.source, "add", "second.py")
+        git(self.source, "commit", "-m", "repair Second final assertion")
+        corrected = git(self.source, "rev-parse", "HEAD").decode().strip()
+        self.act("report", dict(self.report(), result_candidate_sha=corrected,
+                                test_mapping={"C2": "test_second.py"}, commands=[{"exit_code": 0}]))
+        self.launch("checker")
+        success = checked_report(["test_second", "test_final"], {"C2": [second_id, final_id]})
+        self.unchanged_rejection("report", success, "unresolved prior finding")
+        self.act("resolve-finding", {"finding_id": "later-only", "evidence": success["records"][success["evidence"][0]["log"]]})
+        self.assertEqual(self.state["findings"][0]["affected_task"], second)
+        self.assertEqual(self.state["findings"][0]["status"], "resolved")
+        self.act("report", success)
+        subtask_attempt = success["attempt_id"]
+        self.assertEqual(self.state["operation"], "final")
+        self.unchanged_rejection("publish-intent", self.intent(), "final acceptance")
+        self.launch("checker")
+        final = checked_report(["test_behavior", "test_second", "test_final"],
+                               {"C1": [behavior_id], "C2": [second_id, final_id]})
+        self.assertNotEqual(final["attempt_id"], subtask_attempt)
+        self.assertEqual(final["operation"], "final")
+        self.act("report", final)
+        self.assertEqual(self.state["final_acceptance"]["candidate_sha"], corrected)
+        # Even after final acceptance, publication guard rejects any reopened finding.
+        blocked = copy.deepcopy(self.state)
+        blocked["findings"][0]["status"] = "open"
+        with self.assertRaisesRegex(Invalid, "unaccepted work/findings"):
+            self.harness.publication_guard(blocked, self.intent())
+        self.act("publish-intent", self.intent())
+        self.assertEqual(self.state["publishing"]["stage"], "push")
+
+    def test_T10c_finding_scope_validation_dependency_branch_and_replan(self):
+        plan = self.split_plan()
+        first, second = [unit["key"] for unit in plan["subtasks"]]
+        self.launch("planner")
+        self.act("report", dict(self.report(), plan=plan))
+        self.implemented()
+        self.launch("checker")
+        finding = {"id": "scoped", "affected_task": second, "status": "open",
+                   "route": "planner", "evidence": "Second needs a stronger planned assertion"}
+        for scope in (None, "", "FOS-999999", [], 27):
+            bad = dict(finding, affected_task=scope)
+            self.unchanged_rejection("report", dict(self.report(), verdict="changes_required", findings=[bad],
+                                                    next_action="replan"), "finding scope")
+            malformed = copy.deepcopy(self.state)
+            malformed["findings"] = [bad]
+            with self.assertRaisesRegex(Invalid, "finding scope"):
+                validate_state(malformed, self.source)
+
+        passed = self.check_report()
+        records = dict(self.harness.store.records(self.tip))
+        records.update({path: content.encode() for path, content in passed["records"].items()})
+        for scope in (first, self.root_key, "missing"):
+            blocked = copy.deepcopy(self.state)
+            blocked["findings"] = [dict(finding)]
+            if scope == "missing":
+                blocked["findings"][0].pop("affected_task")
+            else:
+                blocked["findings"][0]["affected_task"] = scope
+            # Legacy missing scope remains valid and blocks as root-wide.
+            validate_state(blocked, self.source)
+            with self.assertRaisesRegex(Invalid, "unresolved prior finding"):
+                self.harness.evidence(blocked, passed, records)
+
+        # A finding in a dependency blocks its dependent, even after prior acceptance.
+        dependent = dict(passed, unit=second)
+        blocked = copy.deepcopy(self.state)
+        blocked["findings"] = [dict(finding, affected_task=first)]
+        with self.assertRaisesRegex(Invalid, "unresolved prior finding"):
+            self.harness.evidence(blocked, dependent, records)
+        # An independent branch finding does not taint First's subtask evidence.
+        blocked["units"][1]["dependencies"] = []
+        blocked["findings"] = [dict(finding)]
+        self.harness.evidence(blocked, passed, records)
+
+        self.act("report", dict(self.report(), verdict="changes_required", findings=[finding], next_action="replan"))
+        self.launch("planner")
+        replanned = copy.deepcopy(plan)
+        replanned.update(version=2, subtasks=[])
+        replanned["cases"] = [dict(plan["cases"][0], units=[self.root_key])]
+        self.act("report", dict(self.report(), plan=replanned))
+        self.assertEqual(self.state["findings"], [finding])
+        self.assertEqual(self.harness.show()["state"], self.state)
+        self.implemented()
+        self.launch("checker")
+        # Removing a unit in a replan cannot hide its permanently attributed finding.
+        self.unchanged_rejection("report", self.check_report(), "unresolved prior finding")
+        # Resolution arguments cannot narrow its permanent affected task.
+        self.unchanged_rejection("resolve-finding", {"finding_id": "scoped", "affected_task": self.root_key,
+                                                    "evidence": "verified"}, "finding scope")
+        self.act("resolve-finding", {"finding_id": "scoped", "evidence": "fresh checker verified revised assertion"})
+        self.assertEqual(self.state["findings"][0]["affected_task"], second)
+        self.act("report", self.check_report())
+
     def test_T14_required_environment_unavailable_cannot_be_waived(self):
         plan = self.plan()
         plan["gates"].append(dict(plan["gates"][0], id="gpu", prerequisites="physical GPU and driver"))

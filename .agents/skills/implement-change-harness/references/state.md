@@ -133,6 +133,23 @@ before launch. `acknowledge` takes that attempt ID and actual `worker_id`.
 
 Finding IDs must be unique both within one report and across durable findings; a
 duplicate report is rejected without advancing the checkpoint.
+`affected_task` permanently attributes each finding to the root (task-wide) or a
+registered unit in the report's current plan. Missing attribution in old or new
+reports means root-wide; explicit null, empty, unknown, retired or unplanned keys
+are invalid. Use root-wide scope for uncertain or multiple-unit effects. This is
+ownership of a concrete finding, not a waiver: subtask acceptance blocks on all
+unresolved durable findings for its own unit, its transitive dependencies or the
+root, while explicitly unrelated unit findings remain open for their owner's
+repair. Accepted reports cannot introduce any unresolved finding. Final acceptance
+and every publication guard continue to require all findings resolved.
+
+Replans retain prior validated unit declarations under `provenance` entries named
+`superseded_plan` (version and subtasks); full old plans remain in their reports.
+Finding attribution is preserved when plans change. A finding whose unit is absent
+from the new plan conservatively blocks every unit, rather than disappearing.
+Current dependency relationships determine applicable findings for remaining units;
+replans still invalidate every prior approval. No resolution or replan action may
+reassign an existing finding to a narrower task.
 
 Supply additional small text/JSON artifacts in `records`, a mapping of permitted
 full run evidence/report paths to text or JSON values. Accepted/rejected role
@@ -151,7 +168,8 @@ The checker independently establishes meaning and completeness.
 `observation`, `next_action`. Intent without worker acknowledgement is ambiguous;
 only confirmed termination unlocks a replacement. Old reports remain fenced.
 `resolve-finding` takes `finding_id` and concrete `evidence`, only during a fresh
-active checker. `resume` records resolved-prerequisite `observation`/`next_action`
+active checker. It retains `affected_task`; an optional conflicting attribution is
+rejected. `resume` records resolved-prerequisite `observation`/`next_action`
 for an environment decision; it cannot waive mandatory evidence or exhausted bounds.
 
 Initial implementation plus three repairs per unit and one replan are defaults.

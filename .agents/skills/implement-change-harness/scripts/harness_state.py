@@ -246,6 +246,31 @@ def validate_plan(plan, original, root, registry, journal):
         done.update(ready)
 
 
+def validate_finding_scope(finding, root, keys):
+    # Old schema-2 records omitted attribution. They remain root-wide forever.
+    affected = finding.get("affected_task", root)
+    require(isinstance(affected, str) and affected in keys | {root}, "invalid finding scope")
+    return affected
+
+
+def finding_applies(state, finding, operation, unit):
+    affected = finding.get("affected_task", state["task_key"])
+    units = {item["key"]: item for item in state["units"]}
+    # Final/publication are global. An orphaned attribution after a replan also
+    # remains global rather than silently disappearing with its former unit.
+    if operation != "subtask" or affected == state["task_key"] or affected not in units:
+        return True
+    require(unit in units, "unknown finding scope check unit")
+    relevant, pending = set(), [unit]
+    while pending:
+        key = pending.pop()
+        if key not in relevant:
+            require(key in units, "invalid finding scope dependency")
+            relevant.add(key)
+            pending.extend(units[key]["dependencies"])
+    return affected in relevant
+
+
 def validate_state(state, repo):
     require(state.get("schema_version") == SCHEMA, "unsupported/incomplete schema; use explicit import-bootstrap")
     required = ("revision", "task_key", "run_id", "task_location", "original", "repository", "phase",
@@ -261,6 +286,11 @@ def validate_state(state, repo):
     require(state["status"] in ("ready", "running", "interrupted", "awaiting_decision", "failed", "complete"), "invalid status")
     finding_ids = [finding["id"] for finding in state["findings"]]
     require(len(finding_ids) == len(set(finding_ids)), "duplicate finding in durable state")
+    known_units = {unit["key"] for unit in (state["plan"] or {}).get("subtasks", [])}
+    for entry in state["provenance"]:
+        known_units.update(unit["key"] for unit in entry.get("superseded_plan", {}).get("subtasks", []))
+    for finding in state["findings"]:
+        validate_finding_scope(finding, state["task_key"], known_units)
     repository = state["repository"]
     require(repository["common_dir"] == str(common_dir(repo)), "wrong repository identity")
     for field in ("input_sha", "base_sha"):
@@ -491,7 +521,9 @@ class Harness:
         provided = {entry["gate"]: entry for entry in report.get("evidence", [])}
         require(set(gates) <= set(provided), "missing mandatory gate")
         require(not any(finding.get("status") != "resolved" for finding in report.get("findings", [])), "unresolved finding")
-        require(not any(finding.get("status") != "resolved" for finding in state["findings"]), "unresolved prior finding")
+        require(not any(finding.get("status") != "resolved" and
+                        finding_applies(state, finding, operation, report["unit"])
+                        for finding in state["findings"]), "unresolved prior finding")
         for gate_id in gates:
             entry = provided[gate_id]
             require(entry.get("result") == "passed" and entry.get("exit_code") == 0, "mandatory evidence is not passed")
@@ -563,6 +595,8 @@ class Harness:
             self.current_attempt(state)
             finding = next((f for f in state["findings"] if f["id"] == p["finding_id"]), None)
             require(finding is not None, "unknown finding")
+            require(p.get("affected_task", finding.get("affected_task", state["task_key"])) ==
+                    finding.get("affected_task", state["task_key"]), "cannot change finding scope")
             finding.update(status="resolved", recheck=p, attempt_id=state["attempts"][-1]["attempt_id"])
         elif action == "budget-extension":
             require(p.get("authorization") and p.get("reason"), "explicit user authorization required")
@@ -682,6 +716,11 @@ class Harness:
             plan = p["plan"]
             require(plan["version"] == (state["plan"]["version"] + 1 if state["plan"] else 1), "plan version not monotonic")
             validate_plan(plan, state["original"], state["task_key"], registry, journal)
+            if state["plan"]:
+                # Preserve validated permanent attributions even if the new plan
+                # removes their units. Full prior plans remain in role reports.
+                state["provenance"].append({"superseded_plan": {
+                    "version": state["plan"]["version"], "subtasks": state["plan"].get("subtasks", [])}})
             state["plan"] = plan
             state["units"] = self.units(state)
             state["active_unit"] = self.ready_unit(state)["key"]
@@ -700,9 +739,14 @@ class Harness:
             self.source(state)
             finding_ids = [finding.get("id") for finding in p.get("findings", [])]
             require(len(finding_ids) == len(set(finding_ids)), "duplicate finding in report")
+            planned_keys = {unit["key"] for unit in state["plan"].get("subtasks", [])}
+            if p.get("findings"):
+                registry, _, _ = canonical_inventory(self.repo, journal)
             for finding in p.get("findings", []):
                 require(finding.get("id") and finding.get("evidence") and finding.get("route") in ("implementation", "planner", "environment"), "incomplete finding")
                 require(not any(f["id"] == finding["id"] for f in state["findings"]), "duplicate finding")
+                affected = validate_finding_scope(finding, state["task_key"], planned_keys)
+                require(affected in registry and "retired" not in registry[affected]["status"], "unregistered finding scope")
             if p["verdict"] == "accepted":
                 self.evidence(state, p, combined)
                 state["verification"].append(p)
