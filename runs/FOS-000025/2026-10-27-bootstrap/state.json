@@ -287,6 +287,7 @@
     },
     {
       "affected_task": "FOS-000025",
+      "attempt_id": "checker-4",
       "criteria": [
         "AC1",
         "AC4",
@@ -303,8 +304,12 @@
         "T13"
       ],
       "priority": 1,
+      "recheck": {
+        "evidence": "Independent checker-4 disposable reversed-split probe confirms initial Second final assertion fails (3 != 4); returns identical candidate and second.py bytes for unaffected First; First fresh acceptance succeeds while Second finding remains open and original final assertion still fails; Second-only implementer changes only second.py, fresh checker reruns Second plus original final assertion successfully, cannot accept until explicitly resolving the applicable finding, then a distinct final checker runs all three actual tests and accepts. Invalid scopes transactionally reject, dependency/root/legacy missing scope remain conservative, and reopening any finding blocks publication guard. T10c additionally verifies permanent removed-unit attribution across replan. All27 independently rerun; no prior C1/C2 safeguards regressed. Evidence runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-4-probes.log and checker-4-G01.log; exact scratch probe retained in checker-4-probe-source.txt.",
+        "finding_id": "FOS-000025-C3-001"
+      },
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "A later-unit final finding blocks the prerequisite recheck needed to reach its repair"
     }
   ],
@@ -1305,7 +1310,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 49,
+  "revision": 50,
   "run_id": "2026-10-27-bootstrap",
   "schema_version": 2,
   "status": "running",
