@@ -259,6 +259,8 @@ def validate_state(state, repo):
             and len({c["id"] for c in original}) == len(original), "invalid original acceptance")
     require(state["phase"] in ("initializing", "planning", "implementing", "checking", "publishing", "complete"), "invalid phase")
     require(state["status"] in ("ready", "running", "interrupted", "awaiting_decision", "failed", "complete"), "invalid status")
+    finding_ids = [finding["id"] for finding in state["findings"]]
+    require(len(finding_ids) == len(set(finding_ids)), "duplicate finding in durable state")
     repository = state["repository"]
     require(repository["common_dir"] == str(common_dir(repo)), "wrong repository identity")
     for field in ("input_sha", "base_sha"):
@@ -402,6 +404,7 @@ class Harness:
             state["plan"] = payload["plan"]
             validate_plan(state["plan"], state["original"], state["task_key"], registry, journal)
             state["units"] = self.units(state)
+            state["active_unit"] = self.ready_unit(state)["key"]
         state["phase"] = "implementing" if state["plan"] else "planning"
         # Completed legacy implementation may be imported as an unverified fact.
         # It is never rewritten into a fabricated fenced attempt or acceptance.
@@ -435,6 +438,33 @@ class Harness:
     def units(state):
         tasks = state["plan"].get("subtasks") or [{"key": state["task_key"], "dependencies": []}]
         return [dict(task, status="ready", accepted=None) for task in tasks]
+
+    @staticmethod
+    def ready_unit(state):
+        done = {unit["key"] for unit in state["units"] if unit["status"] == "accepted"}
+        ready = next((unit for unit in state["units"] if unit["status"] != "accepted"
+                      and set(unit["dependencies"]) <= done), None)
+        require(ready is not None, "no dependency-ready unit")
+        return ready
+
+    @staticmethod
+    def pause_budget(state, reason):
+        limits = state["limits"]
+        limits["exhausted"] = True
+        if state["operation"] == "budget":
+            return
+        limits.update(resume_operation=state["operation"], resume_status=state["status"],
+                      resume_next_action=state["next_action"])
+        state.update(status="awaiting_decision", operation="budget",
+                     next_action="request explicit user budget extension: " + reason
+                     + "; then " + limits.get("resume_next_action", "resume saved operation"))
+
+    @staticmethod
+    def restore_budget_step(state):
+        limits = state["limits"]
+        state.update(operation=limits.pop("resume_operation", "implement"),
+                     status=limits.pop("resume_status", "ready"),
+                     next_action=limits.pop("resume_next_action", "dispatch within extended budget"))
 
     def source(self, state, candidate=None):
         path = Path(state["repository"]["implementation_worktree"])
@@ -483,6 +513,15 @@ class Harness:
 
     def reduce(self, state, action, p, journal, records):
         repository = state["repository"]
+        expired = self.clock() >= state["limits"]["deadline"]
+        # Reports and worker observations are facts worth preserving after expiry.
+        # Forward work/publication pauses before its side effect or authorization.
+        if action in ("dispatch", "command-intent", "observe-source", "publish-intent", "publish-observation", "reserve"):
+            if state["limits"]["exhausted"] or expired:
+                self.pause_budget(state, "run deadline or recorded budget exhausted")
+                return
+        if action in ("report", "acknowledge", "reconcile", "resolve-finding") and state["operation"] == "budget":
+            self.restore_budget_step(state)
         if action == "reserve":
             require(state["status"] != "running", "cannot allocate during worker execution")
             registry, _, high = canonical_inventory(self.repo, journal)
@@ -532,10 +571,11 @@ class Harness:
                 if field in p:
                     require(p[field] >= state["limits"][field], "extension cannot reduce limit")
                     state["limits"][field] = p[field]
+            require(self.clock() < state["limits"]["deadline"], "extension must provide an unexpired deadline")
             state["limits"]["extensions"].append(p)
             state["limits"]["exhausted"] = False
             if state["status"] == "awaiting_decision" and state["operation"] == "budget":
-                state.update(status="ready", operation=state["limits"].pop("resume_operation", "implement"), next_action="dispatch within extended budget")
+                self.restore_budget_step(state)
         elif action == "resume":
             require(state["status"] == "awaiting_decision" and not state["limits"]["exhausted"]
                     and state["operation"] != "bootstrap-reconciliation", "resume requires resolved non-budget decision")
@@ -558,7 +598,7 @@ class Harness:
             state["publishing"] = {"stage": "none", "ci_policy": previous["ci_policy"], "prior": previous}
             for unit in state["units"]:
                 unit.update(status="ready", accepted=None)
-            state.update(phase="implementing", status="ready", operation="repair", active_unit=state["units"][0]["key"], next_action="implement integrated candidate, then fresh subtask and final checks")
+            state.update(phase="implementing", status="ready", operation="repair", active_unit=self.ready_unit(state)["key"], next_action="implement integrated candidate, then fresh subtask and final checks")
         elif action == "publish-intent":
             require(state["phase"] == "publishing" and state["final_acceptance"], "final acceptance required")
             self.publication_guard(state, p)
@@ -569,6 +609,8 @@ class Harness:
             self.publish(state, p)
         else:
             raise Invalid("unknown transition: " + action)
+        if action != "budget-extension" and (expired or state["limits"]["exhausted"]):
+            self.pause_budget(state, "run deadline exhausted")
         # Coordinator supplies bounded text records with each action; never paths on disk.
         for path, content in p.get("records", {}).items():
             record_path(path)
@@ -595,15 +637,17 @@ class Harness:
         if limits["exhausted"] or self.clock() >= limits["deadline"]:
             reason = "run deadline exhausted"
         if role == "implementer":
+            unit = next((u for u in state["units"] if u["key"] == state["active_unit"]), None)
+            done = {u["key"] for u in state["units"] if u["status"] == "accepted"}
+            require(unit is not None and unit["status"] != "accepted" and set(unit["dependencies"]) <= done,
+                    "implementer unit dependencies are not accepted")
             count = limits["implementation_counts"].get(state["active_unit"], 0)
             if count >= 1 + limits["repairs"]:
                 reason = "implementation repair budget exhausted"
         if role == "planner" and state["plan"] and limits["replan_count"] >= limits["replans"]:
             reason = "replan budget exhausted"
         if reason:
-            limits["exhausted"] = True
-            limits["resume_operation"] = state["operation"]
-            state.update(status="awaiting_decision", operation="budget", next_action="request explicit user budget extension: " + reason)
+            self.pause_budget(state, reason)
             return
         if role == "implementer":
             limits["implementation_counts"][state["active_unit"]] = count + 1
@@ -640,7 +684,7 @@ class Harness:
             validate_plan(plan, state["original"], state["task_key"], registry, journal)
             state["plan"] = plan
             state["units"] = self.units(state)
-            state["active_unit"] = state["units"][0]["key"]
+            state["active_unit"] = self.ready_unit(state)["key"]
             state["final_acceptance"] = None
             state.update(phase="implementing", operation="implement", status="ready", next_action="dispatch fresh implementer for first ready unit")
         elif role == "implementer":
@@ -654,6 +698,8 @@ class Harness:
         else:
             require(p["verdict"] in ("accepted", "changes_required", "unable_to_verify"), "unknown checker verdict")
             self.source(state)
+            finding_ids = [finding.get("id") for finding in p.get("findings", [])]
+            require(len(finding_ids) == len(set(finding_ids)), "duplicate finding in report")
             for finding in p.get("findings", []):
                 require(finding.get("id") and finding.get("evidence") and finding.get("route") in ("implementation", "planner", "environment"), "incomplete finding")
                 require(not any(f["id"] == finding["id"] for f in state["findings"]), "duplicate finding")
@@ -670,8 +716,7 @@ class Harness:
                     unit.update(status="accepted", accepted=accepted)
                     remaining = [u for u in state["units"] if u["status"] != "accepted"]
                     if remaining:
-                        done = {u["key"] for u in state["units"] if u["status"] == "accepted"}
-                        ready = next(u for u in remaining if set(u["dependencies"]) <= done)
+                        ready = self.ready_unit(state)
                         state.update(active_unit=ready["key"], phase="implementing", operation="implement", status="ready", next_action="dispatch next dependency-ready implementer")
                     else:
                         state.update(operation="final", status="ready", next_action="dispatch separate fresh final checker over combined branch")
@@ -690,15 +735,14 @@ class Harness:
                     state.update(phase="checking", operation=attempt["operation"])
                     state.update(status="awaiting_decision", next_action=p["next_action"])
                 if repeated:
-                    state["limits"]["exhausted"] = True
-                    state["limits"]["resume_operation"] = state["operation"]
-                    state.update(status="awaiting_decision", operation="budget", next_action="request explicit budget extension or new evidence: repeated unchanged rejection")
+                    self.pause_budget(state, "repeated unchanged rejection")
         attempt["status"] = "complete"
         attempt["report"] = f"runs/{state['task_key']}/{state['run_id']}/reports/{attempt['attempt_id']}.json"
         require(attempt["report"] not in records, "report already exists")
         records[attempt["report"]] = encoded(p)
 
     def publication_guard(self, state, p):
+        require(not state["limits"]["exhausted"] and self.clock() < state["limits"]["deadline"], "publication budget exhausted")
         self.source(state)
         r = state["repository"]
         accepted = state["final_acceptance"]

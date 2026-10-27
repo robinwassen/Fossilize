@@ -92,8 +92,10 @@ A planner report's `plan` uses:
   `key`, permanent `title`, `definition`, `dependencies`, `criteria`.
 
 The helper validates criterion coverage, registrations, reservations and acyclic
-subtask dependencies. It does not decide semantic plan adequacy. `publication`
-gates describe the coordinator's external sequence below, rather than checks that
+subtask dependencies. Initial plans, replans and source resets select the first
+dependency-ready unit regardless of array order; implementer dispatch also checks
+that all dependencies have accepted. It does not decide semantic plan adequacy.
+`publication` gates describe the coordinator's external sequence below, rather than checks that
 could already have passed before a PR exists. Include review of publication
 readiness in final gates as appropriate. Keep the original detailed planner report
 as a separate artifact when normalizing its fields into this compact schema.
@@ -126,6 +128,9 @@ before launch. `acknowledge` takes that attempt ID and actual `worker_id`.
 - checker: `verdict`, findings and exact evidence below. Rejection needs findings
   and `next_action`; acceptance cannot contain unresolved findings.
 
+Finding IDs must be unique both within one report and across durable findings; a
+duplicate report is rejected without advancing the checkpoint.
+
 Supply additional small text/JSON artifacts in `records`, a mapping of permitted
 full run evidence/report paths to text or JSON values. Accepted/rejected role
 reports themselves are committed automatically at `reports/<attempt_id>.json`.
@@ -147,7 +152,14 @@ active checker. `resume` records resolved-prerequisite `observation`/`next_actio
 for an environment decision; it cannot waive mandatory evidence or exhausted bounds.
 
 Initial implementation plus three repairs per unit and one replan are defaults.
-`dispatch` checks deadline/counters on invocation. Repeated unchanged rejection
+Forward-work invocations (`dispatch`, `command-intent`, `observe-source`,
+`reserve`, `publish-intent` and every `publish-observation`) pause before progress
+when the deadline or a recorded budget is exhausted. Valid late reports and worker
+observations are retained as facts, then leave the run awaiting a budget decision;
+even late final acceptance cannot authorize publication. The pause saves the exact
+operation, status and next action. An authorized extension with an unexpired
+deadline restores that step, preserving live-worker fences and completed reports.
+Repair/replan counters are also checked at dispatch. Repeated unchanged rejection
 also stops early; concrete `new_evidence` in a report distinguishes a new probe.
 `budget-extension` needs recorded human `authorization`, `reason`, and increased
 `deadline`/`repairs`/`replans` as applicable. No automatic timeout watcher exists.

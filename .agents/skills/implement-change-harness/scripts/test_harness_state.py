@@ -11,7 +11,7 @@ import unittest
 from unittest.mock import patch
 
 from harness_state import (Harness, Invalid, REF, Store, canonical_inventory, common_dir,
-                           detached_worktree, encoded, git, repository_lock, state_path)
+                           detached_worktree, encoded, git, repository_lock, state_path, validate_state)
 
 
 def lock_contender(repo, ready, proceed, output):
@@ -167,6 +167,139 @@ class HarnessTests(unittest.TestCase):
         with self.assertRaisesRegex(Invalid, pattern or ".*"):
             self.act(action, payload)
         self.assertEqual(self.harness.show(), before)
+
+
+    def test_T03b_duplicate_durable_finding_identity_is_invalid(self):
+        self.planned()
+        malformed = copy.deepcopy(self.state)
+        finding = {"id": "same", "status": "open", "route": "implementation", "evidence": "failure"}
+        malformed["findings"] = [finding, copy.deepcopy(finding)]
+        with self.assertRaisesRegex(Invalid, "duplicate finding"):
+            validate_state(malformed, self.source)
+        # A single resolved record remains valid.
+        malformed["findings"] = [dict(finding, status="resolved")]
+        validate_state(malformed, self.source)
+
+    def test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers(self):
+        self.planned()
+        self.implemented()
+        self.launch("checker")
+        finding = {"id": "same", "status": "open", "route": "implementation", "evidence": "concrete failure"}
+        rejected = dict(self.report(), verdict="changes_required", findings=[finding, copy.deepcopy(finding)], next_action="repair")
+        self.unchanged_rejection("report", rejected, "duplicate finding")
+        rejected["findings"].pop()
+        self.act("report", rejected)
+        self.implemented()
+        self.launch("checker")
+        self.unchanged_rejection("report", self.check_report(), "unresolved prior finding")
+        self.unchanged_rejection("report", dict(self.report(), verdict="changes_required", findings=[finding], next_action="repair"), "duplicate finding")
+        self.act("resolve-finding", {"finding_id": "same", "evidence": "fresh checker reran concrete reproducer successfully"})
+        self.act("report", self.check_report())
+        self.assertEqual(self.state["operation"], "final")
+        self.assertEqual([f["status"] for f in self.state["findings"]], ["resolved"])
+
+    def test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness(self):
+        plan = self.split_plan()
+        first, second = [u["key"] for u in plan["subtasks"]]
+        plan["subtasks"].reverse()
+        self.launch("planner")
+        self.act("report", dict(self.report(), plan=plan))
+        self.assertEqual(self.state["active_unit"], first)
+        self.implemented()
+        self.launch("checker")
+        self.act("report", dict(self.report(), verdict="changes_required", findings=[
+            {"id": "plan-change", "status": "open", "route": "planner", "evidence": "add assertion detail"}], next_action="replan"))
+        self.launch("planner")
+        plan["version"] = 2
+        self.act("report", dict(self.report(), plan=plan))
+        self.assertEqual(self.state["active_unit"], first)
+        self.act("observe-source", {"candidate_sha": self.commit_candidate()})
+        self.assertEqual(self.state["active_unit"], first)
+        # Dispatch independently rejects a malformed selection, even if selection logic regresses.
+        bad = copy.deepcopy(self.state)
+        bad["active_unit"] = second
+        before = copy.deepcopy(bad)
+        model = {"model": "gpt-6.1-sol", "effort": "high"}
+        with self.assertRaisesRegex(Invalid, "dependencies"):
+            self.harness.dispatch(bad, {"role": "implementer", "attempt_id": "unready",
+                                      "requested": model, "actual": model, "catalog": {"gpt-6.1-sol": ["high"]}})
+        self.assertEqual(bad, before)
+        self.implemented()
+        self.launch("checker")
+        self.act("resolve-finding", {"finding_id": "plan-change", "evidence": "fresh checker verified added assertion"})
+        self.act("report", self.check_report())
+        self.assertEqual(self.state["active_unit"], second)
+        self.launch("implementer")
+        self.assertEqual(self.state["attempts"][-1]["unit"], second)
+
+    def test_T09c_late_final_report_retained_but_requires_extension(self):
+        self.planned()
+        self.implemented()
+        self.checked()
+        self.launch("checker")
+        report = self.check_report()
+        self.now = self.state["limits"]["deadline"]
+        self.act("report", report)
+        self.assertEqual(self.state["status"], "awaiting_decision")
+        self.assertEqual(self.state["operation"], "budget")
+        self.assertTrue(self.state["limits"]["exhausted"])
+        self.assertEqual(self.state["attempts"][-1]["status"], "complete")
+        self.assertEqual(json.loads(self.harness.store.records(self.tip)[self.state["attempts"][-1]["report"]]), report)
+        self.assertIsNotNone(self.harness.show()["active"])
+        self.act("publish-intent", self.intent())
+        self.assertEqual(self.state["publishing"]["stage"], "none")
+        self.unchanged_rejection("resume", {"observation": "time passed", "next_action": "publish"}, "non-budget")
+        self.act("budget-extension", {"deadline": self.now + 100, "authorization": "human approved", "reason": "finish publication"})
+        self.assertEqual((self.state["operation"], self.state["status"]), ("publish", "ready"))
+        self.act("publish-intent", self.intent())
+        git(self.source, "push", "origin", "codex/test")
+        self.act("publish-observation", {"event": "push", "remote_sha": self.state["repository"]["candidate_sha"]})
+        self.act("publish-observation", self.lookup([self.pr()]))
+        self.act("publish-observation", {"event": "attachment", "url": self.pr()["url"], "success": True})
+        self.assertIsNone(self.harness.show()["active"])
+
+    def test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report(self):
+        self.planned()
+        self.implemented()
+        self.launch("checker")
+        report = self.check_report()
+        command_count = len(self.state["limits"]["commands"])
+        self.now = self.state["limits"]["deadline"]
+        self.act("command-intent", {"command": "python unittest", "cwd": str(self.source), "timeout": 30})
+        self.assertEqual(len(self.state["limits"]["commands"]), command_count)
+        self.assertEqual(self.state["operation"], "budget")
+        self.assertEqual(self.state["attempts"][-1]["status"], "running")
+        self.act("report", report)
+        self.assertEqual(self.state["operation"], "budget")
+        self.assertEqual(self.state["attempts"][-1]["status"], "complete")
+        self.assertEqual(self.state["limits"]["resume_operation"], "final")
+        self.unchanged_rejection("budget-extension", {"repairs": 4, "authorization": "human approved", "reason": "insufficient deadline"}, "unexpired deadline")
+        self.act("budget-extension", {"deadline": self.now + 100, "authorization": "human approved", "reason": "continue"})
+        self.assertEqual((self.state["operation"], self.state["status"]), ("final", "ready"))
+        self.assertEqual(self.state["next_action"], "dispatch separate fresh final checker over combined branch")
+        self.checked()
+        self.assertEqual(self.state["phase"], "publishing")
+
+    def test_T15b_deadline_stops_publication_at_every_stage(self):
+        self.payload["ci_policy"] = "required_after_pr"
+        self.accepted()
+        self.act("publish-intent", self.intent())
+        git(self.source, "push", "origin", "codex/test")
+        events = [{"event": "push", "remote_sha": self.state["repository"]["candidate_sha"]},
+                  self.lookup([]), {"event": "create-dispatched"}, self.lookup([self.pr()]),
+                  {"event": "attachment", "url": self.pr()["url"], "success": True},
+                  {"event": "ci", "result": "passed", "evidence": "required hosted checks passed"}]
+        for event in events:
+            with self.subTest(event=event["event"]):
+                publication = copy.deepcopy(self.state["publishing"])
+                self.now = self.state["limits"]["deadline"] + 1
+                self.act("publish-observation", event)
+                self.assertEqual(self.state["publishing"], publication)
+                self.assertEqual(self.state["operation"], "budget")
+                self.assertIsNotNone(self.harness.show()["active"])
+                self.act("budget-extension", {"deadline": self.now + 100, "authorization": "human approved", "reason": "continue exact publication stage"})
+                self.act("publish-observation", event)
+        self.assertEqual(self.state["status"], "complete")
 
     def test_T01_happy_path_real_checkpoint_and_source_preservation(self):
         (self.repo / "private.txt").write_text("user untracked")
