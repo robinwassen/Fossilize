@@ -1,6 +1,6 @@
 # Basic change harness: proposed skill design
 
-Date: 2026-10-27. Status: planning only; the skill and harness do not exist yet.
+Date: 2026-10-27. Status: implementation in progress under FOS-000025.
 
 ## Outcome and boundaries
 
@@ -14,8 +14,18 @@ The parent agent coordinates. Planning, implementation and adversarial checking
 each run in a fresh subagent. The coordinator manages durable state and publishing;
 it does not replace a failed checker with its own judgment.
 
-This document is tracked project guidance, not a backlog definition. No backlog keys
-are allocated by writing this proposal. AGENTS.md and local-docs are shared in Git.
+## FOS-000025 — Implement the change harness skill
+
+Canonical task definition. Status: in progress. Implement the workflow specified
+below as a tracked, discoverable skill with a standard-library state/Git helper,
+meaningful automated tests and independently checked evidence. Preserve the
+planner/implementer/checker responsibilities and per-subtask verification gates.
+Acceptance requires tested state transitions, recovery and publication safeguards,
+a validated skill package, and one PR to robinwassen/Fossilize master. Use this
+three-role method to implement the harness itself; record the bootstrap run on
+harness-artifacts before dispatching agents. Product C++ changes are out of scope.
+
+AGENTS.md and local-docs are shared in Git.
 
 ## Lessons applied from the requested lecture
 
