@@ -484,7 +484,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -1345,6 +1345,10 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793134992.344558,
+      "event": "create-dispatched"
+    },
     "intent": {
       "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
       "branch": "codex/FOS-000025-implement-change-harness",
@@ -1364,10 +1368,13 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "event": "create-dispatched"
       }
     ],
     "remote_sha": "e01fa9d68ade5384f214ec46a6ddc352b22a03de",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
@@ -1381,7 +1388,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 60,
+  "revision": 61,
   "run_id": "2026-10-27-bootstrap",
   "schema_version": 2,
   "status": "ready",
