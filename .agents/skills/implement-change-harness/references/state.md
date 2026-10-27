@@ -193,6 +193,35 @@ requires a clean matching implementation branch/worktree, invalidates unit/final
 acceptance and returns to implementation. It preserves prior publication facts.
 Changed HEAD/dirty/untracked work cannot publish under an older final acceptance.
 
+## PR description
+
+Use these explicit level-two Markdown headings in every harness PR description.
+Write plain language that a reader familiar only with the project can understand.
+Keep each section proportional to the change; headings do not require long text.
+
+```markdown
+## Problem
+Describe the affected workflow and observable problem.
+
+## What changes
+Explain the behavior before and after the change.
+
+## Why this matters
+Explain why solving the problem matters for this project.
+
+## Why this approach
+Explain the chosen shape and scope, including a meaningful tradeoff when relevant.
+
+## Verification and limits
+State what was actually checked and what remains unverified.
+
+## Task references
+List the root and any subtask keys with links to their canonical definitions.
+```
+
+Do not include private machine configuration, full transcripts or inaccessible
+evidence links. The description must make sense without reading the run history.
+
 ## Publication observations
 
 After separate final acceptance, fetch target master and compare accepted base.

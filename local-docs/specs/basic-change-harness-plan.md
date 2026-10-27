@@ -343,15 +343,16 @@ or a recorded repository policy requires it. No automatic merge or force push.
 Complete means verified and PR opened, not merged. A publication failure retains
 the verified candidate and resumes publishing without reimplementing it.
 
-Plain-language PR description:
+Write the PR description in plain language with these explicit level-two Markdown
+section headings, even for a small change. Keep the content proportional to scope:
 
-- Problem: describe the affected user/workflow and the observable problem.
-- Difference: explain behavior before and after the change.
-- Reason: explain why this matters in terms of the project's purpose.
-- Design: explain why this approach and scope were chosen, including a meaningful
+- `## Problem`: describe the affected user/workflow and the observable problem.
+- `## What changes`: explain behavior before and after the change.
+- `## Why this matters`: explain why this matters in terms of the project's purpose.
+- `## Why this approach`: explain why this approach and scope were chosen, including a meaningful
   alternative or tradeoff when relevant, without a transcript of deliberation.
-- Verification and limits: say what was checked and where uncertainty remains.
-- References: list root/subtask keys with links to the tracked backlog and sufficient standalone context.
+- `## Verification and limits`: say what was checked and where uncertainty remains.
+- `## Task references`: list root/subtask keys with links to the tracked backlog and sufficient standalone context.
 
 Do not put private machine configuration, full run transcripts or inaccessible evidence
 links into the public PR. Supply sufficient public explanation and verification.
