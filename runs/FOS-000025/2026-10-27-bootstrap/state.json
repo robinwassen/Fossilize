@@ -81,6 +81,7 @@
   "findings": [
     {
       "affected_task": "FOS-000025",
+      "attempt_id": "checker-2",
       "criteria": [
         "AC1",
         "AC5"
@@ -95,8 +96,12 @@
         "T13"
       ],
       "priority": 1,
+      "recheck": {
+        "evidence": "Independent C1-001 probe at candidate 37467de186ee1d0d670030b365c72e8ca3c278c6 reverses the valid acyclic split, verifies dependency First is active, accepts First with actual assertion-run evidence, verifies Second becomes active and an acknowledged implementer dispatch is bound to Second. Full24 suite also reran T13 and T13b (replan/reset/direct unready dispatch) successfully. runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probes.log and runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G01.log.",
+        "finding_id": "FOS-000025-C1-001"
+      },
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Initial split unit can run before its dependencies accept"
     },
     {
@@ -1080,7 +1085,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 23,
+  "revision": 24,
   "run_id": "2026-10-27-bootstrap",
   "schema_version": 2,
   "status": "running",
