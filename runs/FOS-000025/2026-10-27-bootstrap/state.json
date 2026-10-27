@@ -128,6 +128,30 @@
       "status": "complete",
       "unit": "FOS-000025",
       "worker_id": "/root/fos25_checker_3"
+    },
+    {
+      "actual": {
+        "effort": "high",
+        "model": "gpt-6.1-sol"
+      },
+      "attempt_id": "implementer-4",
+      "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+      "candidate_sha": "7ec4ddcaa019e8d7601aa7dba12d8a642254def8",
+      "fallback_reason": null,
+      "input_revision": 39,
+      "input_sha": "7ec4ddcaa019e8d7601aa7dba12d8a642254def8",
+      "observations": [],
+      "operation": "repair",
+      "plan_version": 1,
+      "requested": {
+        "effort": "high",
+        "model": "gpt-6.1-sol"
+      },
+      "role": "implementer",
+      "started": 1793134185.7481086,
+      "status": "intent",
+      "unit": "FOS-000025",
+      "worker_id": null
     }
   ],
   "final_acceptance": null,
@@ -345,13 +369,13 @@
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
-      "FOS-000025": 3
+      "FOS-000025": 4
     },
     "repairs": 3,
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "Repair FOS-000025-C3-001 under existing T10/T13 plan, then dispatch a fresh checker at the new candidate. G01/G02/G04 passing does not override this concrete sequential repair blocker.",
+  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
   "operation": "repair",
   "original": [
     {
@@ -1226,10 +1250,10 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 39,
+  "revision": 40,
   "run_id": "2026-10-27-bootstrap",
   "schema_version": 2,
-  "status": "ready",
+  "status": "running",
   "task_key": "FOS-000025",
   "task_location": "local-docs/specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill",
   "units": [
