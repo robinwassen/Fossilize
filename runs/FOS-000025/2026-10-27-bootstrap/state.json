@@ -106,6 +106,7 @@
     },
     {
       "affected_task": "FOS-000025",
+      "attempt_id": "checker-2",
       "criteria": [
         "AC4",
         "AC8"
@@ -121,8 +122,12 @@
         "T15"
       ],
       "priority": 1,
+      "recheck": {
+        "evidence": "Independent C1-002 fake-clock probe submits final acceptance after deadline+1, verifies report completes durably while operation=budget/exhausted=true, and publish-intent leaves stage=none. An explicit authorized future-deadline extension restores publishing and permits stage=push. Full24 suite reran T09c/T09d/T15b verifying live-attempt late-report retention and all six expired publication observations resume only after extension. runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probes.log and runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G01.log.",
+        "finding_id": "FOS-000025-C1-002"
+      },
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Deadline expiry can be bypassed through final acceptance and publication"
     },
     {
@@ -1085,7 +1090,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 24,
+  "revision": 25,
   "run_id": "2026-10-27-bootstrap",
   "schema_version": 2,
   "status": "running",
