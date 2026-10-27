@@ -1,0 +1,82 @@
+PROBE unsplit
+STATE {"active": "FOS-000025", "operation": "repair", "phase": "implementing", "units": [["FOS-000025", "ready", null]]}
+COMMAND ['test_behavior'] exit 0
+test_value (test_behavior.Behavior.test_value) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+COMMAND ['test_behavior'] exit 0
+test_value (test_behavior.Behavior.test_value) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+COMMAND ['test_behavior'] exit 0
+test_value (test_behavior.Behavior.test_value) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+STATE {"active": "FOS-000025", "operation": "publish", "phase": "publishing", "units": [["FOS-000025", "accepted", {"attempt_id": "checker-6", "base_sha": "f7fa8849e89073e22e9b4a644bc46f810f3578de", "candidate_sha": "4fa79aa08bff79891c534665b4c8bf636a7bc8ae", "plan_version": 1}]]}
+PASS actual repair dispatch, corrected candidate, renewed unit chain, distinct final acceptance after restart
+PROBE reversed_split
+COMMAND ['test_second'] exit 0
+test_second (test_second.Second.test_second) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+COMMAND ['test_behavior', 'test_second'] exit 1
+test_value (test_behavior.Behavior.test_value) ... FAIL
+test_second (test_second.Second.test_second) ... ok
+
+======================================================================
+FAIL: test_value (test_behavior.Behavior.test_value)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/harness-test-quc3drme/source/test_behavior.py", line 5, in test_value
+    self.assertEqual(value(), 1)
+AssertionError: 2 != 1
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+FAILED (failures=1)
+STATE {"active": "FOS-000026", "operation": "repair", "phase": "implementing", "units": [["FOS-000027", "ready", null], ["FOS-000026", "ready", null]]}
+COMMAND ['test_behavior', 'test_second'] exit 0
+test_value (test_behavior.Behavior.test_value) ... ok
+test_second (test_second.Second.test_second) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK
+COMMAND ['test_behavior'] exit 0
+test_value (test_behavior.Behavior.test_value) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+COMMAND ['test_second'] exit 0
+test_second (test_second.Second.test_second) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+COMMAND ['test_behavior', 'test_second'] exit 0
+test_value (test_behavior.Behavior.test_value) ... ok
+test_second (test_second.Second.test_second) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK
+STATE {"active": "FOS-000027", "operation": "publish", "phase": "publishing", "units": [["FOS-000027", "accepted", {"attempt_id": "checker-10", "base_sha": "31073976095e9267280e37ce6a10d40d42a7a398", "candidate_sha": "e3a52c3ca3f324100193bf8f7382b6b262cd1f52", "plan_version": 1}], ["FOS-000026", "accepted", {"attempt_id": "checker-8", "base_sha": "31073976095e9267280e37ce6a10d40d42a7a398", "candidate_sha": "e3a52c3ca3f324100193bf8f7382b6b262cd1f52", "plan_version": 1}]]}
+PASS actual repair dispatch, corrected candidate, renewed unit chain, distinct final acceptance after restart
