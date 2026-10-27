@@ -1,0 +1,65 @@
+import sys,subprocess,copy,json
+sys.path.insert(0,'/home/robin/dev/fossilize-harness-checker-4/.agents/skills/implement-change-harness/scripts')
+from test_harness_state import HarnessTests
+from harness_state import Harness, Invalid,git,finding_applies,validate_state
+
+def run(t,modules):
+ r=subprocess.run([sys.executable,'-B','-m','unittest','-v',*modules],cwd=t.source,capture_output=True,text=True,timeout=30)
+ print('RUN',modules,'exit',r.returncode);print(r.stderr);return r
+
+def passing(t,modules,mapping):
+ r=run(t,modules);assert r.returncode==0
+ p=t.check_report(r);ids=[x for xs in mapping.values() for x in xs]
+ p.update(discovered=ids,executed=ids,test_mapping={k:{'location':v[0].split('.')[0]+'.py:5','tests':v} for k,v in mapping.items()})
+ p['evidence'][0]['command']=[sys.executable,'-B','-m','unittest','-v',*modules]
+ return p
+
+t=HarnessTests();t.setUp()
+try:
+ plan=t.split_plan();first,second=[u['key'] for u in plan['subtasks']];plan['subtasks'].reverse()
+ t.launch('planner');t.act('report',dict(t.report(),plan=plan));t.implemented();t.checked();t.launch('implementer')
+ (t.source/'second.py').write_text('def second_value(x):\n    return x+1\n')
+ (t.source/'test_second.py').write_text('import unittest\nfrom second import second_value\nclass Second(unittest.TestCase):\n    def test_second(self):\n        self.assertEqual(second_value(1),2)\n')
+ (t.source/'test_final.py').write_text('import unittest\nfrom second import second_value\nclass Final(unittest.TestCase):\n    def test_final(self):\n        self.assertEqual(second_value(2),4)\n')
+ candidate=t.commit_candidate(); t.act('report',dict(t.report(),result_candidate_sha=candidate,test_mapping={'C2':'test_second.py'},commands=[{'exit_code':0}]))
+ behavior='test_behavior.Behavior.test_value';sid='test_second.Second.test_second';fid='test_final.Final.test_final'
+ t.launch('checker');t.act('report',passing(t,['test_second'],{'C2':[sid]}));t.launch('checker')
+ failed=run(t,['test_behavior','test_second','test_final']);assert failed.returncode!=0 and '3 != 4' in failed.stderr
+ finding={'id':'later-only','affected_task':second,'status':'open','route':'implementation','evidence':failed.stderr}
+ t.act('report',dict(t.report(),verdict='changes_required',findings=[finding],next_action='First recheck unchanged, then Second scoped repair'))
+ assert t.state['active_unit']==first and all(u['accepted'] is None for u in t.state['units'])
+ t.harness=Harness(t.source,clock=lambda:t.now);assert t.harness.show()['state']==t.state
+ before=git(t.source,'rev-parse','HEAD'),(t.source/'second.py').read_bytes()
+ t.implemented(candidate);t.launch('checker');p=passing(t,['test_behavior'],{'C1':[behavior]})
+ for scope in [None,'','FOS-999999',[],27]:
+  bad=dict(finding,id='invalid-scope',affected_task=scope)
+  t.unchanged_rejection('report',dict(t.report(),verdict='changes_required',findings=[bad],next_action='repair'),'finding scope')
+ # Dependency and missing/root scope cannot be ignored; explicitly Second can.
+ for scope in [first,t.root_key,'missing']:
+  state=copy.deepcopy(t.state);f=dict(finding)
+  if scope=='missing':f.pop('affected_task')
+  else:f['affected_task']=scope
+  state['findings']=[f];assert finding_applies(state,f,'subtask',first)
+ assert not finding_applies(t.state,finding,'subtask',first)
+ assert finding_applies(t.state,dict(finding,affected_task=first),'subtask',second)
+ assert finding_applies(t.state,finding,'final',first)
+ t.act('report',p);assert t.state['active_unit']==second and t.state['findings']==[finding]
+ assert before==(git(t.source,'rev-parse','HEAD'),(t.source/'second.py').read_bytes())
+ assert run(t,['test_final']).returncode!=0
+ print('First accepted unchanged; Second finding remains open and failing.')
+ t.launch('implementer');assert t.report()['unit']==second
+ (t.source/'second.py').write_text('def second_value(x):\n    return x*2\n');git(t.source,'add','second.py');git(t.source,'commit','-m','scoped Second repair')
+ fixed=git(t.source,'rev-parse','HEAD').decode().strip();assert git(t.source,'diff','--name-only',candidate,fixed).decode().splitlines()==['second.py']
+ t.act('report',dict(t.report(),result_candidate_sha=fixed,test_mapping={'C2':'test_second.py'},commands=[{'exit_code':0}]))
+ t.launch('checker');p=passing(t,['test_second','test_final'],{'C2':[sid,fid]});t.unchanged_rejection('report',p,'unresolved prior finding')
+ t.unchanged_rejection('resolve-finding',{'finding_id':'later-only','affected_task':first,'evidence':'cannot narrow'},'scope')
+ t.act('resolve-finding',{'finding_id':'later-only','evidence':p['records'][p['evidence'][0]['log']]});t.act('report',p)
+ t.unchanged_rejection('publish-intent',t.intent(),'final acceptance');t.launch('checker')
+ final=passing(t,['test_behavior','test_second','test_final'],{'C1':[behavior],'C2':[sid,fid]});assert final['operation']=='final' and final['attempt_id']!=p['attempt_id'];t.act('report',final)
+ blocked=copy.deepcopy(t.state);blocked['findings'][0]['status']='open'
+ try:t.harness.publication_guard(blocked,t.intent())
+ except Invalid as e:assert 'unaccepted work/findings' in str(e)
+ else:raise AssertionError('global guard bypassed')
+ t.act('publish-intent',t.intent());assert t.state['publishing']['stage']=='push'
+ print('PASS independent C3-001 recovery: no-op First; Second-only actual repair; fresh resolution; separate final; global publication guard.')
+finally:t.doCleanups()
