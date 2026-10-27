@@ -43,6 +43,7 @@ all roles read the project's verification guide before selecting/running checks.
    combined branch. Changed source, plan or target base requires renewed checks.
    Enforce repair/replan/deadline bounds; stop with a precise resumption action.
 7. Fetch origin/master and compare the accepted base. Persist publication intent,
+   write the PR body with the required [section headings](references/state.md#pr-description),
    push the implementation branch without force, verify its remote SHA, then look
    up PRs across all states by exact repository/base/head. Persist creation dispatch
    before a create call. After success or uncertainty, look up again; never blindly
