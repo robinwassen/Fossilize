@@ -26,6 +26,30 @@
       "status": "complete",
       "unit": "FOS-000025",
       "worker_id": "/root/fos25_checker_1"
+    },
+    {
+      "actual": {
+        "effort": "high",
+        "model": "gpt-6.1-sol"
+      },
+      "attempt_id": "implementer-2",
+      "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+      "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+      "fallback_reason": null,
+      "input_revision": 13,
+      "input_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+      "observations": [],
+      "operation": "repair",
+      "plan_version": 1,
+      "requested": {
+        "effort": "high",
+        "model": "gpt-6.1-sol"
+      },
+      "role": "implementer",
+      "started": 1793133209.1246073,
+      "status": "intent",
+      "unit": "FOS-000025",
+      "worker_id": null
     }
   ],
   "final_acceptance": null,
@@ -120,13 +144,13 @@
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
-      "FOS-000025": 1
+      "FOS-000025": 2
     },
     "repairs": 3,
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "Return the same FOS-000025 work unit to a fresh implementer to repair FOS-000025-C1-001 through C1-003 and add the specified regressions under existing T13/T09/T15/T03/T10 coverage; commit a new candidate, then dispatch a fresh independent checker. Keep final checking and publication blocked. No replan is required for these already planned invariants.",
+  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
   "operation": "repair",
   "original": [
     {
@@ -1001,10 +1025,10 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 13,
+  "revision": 14,
   "run_id": "2026-10-27-bootstrap",
   "schema_version": 2,
-  "status": "ready",
+  "status": "running",
   "task_key": "FOS-000025",
   "task_location": "local-docs/specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill",
   "units": [
