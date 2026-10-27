@@ -15,19 +15,85 @@
       "observations": [],
       "operation": "subtask",
       "plan_version": 1,
+      "rejection_signature": "f1600ef011c565f3122070526fc30c77ddaefc6ae97a265b08c9be675c92faff",
+      "report": "runs/FOS-000025/2026-10-27-bootstrap/reports/checker-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793132918.326202,
-      "status": "running",
+      "status": "complete",
       "unit": "FOS-000025",
       "worker_id": "/root/fos25_checker_1"
     }
   ],
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "FOS-000025",
+      "criteria": [
+        "AC1",
+        "AC5"
+      ],
+      "evidence": "Disposable reverse_dependency probe takes the existing registered two-unit split fixture, reverses the acyclic plan to [Second depends First, First], and submits the planner report. The report commits active_unit FOS-000027 with dependency FOS-000026 still unaccepted. launch(implementer) succeeds and checkpoints an acknowledged running implementer for FOS-000027. See checker-1-probes.log PROBE reverse_dependency; scratch source is retained.",
+      "expected": "Only a unit whose dependencies are accepted can dispatch. Array order must not bypass dependency readiness; source-observation reset and replans need the same rule.",
+      "file": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/harness_state.py",
+      "id": "FOS-000025-C1-001",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:642-645 (also dispatch:580-615 and observe-source:562)",
+      "next_action": "Implement dependency-ready initial/reset selection (or explicitly reject non-topological plans) and guard implementer dispatch; extend existing T13 with a valid non-topological plan and readiness assertions.",
+      "planned_cases": [
+        "T13"
+      ],
+      "priority": 1,
+      "route": "implementation",
+      "status": "open",
+      "title": "Initial split unit can run before its dependencies accept"
+    },
+    {
+      "affected_task": "FOS-000025",
+      "criteria": [
+        "AC4",
+        "AC8"
+      ],
+      "evidence": "Disposable late_final probe starts final checker at fake time1000 with deadline15400, advances clock to15401, and submits actual passing assertion-run evidence. Helper moves to publishing with exhausted=false. publish-intent, real local bare-remote push observation, exact PR lookup and attachment then complete the run with extensions=[] and exhausted=false. See checker-1-probes.log PROBE late_final. Deadline is consulted only at dispatch, so no further dispatch occurs to enforce it.",
+      "expected": "An expired run must stop before further work/publication and require the recorded explicit extension. A late report can be retained as a factual result without authorizing post-deadline completion. No watchdog is required for this invocation-time safeguard.",
+      "file": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/harness_state.py",
+      "id": "FOS-000025-C1-002",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:593-607, 660-667, 701-718",
+      "next_action": "Enforce elapsed run budget on forward-progress/publication invocations, preserve late results and exact resume action without fabricating success, and extend T09/T15 with a deadline crossing during final checking or publishing.",
+      "planned_cases": [
+        "T09",
+        "T15"
+      ],
+      "priority": 1,
+      "route": "implementation",
+      "status": "open",
+      "title": "Deadline expiry can be bypassed through final acceptance and publication"
+    },
+    {
+      "affected_task": "FOS-000025",
+      "criteria": [
+        "AC1",
+        "AC2",
+        "AC7"
+      ],
+      "evidence": "Disposable duplicate_findings probe submits a changes_required report containing two open findings with id=same. Both are committed because duplicate validation checks only older state findings. In a fresh checker, resolve-finding(same) twice always selects the first item; the second remains open. Acceptance then fails unresolved prior finding, and no existing legal action can identify/resolve the second item. See checker-1-probes.log PROBE duplicate_findings.",
+      "expected": "Finding IDs are unique across the incoming report and durable state; malformed duplicates must fail without a ref/revision advance, preserving a recoverable run.",
+      "file": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/harness_state.py",
+      "id": "FOS-000025-C1-003",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:657-659 and 525-527",
+      "next_action": "Reject duplicate incoming finding IDs transactionally, validate unique durable finding identities, and extend existing malformed/evidence tests with a same-report duplicate and normal resolution control.",
+      "planned_cases": [
+        "T03",
+        "T10"
+      ],
+      "priority": 2,
+      "route": "implementation",
+      "status": "open",
+      "title": "Duplicate finding IDs within one report create an unresolvable run"
+    }
+  ],
   "limits": {
     "command_timeout": 600,
     "commands": [
@@ -60,8 +126,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "subtask",
+  "next_action": "Return the same FOS-000025 work unit to a fresh implementer to repair FOS-000025-C1-001 through C1-003 and add the specified regressions under existing T13/T09/T15/T03/T10 coverage; commit a new candidate, then dispatch a fresh independent checker. Keep final checking and publication blocked. No replan is required for these already planned invariants.",
+  "operation": "repair",
   "original": [
     {
       "gates": [
@@ -128,7 +194,7 @@
       "requirement": "All mandatory local/final gates pass before one verified ready-for-review PR to origin robinwassen/Fossilize master is opened and attached, with actual SHA/base/plan evidence and no merge."
     }
   ],
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -935,10 +1001,10 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 12,
+  "revision": 13,
   "run_id": "2026-10-27-bootstrap",
   "schema_version": 2,
-  "status": "running",
+  "status": "ready",
   "task_key": "FOS-000025",
   "task_location": "local-docs/specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill",
   "units": [

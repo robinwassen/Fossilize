@@ -1,0 +1,18 @@
+
+PROBE reverse_dependency
+after planner active unit= {'key': 'FOS-000027', 'title': 'Second', 'definition': 'second behavior', 'dependencies': ['FOS-000026'], 'criteria': ['AC1'], 'status': 'ready', 'accepted': None}
+IMPLEMENTER DISPATCHED with unmet dependencies= ['FOS-000026'] attempt= {'actual': {'effort': 'high', 'model': 'gpt-6.1-sol'}, 'attempt_id': 'implementer-2', 'base_sha': 'bb4bebc686d9af49e2609425ef94e9b58c8142e3', 'candidate_sha': None, 'fallback_reason': None, 'input_revision': 6, 'input_sha': 'bb4bebc686d9af49e2609425ef94e9b58c8142e3', 'observations': [], 'operation': 'implement', 'plan_version': 1, 'requested': {'effort': 'high', 'model': 'gpt-6.1-sol'}, 'role': 'implementer', 'started': 1000, 'status': 'running', 'unit': 'FOS-000027', 'worker_id': 'worker/implementer-2'}
+
+PROBE late_final
+now/deadline= 15401 15400
+LATE FINAL ACCEPTED phase= publishing exhausted= False
+COMPLETED AFTER EXPIRED BUDGET phase= complete exhausted= False extensions= []
+
+PROBE duplicate_findings
+DUPLICATE FINDING IDS COMMITTED= ['same', 'same']
+after first resolution= [{'evidence': 'concrete failure', 'id': 'same', 'route': 'implementation', 'status': 'resolved', 'recheck': {'finding_id': 'same', 'evidence': 'independent recheck'}, 'attempt_id': 'checker-5'}, {'evidence': 'concrete failure', 'id': 'same', 'route': 'implementation', 'status': 'open'}]
+after second resolution= [{'attempt_id': 'checker-5', 'evidence': 'concrete failure', 'id': 'same', 'recheck': {'finding_id': 'same', 'evidence': 'independent recheck again'}, 'route': 'implementation', 'status': 'resolved'}, {'evidence': 'concrete failure', 'id': 'same', 'route': 'implementation', 'status': 'open'}]
+ACCEPTANCE BLOCKED= Invalid unresolved prior finding
+
+PROBE meaning_replan
+REINTERPRETED SAME PERMANENT KEY= {'key': 'FOS-000026', 'title': 'First', 'definition': 'An entirely unrelated task replaces first behavior under its existing key', 'dependencies': [], 'criteria': ['AC1'], 'status': 'ready', 'accepted': None}
