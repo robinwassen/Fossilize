@@ -1,0 +1,9 @@
+PROBE C1-001
+PASS reversed acyclic plan selects dependency first; after acceptance dependent dispatches
+PROBE C1-002
+PASS late final report retained; publication blocked until explicit extension; exact publish step resumes
+PROBE C1-003
+PASS same-report duplicates transactionally reject; previous-report duplicates reject; normal resolution recovers
+PROBE final_repair
+after final rejection= {"active_unit": "FOS-000025", "operation": "repair", "phase": "implementing", "status": "ready", "units": [{"accepted": {"attempt_id": "checker-3", "base_sha": "fd998426d6a85f77b79523ea6a160c7f12482516", "candidate_sha": "45545799fdc3799d548db04c64ee93625b2a283d", "plan_version": 1}, "dependencies": [], "key": "FOS-000025", "status": "accepted"}]}
+BLOCKER final integration repair dispatch rejected: implementer unit dependencies are not accepted

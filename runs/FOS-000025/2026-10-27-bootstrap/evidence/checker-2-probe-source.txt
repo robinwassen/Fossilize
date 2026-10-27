@@ -1,0 +1,55 @@
+import sys, copy, json
+sys.path.insert(0, '/home/robin/dev/fossilize-harness-checker-2/.agents/skills/implement-change-harness/scripts')
+from test_harness_state import HarnessTests
+from harness_state import Invalid, validate_state, git
+
+def run(name, fn):
+ t=HarnessTests();t.setUp()
+ try:
+  print('PROBE',name,flush=True);fn(t)
+ finally:t.doCleanups()
+
+def readiness(t):
+ p=t.split_plan(); first,second=[x['key'] for x in p['subtasks']];p['subtasks'].reverse()
+ t.launch('planner');t.act('report',dict(t.report(),plan=p))
+ assert t.state['active_unit']==first
+ t.implemented();t.checked();assert t.state['active_unit']==second
+ t.launch('implementer');assert t.state['attempts'][-1]['unit']==second
+ print('PASS reversed acyclic plan selects dependency first; after acceptance dependent dispatches')
+
+def deadline(t):
+ t.planned();t.implemented();t.checked();t.launch('checker');r=t.check_report();t.now=t.state['limits']['deadline']+1
+ t.act('report',r);assert t.state['operation']=='budget' and t.state['attempts'][-1]['status']=='complete'
+ assert t.state['final_acceptance'] and t.state['limits']['exhausted']
+ t.act('publish-intent',t.intent());assert t.state['publishing']['stage']=='none'
+ t.act('budget-extension',{'deadline':t.now+100,'authorization':'probe human authorization','reason':'probe'})
+ t.act('publish-intent',t.intent());assert t.state['publishing']['stage']=='push'
+ print('PASS late final report retained; publication blocked until explicit extension; exact publish step resumes')
+
+def duplicates(t):
+ t.planned();t.implemented();t.launch('checker');f={'id':'duplicate','status':'open','route':'implementation','evidence':'probe defect'}
+ before=t.harness.show();r=dict(t.report(),verdict='changes_required',findings=[f,copy.deepcopy(f)],next_action='repair')
+ try:t.act('report',r);raise AssertionError('duplicate accepted')
+ except Invalid as e:assert 'duplicate finding' in str(e)
+ assert t.harness.show()==before
+ r['findings'].pop();t.act('report',r);t.implemented();t.launch('checker')
+ try:t.act('report',dict(t.report(),verdict='changes_required',findings=[f],next_action='repair'));raise AssertionError('cross-report duplicate accepted')
+ except Invalid as e:assert 'duplicate finding' in str(e)
+ t.act('resolve-finding',{'finding_id':'duplicate','evidence':'independent probe recheck'});t.act('report',t.check_report())
+ assert t.state['operation']=='final'
+ print('PASS same-report duplicates transactionally reject; previous-report duplicates reject; normal resolution recovers')
+
+def final_repair(t):
+ t.planned();t.implemented();t.checked();t.launch('checker')
+ assert all(u['status']=='accepted' for u in t.state['units'])
+ t.act('report',dict(t.report(),verdict='changes_required',findings=[{'id':'final-defect','status':'open','route':'implementation','evidence':'final integration uncovers defect'}],next_action='repair integrated candidate'))
+ print('after final rejection=', json.dumps({k:t.state[k] for k in ['phase','operation','status','active_unit','units']},sort_keys=True))
+ try:
+  t.launch('implementer')
+  print('REPAIR DISPATCHED')
+ except Invalid as e:
+  print('BLOCKER final integration repair dispatch rejected:',str(e))
+  assert str(e)=='implementer unit dependencies are not accepted'
+ else:raise AssertionError('expected reproduced blocker')
+
+for n,f in [('C1-001',readiness),('C1-002',deadline),('C1-003',duplicates),('final_repair',final_repair)]:run(n,f)
