@@ -1,0 +1,30 @@
+import importlib.util, json, pathlib, subprocess, sys
+repo = pathlib.Path('/home/robin/dev/fossilize-harness-FOS-000025')
+base = 'bbe8ae4acd9ad527658bb58e6b06474924a06284'
+previous = '7ec4ddcaa019e8d7601aa7dba12d8a642254def8'
+def command(args, cwd=repo):
+    result = subprocess.run(args, cwd=cwd, capture_output=True, text=True, timeout=600)
+    print(json.dumps({'command': args, 'cwd': str(cwd), 'exit_code': result.returncode}))
+    print(result.stdout + result.stderr)
+    assert result.returncode == 0
+    return result.stdout
+candidate = command(['git', 'rev-parse', 'HEAD']).strip()
+assert not command(['git', 'status', '--porcelain=v1']).strip()
+command(['git', 'diff', '--check', base + '...' + candidate])
+command(['git', 'diff', '--check', previous + '...' + candidate])
+changes = command(['git', 'diff', '--name-only', previous + '...' + candidate]).splitlines()
+assert set(changes) == {'.agents/skills/implement-change-harness/' + path for path in ('scripts/harness_state.py', 'scripts/test_harness_state.py', 'references/roles.md', 'references/state.md')}
+all_changes = command(['git', 'diff', '--name-status', base + '...' + candidate])
+command(['git', 'ls-tree', '-r', '--name-only', 'harness-artifacts'])
+command(['git', 'rev-parse', 'HEAD'], pathlib.Path('/home/robin/dev/fossilize'))
+command(['git', 'status', '--porcelain=v1'], pathlib.Path('/home/robin/dev/fossilize'))
+sys.path.insert(0, str(repo / '.agents/skills/implement-change-harness/scripts'))
+from harness_state import Harness, canonical_inventory
+h = Harness(repo)
+observed = h.show()
+records = h.store.records(observed['tip'])
+journal = json.loads(records['allocations.json'])
+registry, definitions, high = canonical_inventory(repo, journal)
+print(json.dumps({'artifact_paths_validated': len(records), 'registered_high_water': high, 'read_only_live_state_revision': observed['state']['revision'], 'live_scope_compatibility': [{'id': f['id'], 'scope': f.get('affected_task', observed['state']['task_key']), 'status': f['status']} for f in observed['state']['findings']]}))
+assert high == 25
+print('PASS read-only records/path inventory, canonical registry and legacy missing-scope compatibility; no artifact mutation')

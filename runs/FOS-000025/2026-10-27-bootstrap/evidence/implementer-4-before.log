@@ -1,0 +1,38 @@
+test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair (test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair) ... ERROR
+test_T10c_finding_scope_validation_dependency_branch_and_replan (test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan) ... FAIL
+
+======================================================================
+ERROR: test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair (test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 871, in test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair
+    self.act("report", passing)
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 66, in act
+    result = self.harness.apply(action, payload or {}, self.tip, self.state["revision"] if self.state else 0)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py", line 366, in apply
+    self.reduce(state, action, payload, journal, records)
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py", line 559, in reduce
+    self.report(state, p, records, journal)
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py", line 707, in report
+    self.evidence(state, p, combined)
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py", line 494, in evidence
+    require(not any(finding.get("status") != "resolved" for finding in state["findings"]), "unresolved prior finding")
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py", line 29, in require
+    raise Invalid(message)
+harness_state.Invalid: unresolved prior finding
+
+======================================================================
+FAIL: test_T10c_finding_scope_validation_dependency_branch_and_replan (test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 922, in test_T10c_finding_scope_validation_dependency_branch_and_replan
+    self.unchanged_rejection("report", dict(self.report(), verdict="changes_required", findings=[bad],
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 167, in unchanged_rejection
+    with self.assertRaisesRegex(Invalid, pattern or ".*"):
+AssertionError: Invalid not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 5.268s
+
+FAILED (failures=1, errors=1)
