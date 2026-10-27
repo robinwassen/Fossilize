@@ -95,6 +95,9 @@ The helper validates criterion coverage, registrations, reservations and acyclic
 subtask dependencies. Initial plans, replans and source resets select the first
 dependency-ready unit regardless of array order; implementer dispatch also checks
 that all dependencies have accepted. It does not decide semantic plan adequacy.
+An implementation rejection at final checking invalidates every unit approval and
+restarts with the first dependency-ready unit; renewed unit checks precede another
+separate final check.
 `publication` gates describe the coordinator's external sequence below, rather than checks that
 could already have passed before a PR exists. Include review of publication
 readiness in final gates as appropriate. Keep the original detailed planner report

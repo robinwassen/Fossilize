@@ -667,8 +667,10 @@ class HarnessTests(unittest.TestCase):
                 (self.source / "local-docs/backlog-keys.md").write_text(old)
                 git(self.source, "add", ".")
                 git(self.source, "commit", "-m", "restore registry")
+        first, second = [unit["key"] for unit in plan["subtasks"]]
+        # Readiness must also survive final repair with a non-topological plan.
+        plan["subtasks"].reverse()
         self.act("report", dict(self.report(), plan=plan))
-        first, second = [unit["key"] for unit in self.state["units"]]
         self.assertEqual(self.state["active_unit"], first)
         self.launch("implementer")
         self.unchanged_rejection("dispatch", {"role": "implementer", "attempt_id": "parallel"}, "live/ambiguous")
@@ -685,6 +687,7 @@ class HarnessTests(unittest.TestCase):
         second_report = self.check_report(second_run)
         second_id = "test_second.Second.test_second"
         second_report.update(discovered=[second_id], executed=[second_id], test_mapping={"C2": {"location": "test_second.py:4", "tests": [second_id]}})
+        second_report["evidence"][0]["command"][-1] = "test_second"
         self.act("report", second_report)
         self.assertTrue(all(u["status"] == "accepted" for u in self.state["units"]))
         self.assertEqual(self.state["operation"], "final")
@@ -697,6 +700,112 @@ class HarnessTests(unittest.TestCase):
         self.act("report", dict(self.report(), verdict="changes_required", findings=[{"id": "integration", "status": "open", "route": "implementation", "evidence": failure.stderr}], next_action="repair integrated behavior"))
         self.assertIsNone(self.state["final_acceptance"])
         self.unchanged_rejection("publish-intent", self.intent(), "final acceptance")
+        self.assertEqual(self.state["active_unit"], first)
+        self.assertTrue(all(u["status"] == "ready" and u["accepted"] is None for u in self.state["units"]))
+        self.assertEqual(self.state["plan"], plan)
+        # Repair the integrated implementation without weakening either assertion.
+        # The dependency must accept again before the dependent may dispatch.
+        self.launch("implementer")
+        self.assertEqual(self.state["attempts"][-1]["unit"], first)
+        (self.source / "behavior.py").write_text("def value():\n    return 1\ndef second_value():\n    return 2\n")
+        (self.source / "test_second.py").write_text("import unittest\nfrom behavior import second_value\nclass Second(unittest.TestCase):\n    def test_second(self):\n        self.assertEqual(second_value(), 2)\n")
+        git(self.source, "add", ".")
+        git(self.source, "commit", "-m", "repair integrated behavior")
+        corrected = git(self.source, "rev-parse", "HEAD").decode().strip()
+        self.act("report", dict(self.report(), result_candidate_sha=corrected,
+                                test_mapping={"C1": "test_behavior.py", "C2": "test_second.py"}, commands=[{"exit_code": 0}]))
+        self.unchanged_rejection("dispatch", {"role": "implementer", "attempt_id": "skip-recheck"}, "role")
+        self.launch("checker")
+        success = subprocess.run([sys.executable, "-m", "unittest", "-v", "test_behavior", "test_second"], cwd=self.source, env=env, capture_output=True, text=True)
+        self.assertEqual(success.returncode, 0, success.stderr)
+        self.unchanged_rejection("report", self.check_report(), "unresolved prior finding")
+        self.act("resolve-finding", {"finding_id": "integration", "evidence": success.stderr})
+        self.act("report", self.check_report())
+        self.assertEqual(self.state["active_unit"], second)
+        self.assertEqual(self.state["operation"], "implement")
+        self.launch("implementer")
+        self.assertEqual(self.state["attempts"][-1]["unit"], second)
+        self.act("report", dict(self.report(), result_candidate_sha=corrected, test_mapping={"C2": "test_second.py"}, commands=[{"exit_code": 0}]))
+        self.launch("checker")
+        second_run = subprocess.run([sys.executable, "-m", "unittest", "-v", "test_second"], cwd=self.source, env=env, capture_output=True, text=True)
+        self.assertEqual(second_run.returncode, 0, second_run.stderr)
+        renewed = self.check_report(second_run)
+        renewed.update(discovered=[second_id], executed=[second_id], test_mapping={"C2": {"location": "test_second.py:4", "tests": [second_id]}})
+        renewed["evidence"][0]["command"][-1] = "test_second"
+        self.act("report", renewed)
+        subtask_attempt = renewed["attempt_id"]
+        self.assertEqual(self.state["operation"], "final")
+        self.assertIsNone(self.state["final_acceptance"])
+        self.unchanged_rejection("publish-intent", self.intent(), "final acceptance")
+        self.launch("checker")
+        final_run = subprocess.run([sys.executable, "-m", "unittest", "-v", "test_behavior", "test_second"], cwd=self.source, env=env, capture_output=True, text=True)
+        self.assertEqual(final_run.returncode, 0, final_run.stderr)
+        final = self.check_report(final_run)
+        behavior_id = "test_behavior.Behavior.test_value"
+        final.update(discovered=[behavior_id, second_id], executed=[behavior_id, second_id],
+                     test_mapping={"C1": {"location": "test_behavior.py:4", "tests": [behavior_id]},
+                                   "C2": {"location": "test_second.py:4", "tests": [second_id]}})
+        final["evidence"][0]["command"].append("test_second")
+        self.assertEqual(final["operation"], "final")
+        self.assertNotEqual(final["attempt_id"], subtask_attempt)
+        self.act("report", final)
+        self.assertEqual(self.state["phase"], "publishing")
+        self.assertTrue(all(u["accepted"]["candidate_sha"] == corrected for u in self.state["units"]))
+        self.assertEqual(self.state["final_acceptance"]["candidate_sha"], corrected)
+        self.assertEqual(self.state["limits"]["implementation_counts"], {first: 2, second: 2})
+
+    def test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks(self):
+        self.planned()
+        self.launch("implementer")
+        (self.source / "final_behavior.py").write_text("def final_value():\n    return 1\n")
+        (self.source / "test_final.py").write_text("import unittest\nfrom final_behavior import final_value\nclass Final(unittest.TestCase):\n    def test_final(self):\n        self.assertEqual(final_value(), 2)\n")
+        candidate = self.commit_candidate()
+        self.act("report", dict(self.report(), result_candidate_sha=candidate,
+                                test_mapping={"C1": "test_behavior.py"}, commands=[{"exit_code": 0}]))
+        self.checked()
+        self.launch("checker")
+        env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+        command = [sys.executable, "-m", "unittest", "-v", "test_behavior", "test_final"]
+        failure = subprocess.run(command, cwd=self.source, env=env, capture_output=True, text=True)
+        self.assertNotEqual(failure.returncode, 0)
+        self.assertIn("1 != 2", failure.stderr)
+        self.act("report", dict(self.report(), verdict="changes_required", findings=[
+            {"id": "final-defect", "status": "open", "route": "implementation", "evidence": failure.stderr}], next_action="repair final behavior"))
+        self.unchanged_rejection("publish-intent", self.intent(), "final acceptance")
+        self.launch("implementer")
+        self.assertEqual(self.state["attempts"][-1]["unit"], self.root_key)
+        self.assertEqual(len(self.state["units"]), 1)
+        self.assertEqual(self.state["units"][0]["status"], "ready")
+        self.assertIsNone(self.state["units"][0]["accepted"])
+        self.assertEqual(self.state["plan"]["subtasks"], [])
+        (self.source / "final_behavior.py").write_text("def final_value():\n    return 2\n")
+        corrected = self.commit_candidate()
+        self.act("report", dict(self.report(), result_candidate_sha=corrected,
+                                test_mapping={"C1": "test_behavior.py"}, commands=[{"exit_code": 0}]))
+        self.launch("checker")
+        success = subprocess.run(command, cwd=self.source, env=env, capture_output=True, text=True)
+        self.assertEqual(success.returncode, 0, success.stderr)
+        self.unchanged_rejection("report", self.check_report(), "unresolved prior finding")
+        self.act("resolve-finding", {"finding_id": "final-defect", "evidence": success.stderr})
+        self.act("report", self.check_report())
+        subtask_attempt = self.state["attempts"][-1]["attempt_id"]
+        self.assertEqual(self.state["operation"], "final")
+        self.assertIsNone(self.state["final_acceptance"])
+        self.unchanged_rejection("publish-intent", self.intent(), "final acceptance")
+        self.launch("checker")
+        final_run = subprocess.run(command, cwd=self.source, env=env, capture_output=True, text=True)
+        self.assertEqual(final_run.returncode, 0, final_run.stderr)
+        final = self.check_report(final_run)
+        final_id = "test_final.Final.test_final"
+        final["discovered"].append(final_id)
+        final["executed"].append(final_id)
+        final["evidence"][0]["command"] = command
+        self.assertEqual(final["operation"], "final")
+        self.assertNotEqual(final["attempt_id"], subtask_attempt)
+        self.act("report", final)
+        self.assertEqual(self.state["phase"], "publishing")
+        self.assertEqual(self.state["final_acceptance"]["candidate_sha"], corrected)
+        self.assertEqual(self.state["limits"]["implementation_counts"], {self.root_key: 2})
 
     def test_T14_required_environment_unavailable_cannot_be_waived(self):
         plan = self.plan()

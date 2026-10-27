@@ -734,6 +734,13 @@ class Harness:
                 if p["verdict"] == "unable_to_verify" or "environment" in routes:
                     state.update(phase="checking", operation=attempt["operation"])
                     state.update(status="awaiting_decision", next_action=p["next_action"])
+                elif attempt["operation"] == "final" and phase == "implementing":
+                    # Integration findings can affect any unit. Recheck the whole
+                    # dependency chain rather than retaining stale unit approvals.
+                    for unit in state["units"]:
+                        unit.update(status="ready", accepted=None)
+                    state["final_acceptance"] = None
+                    state["active_unit"] = self.ready_unit(state)["key"]
                 if repeated:
                     self.pause_budget(state, "repeated unchanged rejection")
         attempt["status"] = "complete"
