@@ -1,35 +1,375 @@
 {
-  "schema_version": 1,
-  "revision": 5,
-  "run_id": "2026-10-27-bootstrap",
-  "task_key": "FOS-000025",
-  "task_location": "local-docs/specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill",
-  "phase": "implementing",
-  "operation": "implementer_dispatch",
-  "status": "ready",
-  "next_action": "Release bootstrap lock, explicitly import schema2, reconcile completed workers, then dispatch checker",
-  "repository": {
-    "path": "/home/robin/dev/fossilize",
-    "implementation_worktree": "/home/robin/dev/fossilize-harness-FOS-000025",
-    "branch": "codex/FOS-000025-implement-change-harness",
-    "target_repository": "robinwassen/Fossilize",
-    "target_remote": "origin",
-    "target_branch": "master",
-    "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
-    "input_sha": "643c490"
+  "active_unit": "FOS-000025",
+  "attempts": [],
+  "final_acceptance": null,
+  "findings": [],
+  "limits": {
+    "command_timeout": 600,
+    "commands": [],
+    "deadline": 1793146042,
+    "exhausted": false,
+    "extensions": [],
+    "implementation_counts": {
+      "FOS-000025": 1
+    },
+    "repairs": 3,
+    "replan_count": 0,
+    "replans": 1
   },
+  "next_action": "reconcile every legacy worker; import its report as a fact, then dispatch fresh fenced attempts",
+  "operation": "bootstrap-reconciliation",
+  "original": [
+    {
+      "gates": [
+        "G01",
+        "G03"
+      ],
+      "id": "AC1",
+      "requirement": "The helper validates legal state transitions and stale attempt/candidate/base/plan/revision tuples; actual fresh independent roles follow their bounded contracts."
+    },
+    {
+      "gates": [
+        "G01",
+        "G04"
+      ],
+      "id": "AC2",
+      "requirement": "One active root, atomic authoritative Git checkpoints, safe worktree/artifact isolation and preserved partial/user work survive failure/restart."
+    },
+    {
+      "gates": [
+        "G01"
+      ],
+      "id": "AC3",
+      "requirement": "Permanent dynamic key allocation reconciles registry, archives and journal; interrupted reservations cannot be reused, malformed definitions/dependencies cannot advance."
+    },
+    {
+      "gates": [
+        "G01"
+      ],
+      "id": "AC4",
+      "requirement": "Ambiguous/live workers prevent duplicate dispatch, stale reports are fenced, configured budgets stop predictably and mandatory unavailable evidence remains incomplete."
+    },
+    {
+      "gates": [
+        "G01",
+        "G03"
+      ],
+      "id": "AC5",
+      "requirement": "Planned test extensions, actual discovery/execution evidence and independent subtask/final gates cannot be skipped or silently weakened; publication is idempotent and matching current accepted commits."
+    },
+    {
+      "gates": [
+        "G01",
+        "G03"
+      ],
+      "id": "AC6",
+      "requirement": "Bootstrap migrates explicitly preserving Git history and uncertainty, and this actual FOS-000025 run records planner, implementation and independent final checking evidence."
+    },
+    {
+      "gates": [
+        "G01",
+        "G02",
+        "G03",
+        "G04"
+      ],
+      "id": "AC7",
+      "requirement": "A lean valid repository-discoverable implement-change-harness package includes usable CLI/role/state documentation and meaningful standard-library tests; docs accurately state implemented limits."
+    },
+    {
+      "gates": [
+        "G03",
+        "G05"
+      ],
+      "id": "AC8",
+      "requirement": "All mandatory local/final gates pass before one verified ready-for-review PR to origin robinwassen/Fossilize master is opened and attached, with actual SHA/base/plan evidence and no merge."
+    }
+  ],
+  "phase": "checking",
   "plan": {
-    "report_type": "planner",
-    "task_key": "FOS-000025",
-    "attempt_id": "planner-1",
-    "input_sha": "643c490d34347289ab4a7316b3b1d14f770028a5",
-    "plan_version": 1,
-    "outcome": "ready_for_implementation",
-    "problem": "The proposed three-role change workflow has no reusable skill or deterministic recovery/state mechanics. Build a discoverable, repository-tracked v1 and use the actual planner/implementer/checker workflow for this root task.",
+    "cases": [
+      {
+        "assertions": "Initialize orphan records-only ref; plan, implement and subtask/final check with real evidence; publication transitions; state revision increases; persisted blobs and active pointer agree; original source worktree/index/HEAD are byte-for-byte/status unchanged.",
+        "id": "T01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Inject write/tree/commit/ref-update failures; ref and loaded revision never advance on failure; staged/uncommitted artifact view is ignored; restart reads old committed state; concurrent expected-tip CAS loser cannot overwrite winner.",
+        "id": "T02",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Reject malformed schema, invalid identity, unsafe path/traversal/symlink/source blobs, invalid existing artifact branch, unknown transition and wrong expected revision without changing refs. Assert all actual artifact paths are records-only and implementation diff has no run records.",
+        "id": "T03",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Two processes/worktrees contend on the same common-dir lock using barriers/events rather than timing races. Reject distinct active root/run initialization; same identity resumes. Incomplete/failed/blocked runs retain pointer; completion clears it atomically.",
+        "id": "T04",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Union registry/journal/backlog maximum, including retired and artifact-only reserved keys, determines new allocation. Reserve, crash before registry, resume and prove next key is strictly higher. Reject duplicate canonical definitions, key meaning conflict, absent registrations, retired reuse, dangling dependencies and cycles; references alone are not duplicate definitions. Fixture with max25 allocates26 without hardcoded production counter.",
+        "id": "T05",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Planner input detached at input commit; checker detached at exact candidate. Original user's dirty/untracked files survive initialization/recovery; dirty candidate prevents final publication; helper never resets/cleans another worktree. Later source commit invalidates previous final acceptance.",
+        "id": "T06",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Persist dispatch intent, simulate worker launch then loss of worker-ID checkpoint; resume classifies ambiguous and refuses replacement. Live/unknown worker observations do not permit dispatch. Only confirmed termination reconciliation permits a new attempt; old report remains rejected.",
+        "id": "T07",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Individually mutate attempt ID, worker ID, dispatch input revision, input/candidate SHA, base SHA, plan version and role; report/check acceptance is rejected without advancing state. Correct report remains valid after acknowledgement revision increases; a late previous-attempt report does not.",
+        "id": "T08",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Reject unsupported requested model/effort without recorded supported fallback; persist actual/requested choices. Fake clock/time and attempt counters hit each repair/replan/deadline limit deterministically. Exhaustion/repeated unchanged rejection produces non-success precise next action; only explicit budget-extension record permits resume.",
+        "id": "T09",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Reject acceptance with omitted gate, failed/unsupported/incomplete/not-run gate, zero discovered/executed tests, skipped planned test, missing planned-case-to-location mapping, missing result/log identity or unresolved finding. A passed build with no assertion tests cannot accept. Complete positive evidence accepts; unavailable optional diagnostic is retained separately.",
+        "id": "T10",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Run a tiny real assertion-bearing reproducer that fails for a deliberately faulty candidate and passes for fixed behavior. Preserve nonzero/zero status and discovered/executed case IDs. A fake implementer success cannot override the independent failing run. A weakened test is identified by a checker evidence/inspection finding and acceptance stays blocked; document that helper cannot infer semantic assertion quality from a log.",
+        "id": "T11",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Missing implementation of a planned test routes to implementation; missing planned coverage routes to planner. Versioned replan invalidates previous relevant acceptance; implementer cannot alter original requirements or checker verdict; only fresh checker at new tuple may accept.",
+        "id": "T12",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Two registered synthetic subtasks with dependency cannot run concurrently or advance before mandatory subtask acceptance. Later subtask invalidates/breaks an earlier assertion; a separate final check fails and blocks publishing despite two prior subtask acceptances. Unsplit root uses no duplicate canonical definition.",
+        "id": "T13",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Synthetic required GPU/driver gate marked unavailable remains unable_to_verify/incomplete and cannot be waived by implementer/checker; record prerequisite and next action. This tests policy, and makes no claim that a GPU test ran.",
+        "id": "T14",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Local bare Git remote verifies push/current remote SHA. Persisted intent precedes fake PR mutation. Wrong destination/head/base, changed target master, changed candidate and dirty source all block creation or require renewed final check. Push/remote conflict retains source and never force pushes.",
+        "id": "T15",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Fake transport creates exactly once then loses response; restart performs exact all-state lookup and reconciles same PR. No duplicate create after ambiguous lookup, closed/merged PR, multiple matches or wrong repo/base/head. Attachment failure retries only attach. State cannot become complete without final acceptance and recorded PR outcome.",
+        "id": "T16",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      },
+      {
+        "assertions": "Use a fixture matching current bootstrap state/active/journal. Import normalizes valid abbreviated SHA, retains prior commits/facts and original task, adds only known schema fields and provenance, does not fabricate acceptance/execution logs. Malformed/conflicting bootstrap refuses import without advancing tip.",
+        "id": "T17",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6"
+        ],
+        "cwd": "exact candidate implementation worktree for implementer; fresh detached exact candidate worktree for checker",
+        "expected": "Exit0; nonzero discovered/executed tests; every T01-T17 mapped to actual assertion-bearing methods and passes, with no skipped mandatory cases. Checker reruns independently and inspects tests for fake-only/vacuous claims.",
+        "id": "G01",
+        "kind": "both",
+        "method": "python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v",
+        "prerequisites": "Python3, Git, POSIX advisory locking; temporary directory filesystem. No third-party Python modules."
+      },
+      {
+        "criteria": [
+          "AC7"
+        ],
+        "cwd": "exact candidate worktree",
+        "expected": "Exit0 and Skill is valid; inspect openai.yaml consistency, reference links and CLI examples. Validate discovery from repository skill directory or explicit invocation; no global config mutation.",
+        "id": "G02",
+        "kind": "both",
+        "method": "python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+        "prerequisites": "Skill-creator validation environment including PyYAML. If /usr/bin/python3 lacks PyYAML, use the provided bundled interpreter with it; this is a validation-tool dependency only, not a runtime helper dependency."
+      },
+      {
+        "criteria": [
+          "AC1",
+          "AC6",
+          "AC7",
+          "AC8"
+        ],
+        "cwd": "fresh detached exact candidate checker worktree; read canonical artifact ref without mutation",
+        "expected": "Actual fresh planner and implementer and independent checker attempts are durable, model choices recorded, sole coordinator state writes, plans precede implementation, tests map to accepted requirements, final check is a separate attempt, no weakened tests/scope creep. Checker cannot self-approve code changes or replace failed semantic checks with schema claims.",
+        "id": "G03",
+        "kind": "final",
+        "method": "Review original keyed requirement and project guidance first, then full git diff <recorded-target-base>...<candidate>, skill contracts/helper/tests, planner/implementer reports and actual bootstrap artifact history.",
+        "prerequisites": "Project guidance, exact candidate and recorded role/evidence artifacts"
+      },
+      {
+        "criteria": [
+          "AC2",
+          "AC7"
+        ],
+        "cwd": "candidate worktree and canonical artifact ref",
+        "expected": "Whitespace check succeeds; source changes limited to authorized skill/project documentation; artifacts branch contains records only and no source tree; candidate contains no runs, logs, private machine config, build output or changes to ignore guidance. Verify original user's checkout unchanged.",
+        "id": "G04",
+        "kind": "both",
+        "method": "git diff --check <recorded-target-base>...<candidate> ; separately inspect git diff --name-status <recorded-target-base>...<candidate> and git ls-tree -r --name-only harness-artifacts",
+        "prerequisites": "Project guidance, exact candidate and recorded role/evidence artifacts"
+      },
+      {
+        "criteria": [
+          "AC8"
+        ],
+        "cwd": "coordinator implementation worktree",
+        "expected": "One ready-for-review PR to robinwassen/Fossilize master, matching verified remote SHA; no merge/force push/artifact push. PR title/body explain problem, behavior, tests/limits and link FOS-000025 canonical definition. Retry respects durable intent and does not duplicate PR.",
+        "id": "G05",
+        "kind": "publication",
+        "method": "After final acceptance: fetch origin master; compare accepted base; verify clean HEAD and no unresolved findings; persist publication intent; git push origin <implementation-branch>; git ls-remote origin refs/heads/<implementation-branch>; exact all-state PR lookup; create only if absent; record URL; attach_artifact.",
+        "prerequisites": "Project guidance, exact candidate and recorded role/evidence artifacts"
+      }
+    ],
+    "implementation": [
+      {
+        "details": [
+          "Implement one standard-library helper with a small CLI and importable functions. It manages validated state/report/artifact mechanics, not model calls, arbitrary shell execution, GitHub networking or autonomous orchestration.",
+          "Prefer explicit operations such as initialize/show/plan/dispatch/acknowledge/report/reconcile/reserve/publish-observation/import-bootstrap over accepting arbitrary replacement state. Exact names are implementation choices; document real invocations in references/state.md.",
+          "Require schema version, monotonically increasing state revision, immutable root/run/repository identity and original acceptance; separate phase, operation, status and precise next action. Include structured plans, attempts, findings, limits, evidence and publishing records from the specification.",
+          "Reports are bound to role, attempt ID, dispatch input state revision, input/candidate SHA, target base SHA and plan version. Requested/actual model and effort are separate fields. Acknowledgement may advance state revision; compare report input revision to the stored dispatch revision, not blindly to the newest revision.",
+          "An unsplit root is its own work unit and does not receive a second canonical subtask definition. Future split plans validate registered unique subtask keys, dependency existence and acyclicity; only one ready unit can dispatch at a time."
+        ],
+        "outcome": "Explicit compact state and transition contract",
+        "step": 1
+      },
+      {
+        "details": [
+          "Resolve the Git common directory from any worktree. Each command acquires a repository-wide advisory OS lock and validates expected state revision plus artifact tip before mutation. Reuse or coordinate with the bootstrap coordinator's already-held lock through a documented safe handoff; never delete a lock file to bypass its live owner.",
+          "Recommended minimal transaction: read blobs from artifact ref, validate proposed action and bounded safe artifact paths, construct new JSON/reports in a temporary Git index, write-tree, commit-tree and compare-and-swap update-ref. A failure before ref update leaves prior state authoritative; orphan objects are harmless. Do not stage source checkout files. A separate artifact worktree is an inspection view whose stale/dirty state cannot override the ref; document refresh that preserves unexpected edits.",
+          "Accept only records paths active.json, allocations.json and runs/<key>/<run>/state.json, reports/ and evidence/. Reject traversal, absolute paths, source trees, symlinks and unbounded/binary artifacts. Verify existing artifact branch structure and identity before adoption.",
+          "active.json and state update in one artifact commit. A completed run clears active in the same transaction; an unfinished/failed/awaiting-decision run retains its pointer. Starting another root/run while active is rejected or returns resume information.",
+          "Allocation scans tracked registry, durable journal and current/archived backlog definitions; distinguish canonical definition syntax from references/dependency mentions. Validate missing registrations, retired-key reuse and conflicting meanings. Reserve above the highest union key in the artifact journal first, update tracked registry second, publish subtask definition last. Interruption keeps the reservation permanently; resume is idempotent. Do not silently edit the project registry as a side effect of unrelated state reads."
+        ],
+        "outcome": "Transactional artifacts, locking and permanent allocation",
+        "step": 2
+      },
+      {
+        "details": [
+          "Persist dispatch intent before the actual tool call and worker identity immediately afterward. A crash after intent but before acknowledgement is ambiguous, not no-worker. Reconciliation uses actual collaboration.list_agents/interrupt_agent results; uncertain liveness stops awaiting_decision. A killed lock owner does not certify worker termination. Allow replacement only after a recorded definitive termination observation; reject late reports even if their candidate otherwise matches.",
+          "Only implementation edits source and committed tests. Planner owns versioned test design. Checker accepts/rejects on criterion evidence and may request replan for missing coverage; it cannot patch the candidate or weaken acceptance. Replan invalidates affected acceptance; conservative invalidation of all prior acceptance is acceptable for v1.",
+          "Verification plan gates have stable IDs, criterion mapping, required-subtask/required-final/optional classification, exact commands/cwd or concrete review method, fixtures/environment, expected assertions, suite-extension cases and runner registration. Evidence must identify actual discovered/executed tests, mapping from planned cases to implemented locations, command status/output artifacts and candidate/base/plan/attempt tuple.",
+          "Reject mandatory passed claims with missing gate evidence, no test discovery/execution, skipped/unsupported/incomplete results, missing extension mappings or unresolved findings. Schema checks establish evidence completeness; the independent checker inspects assertions and reruns tests to establish meaning. Do not claim JSON validation proves a test is non-vacuous.",
+          "A subtask check can accept only the active work unit. Subtask acceptance unlocks the next ready dependency; final checking is a new independent attempt after all units accept. Later commits, dirty/untracked source changes, altered base or plans invalidate publication acceptance.",
+          "Track initial implementation and at most three repairs per unit, one replan, deadline and per-command timeout records. Repeated identical rejection without new evidence, exhausted limits and unresolved infrastructure/liveness stop with reason and next action. Missing mandatory prerequisites remain incomplete/awaiting_decision; only optional gates may be unavailable without preventing acceptance."
+        ],
+        "outcome": "Fenced attempts, evidence gates and bounded recovery",
+        "step": 3
+      },
+      {
+        "details": [
+          "Before publishing require accepted final candidate/base/plan, all work units accepted, mandatory gates passed, clean matching HEAD and no unresolved acceptance findings. Persist intended exact destination/head/base/candidate before external mutations.",
+          "Coordinator uses actual Git and available gh/API tools: fetch base, push without force, verify remote SHA, look up all open/closed/merged PRs by exact repository/base/head, create only on an unambiguous empty lookup, then record and attach the PR URL. The helper validates observations/state sequencing; no GitHub dependency is added to Python.",
+          "An ambiguous create outcome returns lookup-required, never immediate create-again. Exactly one matching open PR is reconciled; closed/merged or multiple matches stop for a decision. Attachment failure resumes attachment without push/create duplication. Remote branch conflicts preserve candidate/source and block publishing; no reset or force push.",
+          "Complete is verified with one ready-for-review PR opened and attachment recorded, or CI-pending under a predeclared required-CI policy. Never imply merge. Publication failure retains final candidate evidence so resume does not reimplement."
+        ],
+        "outcome": "Idempotent publication decision mechanics",
+        "step": 4
+      },
+      {
+        "details": [
+          "Place the package under .agents/skills/implement-change-harness so source and instructions travel with the repository. Keep normal implicit skill discovery enabled; use correctly quoted agents/openai.yaml strings and a useful description/default prompt. A personal symlink is optional and must not replace a pre-existing user skill.",
+          "SKILL.md contains purpose, finite outcome, sole coordinator routing, mandatory fresh fork_turns=none roles, one-active-task invariant and references. roles.md has separate bounded role input/report contracts; state.md owns CLI/schema, recovery, allocation and publication details. No copied transcripts, duplicated universal advice or generic framework.",
+          "Use collaboration.spawn_agent/list_agents/interrupt_agent for real roles, not create_thread or simulated prose personas. Check model catalog and tools before dispatch; write records before and after actual tool operations. No nested delegation in v1.",
+          "Update proposal destination and current high-water wording, describe actual v1 guarantees and limitations without claiming planned tests already passed. Add exact Python unittest discovery command and scope to verification.md; CMake/CTest registration is unnecessary because this is a separate Python skill test suite and does not change product targets.",
+          "Implement the planned tests alongside the helper. Return candidate commit SHA plus case-to-test mapping and actual execution evidence; do not edit canonical artifacts, verifier reports, original acceptance or registry allocations as implementer. Coordinator migrates/imports and writes canonical state."
+        ],
+        "outcome": "Lean discoverable skill and project documentation",
+        "step": 5
+      }
+    ],
+    "non_goals": [
+      "No Fossilize C++/Vulkan changes, CMake integration or GPU/Steam deployment.",
+      "No scheduler, daemon, background wakeup, database, external API runtime, generic agent framework or automatic merge.",
+      "No global Codex configuration changes, automatic stronger-model escalation, remote artifact publication or cross-machine locking.",
+      "No hostile-agent security boundary: worktrees and report identity are procedural isolation under a sole cooperative coordinator.",
+      "No extra production root task or test PR solely to demonstrate the harness. This actual keyed bootstrap run is the real role exercise; publication unit tests use local fakes."
+    ],
+    "original": [
+      {
+        "gates": [
+          "G01",
+          "G03"
+        ],
+        "id": "AC1",
+        "requirement": "The helper validates legal state transitions and stale attempt/candidate/base/plan/revision tuples; actual fresh independent roles follow their bounded contracts."
+      },
+      {
+        "gates": [
+          "G01",
+          "G04"
+        ],
+        "id": "AC2",
+        "requirement": "One active root, atomic authoritative Git checkpoints, safe worktree/artifact isolation and preserved partial/user work survive failure/restart."
+      },
+      {
+        "gates": [
+          "G01"
+        ],
+        "id": "AC3",
+        "requirement": "Permanent dynamic key allocation reconciles registry, archives and journal; interrupted reservations cannot be reused, malformed definitions/dependencies cannot advance."
+      },
+      {
+        "gates": [
+          "G01"
+        ],
+        "id": "AC4",
+        "requirement": "Ambiguous/live workers prevent duplicate dispatch, stale reports are fenced, configured budgets stop predictably and mandatory unavailable evidence remains incomplete."
+      },
+      {
+        "gates": [
+          "G01",
+          "G03"
+        ],
+        "id": "AC5",
+        "requirement": "Planned test extensions, actual discovery/execution evidence and independent subtask/final gates cannot be skipped or silently weakened; publication is idempotent and matching current accepted commits."
+      },
+      {
+        "gates": [
+          "G01",
+          "G03"
+        ],
+        "id": "AC6",
+        "requirement": "Bootstrap migrates explicitly preserving Git history and uncertainty, and this actual FOS-000025 run records planner, implementation and independent final checking evidence."
+      },
+      {
+        "gates": [
+          "G01",
+          "G02",
+          "G03",
+          "G04"
+        ],
+        "id": "AC7",
+        "requirement": "A lean valid repository-discoverable implement-change-harness package includes usable CLI/role/state documentation and meaningful standard-library tests; docs accurately state implemented limits."
+      },
+      {
+        "gates": [
+          "G03",
+          "G05"
+        ],
+        "id": "AC8",
+        "requirement": "All mandatory local/final gates pass before one verified ready-for-review PR to origin robinwassen/Fossilize master is opened and attached, with actual SHA/base/plan evidence and no merge."
+      }
+    ],
     "scope": {
-      "root_remains_unsplit": true,
-      "rationale": "The skill contracts, reducer, artifact transactions and recovery tests form one coherent deliverable. Splitting source and its tests would add allocation and gating overhead without an independently useful outcome. Exercise future sequential-subtask support in temporary-repository tests.",
-      "subtasks": [],
       "files": [
         ".agents/skills/implement-change-harness/SKILL.md",
         ".agents/skills/implement-change-harness/agents/openai.yaml",
@@ -46,413 +386,514 @@
         "No global Codex configuration changes, automatic stronger-model escalation, remote artifact publication or cross-machine locking.",
         "No hostile-agent security boundary: worktrees and report identity are procedural isolation under a sole cooperative coordinator.",
         "No extra production root task or test PR solely to demonstrate the harness. This actual keyed bootstrap run is the real role exercise; publication unit tests use local fakes."
-      ]
-    },
-    "assumptions_and_policy": {
-      "runtime": "Git and Python 3 standard library on the current Linux/POSIX host. Use fcntl.flock in the common Git directory. Explicitly report unsupported platforms rather than claim tested portability.",
-      "artifact_branch": "harness-artifacts, local-only, orphan records-only tree; Git ref tip is the sole authoritative checkpoint.",
-      "destination": {
-        "remote": "origin",
-        "repository": "robinwassen/Fossilize",
-        "base": "master"
-      },
-      "ci": "No mandatory hosted CI is specified for this skill-only change. Record that policy before implementation. Required local gates and final independent acceptance precede the real PR. If repository branch policy discovered later requires CI after PR creation, record PR-open/CI-pending and do not declare CI-verified completion.",
-      "bootstrap": "Existing artifact state runs/FOS-000025/2026-10-27-bootstrap/state.json is explicitly marked bootstrap, revision 2 in the snapshot read. It has incomplete schema fields and an abbreviated input SHA; preserve its Git history and original facts. Import/migrate under an explicit validated action, normalize SHAs via Git, retain provenance, and never fabricate old commands, evidence, times or acceptance. Bootstrap allocations have registry-location placeholders; reconcile canonical locations from the tracked registry without changing key meanings.",
-      "allocation": "The actual tracked registry and bootstrap journal both currently reach 25. No new keys are required by this plan. The helper must reconcile durable union dynamically; never hardcode 26 as the next allocation.",
-      "source_base": "Bootstrap input 643c490 contains the registered proposal above origin/master bbe8ae4. Preserve those authorized documentation changes. Root acceptance is against the recorded full target master SHA; do not confuse planner input SHA with target base SHA.",
-      "budget": "Preserve this run's recorded four-hour limit, three repair rounds per work unit and one replan. Record command deadlines before running commands. New runs may use those configurable defaults. Clock-based limits are checked on invocation; no watchdog/background-service guarantee. Exhaustion requires an explicit recorded user budget extension before resuming dispatch.",
-      "publication_base_policy": "Fetch origin/master immediately before publication, compare with final accepted base, and if changed integrate through implementation and recheck. Verify clean source HEAD and remote head again before PR mutation. This verifies observed commits and cannot promise the target never changes afterward."
-    },
-    "implementation_plan": [
-      {
-        "step": 1,
-        "outcome": "Explicit compact state and transition contract",
-        "details": [
-          "Implement one standard-library helper with a small CLI and importable functions. It manages validated state/report/artifact mechanics, not model calls, arbitrary shell execution, GitHub networking or autonomous orchestration.",
-          "Prefer explicit operations such as initialize/show/plan/dispatch/acknowledge/report/reconcile/reserve/publish-observation/import-bootstrap over accepting arbitrary replacement state. Exact names are implementation choices; document real invocations in references/state.md.",
-          "Require schema version, monotonically increasing state revision, immutable root/run/repository identity and original acceptance; separate phase, operation, status and precise next action. Include structured plans, attempts, findings, limits, evidence and publishing records from the specification.",
-          "Reports are bound to role, attempt ID, dispatch input state revision, input/candidate SHA, target base SHA and plan version. Requested/actual model and effort are separate fields. Acknowledgement may advance state revision; compare report input revision to the stored dispatch revision, not blindly to the newest revision.",
-          "An unsplit root is its own work unit and does not receive a second canonical subtask definition. Future split plans validate registered unique subtask keys, dependency existence and acyclicity; only one ready unit can dispatch at a time."
-        ]
-      },
-      {
-        "step": 2,
-        "outcome": "Transactional artifacts, locking and permanent allocation",
-        "details": [
-          "Resolve the Git common directory from any worktree. Each command acquires a repository-wide advisory OS lock and validates expected state revision plus artifact tip before mutation. Reuse or coordinate with the bootstrap coordinator's already-held lock through a documented safe handoff; never delete a lock file to bypass its live owner.",
-          "Recommended minimal transaction: read blobs from artifact ref, validate proposed action and bounded safe artifact paths, construct new JSON/reports in a temporary Git index, write-tree, commit-tree and compare-and-swap update-ref. A failure before ref update leaves prior state authoritative; orphan objects are harmless. Do not stage source checkout files. A separate artifact worktree is an inspection view whose stale/dirty state cannot override the ref; document refresh that preserves unexpected edits.",
-          "Accept only records paths active.json, allocations.json and runs/<key>/<run>/state.json, reports/ and evidence/. Reject traversal, absolute paths, source trees, symlinks and unbounded/binary artifacts. Verify existing artifact branch structure and identity before adoption.",
-          "active.json and state update in one artifact commit. A completed run clears active in the same transaction; an unfinished/failed/awaiting-decision run retains its pointer. Starting another root/run while active is rejected or returns resume information.",
-          "Allocation scans tracked registry, durable journal and current/archived backlog definitions; distinguish canonical definition syntax from references/dependency mentions. Validate missing registrations, retired-key reuse and conflicting meanings. Reserve above the highest union key in the artifact journal first, update tracked registry second, publish subtask definition last. Interruption keeps the reservation permanently; resume is idempotent. Do not silently edit the project registry as a side effect of unrelated state reads."
-        ]
-      },
-      {
-        "step": 3,
-        "outcome": "Fenced attempts, evidence gates and bounded recovery",
-        "details": [
-          "Persist dispatch intent before the actual tool call and worker identity immediately afterward. A crash after intent but before acknowledgement is ambiguous, not no-worker. Reconciliation uses actual collaboration.list_agents/interrupt_agent results; uncertain liveness stops awaiting_decision. A killed lock owner does not certify worker termination. Allow replacement only after a recorded definitive termination observation; reject late reports even if their candidate otherwise matches.",
-          "Only implementation edits source and committed tests. Planner owns versioned test design. Checker accepts/rejects on criterion evidence and may request replan for missing coverage; it cannot patch the candidate or weaken acceptance. Replan invalidates affected acceptance; conservative invalidation of all prior acceptance is acceptable for v1.",
-          "Verification plan gates have stable IDs, criterion mapping, required-subtask/required-final/optional classification, exact commands/cwd or concrete review method, fixtures/environment, expected assertions, suite-extension cases and runner registration. Evidence must identify actual discovered/executed tests, mapping from planned cases to implemented locations, command status/output artifacts and candidate/base/plan/attempt tuple.",
-          "Reject mandatory passed claims with missing gate evidence, no test discovery/execution, skipped/unsupported/incomplete results, missing extension mappings or unresolved findings. Schema checks establish evidence completeness; the independent checker inspects assertions and reruns tests to establish meaning. Do not claim JSON validation proves a test is non-vacuous.",
-          "A subtask check can accept only the active work unit. Subtask acceptance unlocks the next ready dependency; final checking is a new independent attempt after all units accept. Later commits, dirty/untracked source changes, altered base or plans invalidate publication acceptance.",
-          "Track initial implementation and at most three repairs per unit, one replan, deadline and per-command timeout records. Repeated identical rejection without new evidence, exhausted limits and unresolved infrastructure/liveness stop with reason and next action. Missing mandatory prerequisites remain incomplete/awaiting_decision; only optional gates may be unavailable without preventing acceptance."
-        ]
-      },
-      {
-        "step": 4,
-        "outcome": "Idempotent publication decision mechanics",
-        "details": [
-          "Before publishing require accepted final candidate/base/plan, all work units accepted, mandatory gates passed, clean matching HEAD and no unresolved acceptance findings. Persist intended exact destination/head/base/candidate before external mutations.",
-          "Coordinator uses actual Git and available gh/API tools: fetch base, push without force, verify remote SHA, look up all open/closed/merged PRs by exact repository/base/head, create only on an unambiguous empty lookup, then record and attach the PR URL. The helper validates observations/state sequencing; no GitHub dependency is added to Python.",
-          "An ambiguous create outcome returns lookup-required, never immediate create-again. Exactly one matching open PR is reconciled; closed/merged or multiple matches stop for a decision. Attachment failure resumes attachment without push/create duplication. Remote branch conflicts preserve candidate/source and block publishing; no reset or force push.",
-          "Complete is verified with one ready-for-review PR opened and attachment recorded, or CI-pending under a predeclared required-CI policy. Never imply merge. Publication failure retains final candidate evidence so resume does not reimplement."
-        ]
-      },
-      {
-        "step": 5,
-        "outcome": "Lean discoverable skill and project documentation",
-        "details": [
-          "Place the package under .agents/skills/implement-change-harness so source and instructions travel with the repository. Keep normal implicit skill discovery enabled; use correctly quoted agents/openai.yaml strings and a useful description/default prompt. A personal symlink is optional and must not replace a pre-existing user skill.",
-          "SKILL.md contains purpose, finite outcome, sole coordinator routing, mandatory fresh fork_turns=none roles, one-active-task invariant and references. roles.md has separate bounded role input/report contracts; state.md owns CLI/schema, recovery, allocation and publication details. No copied transcripts, duplicated universal advice or generic framework.",
-          "Use collaboration.spawn_agent/list_agents/interrupt_agent for real roles, not create_thread or simulated prose personas. Check model catalog and tools before dispatch; write records before and after actual tool operations. No nested delegation in v1.",
-          "Update proposal destination and current high-water wording, describe actual v1 guarantees and limitations without claiming planned tests already passed. Add exact Python unittest discovery command and scope to verification.md; CMake/CTest registration is unnecessary because this is a separate Python skill test suite and does not change product targets.",
-          "Implement the planned tests alongside the helper. Return candidate commit SHA plus case-to-test mapping and actual execution evidence; do not edit canonical artifacts, verifier reports, original acceptance or registry allocations as implementer. Coordinator migrates/imports and writes canonical state."
-        ]
-      }
-    ],
-    "verification_plan": {
-      "suite_extension": {
-        "existing_coverage": "No existing change-harness code or Python suite exists at input 643c490. Existing CTest and observability probes exercise Fossilize C++, not Git/state workflow behavior; they cannot establish these requirements.",
-        "test_file": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
-        "runner": "Python unittest discovery with test_*.py and real assert-bearing test methods; no CMake changes.",
-        "fixtures": "Temporary directories containing real Git repositories, source/planner/checker worktrees, orphan artifact refs, local bare origin, small canonical backlog registries including retired/reserved keys, real trivial assertion-bearing test commands, deterministic injected failures/clocks, fake agent observations and a fake PR transport that counts side effects. No network, live GPU, user checkout changes or test PRs.",
-        "cases": [
-          {
-            "id": "T01",
-            "behavior": "Happy-path state and actual Git checkpoint",
-            "assertions": "Initialize orphan records-only ref; plan, implement and subtask/final check with real evidence; publication transitions; state revision increases; persisted blobs and active pointer agree; original source worktree/index/HEAD are byte-for-byte/status unchanged."
-          },
-          {
-            "id": "T02",
-            "behavior": "Artifact transaction failure boundaries",
-            "assertions": "Inject write/tree/commit/ref-update failures; ref and loaded revision never advance on failure; staged/uncommitted artifact view is ignored; restart reads old committed state; concurrent expected-tip CAS loser cannot overwrite winner."
-          },
-          {
-            "id": "T03",
-            "behavior": "Malformed or wrong state and artifact isolation",
-            "assertions": "Reject malformed schema, invalid identity, unsafe path/traversal/symlink/source blobs, invalid existing artifact branch, unknown transition and wrong expected revision without changing refs. Assert all actual artifact paths are records-only and implementation diff has no run records."
-          },
-          {
-            "id": "T04",
-            "behavior": "Repository-wide serialization and one active run",
-            "assertions": "Two processes/worktrees contend on the same common-dir lock using barriers/events rather than timing races. Reject distinct active root/run initialization; same identity resumes. Incomplete/failed/blocked runs retain pointer; completion clears it atomically."
-          },
-          {
-            "id": "T05",
-            "behavior": "Permanent key authority and interrupted reservations",
-            "assertions": "Union registry/journal/backlog maximum, including retired and artifact-only reserved keys, determines new allocation. Reserve, crash before registry, resume and prove next key is strictly higher. Reject duplicate canonical definitions, key meaning conflict, absent registrations, retired reuse, dangling dependencies and cycles; references alone are not duplicate definitions. Fixture with max25 allocates26 without hardcoded production counter."
-          },
-          {
-            "id": "T06",
-            "behavior": "Worktree source/candidate isolation",
-            "assertions": "Planner input detached at input commit; checker detached at exact candidate. Original user's dirty/untracked files survive initialization/recovery; dirty candidate prevents final publication; helper never resets/cleans another worktree. Later source commit invalidates previous final acceptance."
-          },
-          {
-            "id": "T07",
-            "behavior": "Dispatch-before-acknowledgement crash",
-            "assertions": "Persist dispatch intent, simulate worker launch then loss of worker-ID checkpoint; resume classifies ambiguous and refuses replacement. Live/unknown worker observations do not permit dispatch. Only confirmed termination reconciliation permits a new attempt; old report remains rejected."
-          },
-          {
-            "id": "T08",
-            "behavior": "Stale attempt identity tuple",
-            "assertions": "Individually mutate attempt ID, worker ID, dispatch input revision, input/candidate SHA, base SHA, plan version and role; report/check acceptance is rejected without advancing state. Correct report remains valid after acknowledgement revision increases; a late previous-attempt report does not."
-          },
-          {
-            "id": "T09",
-            "behavior": "Model and budget policy",
-            "assertions": "Reject unsupported requested model/effort without recorded supported fallback; persist actual/requested choices. Fake clock/time and attempt counters hit each repair/replan/deadline limit deterministically. Exhaustion/repeated unchanged rejection produces non-success precise next action; only explicit budget-extension record permits resume."
-          },
-          {
-            "id": "T10",
-            "behavior": "Mandatory gate evidence completeness",
-            "assertions": "Reject acceptance with omitted gate, failed/unsupported/incomplete/not-run gate, zero discovered/executed tests, skipped planned test, missing planned-case-to-location mapping, missing result/log identity or unresolved finding. A passed build with no assertion tests cannot accept. Complete positive evidence accepts; unavailable optional diagnostic is retained separately."
-          },
-          {
-            "id": "T11",
-            "behavior": "Concrete original-defect and vacuous-test counterexamples",
-            "assertions": "Run a tiny real assertion-bearing reproducer that fails for a deliberately faulty candidate and passes for fixed behavior. Preserve nonzero/zero status and discovered/executed case IDs. A fake implementer success cannot override the independent failing run. A weakened test is identified by a checker evidence/inspection finding and acceptance stays blocked; document that helper cannot infer semantic assertion quality from a log."
-          },
-          {
-            "id": "T12",
-            "behavior": "Replanning versus implementation repairs",
-            "assertions": "Missing implementation of a planned test routes to implementation; missing planned coverage routes to planner. Versioned replan invalidates previous relevant acceptance; implementer cannot alter original requirements or checker verdict; only fresh checker at new tuple may accept."
-          },
-          {
-            "id": "T13",
-            "behavior": "Sequential split task and final integration",
-            "assertions": "Two registered synthetic subtasks with dependency cannot run concurrently or advance before mandatory subtask acceptance. Later subtask invalidates/breaks an earlier assertion; a separate final check fails and blocks publishing despite two prior subtask acceptances. Unsplit root uses no duplicate canonical definition."
-          },
-          {
-            "id": "T14",
-            "behavior": "Mandatory environment absence",
-            "assertions": "Synthetic required GPU/driver gate marked unavailable remains unable_to_verify/incomplete and cannot be waived by implementer/checker; record prerequisite and next action. This tests policy, and makes no claim that a GPU test ran."
-          },
-          {
-            "id": "T15",
-            "behavior": "Publication ordering and moving commits",
-            "assertions": "Local bare Git remote verifies push/current remote SHA. Persisted intent precedes fake PR mutation. Wrong destination/head/base, changed target master, changed candidate and dirty source all block creation or require renewed final check. Push/remote conflict retains source and never force pushes."
-          },
-          {
-            "id": "T16",
-            "behavior": "Idempotent PR recovery",
-            "assertions": "Fake transport creates exactly once then loses response; restart performs exact all-state lookup and reconciles same PR. No duplicate create after ambiguous lookup, closed/merged PR, multiple matches or wrong repo/base/head. Attachment failure retries only attach. State cannot become complete without final acceptance and recorded PR outcome."
-          },
-          {
-            "id": "T17",
-            "behavior": "Bootstrap import preserves history and uncertainty",
-            "assertions": "Use a fixture matching current bootstrap state/active/journal. Import normalizes valid abbreviated SHA, retains prior commits/facts and original task, adds only known schema fields and provenance, does not fabricate acceptance/execution logs. Malformed/conflicting bootstrap refuses import without advancing tip."
-          }
-        ]
-      },
-      "gates": [
-        {
-          "id": "G01",
-          "classification": "required_subtask_and_final",
-          "criteria": [
-            "AC1",
-            "AC2",
-            "AC3",
-            "AC4",
-            "AC5",
-            "AC6"
-          ],
-          "cwd": "exact candidate implementation worktree for implementer; fresh detached exact candidate worktree for checker",
-          "command": "python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v",
-          "prerequisites": "Python3, Git, POSIX advisory locking; temporary directory filesystem. No third-party Python modules.",
-          "expected": "Exit0; nonzero discovered/executed tests; every T01-T17 mapped to actual assertion-bearing methods and passes, with no skipped mandatory cases. Checker reruns independently and inspects tests for fake-only/vacuous claims.",
-          "evidence": "Full command/cwd/revision/base/plan tuple, test IDs and counts, output/status, per-T mapping to implementation test file/method, relevant temporary-fixture observations. Keep small sanitized logs on artifact branch."
-        },
-        {
-          "id": "G02",
-          "classification": "required_subtask_and_final",
-          "criteria": [
-            "AC7"
-          ],
-          "cwd": "exact candidate worktree",
-          "command": "python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
-          "prerequisites": "Skill-creator validation environment including PyYAML. If /usr/bin/python3 lacks PyYAML, use the provided bundled interpreter with it; this is a validation-tool dependency only, not a runtime helper dependency.",
-          "expected": "Exit0 and Skill is valid; inspect openai.yaml consistency, reference links and CLI examples. Validate discovery from repository skill directory or explicit invocation; no global config mutation.",
-          "evidence": "Exact interpreter/command/status/output plus metadata/reference review. If validator cannot run, mandatory gate stays incomplete until environment is resolved."
-        },
-        {
-          "id": "G03",
-          "classification": "required_final",
-          "criteria": [
-            "AC1",
-            "AC6",
-            "AC7",
-            "AC8"
-          ],
-          "cwd": "fresh detached exact candidate checker worktree; read canonical artifact ref without mutation",
-          "command": "Review original keyed requirement and project guidance first, then full git diff <recorded-target-base>...<candidate>, skill contracts/helper/tests, planner/implementer reports and actual bootstrap artifact history.",
-          "expected": "Actual fresh planner and implementer and independent checker attempts are durable, model choices recorded, sole coordinator state writes, plans precede implementation, tests map to accepted requirements, final check is a separate attempt, no weakened tests/scope creep. Checker cannot self-approve code changes or replace failed semantic checks with schema claims.",
-          "evidence": "Criterion-level accepted/changes_required/unable_to_verify report tied to candidate/base/plan and attempt; concrete findings/file locations, mapped required gates and actual rerun results. This gate validates real role behavior that deterministic helper unit tests cannot prove."
-        },
-        {
-          "id": "G04",
-          "classification": "required_subtask_and_final",
-          "criteria": [
-            "AC2",
-            "AC7"
-          ],
-          "cwd": "candidate worktree and canonical artifact ref",
-          "command": "git diff --check <recorded-target-base>...<candidate> ; separately inspect git diff --name-status <recorded-target-base>...<candidate> and git ls-tree -r --name-only harness-artifacts",
-          "expected": "Whitespace check succeeds; source changes limited to authorized skill/project documentation; artifacts branch contains records only and no source tree; candidate contains no runs, logs, private machine config, build output or changes to ignore guidance. Verify original user's checkout unchanged.",
-          "evidence": "Separate command/status outputs, exact approved path inventory and artifact-path review. The semicolon here denotes separately recorded commands, not a recommended chained shell invocation."
-        },
-        {
-          "id": "G05",
-          "classification": "required_final_publication",
-          "criteria": [
-            "AC8"
-          ],
-          "cwd": "coordinator implementation worktree",
-          "command": "After final acceptance: fetch origin master; compare accepted base; verify clean HEAD and no unresolved findings; persist publication intent; git push origin <implementation-branch>; git ls-remote origin refs/heads/<implementation-branch>; exact all-state PR lookup; create only if absent; record URL; attach_artifact.",
-          "expected": "One ready-for-review PR to robinwassen/Fossilize master, matching verified remote SHA; no merge/force push/artifact push. PR title/body explain problem, behavior, tests/limits and link FOS-000025 canonical definition. Retry respects durable intent and does not duplicate PR.",
-          "evidence": "Recorded destination, observed base/head SHAs, push/lookup/create outcomes, PR identity/URL and attach result. This is the real task PR, never a test PR. A failed external operation retains verified candidate and incomplete publishing status."
-        }
       ],
-      "optional_checks": [
-        "A supported second Python interpreter may run the same suite; report actual versions, do not claim cross-platform coverage from Linux.",
-        "Optional personal skill symlink/discovery check only if useful and no existing skill is overwritten."
-      ],
-      "excluded_categories": [
-        "CMake/CTest/C++ system, sanitizer, Vulkan null-device/driver/cache/layer/Steam, game, architecture and benchmark runs: no affected product source/build behavior. Submodules are uninitialized at planner input; do not initialize them or claim product tests for this Python/doc-only change.",
-        "Live GitHub API failure injection: use fake PR effect transport plus real local Git for deterministic publication tests. Real final publication verifies the normal authorized path only.",
-        "No historical product defect reproducer applies to a new harness. T11 supplies a controlled original-defect scenario proving failure evidence blocks acceptance."
-      ]
+      "rationale": "The skill contracts, reducer, artifact transactions and recovery tests form one coherent deliverable. Splitting source and its tests would add allocation and gating overhead without an independently useful outcome. Exercise future sequential-subtask support in temporary-repository tests.",
+      "root_remains_unsplit": true,
+      "subtasks": []
     },
-    "acceptance_criteria": [
-      {
-        "id": "AC1",
-        "requirement": "The helper validates legal state transitions and stale attempt/candidate/base/plan/revision tuples; actual fresh independent roles follow their bounded contracts.",
-        "gates": [
-          "G01",
-          "G03"
-        ]
-      },
-      {
-        "id": "AC2",
-        "requirement": "One active root, atomic authoritative Git checkpoints, safe worktree/artifact isolation and preserved partial/user work survive failure/restart.",
-        "gates": [
-          "G01",
-          "G04"
-        ]
-      },
-      {
-        "id": "AC3",
-        "requirement": "Permanent dynamic key allocation reconciles registry, archives and journal; interrupted reservations cannot be reused, malformed definitions/dependencies cannot advance.",
-        "gates": [
-          "G01"
-        ]
-      },
-      {
-        "id": "AC4",
-        "requirement": "Ambiguous/live workers prevent duplicate dispatch, stale reports are fenced, configured budgets stop predictably and mandatory unavailable evidence remains incomplete.",
-        "gates": [
-          "G01"
-        ]
-      },
-      {
-        "id": "AC5",
-        "requirement": "Planned test extensions, actual discovery/execution evidence and independent subtask/final gates cannot be skipped or silently weakened; publication is idempotent and matching current accepted commits.",
-        "gates": [
-          "G01",
-          "G03"
-        ]
-      },
-      {
-        "id": "AC6",
-        "requirement": "Bootstrap migrates explicitly preserving Git history and uncertainty, and this actual FOS-000025 run records planner, implementation and independent final checking evidence.",
-        "gates": [
-          "G01",
-          "G03"
-        ]
-      },
-      {
-        "id": "AC7",
-        "requirement": "A lean valid repository-discoverable implement-change-harness package includes usable CLI/role/state documentation and meaningful standard-library tests; docs accurately state implemented limits.",
-        "gates": [
-          "G01",
-          "G02",
-          "G03",
-          "G04"
-        ]
-      },
-      {
-        "id": "AC8",
-        "requirement": "All mandatory local/final gates pass before one verified ready-for-review PR to origin robinwassen/Fossilize master is opened and attached, with actual SHA/base/plan evidence and no merge.",
-        "gates": [
-          "G03",
-          "G05"
-        ]
-      }
-    ],
-    "model_policy": {
-      "coordinator": "Inherited parent model/effort; sole canonical writer.",
-      "planner": {
-        "requested_model": "gpt-6.1-sol",
-        "effort": "high",
-        "fork_turns": "none"
-      },
-      "implementer": {
-        "requested_model": "gpt-6.1-sol",
-        "effort": "medium",
-        "fork_turns": "none"
-      },
-      "checker": {
-        "requested_model": "gpt-6.1-sol",
-        "effort": "high",
-        "fork_turns": "none"
-      },
-      "fallback": "Verify against actual runtime catalog per attempt. Record requested and actual model/effort. Explicitly recorded supported fallback only; otherwise capability blocker. Independent evidence matters more than different model names. No global configuration changes or nested delegation."
-    },
-    "spec_adjustments": [
-      "Change personal-only proposed destination to tracked .agents/skills/implement-change-harness; optional local symlink only when helpful. Update stale ledger-at-proposal wording to current registered25 while keeping dynamic allocation mandatory.",
-      "Document Git plumbing transactions as authoritative-ref mechanics; separate artifact worktree remains a nonauthoritative inspectable view and must not become a second state authority.",
-      "Document POSIX local locking support and explicit unsupported-platform status instead of implying a portable lock implementation.",
-      "Document explicit bootstrap import and lock-owner handoff; current legacy bootstrap schema_version1 is incomplete and must not be silently accepted as fully verified helper schema.",
-      "Clarify unsplit root work-unit representation, dispatch input revision binding across acknowledgement updates, evidence-completeness checks versus semantic checker judgment, and the predeclared local-only CI policy. These clarify v1 without relaxing original acceptance."
-    ],
-    "risks": [
-      "Scope can grow into a runtime framework. Keep orchestration/external calls in the skill coordinator and Python focused on deterministic state, Git and validation.",
-      "Structured observations cannot authenticate a hostile coordinator or prove semantic test quality. Preserve independent real checker execution and disclose procedural trust.",
-      "Existing bootstrap lock is live and schema incomplete; migration/handoff must preserve owner liveness and original records, never bypass locking or invent evidence.",
-      "Final accepted base is an observed master commit; target can move later. Refresh before publication and rerun after a detected change without promising future immutability.",
-      "Unit tests need real Git mutations and isolated temporary repositories; fake PR effects alone would miss artifact/index/worktree safety failures.",
-      "PyYAML may be unavailable to the skill validator's default interpreter. Resolve with the bundled validation environment; keep runtime helper/test suite standard-library only.",
-      "Remote publication/account/network may block the final external outcome. Retain verified candidate and exact publishing next action rather than falsely declare complete."
-    ],
-    "planner_observations": {
-      "guidance_read": [
-        "AGENTS.md",
-        "local-docs/README.md",
-        "local-docs/project-descriptor.md",
-        "local-docs/project-pillars.md",
-        "local-docs/verification.md",
-        "local-docs/specs/basic-change-harness-plan.md",
-        "local-docs/backlog-keys.md",
-        "/home/robin/.codex/skills/.system/skill-creator/SKILL.md",
-        "/home/robin/.codex/skills/.system/skill-creator/references/openai_yaml.md"
-      ],
-      "environment": {
-        "python": "3.12.3 /usr/bin/python3",
-        "git": "2.43.0 /usr/bin/git",
-        "planner_worktree": "clean at input SHA when inspected",
-        "submodules": "uninitialized; product builds excluded by scope"
-      },
-      "verification_executed": "No implementation tests exist yet or were run. Read source/build inventories and existing bootstrap records only; report is a plan, not acceptance evidence.",
-      "canonical_state_modified": false
-    }
+    "subtasks": [],
+    "version": 1
   },
-  "subtasks": [],
-  "attempts": [
+  "provenance": [
     {
-      "attempt_id": "planner-1",
-      "role": "planner",
-      "worker_id": "/root/fos25_planner",
-      "input_sha": "643c490",
-      "model": "gpt-6.1-sol",
-      "effort": "high",
-      "status": "complete",
-      "report": "reports/planner-1.json"
+      "imported_from_tip": "afe4877227a8ad4b647a9067eccd4ad0a107f226",
+      "legacy_schema": 1,
+      "legacy_state": {
+        "attempts": [
+          {
+            "attempt_id": "planner-1",
+            "effort": "high",
+            "input_sha": "643c490",
+            "model": "gpt-6.1-sol",
+            "report": "reports/planner-1.json",
+            "role": "planner",
+            "status": "complete",
+            "worker_id": "/root/fos25_planner"
+          },
+          {
+            "attempt_id": "implementer-1",
+            "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+            "effort": "high",
+            "effort_reason": "Transactional state and recovery invariants require careful failure handling",
+            "input_sha": "643c490d34347289ab4a7316b3b1d14f770028a5",
+            "model": "gpt-6.1-sol",
+            "report": "reports/implementer-1.json",
+            "role": "implementer",
+            "status": "complete",
+            "worker_id": "/root/fos25_implementer"
+          }
+        ],
+        "bootstrap": {
+          "limitations": "Procedural worker fencing; unknown surviving worker requires intervention",
+          "lock_pid": 183337,
+          "reason": "Helper does not exist yet; coordinator records equivalent durable checkpoints using Git and JSON"
+        },
+        "findings": [],
+        "limits": {
+          "repair_rounds_per_subtask": 3,
+          "replans": 1,
+          "run_timeout_hours": 4
+        },
+        "next_action": "Release bootstrap lock, explicitly import schema2, reconcile completed workers, then dispatch checker",
+        "operation": "implementer_dispatch",
+        "phase": "implementing",
+        "plan": {
+          "acceptance_criteria": [
+            {
+              "gates": [
+                "G01",
+                "G03"
+              ],
+              "id": "AC1",
+              "requirement": "The helper validates legal state transitions and stale attempt/candidate/base/plan/revision tuples; actual fresh independent roles follow their bounded contracts."
+            },
+            {
+              "gates": [
+                "G01",
+                "G04"
+              ],
+              "id": "AC2",
+              "requirement": "One active root, atomic authoritative Git checkpoints, safe worktree/artifact isolation and preserved partial/user work survive failure/restart."
+            },
+            {
+              "gates": [
+                "G01"
+              ],
+              "id": "AC3",
+              "requirement": "Permanent dynamic key allocation reconciles registry, archives and journal; interrupted reservations cannot be reused, malformed definitions/dependencies cannot advance."
+            },
+            {
+              "gates": [
+                "G01"
+              ],
+              "id": "AC4",
+              "requirement": "Ambiguous/live workers prevent duplicate dispatch, stale reports are fenced, configured budgets stop predictably and mandatory unavailable evidence remains incomplete."
+            },
+            {
+              "gates": [
+                "G01",
+                "G03"
+              ],
+              "id": "AC5",
+              "requirement": "Planned test extensions, actual discovery/execution evidence and independent subtask/final gates cannot be skipped or silently weakened; publication is idempotent and matching current accepted commits."
+            },
+            {
+              "gates": [
+                "G01",
+                "G03"
+              ],
+              "id": "AC6",
+              "requirement": "Bootstrap migrates explicitly preserving Git history and uncertainty, and this actual FOS-000025 run records planner, implementation and independent final checking evidence."
+            },
+            {
+              "gates": [
+                "G01",
+                "G02",
+                "G03",
+                "G04"
+              ],
+              "id": "AC7",
+              "requirement": "A lean valid repository-discoverable implement-change-harness package includes usable CLI/role/state documentation and meaningful standard-library tests; docs accurately state implemented limits."
+            },
+            {
+              "gates": [
+                "G03",
+                "G05"
+              ],
+              "id": "AC8",
+              "requirement": "All mandatory local/final gates pass before one verified ready-for-review PR to origin robinwassen/Fossilize master is opened and attached, with actual SHA/base/plan evidence and no merge."
+            }
+          ],
+          "assumptions_and_policy": {
+            "allocation": "The actual tracked registry and bootstrap journal both currently reach 25. No new keys are required by this plan. The helper must reconcile durable union dynamically; never hardcode 26 as the next allocation.",
+            "artifact_branch": "harness-artifacts, local-only, orphan records-only tree; Git ref tip is the sole authoritative checkpoint.",
+            "bootstrap": "Existing artifact state runs/FOS-000025/2026-10-27-bootstrap/state.json is explicitly marked bootstrap, revision 2 in the snapshot read. It has incomplete schema fields and an abbreviated input SHA; preserve its Git history and original facts. Import/migrate under an explicit validated action, normalize SHAs via Git, retain provenance, and never fabricate old commands, evidence, times or acceptance. Bootstrap allocations have registry-location placeholders; reconcile canonical locations from the tracked registry without changing key meanings.",
+            "budget": "Preserve this run's recorded four-hour limit, three repair rounds per work unit and one replan. Record command deadlines before running commands. New runs may use those configurable defaults. Clock-based limits are checked on invocation; no watchdog/background-service guarantee. Exhaustion requires an explicit recorded user budget extension before resuming dispatch.",
+            "ci": "No mandatory hosted CI is specified for this skill-only change. Record that policy before implementation. Required local gates and final independent acceptance precede the real PR. If repository branch policy discovered later requires CI after PR creation, record PR-open/CI-pending and do not declare CI-verified completion.",
+            "destination": {
+              "base": "master",
+              "remote": "origin",
+              "repository": "robinwassen/Fossilize"
+            },
+            "publication_base_policy": "Fetch origin/master immediately before publication, compare with final accepted base, and if changed integrate through implementation and recheck. Verify clean source HEAD and remote head again before PR mutation. This verifies observed commits and cannot promise the target never changes afterward.",
+            "runtime": "Git and Python 3 standard library on the current Linux/POSIX host. Use fcntl.flock in the common Git directory. Explicitly report unsupported platforms rather than claim tested portability.",
+            "source_base": "Bootstrap input 643c490 contains the registered proposal above origin/master bbe8ae4. Preserve those authorized documentation changes. Root acceptance is against the recorded full target master SHA; do not confuse planner input SHA with target base SHA."
+          },
+          "attempt_id": "planner-1",
+          "implementation_plan": [
+            {
+              "details": [
+                "Implement one standard-library helper with a small CLI and importable functions. It manages validated state/report/artifact mechanics, not model calls, arbitrary shell execution, GitHub networking or autonomous orchestration.",
+                "Prefer explicit operations such as initialize/show/plan/dispatch/acknowledge/report/reconcile/reserve/publish-observation/import-bootstrap over accepting arbitrary replacement state. Exact names are implementation choices; document real invocations in references/state.md.",
+                "Require schema version, monotonically increasing state revision, immutable root/run/repository identity and original acceptance; separate phase, operation, status and precise next action. Include structured plans, attempts, findings, limits, evidence and publishing records from the specification.",
+                "Reports are bound to role, attempt ID, dispatch input state revision, input/candidate SHA, target base SHA and plan version. Requested/actual model and effort are separate fields. Acknowledgement may advance state revision; compare report input revision to the stored dispatch revision, not blindly to the newest revision.",
+                "An unsplit root is its own work unit and does not receive a second canonical subtask definition. Future split plans validate registered unique subtask keys, dependency existence and acyclicity; only one ready unit can dispatch at a time."
+              ],
+              "outcome": "Explicit compact state and transition contract",
+              "step": 1
+            },
+            {
+              "details": [
+                "Resolve the Git common directory from any worktree. Each command acquires a repository-wide advisory OS lock and validates expected state revision plus artifact tip before mutation. Reuse or coordinate with the bootstrap coordinator's already-held lock through a documented safe handoff; never delete a lock file to bypass its live owner.",
+                "Recommended minimal transaction: read blobs from artifact ref, validate proposed action and bounded safe artifact paths, construct new JSON/reports in a temporary Git index, write-tree, commit-tree and compare-and-swap update-ref. A failure before ref update leaves prior state authoritative; orphan objects are harmless. Do not stage source checkout files. A separate artifact worktree is an inspection view whose stale/dirty state cannot override the ref; document refresh that preserves unexpected edits.",
+                "Accept only records paths active.json, allocations.json and runs/<key>/<run>/state.json, reports/ and evidence/. Reject traversal, absolute paths, source trees, symlinks and unbounded/binary artifacts. Verify existing artifact branch structure and identity before adoption.",
+                "active.json and state update in one artifact commit. A completed run clears active in the same transaction; an unfinished/failed/awaiting-decision run retains its pointer. Starting another root/run while active is rejected or returns resume information.",
+                "Allocation scans tracked registry, durable journal and current/archived backlog definitions; distinguish canonical definition syntax from references/dependency mentions. Validate missing registrations, retired-key reuse and conflicting meanings. Reserve above the highest union key in the artifact journal first, update tracked registry second, publish subtask definition last. Interruption keeps the reservation permanently; resume is idempotent. Do not silently edit the project registry as a side effect of unrelated state reads."
+              ],
+              "outcome": "Transactional artifacts, locking and permanent allocation",
+              "step": 2
+            },
+            {
+              "details": [
+                "Persist dispatch intent before the actual tool call and worker identity immediately afterward. A crash after intent but before acknowledgement is ambiguous, not no-worker. Reconciliation uses actual collaboration.list_agents/interrupt_agent results; uncertain liveness stops awaiting_decision. A killed lock owner does not certify worker termination. Allow replacement only after a recorded definitive termination observation; reject late reports even if their candidate otherwise matches.",
+                "Only implementation edits source and committed tests. Planner owns versioned test design. Checker accepts/rejects on criterion evidence and may request replan for missing coverage; it cannot patch the candidate or weaken acceptance. Replan invalidates affected acceptance; conservative invalidation of all prior acceptance is acceptable for v1.",
+                "Verification plan gates have stable IDs, criterion mapping, required-subtask/required-final/optional classification, exact commands/cwd or concrete review method, fixtures/environment, expected assertions, suite-extension cases and runner registration. Evidence must identify actual discovered/executed tests, mapping from planned cases to implemented locations, command status/output artifacts and candidate/base/plan/attempt tuple.",
+                "Reject mandatory passed claims with missing gate evidence, no test discovery/execution, skipped/unsupported/incomplete results, missing extension mappings or unresolved findings. Schema checks establish evidence completeness; the independent checker inspects assertions and reruns tests to establish meaning. Do not claim JSON validation proves a test is non-vacuous.",
+                "A subtask check can accept only the active work unit. Subtask acceptance unlocks the next ready dependency; final checking is a new independent attempt after all units accept. Later commits, dirty/untracked source changes, altered base or plans invalidate publication acceptance.",
+                "Track initial implementation and at most three repairs per unit, one replan, deadline and per-command timeout records. Repeated identical rejection without new evidence, exhausted limits and unresolved infrastructure/liveness stop with reason and next action. Missing mandatory prerequisites remain incomplete/awaiting_decision; only optional gates may be unavailable without preventing acceptance."
+              ],
+              "outcome": "Fenced attempts, evidence gates and bounded recovery",
+              "step": 3
+            },
+            {
+              "details": [
+                "Before publishing require accepted final candidate/base/plan, all work units accepted, mandatory gates passed, clean matching HEAD and no unresolved acceptance findings. Persist intended exact destination/head/base/candidate before external mutations.",
+                "Coordinator uses actual Git and available gh/API tools: fetch base, push without force, verify remote SHA, look up all open/closed/merged PRs by exact repository/base/head, create only on an unambiguous empty lookup, then record and attach the PR URL. The helper validates observations/state sequencing; no GitHub dependency is added to Python.",
+                "An ambiguous create outcome returns lookup-required, never immediate create-again. Exactly one matching open PR is reconciled; closed/merged or multiple matches stop for a decision. Attachment failure resumes attachment without push/create duplication. Remote branch conflicts preserve candidate/source and block publishing; no reset or force push.",
+                "Complete is verified with one ready-for-review PR opened and attachment recorded, or CI-pending under a predeclared required-CI policy. Never imply merge. Publication failure retains final candidate evidence so resume does not reimplement."
+              ],
+              "outcome": "Idempotent publication decision mechanics",
+              "step": 4
+            },
+            {
+              "details": [
+                "Place the package under .agents/skills/implement-change-harness so source and instructions travel with the repository. Keep normal implicit skill discovery enabled; use correctly quoted agents/openai.yaml strings and a useful description/default prompt. A personal symlink is optional and must not replace a pre-existing user skill.",
+                "SKILL.md contains purpose, finite outcome, sole coordinator routing, mandatory fresh fork_turns=none roles, one-active-task invariant and references. roles.md has separate bounded role input/report contracts; state.md owns CLI/schema, recovery, allocation and publication details. No copied transcripts, duplicated universal advice or generic framework.",
+                "Use collaboration.spawn_agent/list_agents/interrupt_agent for real roles, not create_thread or simulated prose personas. Check model catalog and tools before dispatch; write records before and after actual tool operations. No nested delegation in v1.",
+                "Update proposal destination and current high-water wording, describe actual v1 guarantees and limitations without claiming planned tests already passed. Add exact Python unittest discovery command and scope to verification.md; CMake/CTest registration is unnecessary because this is a separate Python skill test suite and does not change product targets.",
+                "Implement the planned tests alongside the helper. Return candidate commit SHA plus case-to-test mapping and actual execution evidence; do not edit canonical artifacts, verifier reports, original acceptance or registry allocations as implementer. Coordinator migrates/imports and writes canonical state."
+              ],
+              "outcome": "Lean discoverable skill and project documentation",
+              "step": 5
+            }
+          ],
+          "input_sha": "643c490d34347289ab4a7316b3b1d14f770028a5",
+          "model_policy": {
+            "checker": {
+              "effort": "high",
+              "fork_turns": "none",
+              "requested_model": "gpt-6.1-sol"
+            },
+            "coordinator": "Inherited parent model/effort; sole canonical writer.",
+            "fallback": "Verify against actual runtime catalog per attempt. Record requested and actual model/effort. Explicitly recorded supported fallback only; otherwise capability blocker. Independent evidence matters more than different model names. No global configuration changes or nested delegation.",
+            "implementer": {
+              "effort": "medium",
+              "fork_turns": "none",
+              "requested_model": "gpt-6.1-sol"
+            },
+            "planner": {
+              "effort": "high",
+              "fork_turns": "none",
+              "requested_model": "gpt-6.1-sol"
+            }
+          },
+          "outcome": "ready_for_implementation",
+          "plan_version": 1,
+          "planner_observations": {
+            "canonical_state_modified": false,
+            "environment": {
+              "git": "2.43.0 /usr/bin/git",
+              "planner_worktree": "clean at input SHA when inspected",
+              "python": "3.12.3 /usr/bin/python3",
+              "submodules": "uninitialized; product builds excluded by scope"
+            },
+            "guidance_read": [
+              "AGENTS.md",
+              "local-docs/README.md",
+              "local-docs/project-descriptor.md",
+              "local-docs/project-pillars.md",
+              "local-docs/verification.md",
+              "local-docs/specs/basic-change-harness-plan.md",
+              "local-docs/backlog-keys.md",
+              "/home/robin/.codex/skills/.system/skill-creator/SKILL.md",
+              "/home/robin/.codex/skills/.system/skill-creator/references/openai_yaml.md"
+            ],
+            "verification_executed": "No implementation tests exist yet or were run. Read source/build inventories and existing bootstrap records only; report is a plan, not acceptance evidence."
+          },
+          "problem": "The proposed three-role change workflow has no reusable skill or deterministic recovery/state mechanics. Build a discoverable, repository-tracked v1 and use the actual planner/implementer/checker workflow for this root task.",
+          "report_type": "planner",
+          "risks": [
+            "Scope can grow into a runtime framework. Keep orchestration/external calls in the skill coordinator and Python focused on deterministic state, Git and validation.",
+            "Structured observations cannot authenticate a hostile coordinator or prove semantic test quality. Preserve independent real checker execution and disclose procedural trust.",
+            "Existing bootstrap lock is live and schema incomplete; migration/handoff must preserve owner liveness and original records, never bypass locking or invent evidence.",
+            "Final accepted base is an observed master commit; target can move later. Refresh before publication and rerun after a detected change without promising future immutability.",
+            "Unit tests need real Git mutations and isolated temporary repositories; fake PR effects alone would miss artifact/index/worktree safety failures.",
+            "PyYAML may be unavailable to the skill validator's default interpreter. Resolve with the bundled validation environment; keep runtime helper/test suite standard-library only.",
+            "Remote publication/account/network may block the final external outcome. Retain verified candidate and exact publishing next action rather than falsely declare complete."
+          ],
+          "scope": {
+            "files": [
+              ".agents/skills/implement-change-harness/SKILL.md",
+              ".agents/skills/implement-change-harness/agents/openai.yaml",
+              ".agents/skills/implement-change-harness/references/roles.md",
+              ".agents/skills/implement-change-harness/references/state.md",
+              ".agents/skills/implement-change-harness/scripts/harness_state.py",
+              ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+              "local-docs/specs/basic-change-harness-plan.md",
+              "local-docs/verification.md"
+            ],
+            "non_goals": [
+              "No Fossilize C++/Vulkan changes, CMake integration or GPU/Steam deployment.",
+              "No scheduler, daemon, background wakeup, database, external API runtime, generic agent framework or automatic merge.",
+              "No global Codex configuration changes, automatic stronger-model escalation, remote artifact publication or cross-machine locking.",
+              "No hostile-agent security boundary: worktrees and report identity are procedural isolation under a sole cooperative coordinator.",
+              "No extra production root task or test PR solely to demonstrate the harness. This actual keyed bootstrap run is the real role exercise; publication unit tests use local fakes."
+            ],
+            "rationale": "The skill contracts, reducer, artifact transactions and recovery tests form one coherent deliverable. Splitting source and its tests would add allocation and gating overhead without an independently useful outcome. Exercise future sequential-subtask support in temporary-repository tests.",
+            "root_remains_unsplit": true,
+            "subtasks": []
+          },
+          "spec_adjustments": [
+            "Change personal-only proposed destination to tracked .agents/skills/implement-change-harness; optional local symlink only when helpful. Update stale ledger-at-proposal wording to current registered25 while keeping dynamic allocation mandatory.",
+            "Document Git plumbing transactions as authoritative-ref mechanics; separate artifact worktree remains a nonauthoritative inspectable view and must not become a second state authority.",
+            "Document POSIX local locking support and explicit unsupported-platform status instead of implying a portable lock implementation.",
+            "Document explicit bootstrap import and lock-owner handoff; current legacy bootstrap schema_version1 is incomplete and must not be silently accepted as fully verified helper schema.",
+            "Clarify unsplit root work-unit representation, dispatch input revision binding across acknowledgement updates, evidence-completeness checks versus semantic checker judgment, and the predeclared local-only CI policy. These clarify v1 without relaxing original acceptance."
+          ],
+          "task_key": "FOS-000025",
+          "verification_plan": {
+            "excluded_categories": [
+              "CMake/CTest/C++ system, sanitizer, Vulkan null-device/driver/cache/layer/Steam, game, architecture and benchmark runs: no affected product source/build behavior. Submodules are uninitialized at planner input; do not initialize them or claim product tests for this Python/doc-only change.",
+              "Live GitHub API failure injection: use fake PR effect transport plus real local Git for deterministic publication tests. Real final publication verifies the normal authorized path only.",
+              "No historical product defect reproducer applies to a new harness. T11 supplies a controlled original-defect scenario proving failure evidence blocks acceptance."
+            ],
+            "gates": [
+              {
+                "classification": "required_subtask_and_final",
+                "command": "python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v",
+                "criteria": [
+                  "AC1",
+                  "AC2",
+                  "AC3",
+                  "AC4",
+                  "AC5",
+                  "AC6"
+                ],
+                "cwd": "exact candidate implementation worktree for implementer; fresh detached exact candidate worktree for checker",
+                "evidence": "Full command/cwd/revision/base/plan tuple, test IDs and counts, output/status, per-T mapping to implementation test file/method, relevant temporary-fixture observations. Keep small sanitized logs on artifact branch.",
+                "expected": "Exit0; nonzero discovered/executed tests; every T01-T17 mapped to actual assertion-bearing methods and passes, with no skipped mandatory cases. Checker reruns independently and inspects tests for fake-only/vacuous claims.",
+                "id": "G01",
+                "prerequisites": "Python3, Git, POSIX advisory locking; temporary directory filesystem. No third-party Python modules."
+              },
+              {
+                "classification": "required_subtask_and_final",
+                "command": "python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+                "criteria": [
+                  "AC7"
+                ],
+                "cwd": "exact candidate worktree",
+                "evidence": "Exact interpreter/command/status/output plus metadata/reference review. If validator cannot run, mandatory gate stays incomplete until environment is resolved.",
+                "expected": "Exit0 and Skill is valid; inspect openai.yaml consistency, reference links and CLI examples. Validate discovery from repository skill directory or explicit invocation; no global config mutation.",
+                "id": "G02",
+                "prerequisites": "Skill-creator validation environment including PyYAML. If /usr/bin/python3 lacks PyYAML, use the provided bundled interpreter with it; this is a validation-tool dependency only, not a runtime helper dependency."
+              },
+              {
+                "classification": "required_final",
+                "command": "Review original keyed requirement and project guidance first, then full git diff <recorded-target-base>...<candidate>, skill contracts/helper/tests, planner/implementer reports and actual bootstrap artifact history.",
+                "criteria": [
+                  "AC1",
+                  "AC6",
+                  "AC7",
+                  "AC8"
+                ],
+                "cwd": "fresh detached exact candidate checker worktree; read canonical artifact ref without mutation",
+                "evidence": "Criterion-level accepted/changes_required/unable_to_verify report tied to candidate/base/plan and attempt; concrete findings/file locations, mapped required gates and actual rerun results. This gate validates real role behavior that deterministic helper unit tests cannot prove.",
+                "expected": "Actual fresh planner and implementer and independent checker attempts are durable, model choices recorded, sole coordinator state writes, plans precede implementation, tests map to accepted requirements, final check is a separate attempt, no weakened tests/scope creep. Checker cannot self-approve code changes or replace failed semantic checks with schema claims.",
+                "id": "G03"
+              },
+              {
+                "classification": "required_subtask_and_final",
+                "command": "git diff --check <recorded-target-base>...<candidate> ; separately inspect git diff --name-status <recorded-target-base>...<candidate> and git ls-tree -r --name-only harness-artifacts",
+                "criteria": [
+                  "AC2",
+                  "AC7"
+                ],
+                "cwd": "candidate worktree and canonical artifact ref",
+                "evidence": "Separate command/status outputs, exact approved path inventory and artifact-path review. The semicolon here denotes separately recorded commands, not a recommended chained shell invocation.",
+                "expected": "Whitespace check succeeds; source changes limited to authorized skill/project documentation; artifacts branch contains records only and no source tree; candidate contains no runs, logs, private machine config, build output or changes to ignore guidance. Verify original user's checkout unchanged.",
+                "id": "G04"
+              },
+              {
+                "classification": "required_final_publication",
+                "command": "After final acceptance: fetch origin master; compare accepted base; verify clean HEAD and no unresolved findings; persist publication intent; git push origin <implementation-branch>; git ls-remote origin refs/heads/<implementation-branch>; exact all-state PR lookup; create only if absent; record URL; attach_artifact.",
+                "criteria": [
+                  "AC8"
+                ],
+                "cwd": "coordinator implementation worktree",
+                "evidence": "Recorded destination, observed base/head SHAs, push/lookup/create outcomes, PR identity/URL and attach result. This is the real task PR, never a test PR. A failed external operation retains verified candidate and incomplete publishing status.",
+                "expected": "One ready-for-review PR to robinwassen/Fossilize master, matching verified remote SHA; no merge/force push/artifact push. PR title/body explain problem, behavior, tests/limits and link FOS-000025 canonical definition. Retry respects durable intent and does not duplicate PR.",
+                "id": "G05"
+              }
+            ],
+            "optional_checks": [
+              "A supported second Python interpreter may run the same suite; report actual versions, do not claim cross-platform coverage from Linux.",
+              "Optional personal skill symlink/discovery check only if useful and no existing skill is overwritten."
+            ],
+            "suite_extension": {
+              "cases": [
+                {
+                  "assertions": "Initialize orphan records-only ref; plan, implement and subtask/final check with real evidence; publication transitions; state revision increases; persisted blobs and active pointer agree; original source worktree/index/HEAD are byte-for-byte/status unchanged.",
+                  "behavior": "Happy-path state and actual Git checkpoint",
+                  "id": "T01"
+                },
+                {
+                  "assertions": "Inject write/tree/commit/ref-update failures; ref and loaded revision never advance on failure; staged/uncommitted artifact view is ignored; restart reads old committed state; concurrent expected-tip CAS loser cannot overwrite winner.",
+                  "behavior": "Artifact transaction failure boundaries",
+                  "id": "T02"
+                },
+                {
+                  "assertions": "Reject malformed schema, invalid identity, unsafe path/traversal/symlink/source blobs, invalid existing artifact branch, unknown transition and wrong expected revision without changing refs. Assert all actual artifact paths are records-only and implementation diff has no run records.",
+                  "behavior": "Malformed or wrong state and artifact isolation",
+                  "id": "T03"
+                },
+                {
+                  "assertions": "Two processes/worktrees contend on the same common-dir lock using barriers/events rather than timing races. Reject distinct active root/run initialization; same identity resumes. Incomplete/failed/blocked runs retain pointer; completion clears it atomically.",
+                  "behavior": "Repository-wide serialization and one active run",
+                  "id": "T04"
+                },
+                {
+                  "assertions": "Union registry/journal/backlog maximum, including retired and artifact-only reserved keys, determines new allocation. Reserve, crash before registry, resume and prove next key is strictly higher. Reject duplicate canonical definitions, key meaning conflict, absent registrations, retired reuse, dangling dependencies and cycles; references alone are not duplicate definitions. Fixture with max25 allocates26 without hardcoded production counter.",
+                  "behavior": "Permanent key authority and interrupted reservations",
+                  "id": "T05"
+                },
+                {
+                  "assertions": "Planner input detached at input commit; checker detached at exact candidate. Original user's dirty/untracked files survive initialization/recovery; dirty candidate prevents final publication; helper never resets/cleans another worktree. Later source commit invalidates previous final acceptance.",
+                  "behavior": "Worktree source/candidate isolation",
+                  "id": "T06"
+                },
+                {
+                  "assertions": "Persist dispatch intent, simulate worker launch then loss of worker-ID checkpoint; resume classifies ambiguous and refuses replacement. Live/unknown worker observations do not permit dispatch. Only confirmed termination reconciliation permits a new attempt; old report remains rejected.",
+                  "behavior": "Dispatch-before-acknowledgement crash",
+                  "id": "T07"
+                },
+                {
+                  "assertions": "Individually mutate attempt ID, worker ID, dispatch input revision, input/candidate SHA, base SHA, plan version and role; report/check acceptance is rejected without advancing state. Correct report remains valid after acknowledgement revision increases; a late previous-attempt report does not.",
+                  "behavior": "Stale attempt identity tuple",
+                  "id": "T08"
+                },
+                {
+                  "assertions": "Reject unsupported requested model/effort without recorded supported fallback; persist actual/requested choices. Fake clock/time and attempt counters hit each repair/replan/deadline limit deterministically. Exhaustion/repeated unchanged rejection produces non-success precise next action; only explicit budget-extension record permits resume.",
+                  "behavior": "Model and budget policy",
+                  "id": "T09"
+                },
+                {
+                  "assertions": "Reject acceptance with omitted gate, failed/unsupported/incomplete/not-run gate, zero discovered/executed tests, skipped planned test, missing planned-case-to-location mapping, missing result/log identity or unresolved finding. A passed build with no assertion tests cannot accept. Complete positive evidence accepts; unavailable optional diagnostic is retained separately.",
+                  "behavior": "Mandatory gate evidence completeness",
+                  "id": "T10"
+                },
+                {
+                  "assertions": "Run a tiny real assertion-bearing reproducer that fails for a deliberately faulty candidate and passes for fixed behavior. Preserve nonzero/zero status and discovered/executed case IDs. A fake implementer success cannot override the independent failing run. A weakened test is identified by a checker evidence/inspection finding and acceptance stays blocked; document that helper cannot infer semantic assertion quality from a log.",
+                  "behavior": "Concrete original-defect and vacuous-test counterexamples",
+                  "id": "T11"
+                },
+                {
+                  "assertions": "Missing implementation of a planned test routes to implementation; missing planned coverage routes to planner. Versioned replan invalidates previous relevant acceptance; implementer cannot alter original requirements or checker verdict; only fresh checker at new tuple may accept.",
+                  "behavior": "Replanning versus implementation repairs",
+                  "id": "T12"
+                },
+                {
+                  "assertions": "Two registered synthetic subtasks with dependency cannot run concurrently or advance before mandatory subtask acceptance. Later subtask invalidates/breaks an earlier assertion; a separate final check fails and blocks publishing despite two prior subtask acceptances. Unsplit root uses no duplicate canonical definition.",
+                  "behavior": "Sequential split task and final integration",
+                  "id": "T13"
+                },
+                {
+                  "assertions": "Synthetic required GPU/driver gate marked unavailable remains unable_to_verify/incomplete and cannot be waived by implementer/checker; record prerequisite and next action. This tests policy, and makes no claim that a GPU test ran.",
+                  "behavior": "Mandatory environment absence",
+                  "id": "T14"
+                },
+                {
+                  "assertions": "Local bare Git remote verifies push/current remote SHA. Persisted intent precedes fake PR mutation. Wrong destination/head/base, changed target master, changed candidate and dirty source all block creation or require renewed final check. Push/remote conflict retains source and never force pushes.",
+                  "behavior": "Publication ordering and moving commits",
+                  "id": "T15"
+                },
+                {
+                  "assertions": "Fake transport creates exactly once then loses response; restart performs exact all-state lookup and reconciles same PR. No duplicate create after ambiguous lookup, closed/merged PR, multiple matches or wrong repo/base/head. Attachment failure retries only attach. State cannot become complete without final acceptance and recorded PR outcome.",
+                  "behavior": "Idempotent PR recovery",
+                  "id": "T16"
+                },
+                {
+                  "assertions": "Use a fixture matching current bootstrap state/active/journal. Import normalizes valid abbreviated SHA, retains prior commits/facts and original task, adds only known schema fields and provenance, does not fabricate acceptance/execution logs. Malformed/conflicting bootstrap refuses import without advancing tip.",
+                  "behavior": "Bootstrap import preserves history and uncertainty",
+                  "id": "T17"
+                }
+              ],
+              "existing_coverage": "No existing change-harness code or Python suite exists at input 643c490. Existing CTest and observability probes exercise Fossilize C++, not Git/state workflow behavior; they cannot establish these requirements.",
+              "fixtures": "Temporary directories containing real Git repositories, source/planner/checker worktrees, orphan artifact refs, local bare origin, small canonical backlog registries including retired/reserved keys, real trivial assertion-bearing test commands, deterministic injected failures/clocks, fake agent observations and a fake PR transport that counts side effects. No network, live GPU, user checkout changes or test PRs.",
+              "runner": "Python unittest discovery with test_*.py and real assert-bearing test methods; no CMake changes.",
+              "test_file": ".agents/skills/implement-change-harness/scripts/test_harness_state.py"
+            }
+          }
+        },
+        "publishing": {
+          "pr_url": null
+        },
+        "repository": {
+          "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+          "branch": "codex/FOS-000025-implement-change-harness",
+          "implementation_worktree": "/home/robin/dev/fossilize-harness-FOS-000025",
+          "input_sha": "643c490",
+          "path": "/home/robin/dev/fossilize",
+          "target_branch": "master",
+          "target_remote": "origin",
+          "target_repository": "robinwassen/Fossilize"
+        },
+        "revision": 5,
+        "run_id": "2026-10-27-bootstrap",
+        "schema_version": 1,
+        "status": "ready",
+        "subtasks": [],
+        "task_key": "FOS-000025",
+        "task_location": "local-docs/specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill",
+        "verification": []
+      },
+      "started_at": 1793131642,
+      "uncertainty": "legacy attempts are facts only; reconcile before redispatch"
     },
     {
-      "attempt_id": "implementer-1",
-      "role": "implementer",
-      "worker_id": "/root/fos25_implementer",
-      "input_sha": "643c490d34347289ab4a7316b3b1d14f770028a5",
-      "model": "gpt-6.1-sol",
-      "effort": "high",
-      "status": "complete",
-      "effort_reason": "Transactional state and recovery invariants require careful failure handling",
-      "report": "reports/implementer-1.json",
-      "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748"
+      "acceptance": "unverified; fresh independent checks required",
+      "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+      "legacy_implementation_report": "runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json"
     }
   ],
-  "verification": [],
-  "findings": [],
-  "limits": {
-    "repair_rounds_per_subtask": 3,
-    "replans": 1,
-    "run_timeout_hours": 4
-  },
   "publishing": {
-    "pr_url": null
+    "ci_policy": "local",
+    "stage": "none"
   },
-  "bootstrap": {
-    "reason": "Helper does not exist yet; coordinator records equivalent durable checkpoints using Git and JSON",
-    "lock_pid": 183337,
-    "limitations": "Procedural worker fencing; unknown surviving worker requires intervention"
-  }
+  "repository": {
+    "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+    "branch": "codex/FOS-000025-implement-change-harness",
+    "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+    "common_dir": "/home/robin/dev/fossilize/.git",
+    "implementation_worktree": "/home/robin/dev/fossilize-harness-FOS-000025",
+    "input_sha": "643c490d34347289ab4a7316b3b1d14f770028a5",
+    "path": "/home/robin/dev/fossilize",
+    "target_branch": "master",
+    "target_remote": "origin",
+    "target_repository": "robinwassen/Fossilize"
+  },
+  "revision": 6,
+  "run_id": "2026-10-27-bootstrap",
+  "schema_version": 2,
+  "status": "awaiting_decision",
+  "task_key": "FOS-000025",
+  "task_location": "local-docs/specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill",
+  "units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "key": "FOS-000025",
+      "status": "ready"
+    }
+  ],
+  "verification": []
 }
