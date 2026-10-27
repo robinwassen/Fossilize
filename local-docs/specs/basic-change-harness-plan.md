@@ -1,10 +1,11 @@
 # Basic change harness: proposed skill design
 
-Date: 2026-10-27. Status: planning only; the skill and harness do not exist yet.
+Date: 2026-10-27. Status: v1 implementation candidate under FOS-000025;
+independent acceptance and publication remain separate gates.
 
 ## Outcome and boundaries
 
-Create a discoverable personal skill named `implement-change-harness`. It runs one
+Create a discoverable repository skill named `implement-change-harness`. It runs one
 identified root task at a time in this repository, with sequential, independently
 verifiable subtasks when necessary. It produces one verified implementation branch
 and one pull request to `master` for the whole task. It does not merge the PR,
@@ -14,8 +15,18 @@ The parent agent coordinates. Planning, implementation and adversarial checking
 each run in a fresh subagent. The coordinator manages durable state and publishing;
 it does not replace a failed checker with its own judgment.
 
-This document is tracked project guidance, not a backlog definition. No backlog keys
-are allocated by writing this proposal. AGENTS.md and local-docs are shared in Git.
+## FOS-000025 — Implement the change harness skill
+
+Canonical task definition. Status: in progress. Implement the workflow specified
+below as a tracked, discoverable skill with a standard-library state/Git helper,
+meaningful automated tests and independently checked evidence. Preserve the
+planner/implementer/checker responsibilities and per-subtask verification gates.
+Acceptance requires tested state transitions, recovery and publication safeguards,
+a validated skill package, and one PR to robinwassen/Fossilize master. Use this
+three-role method to implement the harness itself; record the bootstrap run on
+harness-artifacts before dispatching agents. Product C++ changes are out of scope.
+
+AGENTS.md and local-docs are shared in Git.
 
 ## Lessons applied from the requested lecture
 
@@ -97,7 +108,7 @@ the reservation durably first, then update the tracked registry, then publish th
 subtask definition. Interrupted reservations remain issued forever. The journal
 contains key/location/allocation metadata, not copies of the project guidance.
 Conflicting meanings for one key require reconciliation rather than renumbering.
-The ledger at the time of this proposal ends at FOS-000024; re-read it at allocation time rather
+The registered ledger currently reaches FOS-000025; re-read it at allocation time rather
 than encoding the next number in the skill.
 
 ## Agent contracts and bounded context
@@ -347,7 +358,9 @@ links into the public PR. Supply sufficient public explanation and verification.
 
 ## Skill package and implementation sequence
 
-Proposed destination: ~/.codex/skills/implement-change-harness/.
+Tracked destination: `.agents/skills/implement-change-harness/`. This repository
+skill travels with agent worktrees. An optional personal symlink may expose the
+same package elsewhere, but must not replace an existing user skill.
 
 ```text
 SKILL.md                       # purpose, invariants, coordinator routing
@@ -395,15 +408,55 @@ Do not open a real PR merely to test the skill's publication code.
 - Repeated rejection, exhausted budgets and unclear worker liveness stop with a
   precise recoverable state rather than looping or declaring success.
 
-These are proposed tests, not tests already performed. Test helper mechanics with
-temporary repositories and mocked external effects, plus one end-to-end exercise
-of role behavior when the skill exists. Syntax validation alone is insufficient.
+The v1 candidate implements these mechanics in a standard-library helper and
+assertion-bearing tests using temporary Git repositories and a local bare remote.
+The exact planned-case mapping and executed results belong to the run's reports;
+the test descriptions here do not establish that a particular candidate passed.
+The actual fresh-role run and independent final check are separate evidence from
+unit tests. Syntax validation alone is insufficient.
 
 An independent design-review subagent identified the surviving-worker and ambiguous
 dispatch windows, the allocation-ledger durability gap, stale approvals after replans,
 the moving-base publication window, and the need for a single authoritative Git
 checkpoint. The proposal incorporates those corrections. The review is a design
-exercise; none of these recovery guarantees have yet been implemented or tested.
+exercise. The implementation candidate addresses these cases; its independent
+checker must establish which guarantees the observed evidence supports.
+
+## V1 mechanics and explicit limits
+
+The [tracked skill](../../.agents/skills/implement-change-harness/SKILL.md) documents
+the actual CLI, role contracts and schema. The helper has finite explicit actions;
+it does not call agents, run arbitrary shell commands or access GitHub. The
+coordinator performs those operations and records actual observations.
+
+Git plumbing builds records in a temporary index, creates a commit and advances
+`harness-artifacts` with an expected-old-tip compare-and-swap. The committed ref is
+the authority. An artifact worktree remains an inspectable, possibly stale view;
+its index and edits cannot override a committed checkpoint. Never discard its
+unexpected edits merely to refresh the view. Locking uses POSIX advisory `flock`
+in the common Git directory and covers cooperative writers on this machine only.
+Other platforms and distributed key allocation are unsupported by this v1.
+
+An unsplit root is its own work unit without another canonical definition. Report
+identity binds to the dispatch input revision, even after worker acknowledgement
+increments state. Structured evidence validation checks completeness and identity;
+semantic assertion quality and actual role conduct still require an independent
+checker. Deadline checks occur on helper invocation, with the coordinator enforcing
+recorded command timeouts; there is no background watchdog.
+
+The original bootstrap schema is deliberately incomplete. Explicit import retains
+Git history, original requirements, legacy worker/report facts and uncertainty,
+normalizes known commit identities and starts the budget at the first state commit.
+A known completed implementer's candidate may be imported only as unverified.
+Import requires reconciliation of every known legacy worker before a replacement
+or fresh checker. A live bootstrap lock owner must release the lock before helper
+handoff; deleting the lock file is not a handoff.
+
+For this skill-only implementation, the predeclared policy requires the planned
+local gates and independent final acceptance before the real PR. No hosted CI is
+claimed unless actually observed. Required CI that can run only after a PR exists
+has a distinct pending state. Local-only artifact retention cannot recover another
+machine, and no observed-base check guarantees that master will never move later.
 
 ## Policy decisions and current limitations
 

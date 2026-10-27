@@ -12,6 +12,28 @@ Inventory checked against first-party source and the local Steam installation on
 - Report passed, failed, unsupported, skipped/unavailable and incomplete separately. Zero exit/progress 100% currently does not establish complete replay or persistence; assert relevant output and coverage facts. Future guarantees in the keyed backlog are not current implementation guarantees.
 - At this inventory check, `g++`, `vulkaninfo` and Steam were present; CMake/CTest/Ninja were not on PATH. Earlier direct-build probes and `fossilize-test` passed their recorded executions, not a full current CMake/CTest matrix. Documented commands below are procedures, not claims they have all been run here.
 
+## Change-harness skill checks
+
+The repository skill has a separate standard-library Python suite; CTest does not
+discover it. From the exact implementation/checker candidate worktree, use:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v
+python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness
+```
+
+The validator path is this host's installed skill-creator tool; resolve its path
+on another host. PyYAML belongs to that validation tool, not the helper runtime.
+The suite requires Python 3, Git, POSIX locking and temporary storage. It exercises
+real disposable repositories/worktrees, ref transactions, local bare-remote effects
+and assertion-bearing test commands, with deterministic worker/PR observations.
+It never mutates the real artifact ref, launches actual agents or creates test PRs.
+Record nonzero discovered/executed IDs, statuses and the T01–T17 method mapping;
+passing this suite does not prove actual role conduct or live GitHub behavior.
+Independent checker review and the real publication gates remain separate.
+Disable bytecode as shown so verification does not dirty the candidate worktree.
+No product C++/Vulkan build, driver or Steam claim follows from this Python suite.
+
 ## Canonical builds and CTest
 
 From the repository root:
