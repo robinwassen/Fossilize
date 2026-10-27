@@ -484,8 +484,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
-  "operation": "publish",
+  "next_action": "PR opened and attached; no merge",
+  "operation": "complete",
   "original": [
     {
       "gates": [
@@ -552,7 +552,7 @@
       "requirement": "All mandatory local/final gates pass before one verified ready-for-review PR to origin robinwassen/Fossilize master is opened and attached, with actual SHA/base/plan evidence and no merge."
     }
   ],
-  "phase": "publishing",
+  "phase": "complete",
   "plan": {
     "cases": [
       {
@@ -1344,6 +1344,12 @@
     }
   ],
   "publishing": {
+    "attachment": {
+      "event": "attachment",
+      "outcome": "Codex attach_artifact succeeded for current chat",
+      "success": true,
+      "url": "https://github.com/robinwassen/Fossilize/pull/2"
+    },
     "ci_policy": "local",
     "creation_intent": {
       "at": 1793134992.344558,
@@ -1386,6 +1392,12 @@
           }
         ],
         "unambiguous": true
+      },
+      {
+        "event": "attachment",
+        "outcome": "Codex attach_artifact succeeded for current chat",
+        "success": true,
+        "url": "https://github.com/robinwassen/Fossilize/pull/2"
       }
     ],
     "pr": {
@@ -1397,7 +1409,7 @@
       "url": "https://github.com/robinwassen/Fossilize/pull/2"
     },
     "remote_sha": "e01fa9d68ade5384f214ec46a6ddc352b22a03de",
-    "stage": "attach"
+    "stage": "done"
   },
   "repository": {
     "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
@@ -1411,10 +1423,10 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 62,
+  "revision": 63,
   "run_id": "2026-10-27-bootstrap",
   "schema_version": 2,
-  "status": "ready",
+  "status": "complete",
   "task_key": "FOS-000025",
   "task_location": "local-docs/specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill",
   "units": [
