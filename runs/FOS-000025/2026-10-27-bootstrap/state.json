@@ -16,8 +16,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "reconcile every legacy worker; import its report as a fact, then dispatch fresh fenced attempts",
-  "operation": "bootstrap-reconciliation",
+  "next_action": "Dispatch fresh checker at badc751 for root subtask gate",
+  "operation": "subtask",
   "original": [
     {
       "gates": [
@@ -863,6 +863,16 @@
       "acceptance": "unverified; fresh independent checks required",
       "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
       "legacy_implementation_report": "runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json"
+    },
+    {
+      "reconciliation": {
+        "next_action": "Dispatch fresh checker at badc751 for root subtask gate",
+        "observation": "collaboration.list_agents confirms /root/fos25_planner and /root/fos25_implementer completed, with final reports; bootstrap lock-holder process exited normally on coordinator handoff",
+        "terminated_workers": [
+          "/root/fos25_planner",
+          "/root/fos25_implementer"
+        ]
+      }
     }
   ],
   "publishing": {
@@ -881,10 +891,10 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 6,
+  "revision": 7,
   "run_id": "2026-10-27-bootstrap",
   "schema_version": 2,
-  "status": "awaiting_decision",
+  "status": "ready",
   "task_key": "FOS-000025",
   "task_location": "local-docs/specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill",
   "units": [
