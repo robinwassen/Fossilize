@@ -425,7 +425,7 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -818,6 +818,15 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793221124.7232716,
+      "body_digest": "ce9da55ee420104decd6b7595c58ae1cf7d1bbbca27518509ef9cd18e53fb78a",
+      "event": "create-dispatched",
+      "records": {
+        "runs/issue-10/issue10-20261028/evidence/pr-description.txt": "## Problem\n\nPipeline replay and Vulkan device setup diagnostics discard raw failure results. Some compute and ray-tracing capture messages name the wrong pipeline type and speculate about unsupported pNext chains. Cache export errors lose the originating OS error during cleanup.\n\n## What changes\n\n- Preserve numeric VkResult, operation/phase and available pipeline hash or device context in replay/setup failures, including compile-required paths.\n- Correct pipeline capture resource names across normal, QA, paranoid, eager and binary modes, and report unknown recording causes honestly.\n- Snapshot errno at cache open/write/close failures before cleanup can overwrite it; distinguish pipeline and validation caches.\n- Register GPU-independent tests through production replay, device and exported layer call paths, with successful controls and compatibility fixtures.\n\n## Why this matters\n\nFailure reports retain the evidence needed to distinguish controlled API errors, capture rejection and cache export failure without treating them as driver crashes or unsupported features.\n\n## Why this approach\n\nThis is the initial diagnostic-context slice requested in #10. It retains public interfaces, Vulkan return/handle behavior and existing CLI exit policy while improving existing human diagnostics. It introduces no common result schema, process-controller redesign or persistence guarantee.\n\n## Verification and limits\n\nCandidate: `a24e8afd8b584a3ad95d049885c3445ba3f1fa9c`; base: `b42b22c2e73bcfed731ee17752c244e2be7e737f`.\n\nLinux GCC 13.3, full CLI/layer builds, Debug and Release with exceptions OFF and ON: all 54 registered CTests passed in each configuration. Independent checking reruns the applicable gates. Baseline-header callers and an unchanged layer consumer exercise source compatibility and the limited Vulkan layer C ABI. Compiled defect controls check that missing raw results, overwritten errno, incorrect pipeline names and unsupported-feature speculation trigger assertion failures; the clean candidate passes.\n\nNative Windows verification is explicitly deferred and remains unverified under the user's authorization for this run. Linux CPU mocks do not prove native Windows behavior, real driver compilation, Steam integration, durable cache output or a general C++ ABI guarantee. Human diagnostic wording intentionally changes.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/10\n\nShared requirements: https://github.com/robinwassen/Fossilize/issues/8 (remains open).\n"
+      },
+      "title": "Preserve precise Vulkan and OS failure diagnostics"
+    },
     "intent": {
       "base_sha": "b42b22c2e73bcfed731ee17752c244e2be7e737f",
       "branch": "codex/issue-10-diagnostic-context",
@@ -838,10 +847,18 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "body_digest": "ce9da55ee420104decd6b7595c58ae1cf7d1bbbca27518509ef9cd18e53fb78a",
+        "event": "create-dispatched",
+        "records": {
+          "runs/issue-10/issue10-20261028/evidence/pr-description.txt": "## Problem\n\nPipeline replay and Vulkan device setup diagnostics discard raw failure results. Some compute and ray-tracing capture messages name the wrong pipeline type and speculate about unsupported pNext chains. Cache export errors lose the originating OS error during cleanup.\n\n## What changes\n\n- Preserve numeric VkResult, operation/phase and available pipeline hash or device context in replay/setup failures, including compile-required paths.\n- Correct pipeline capture resource names across normal, QA, paranoid, eager and binary modes, and report unknown recording causes honestly.\n- Snapshot errno at cache open/write/close failures before cleanup can overwrite it; distinguish pipeline and validation caches.\n- Register GPU-independent tests through production replay, device and exported layer call paths, with successful controls and compatibility fixtures.\n\n## Why this matters\n\nFailure reports retain the evidence needed to distinguish controlled API errors, capture rejection and cache export failure without treating them as driver crashes or unsupported features.\n\n## Why this approach\n\nThis is the initial diagnostic-context slice requested in #10. It retains public interfaces, Vulkan return/handle behavior and existing CLI exit policy while improving existing human diagnostics. It introduces no common result schema, process-controller redesign or persistence guarantee.\n\n## Verification and limits\n\nCandidate: `a24e8afd8b584a3ad95d049885c3445ba3f1fa9c`; base: `b42b22c2e73bcfed731ee17752c244e2be7e737f`.\n\nLinux GCC 13.3, full CLI/layer builds, Debug and Release with exceptions OFF and ON: all 54 registered CTests passed in each configuration. Independent checking reruns the applicable gates. Baseline-header callers and an unchanged layer consumer exercise source compatibility and the limited Vulkan layer C ABI. Compiled defect controls check that missing raw results, overwritten errno, incorrect pipeline names and unsupported-feature speculation trigger assertion failures; the clean candidate passes.\n\nNative Windows verification is explicitly deferred and remains unverified under the user's authorization for this run. Linux CPU mocks do not prove native Windows behavior, real driver compilation, Steam integration, durable cache output or a general C++ ABI guarantee. Human diagnostic wording intentionally changes.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/10\n\nShared requirements: https://github.com/robinwassen/Fossilize/issues/8 (remains open).\n"
+        },
+        "title": "Preserve precise Vulkan and OS failure diagnostics"
       }
     ],
     "remote_sha": "a24e8afd8b584a3ad95d049885c3445ba3f1fa9c",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "b42b22c2e73bcfed731ee17752c244e2be7e737f",
@@ -854,7 +871,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 54,
+  "revision": 55,
   "root_issue": {
     "id": 6079794262,
     "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
