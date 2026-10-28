@@ -425,7 +425,7 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "fetch target base, verify clean tuple, persist publication intent",
+  "next_action": "push implementation without force, then record remote head",
   "operation": "publish",
   "original": [
     {
@@ -818,7 +818,17 @@
   ],
   "publishing": {
     "ci_policy": "local",
-    "stage": "none"
+    "intent": {
+      "base_sha": "b42b22c2e73bcfed731ee17752c244e2be7e737f",
+      "branch": "codex/issue-10-diagnostic-context",
+      "candidate_sha": "a24e8afd8b584a3ad95d049885c3445ba3f1fa9c",
+      "plan_version": 2,
+      "target_branch": "master",
+      "target_remote": "origin",
+      "target_repository": "robinwassen/Fossilize",
+      "verification": "Separate fresh unit and final checker accepted; Linux four configurations54/54 each; compatibility/sensitivity and exact live readiness passed; native Windows explicitly optional deferred/unverified by human."
+    },
+    "stage": "push"
   },
   "repository": {
     "base_sha": "b42b22c2e73bcfed731ee17752c244e2be7e737f",
@@ -831,7 +841,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 51,
+  "revision": 52,
   "root_issue": {
     "id": 6079794262,
     "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
