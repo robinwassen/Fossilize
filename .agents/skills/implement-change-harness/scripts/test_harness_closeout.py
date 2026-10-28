@@ -1,6 +1,9 @@
 """Real source/Git lifecycle regressions for canonical completion (C01–C08)."""
 import copy
 import json
+import os
+import subprocess
+import sys
 import unittest
 from pathlib import Path
 from harness_state import Harness, Invalid, Store, encoded, git
@@ -68,6 +71,20 @@ class CloseoutTests(unittest.TestCase):
 
     def test_C02_split_canonical_children_and_registry_preserved(self):
         plan = self.split_plan()
+        # Canonical source carries real obligations, not just heading/status stubs.
+        for unit in plan["subtasks"]:
+            path = self.source / "local-docs" / (unit["title"] + ".md")
+            dependency = ", ".join(unit["dependencies"]) or "None"
+            path.write_text(path.read_text() + "\n**Depends on:** " + dependency + "\n\n"
+                            + "### Original requirement\n" + unit["definition"] + "\n\n"
+                            + "### Acceptance criteria\n"
+                            + ("- AC1: value() returns exactly 1.\n" if unit["title"] == "First"
+                               else "- AC1: second_value() returns exactly 2 after First accepts.\n"))
+        git(self.source, "add", ".")
+        git(self.source, "commit", "-m", "canonical subtask criteria and dependencies")
+        canonical = {path.name: path.read_text() for path in (self.source / "local-docs").glob("*.md")}
+        self.assertIn("**Depends on:** " + plan["subtasks"][0]["key"], canonical["Second.md"])
+        self.assertIn("AC1: value() returns exactly 1.", canonical["First.md"])
         self.launch("planner")
         self.act("report", dict(self.report(), plan=plan))
         registry = (self.source / "local-docs/backlog-keys.md").read_bytes()
@@ -79,11 +96,27 @@ class CloseoutTests(unittest.TestCase):
         self.assertEqual(self.state["units"][1]["status"], "ready")
         self.unchanged_rejection("closeout-intent", {"targets": self.targets()})
         self.assertNotIn("Done", (self.source / "local-docs/task.md").read_text())
-        (self.source / "second.py").write_text("def second_value():\n    return 2\n")
+        (self.source / "second.py").write_text("def second_value():\n    return 3\n")
         (self.source / "test_second.py").write_text("import unittest\nfrom second import second_value\nclass Second(unittest.TestCase):\n    def test_second(self):\n        self.assertEqual(second_value(), 2)\n")
         self.implemented()
         self.launch("checker")
-        import os, subprocess, sys
+        failed = subprocess.run([sys.executable, "-m", "unittest", "-v", "test_second"], cwd=self.source, env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"), capture_output=True, text=True, timeout=30)
+        self.assertEqual(failed.returncode, 1, failed.stderr)
+        self.assertIn("AssertionError: 3 != 2", failed.stderr)
+        failed_log = f"runs/{self.root_key}/run-1/evidence/second-failed.log"
+        self.act("report", dict(self.report(), verdict="changes_required", findings=[{
+            "id": "second-failed", "status": "open", "route": "implementation",
+            "affected_task": second, "evidence": "Actual test_second assertion fails: 3 != 2; see " + failed_log}],
+            records={failed_log: failed.stdout + failed.stderr}, next_action="repair second unit"))
+        self.assertEqual(self.state["units"][0]["status"], "accepted")
+        self.assertNotEqual(self.state["units"][1]["status"], "accepted")
+        self.unchanged_rejection("closeout-intent", {"targets": self.targets()})
+        for name in ("task.md", "First.md", "Second.md"):
+            self.assertEqual((self.source / "local-docs" / name).read_text(), canonical[name])
+        (self.source / "second.py").write_text("def second_value():\n    return 2\n")
+        self.implemented()
+        self.launch("checker")
+        self.act("resolve-finding", {"finding_id": "second-failed", "evidence": "Fresh second-unit assertion passes below."})
         result = subprocess.run([sys.executable, "-m", "unittest", "-v", "test_second"], cwd=self.source, env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"), capture_output=True, text=True, timeout=30)
         self.assertEqual(result.returncode, 0, result.stderr)
         report = self.check_report(result)
@@ -93,7 +126,7 @@ class CloseoutTests(unittest.TestCase):
         self.act("report", report)
         # All three definitions are tracked; status-only closeout preserves their
         # titles, dependencies and criteria, and never rewrites allocations.
-        original = {path.name: path.read_text() for path in (self.source / "local-docs").glob("*.md")}
+        original = canonical
         source_sha = self.state["repository"]["candidate_sha"]
         # A legacy artifact-only canonical location cannot be treated as a
         # tracked completion. Probe the real inventory, then restore this fixture.
@@ -167,12 +200,23 @@ class CloseoutTests(unittest.TestCase):
                 case.unchanged_rejection("dispatch", {"role": "implementer", "attempt_id": "blocked"}, "cleanup")
                 case.unchanged_rejection("closeout-cleanup", {"candidate_sha": case.state["repository"]["candidate_sha"] , "observation": "Attempt cleanup without edits."}, "cleanup requires a new committed|stale Done")
                 path = case.source / "local-docs/task.md"
-                path.write_text("".join(line for line in path.read_text().replace("**Status:** Done (verified proposed branch state; not landed on master).", "**Status:** Pending implementation.").splitlines(keepends=True) if not line.startswith("**Completion evidence:**")))
+                # Removing only the status is a real committed counterexample:
+                # the rejected evidence must keep cleanup pending across restart.
+                path.write_text(path.read_text().replace("**Status:** Done (verified proposed branch state; not landed on master).", "**Status:** Pending implementation."))
+                git(case.source, "add", ".")
+                git(case.source, "commit", "-m", "incomplete cleanup leaves invalidated evidence")
+                stale = git(case.source, "rev-parse", "HEAD").decode().strip()
+                self.assertIn("**Completion evidence:**", path.read_text())
+                case.unchanged_rejection("closeout-cleanup", {"candidate_sha": stale, "observation": "Status removed but evidence remains."}, "stale completion evidence")
+                case.reopen()
+                self.assertEqual(case.state["closeout"]["stage"], "cleanup")
+                path.write_text("".join(line for line in path.read_text().splitlines(keepends=True) if not line.startswith("**Completion evidence:**")))
                 git(case.source, "add", ".")
                 git(case.source, "commit", "-m", "remove invalidated completion")
                 clean = git(case.source, "rev-parse", "HEAD").decode().strip()
                 case.act("closeout-cleanup", {"candidate_sha": clean, "observation": "Stale Done removed from tracked source."})
                 self.assertEqual(case.state["closeout"]["stage"], "pending")
+                self.assertNotIn("**Completion evidence:**", path.read_text())
                 if route == "planner":
                     case.launch("planner")
                     plan = case.plan()
@@ -185,6 +229,8 @@ class CloseoutTests(unittest.TestCase):
                 case.closeout()
                 case.checked()
                 self.assertEqual(case.state["phase"], "publishing")
+                self.assertEqual(path.read_text().count("**Completion evidence:**"), 1)
+                self.assertEqual(case.state["closeout"]["candidate_sha"], case.state["final_acceptance"]["candidate_sha"])
 
     def test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault(self):
         self.accepted_implementation()
@@ -250,30 +296,83 @@ class CloseoutTests(unittest.TestCase):
         self.assertEqual(sum(o["event"] == "create-dispatched" for o in observations), 1)
 
     def test_C08_schema2_pending_adoption_preserves_facts_and_completed_record(self):
-        # Current run is FOS-000026; the completed historical run is FOS-000025.
-        for name in ("task.md", "backlog-keys.md"):
-            path = self.source / "local-docs" / name
-            path.write_text(path.read_text().replace("FOS-000025", "FOS-000026"))
+        # Obtain real historical acceptance, publication and retained reports by
+        # completing the preceding fixture run, rather than cloning a planned run.
+        self.publish_ready()
+        self.act("publish-observation", self.lookup([]))
+        self.act("publish-observation", {"event": "create-dispatched"})
+        self.act("publish-observation", self.lookup([self.pr()]))
+        self.act("publish-observation", {"event": "attachment", "url": self.pr()["url"], "success": True})
+        self.assertIsNone(self.harness.show()["active"])
+        historical = "runs/FOS-000025/run-1/state.json"
+        records = self.harness.store.records(self.tip)
+        completed = json.loads(records[historical])
+        completed.pop("closeout")  # Completed pre-closeout schema-2 record.
+        self.assertIsNotNone(completed["final_acceptance"])
+        self.assertEqual(completed["publishing"]["stage"], "done")
+        records[historical] = encoded(completed)
+        self.tip = self.harness.store.checkpoint(records, self.tip, "historical schema-2 record")
+        historical_records = {k: v for k, v in records.items() if k.startswith("runs/FOS-000025/")}
+
+        # Keep its canonical definition, registration and original completed bytes.
+        task = self.source / "local-docs/task.md"
+        git(self.source, "mv", "local-docs/task.md", "local-docs/historical.md")
+        ledger = self.source / "local-docs/backlog-keys.md"
+        ledger.write_text(ledger.read_text().replace("[task](task.md)", "[task](historical.md)")
+                          + "| `FOS-000026` | Root task | [task](task.md) | Allocated |\n")
+        task.write_text("# FOS-000026 — Root task\n\n**Status:** Pending implementation.\nOriginal criterion AC1: value() returns exactly 1.\n")
         git(self.source, "add", ".")
         git(self.source, "commit", "-m", "next root fixture")
         self.root_key = "FOS-000026"
         self.payload["task_key"] = self.root_key
-        self.planned()
+        self.payload["repository"]["input_sha"] = git(self.source, "rev-parse", "HEAD").decode().strip()
+        self.state = None  # New active root, existing completed history retained.
+        self.accepted_implementation()
         records = self.harness.store.records(self.tip)
         path = f"runs/{self.root_key}/run-1/state.json"
         old = json.loads(records[path])
-        old.pop("closeout", None)
+        old.pop("closeout")
+        old.update(phase="checking", operation="final", next_action="dispatch separate final checker")
         records[path] = encoded(old)
-        completed = copy.deepcopy(old)
-        completed.update(task_key="FOS-000025", run_id="historical", phase="complete", status="complete")
-        historical = "runs/FOS-000025/historical/state.json"
-        records[historical] = encoded(completed)
-        self.tip = self.harness.store.checkpoint(records, self.tip, "legacy schema-2 fixture")
+        self.assertIsNotNone(old["units"][0]["accepted"])
+        accepted = copy.deepcopy(old["units"][0]["accepted"])
+        old_reports = {k: v for k, v in records.items() if "/reports/" in k or "/evidence/" in k}
+        self.tip = self.harness.store.checkpoint(records, self.tip, "accepted legacy schema-2 fixture")
         self.reopen()
         self.assertEqual(self.state["closeout"], {"stage": "pending"})
         self.assertEqual({k: v for k, v in self.state.items() if k != "closeout"}, old)
-        self.implemented()
-        self.assertEqual(self.harness.store.records(self.tip)[historical], encoded(completed))
+        self.unchanged_rejection("publish-intent", self.intent())
+        self.act("closeout-intent", {"targets": self.targets()})
+        # Normalization persists only pending/intent bookkeeping: prior immutable
+        # identity, original acceptance, workers, history, budget and reports survive.
+        for key in ("task_key", "run_id", "original", "repository", "attempts", "verification", "plan", "limits", "provenance", "units"):
+            self.assertEqual(self.state[key], old[key])
+        self.assertEqual(self.state["closeout"]["acceptances"], [accepted])
+        candidate = self.commit_done()
+        self.act("closeout-record", {"candidate_sha": candidate})
+        self.assertNotEqual(candidate, accepted["candidate_sha"])
+        self.assertIsNone(self.state["units"][0]["accepted"])
+        self.assertIsNone(self.state["final_acceptance"])
+        self.assertEqual(self.state["closeout"]["acceptances"], [accepted])
+        self.unchanged_rejection("publish-intent", self.intent())
+        self.reopen()
+        self.launch("checker")
+        stale_report = json.loads(old_reports[old["attempts"][-1]["report"]])
+        self.unchanged_rejection("report", stale_report, "stale")
+        self.act("report", self.check_report())  # Actual renewed assertion command.
+        self.assertEqual(self.state["operation"], "final")
+        renewed = copy.deepcopy(self.state["units"][0]["accepted"])
+        self.assertEqual(renewed["candidate_sha"], candidate)
+        self.checked()  # Separate checker attempt, another actual assertion command.
+        self.assertEqual(self.state["phase"], "publishing")
+        self.assertEqual(self.state["final_acceptance"]["candidate_sha"], candidate)
+        self.assertNotEqual(renewed["attempt_id"], self.state["final_acceptance"]["attempt_id"])
+        self.assertEqual(self.state["closeout"]["stage"], "prepared")
+        self.assertEqual(self.state["limits"], old["limits"])
+        retained = self.harness.store.records(self.tip)
+        for key, value in {**historical_records, **old_reports}.items():
+            self.assertEqual(retained[key], value)
+
 
 
 if __name__ == "__main__":

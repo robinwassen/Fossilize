@@ -635,6 +635,7 @@ class Harness:
             require(candidate != origin, "cleanup requires a new committed candidate")
             git(self.repo, "merge-base", "--is-ancestor", origin, candidate)
             require(all(not re.search(r"^\*\*Status:\*\* Done\b", value, re.M) for value in new.values()), "stale Done remains; cleanup incomplete")
+            require(all(not re.search(r"^\*\*Completion evidence:\*\*", value, re.M) for value in new.values()), "stale completion evidence remains; cleanup incomplete")
             state["provenance"].append({"invalidated_closeout": c, "cleanup_sha": candidate, "observation": p.get("observation")})
             state["closeout"] = {"stage": "pending"}
         r["candidate_sha"] = candidate
