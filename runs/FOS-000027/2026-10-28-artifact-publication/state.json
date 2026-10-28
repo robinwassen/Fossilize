@@ -40,13 +40,14 @@
       "observations": [],
       "operation": "implement",
       "plan_version": 1,
+      "report": "runs/FOS-000027/2026-10-28-artifact-publication/reports/implementer-1.json",
       "requested": {
         "effort": "medium",
         "model": "gpt-6.1-sol"
       },
       "role": "implementer",
       "started": 1793184350.8190603,
-      "status": "running",
+      "status": "complete",
       "unit": "FOS-000027",
       "worker_id": "/root/implementer27"
     }
@@ -69,8 +70,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "implement",
+  "next_action": "dispatch fresh independent checker at candidate",
+  "operation": "subtask",
   "original": [
     {
       "id": "AC1",
@@ -97,7 +98,7 @@
       "requirement": "Network/authentication/rejection failures and ambiguous push outcomes preserve the local checkpoint and remain recoverable. Resume checks the actual remote ref before retrying, without rerunning accepted implementation work, duplicating a PR or dropping allocation reservations. Define terminal publication ordering so the final state/active-pointer update is also published, without an endless cycle of commits acknowledging their own publication."
     }
   ],
-  "phase": "implementing",
+  "phase": "checking",
   "plan": {
     "cases": [
       {
@@ -312,7 +313,7 @@
   "repository": {
     "base_sha": "fe0e26518e50f27a072c8bfe5f5062e4c81b4273",
     "branch": "codex/FOS-000027-artifact-publication",
-    "candidate_sha": null,
+    "candidate_sha": "033cd84971c07e400de4778e19d129e0dce54b8f",
     "common_dir": "/home/robin/dev/fossilize/.git",
     "implementation_worktree": "/home/robin/dev/fossilize-FOS-000027",
     "input_sha": "cf7a4b78199312eaf4e94ce6dde9ebcc8bd122d1",
@@ -320,10 +321,10 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 6,
+  "revision": 7,
   "run_id": "2026-10-28-artifact-publication",
   "schema_version": 2,
-  "status": "running",
+  "status": "ready",
   "task_key": "FOS-000027",
   "task_location": "local-docs/reviews/harness-backlog.md#fos-000027--commit-and-publish-harness-artifacts-to-the-remote-orphan-branch",
   "units": [
