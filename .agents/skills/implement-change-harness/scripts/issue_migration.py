@@ -12,7 +12,7 @@ import re
 import sys
 import time
 from github_issues import GitHub, IssueError, digest, need
-from harness_state import Harness, Store, historical_inventory, encoded, git, require
+from harness_state import Harness, Store, historical_inventory, encoded, git, require, repository_lock
 
 MARKER = '<!-- fossilize-migration-v1:'
 
@@ -168,10 +168,21 @@ class Journal:
         path=f"runs/{state['task_key']}/{state['run_id']}/evidence/{name}.json"
         return json.loads(records[path]) if path in records else None
 
-    def authorize(self):
+    def _authorize_locked(self):
         tip,records,state=self.records()
         need(not state['limits']['exhausted'] and time.time()<state['limits']['deadline'], 'run budget exhausted; retain facts and ask coordinator for authorized extension')
         need(self.harness.artifact_sync(tip,records,adopt=True)['status']=='confirmed', 'external dispatch requires exact confirmed artifact tip')
+
+    def authorize(self):
+        with repository_lock(self.harness.repo):
+            self._authorize_locked()
+
+    def dispatch(self, action):
+        # Hold the same lock through the bounded external request; no canonical
+        # writer can interleave between exact confirmation and dispatch.
+        with repository_lock(self.harness.repo):
+            self._authorize_locked()
+            return action()
 
     def append(self, name, value):
         tip,records,state = self.records()
@@ -209,9 +220,8 @@ class Migration:
                 if observed is not None:break
             need(observed is not None, 'previous returned identity is no longer visible; reconcile deletion/conflict before any mutation retry')
         if observed is None:
-            if hasattr(self.journal,'authorize'):self.journal.authorize()
             try:
-                returned = action()
+                returned = self.journal.dispatch(action) if hasattr(self.journal,'dispatch') else action()
             except IssueError:
                 # A failed write may already have happened. Always reconcile;
                 # incomplete/failed reads raise and never permit blind retries.

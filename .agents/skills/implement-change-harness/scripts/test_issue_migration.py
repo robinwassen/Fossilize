@@ -7,7 +7,7 @@ from unittest.mock import patch
 import test_harness_state as legacy_fixtures
 from test_issue_source import ServiceFixture
 from github_issues import IssueError, digest
-from harness_state import Harness, Invalid, git
+from harness_state import Harness, Invalid, git, repository_lock
 from issue_migration import Migration, Journal, inventory, check_cycles, MARKER
 
 
@@ -154,6 +154,22 @@ class RestrictedJournalTests(unittest.TestCase):
             journal.authorize()
         self.assertEqual(journal.harness.store.tip(),pending)
         self.assertEqual(git(self.source,'ls-remote','origin','refs/heads/harness-artifacts').decode().split()[0],pending)
+
+    def test_M01_external_dispatch_uses_same_canonical_lock(self):
+        self.act('initialize',self.payload)
+        journal=Journal(self.source);calls=[]
+        with repository_lock(self.source),patch('issue_migration.time.time',return_value=1000):
+            with self.assertRaisesRegex(Invalid,'held'):journal.dispatch(lambda:calls.append('forbidden'))
+        self.assertEqual(calls,[])
+        def external_request():
+            tip,records,state=journal.records()
+            path=f"runs/{self.root_key}/run-1/evidence/interleaved.json"
+            with self.assertRaisesRegex(Invalid,'held'):
+                Harness(self.source).apply('records-only',{'records':{path:{'forbidden':'interleaving'}}},tip,state['revision'])
+            calls.append('authorized')
+        with patch('issue_migration.time.time',return_value=1000):
+            journal.dispatch(external_request)
+        self.assertEqual(calls,['authorized'])
 
     def test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union(self):
         self.act('initialize',self.payload)
