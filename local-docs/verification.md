@@ -120,6 +120,9 @@ terminal-run bookkeeping, ticket/comment evidence, explicit mutation-boundary
 process-death recovery and exact publication failures. Fixture service response
 loss and artifact publication seams require fresh helper instances on retry.
 The CLI happy path invokes one approved wrap-up command and emits compact results.
+Repeated matrix reads execute the same persistent fake-gh entrypoint in-process
+to avoid interpreter startup overhead; mutation calls still use subprocess gh
+and real Git. CLI/service-response-loss cases retain subprocess reads as well.
 These tests do not mutate production PRs/issues or prove live GitHub protection
 behavior. No C++ build, GPU or Steam verification applies to harness-only changes.
 

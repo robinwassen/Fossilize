@@ -243,10 +243,12 @@ which may detach safely at the accepted candidate; no worktree is removed.
 The command holds the existing common-directory lock and uses the same artifact
 CAS, bound push endpoint and integrity checks. It validates independent unit/final
 reports and mandatory gates, attachment, eligible closeout targets, current material
-issue graph, exact actual PR repositories/head/base, required successful checks and
+issue graph, exact actual PR repositories/head/base/closing targets, required successful checks and
 merge conditions. Historical PR-ready runs without a required-check baseline need
 review and renewed readiness through the supported publication workflow; no baseline
-or acceptance is invented. Changed requirements/head/base/checks require a decision.
+or acceptance is invented. Zero-total/zero-required gh check signals need structured
+PR URL/head/ref/rollup confirmation; generic lookup failure is never absence.
+Changed requirements/head/base/checks/closing targets require a decision.
 
 Every intent, dispatch, returned identity and readback has a durable checkpoint
 with exact-tip publication before progression. Restart the same command after

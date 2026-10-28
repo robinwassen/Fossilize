@@ -250,10 +250,18 @@ class Delivery:
         self.material()
         self.cleanup_safe()
         row = self.pr()
+        proof = self.gh.call(['pr', 'view', self.approval['pr'], '--repo', self.gh.repository, '--json',
+                              'url,headRefOid,headRefName,baseRefName,body,closingIssuesReferences'])
+        r = self.state['repository']
+        require(proof.get('url') == self.approval['pr'] and proof.get('headRefOid') == self.approval['head'] and
+                proof.get('headRefName') == r['branch'] and proof.get('baseRefName') == r['target_branch'], 'PR closing-reference readback identity differs')
+        require({issue['url'] for issue in proof['closingIssuesReferences']} == self.targets and
+                all(line in proof['body'] for line in self.state['closeout']['closing_references']),
+                'actual PR closing targets changed; preserve unfinished or unrelated issues')
+        require(required_checks(self.gh, self.approval['pr'], self.approval['head']) == self.state['publishing']['required_checks'], 'required verification changed; renew verification/approval')
         if not row.get('merged'):
             require(row['base']['sha'] == self.state['repository']['base_sha'] and self.remote_ref(self.state['repository']['target_branch']) == self.state['repository']['base_sha'], 'target base moved; integrate and renew verification/approval')
             require(row.get('mergeable') is True and row.get('mergeable_state') in ('clean', 'has_hooks'), 'merge conditions unknown, blocked or conflicting')
-            require(required_checks(self.gh, self.approval['pr'], self.approval['head']) == self.state['publishing']['required_checks'], 'required verification changed; renew verification/approval')
         return row
 
     def merged(self):
@@ -309,7 +317,7 @@ class Delivery:
         self.delivery['merge_sha'] = merge['merge_sha']
         # Verification has durable intent before its fetch and authoritative read.
         self.step('merge-verification', self.verify_merge, self.fetch_target)
-        self.cleanup_safe()
+        self.preflight()
         intended = self.state['repository']['implementation_worktree']
         def detach():
             self.cleanup_safe()

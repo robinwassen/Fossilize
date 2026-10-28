@@ -266,6 +266,16 @@ class DeliveryTests(LiveFixture, unittest.TestCase):
                 self.restore();self.update(required_checks=[{'name': 'new required check', 'state': 'SUCCESS', 'bucket': bucket, 'workflow': 'CI'}])
                 self.assertEqual(self.run_delivery()['outcome'], 'decision-needed')
                 self.assertNotIn('merge_count', self.service())
+        for targets in ([], [{'url': self.parent['html_url']}]):
+            with self.subTest(closing_targets=targets):
+                self.restore()
+                data = self.service();data['prs']['99']['closingIssuesReferences'] = targets
+                data['prs']['99']['body'] = '\n'.join('Closes ' + row['url'] for row in targets)
+                self.service_file.write_text(json.dumps(data))
+                result = self.run_delivery()
+                self.assertEqual(result['outcome'], 'decision-needed', result)
+                self.assertNotIn('merge_count', self.service())
+                self.assertEqual(self.gh.issue(self.parent['number'])['state'], 'open')
         self.restore()
         self.gh.api(f"issues/{self.root_issue['number']}", 'PATCH', {'title': 'Changed material requirement'})
         self.assertEqual(self.run_delivery()['outcome'], 'decision-needed')
@@ -294,6 +304,23 @@ class DeliveryTests(LiveFixture, unittest.TestCase):
         self.restore()
         self.gh.api('pulls/99/merge', 'PUT', {'merge_method': 'squash', 'sha': self.approval['head']})
         self.assert_delivered(self.run_delivery())
+
+    def test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch(self):
+        for kind in ('requirements', 'checks'):
+            with self.subTest(kind=kind):
+                self.restore()
+                def drift(stage, phase, delivery):
+                    if (stage, phase) == ('merge-verification', 'after-readback'):
+                        data = self.service()
+                        if kind == 'requirements':data['issues']['8']['title'] = 'Changed after merge'
+                        else:data['required_checks'] = [{'name':'new required gate','state':'FAILURE','bucket':'fail','workflow':'CI'}]
+                        self.service_file.write_text(json.dumps(data))
+                result = self.run_delivery(fault=drift)
+                self.assertEqual(result['outcome'], 'decision-needed', result)
+                self.assertIsNotNone(result['merge_sha'])
+                self.assertTrue(self.remote('codex/test'))
+                self.assertEqual(self.service()['merge_count'], 1)
+                self.assertEqual(self.gh.issue(self.root_issue['number'])['state'], 'open')
 
     def test_W03_zero_total_zero_required_and_failed_lookup_are_distinct(self):
         self.assertEqual(dw.required_checks(self.gh, self.pr_url, self.approval['head']), [])
