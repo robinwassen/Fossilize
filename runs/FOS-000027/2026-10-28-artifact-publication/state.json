@@ -1,0 +1,71 @@
+{
+  "active_unit": "FOS-000027",
+  "attempts": [],
+  "final_acceptance": null,
+  "findings": [],
+  "limits": {
+    "command_timeout": 600,
+    "commands": [],
+    "deadline": 1793198551.5593147,
+    "exhausted": false,
+    "extensions": [],
+    "implementation_counts": {},
+    "repairs": 3,
+    "replan_count": 0,
+    "replans": 1
+  },
+  "next_action": "dispatch fresh planner",
+  "operation": "plan",
+  "original": [
+    {
+      "id": "AC1",
+      "requirement": "Make committing and publishing the allowed harness records to `origin`'s `refs/heads/harness-artifacts` part of the normal workflow. Record the repository/remote identity explicitly, keep the branch orphaned and separate from source history, and update the skill, state guidance and helper as needed."
+    },
+    {
+      "id": "AC2",
+      "requirement": "Define and enforce publication checkpoints covering initialization, state transitions and reports/evidence, permanent allocation changes, interruption and terminal run state. Distinguish locally committed from remotely confirmed records; retain a precise retry action when publication is incomplete. A run cannot claim successful artifact publication or full workflow completion while required records exist only locally."
+    },
+    {
+      "id": "AC3",
+      "requirement": "Publish the authoritative committed ref, including existing valid local run history. Preserve the records-only tree and existing validation. Do not stage stale inspection files, copy source trees, or include build outputs, binaries, private configuration, secrets or full transcripts. Preserve unexpected local edits when inspecting or refreshing a worktree."
+    },
+    {
+      "id": "AC4",
+      "requirement": "Use explicit non-force pushes to the recorded artifact destination. Verify the remote ref against the checkpoint being published; command success alone is insufficient. Never merge artifact history into the implementation PR or `master`, and never push to `upstream` merely because it exists."
+    },
+    {
+      "id": "AC5",
+      "requirement": "Handle an absent remote branch, already published checkpoints, remote advances and divergent history without overwriting either writer's work. Validate any adopted remote artifact history. Reconcile remote state before continuing; unresolved conflicts retain local records and a concrete recovery action. A repository-local lock must not be described as cross-machine coordination."
+    },
+    {
+      "id": "AC6",
+      "requirement": "Network/authentication/rejection failures and ambiguous push outcomes preserve the local checkpoint and remain recoverable. Resume checks the actual remote ref before retrying, without rerunning accepted implementation work, duplicating a PR or dropping allocation reservations. Define terminal publication ordering so the final state/active-pointer update is also published, without an endless cycle of commits acknowledging their own publication."
+    }
+  ],
+  "phase": "planning",
+  "plan": null,
+  "provenance": [],
+  "publishing": {
+    "ci_policy": "local",
+    "stage": "none"
+  },
+  "repository": {
+    "base_sha": "fe0e26518e50f27a072c8bfe5f5062e4c81b4273",
+    "branch": "codex/FOS-000027-artifact-publication",
+    "candidate_sha": null,
+    "common_dir": "/home/robin/dev/fossilize/.git",
+    "implementation_worktree": "/home/robin/dev/fossilize-FOS-000027",
+    "input_sha": "cf7a4b78199312eaf4e94ce6dde9ebcc8bd122d1",
+    "target_branch": "master",
+    "target_remote": "origin",
+    "target_repository": "robinwassen/Fossilize"
+  },
+  "revision": 1,
+  "run_id": "2026-10-28-artifact-publication",
+  "schema_version": 2,
+  "status": "ready",
+  "task_key": "FOS-000027",
+  "task_location": "local-docs/reviews/harness-backlog.md#fos-000027--commit-and-publish-harness-artifacts-to-the-remote-orphan-branch",
+  "units": [],
+  "verification": []
+}
