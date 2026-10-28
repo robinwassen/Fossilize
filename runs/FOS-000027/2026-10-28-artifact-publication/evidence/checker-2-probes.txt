@@ -1,0 +1,41 @@
+import copy,json,sys
+from pathlib import Path
+sys.path.insert(0,str(Path.cwd()/'.agents/skills/implement-change-harness/scripts'))
+from test_harness_artifacts import ArtifactTests
+from harness_state import Store,Harness,encoded,git,REF,Invalid,POLICY,state_path
+case=ArtifactTests('test_P08c_historical_allocations_survive_every_parent_edge');case.setUp()
+try:
+ case.initialize();parent=case.tip;writer=case.clone_writer();original=Store(writer).records(parent)
+ rows=dict(original);journal=json.loads(rows['allocations.json']);journal.update(high_water=26,issued=[{'key':'FOS-000026','title':'Permanent remote reservation','location':'local-docs/reserved.md'}]);rows['allocations.json']=encoded(journal)
+ issued=case.writer_checkpoint(writer,parent,rows);removed=case.writer_checkpoint(writer,issued,original)
+ result=case.raw('publish-artifacts');assert result['artifact_publication']['status']=='incomplete';assert case.tip==parent;assert case.remote_tip()==removed;assert 'ancestor drops issued allocations' in result['artifact_publication']['detail']
+ result=case.raw('reserve',{'title':'Must not reuse','location':'local-docs/new.md'});assert case.tip==parent
+ print('Exact checker-1 issue/drop/reuse scenario: rejected before adoption; forward reserve blocked; both tips and reservation ancestor retained.')
+ policy=json.loads(original['allocations.json'])[POLICY];path=state_path(case.root_key,'run-1');legacy=dict(original);old=json.loads(legacy[path]);old['schema_version']=1;legacy[path]=encoded(old)
+ legacy_journal=copy.deepcopy(json.loads(original['allocations.json']));legacy_journal.update(high_water=25,issued=[{'key':case.root_key,'location':'local-docs/backlog-keys.md'}]);legacy['allocations.json']=encoded(legacy_journal)
+ legacy_tip=case.raw_commit(legacy,parent)
+ migrated=dict(original);state=json.loads(migrated[path]);state['provenance']=[{'imported_from_tip':legacy_tip,'legacy_schema':1,'legacy_state':old}];migrated[path]=encoded(state)
+ resolved=copy.deepcopy(legacy_journal);resolved['issued']=[{'key':case.root_key,'location':'local-docs/task.md','title':'Root task'}];migrated['allocations.json']=encoded(resolved)
+ good=case.raw_commit(migrated,legacy_tip);Harness(case.source).remote_history(good,original,policy,preserve=False)
+ print('Registry-backed exact-provenance schema1 placeholder migration: accepted read-only.')
+ mutations={}
+ for name in ['missing provenance','wrong imported tip','changed legacy snapshot','changed permanent title','changed permanent key','high-water decrease','unregistered placeholder']:
+  bad=copy.deepcopy(migrated);s=json.loads(bad[path]);j=json.loads(bad['allocations.json'])
+  if name=='missing provenance':s['provenance']=[]
+  elif name=='wrong imported tip':s['provenance'][0]['imported_from_tip']=parent
+  elif name=='changed legacy snapshot':s['provenance'][0]['legacy_state']['revision']+=1
+  elif name=='changed permanent title':j['issued'][0]['title']='Different meaning'
+  elif name=='changed permanent key':j['issued'][0]['key']='FOS-000024'
+  elif name=='high-water decrease':j['high_water']=24;j['issued']=[]
+  elif name=='unregistered placeholder':j['issued'][0]['location']='local-docs/unregistered.md'
+  bad[path]=encoded(s);bad['allocations.json']=encoded(j);bad_tip=case.raw_commit(bad,legacy_tip)
+  try:Harness(case.source).remote_history(bad_tip,original,policy,preserve=False)
+  except Invalid:print('Rejected migration counterexample:',name)
+  else:raise AssertionError('accepted invalid migration '+name)
+ # Schema2 parents cannot invoke the schema1 exception even with matching provenance.
+ schema2=dict(legacy);s=copy.deepcopy(old);s['schema_version']=2;schema2[path]=encoded(s);p2=case.raw_commit(schema2,parent)
+ bad=copy.deepcopy(migrated);s=json.loads(bad[path]);s['provenance']=[{'imported_from_tip':p2,'legacy_schema':1,'legacy_state':json.loads(schema2[path])}];bad[path]=encoded(s);bad_tip=case.raw_commit(bad,p2)
+ try:Harness(case.source).remote_history(bad_tip,original,policy,preserve=False)
+ except Invalid:print('Rejected schema2 placeholder rewrite with forged legacy_schema marker.')
+ else:raise AssertionError('schema2 migration exception')
+finally:case.doCleanups()
