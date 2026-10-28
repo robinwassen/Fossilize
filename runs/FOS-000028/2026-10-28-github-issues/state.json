@@ -404,8 +404,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "journal actual implementation PR URL on each closeout issue, then publish-observation event=issue-evidence",
-  "operation": "publish",
+  "next_action": "PR opened and attached; no merge",
+  "operation": "complete",
   "original": [
     {
       "id": "AC1",
@@ -444,7 +444,7 @@
       "requirement": "**Remove the repository backlog after verification.** Remove canonical task\n   definitions, registry, backlog status sections, obsolete links and instructions\n   from the source tree, including this proposal. Do not leave an archived copy,\n   generated task mirror, live legacy fallback or new task ledger elsewhere in\n   the repo. Explicitly supersede the old rule requiring the tracked FOS registry\n   forever: retain legacy identities and mapping on GitHub and historical Git\n   evidence, while future identity allocation belongs to GitHub. Keep valuable\n   specifications, research, fixtures and sanitized execution evidence; replace\n   task references with issue links and ensure retained documents do not operate\n   as another backlog. Test fixtures may describe legacy formats when necessary\n   for compatibility tests, without becoming real task definitions. No destructive\n   Git history rewrite is requested."
     }
   ],
-  "phase": "publishing",
+  "phase": "complete",
   "plan": {
     "cases": [
       {
@@ -1513,6 +1513,23 @@
     }
   ],
   "publishing": {
+    "attachment": {
+      "event": "attachment",
+      "outcome": "Codex attach_artifact succeeded for this exact pull request (isError=false).",
+      "records": {
+        "runs/FOS-000028/2026-10-28-github-issues/evidence/pr-attachment.json": {
+          "content": [
+            {
+              "text": "{\"artifact_type\":\"pull_request\",\"url\":\"https://github.com/robinwassen/Fossilize/pull/38\"}",
+              "type": "text"
+            }
+          ],
+          "isError": false
+        }
+      },
+      "success": true,
+      "url": "https://github.com/robinwassen/Fossilize/pull/38"
+    },
     "ci_policy": "local",
     "creation_intent": {
       "at": 1793202277.3674834,
@@ -1599,6 +1616,23 @@
       },
       {
         "event": "issue-evidence"
+      },
+      {
+        "event": "attachment",
+        "outcome": "Codex attach_artifact succeeded for this exact pull request (isError=false).",
+        "records": {
+          "runs/FOS-000028/2026-10-28-github-issues/evidence/pr-attachment.json": {
+            "content": [
+              {
+                "text": "{\"artifact_type\":\"pull_request\",\"url\":\"https://github.com/robinwassen/Fossilize/pull/38\"}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "success": true,
+        "url": "https://github.com/robinwassen/Fossilize/pull/38"
       }
     ],
     "pr": {
@@ -1610,7 +1644,7 @@
       "url": "https://github.com/robinwassen/Fossilize/pull/38"
     },
     "remote_sha": "7f821f6b91fa32333a9330c027dc4f85b7f33b01",
-    "stage": "attach"
+    "stage": "done"
   },
   "repository": {
     "base_sha": "73f891d6c0cf498ac92e804d7d0f0cd344a083f5",
@@ -1623,7 +1657,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 38,
+  "revision": 39,
   "root_issue": {
     "id": 6079927386,
     "node_id": "I_kwDOVZpjbc8AAAABamRUWg",
@@ -1633,7 +1667,7 @@
   },
   "run_id": "2026-10-28-github-issues",
   "schema_version": 3,
-  "status": "ready",
+  "status": "complete",
   "task_key": "FOS-000028",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/37",
   "verification": [
