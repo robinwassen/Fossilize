@@ -9,7 +9,12 @@ Take one explicitly identified root requirement through planning, implementation
 independent checking and one ready-for-review PR. Stop after recording and attaching
 that PR; do not merge it or start another task. Preserve the original acceptance.
 
-The parent is the coordinator and sole canonical state writer. Use the helper in
+The parent is the coordinator and sole canonical state writer. Each helper
+checkpoint commits local facts, publishes the exact authoritative artifact SHA
+without force, then independently confirms the bound destination's current ref.
+A local commit or successful push alone cannot establish remote confirmation.
+Inspect the returned `artifact_publication` and `workflow_complete`; CLI exit 3
+means publication remains incomplete with a precise retry envelope. Use the helper in
 [scripts/harness_state.py](scripts/harness_state.py) for state transitions and Git
 checkpoints. It is a local POSIX tool, not a worker runtime or security boundary.
 Read [references/state.md](references/state.md) before initialization or recovery.
@@ -17,13 +22,19 @@ Read [references/roles.md](references/roles.md) when constructing a role prompt 
 processing its report. Read applicable AGENTS.md and its required documentation;
 all roles read the project's verification guide before selecting/running checks.
 
-1. Inspect active state under the common Git directory lock. Resume the existing
+1. Inspect active state and artifact publication under the common Git directory lock. Resume the existing
    root; never start a second active run. Preserve the user's checkout and partial
    work. Verify an existing artifact branch before adopting it. Explicitly import
    bootstrap records; never treat an incomplete old schema as current acceptance.
+   Existing local-only history requires explicit `adopt-artifacts` after all-history
+   semantic privacy review. Keep old run/report bytes and all valid ancestors.
+   Reconcile `artifact_publication.status=incomplete` with `publish-artifacts`
+   before forward work, including when terminal state has cleared active.json.
 2. Record immutable original requirements, repository/destination/base, scope,
    budgets, command deadlines and CI policy. Default here is origin,
-   robinwassen/Fossilize, master; artifacts remain local-only. No mandatory hosted
+   robinwassen/Fossilize, master. Artifacts publish normally to origin's separate
+   orphan refs/heads/harness-artifacts. FOS-000027 supersedes the original local-only
+   artifact proposal. No mandatory hosted
    CI is declared for a skill-only change unless project policy says otherwise.
 3. Dispatch a fresh planner with `collaboration.spawn_agent`, `fork_turns="none"`.
    Check the actual model catalog, persist dispatch intent, launch once, then
@@ -67,10 +78,13 @@ configuration. Default planner/checker: gpt-6.1-sol/high; implementer:
 gpt-6.1-sol/medium, raised with a recorded reason for difficult correctness work.
 Different models are optional; independent evidence is mandatory.
 
-Keep reports and small sanitized logs on the orphan `harness-artifacts` branch;
+Keep reports and small sanitized logs on the published orphan `harness-artifacts` branch;
 keep skill/source/tests on the implementation branch. Never merge/push artifact
 history as part of the source PR. Report passed, failed, unsupported, incomplete
 and not-run distinctly. JSON completeness cannot establish semantic test quality:
 the actual checker reads assertions, runs counterexamples and checks the original
 requirements. This skill cannot authenticate a hostile coordinator or recover
-across machines without separately coordinated artifact/key retention.
+cross-machine writers or key allocation without separately coordinated ownership.
+The repository lock coordinates local worktrees only. Ordinary non-force remote
+rejection protects competing tips; it is not a distributed lock. Never overwrite
+conflicting history, retarget the bound endpoint silently or push to upstream.

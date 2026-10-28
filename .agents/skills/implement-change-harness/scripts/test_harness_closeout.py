@@ -312,6 +312,8 @@ class CloseoutTests(unittest.TestCase):
         self.assertEqual(completed["publishing"]["stage"], "done")
         records[historical] = encoded(completed)
         self.tip = self.harness.store.checkpoint(records, self.tip, "historical schema-2 record")
+        recovery = self.harness.apply("publish-artifacts", {}, self.tip, 0)
+        self.assertEqual(recovery["artifact_publication"]["status"], "confirmed")
         historical_records = {k: v for k, v in records.items() if k.startswith("runs/FOS-000025/")}
 
         # Keep its canonical definition, registration and original completed bytes.
@@ -338,6 +340,7 @@ class CloseoutTests(unittest.TestCase):
         accepted = copy.deepcopy(old["units"][0]["accepted"])
         old_reports = {k: v for k, v in records.items() if "/reports/" in k or "/evidence/" in k}
         self.tip = self.harness.store.checkpoint(records, self.tip, "accepted legacy schema-2 fixture")
+        self.act("publish-artifacts")
         self.reopen()
         self.assertEqual(self.state["closeout"], {"stage": "pending"})
         self.assertEqual({k: v for k, v in self.state.items() if k != "closeout"}, old)

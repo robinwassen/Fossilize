@@ -32,7 +32,14 @@ Record nonzero discovered/executed IDs, statuses and the T01–T17 method mappin
 `test_harness_closeout.py` additionally covers C01–C08 canonical completion,
 actual tracked Markdown commits, renewal/cleanup, pending schema-2 adoption and
 a one-PR local-remote publication/merge simulation. The test explicitly performs
-the simulated user merge; the helper never merges. Passing this suite does not
+the simulated user merge; the helper never merges. `test_harness_artifacts.py`
+covers P01–P11 against real disposable bare remotes: exact non-force checkpoints,
+existing-history adoption, dirty-view preservation, bounded recovery/barriers,
+second-clone advance/divergence, hostile record rejection, push-endpoint binding,
+post-push races and terminal/null-active publication. P12 additionally maps the
+retained T01–T17/C01–C08 suite and independent guidance/diff review. Use a real
+600-second process deadline for the complete Python suite; record discovered and
+executed test IDs and actual outcomes. Passing this suite does not
 prove actual role conduct or live GitHub behavior.
 Independent checker review and the real publication gates remain separate.
 Disable bytecode as shown so verification does not dirty the candidate worktree.
