@@ -131,13 +131,18 @@
   "findings": [
     {
       "affected_task": "FOS-000026",
+      "attempt_id": "checker-2",
       "evidence": "Independent disposable real-Git probe /tmp/fos26-run/checker-1-probe.py accepted closeout-cleanup after replacing only the Done status with Pending and committing, while the rejected **Completion evidence:** line remained. State moved to closeout={stage:pending} and implementation could resume. The implementation checks only absence of a Done status (line 637). state.md step 4 explicitly requires removing stale Done metadata AND completion evidence. Retaining unqualified completion evidence leaves invalidated source bookkeeping behind and permits it to survive into a later closeout alongside fresh evidence. Exact output is /tmp/fos26-run/checker-1-probes.log.",
       "id": "F26-C1",
       "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:637",
       "priority": 2,
+      "recheck": {
+        "evidence": "Independently reran exact-candidate G01: C04 passes all implementation/planner/environment subtests. Its real Git fixture commits Pending status while retaining rejected Completion evidence, asserts closeout-cleanup raises stale completion evidence without advancing Harness.show(), reopens durable cleanup, commits evidence removal, then successfully repairs/rechecks/closes with exactly one applicable evidence line and separate final acceptance. Source helper line 638 enforces absence of Completion evidence in every affected section. Independently reran current C04 against prior helper 242cd40f931d9fff8de2c10533fd029308c97c11: exactly three Invalid not raised failures, no errors, demonstrating regression detects original bypass. Logs /tmp/fos26-run/checker-2-G01.log and checker-2-regression.log.",
+        "finding_id": "F26-C1"
+      },
       "recheck_expectation": "Add a real source-commit negative regression: after independent rejection, a cleanup candidate that removes Done but retains invalidated completion evidence must not clear the cleanup obligation/checkpoint. Then remove both, commit, show cleanup/recovery succeeds, and ensure a later accepted closeout carries only applicable completion evidence.",
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Keep cleanup pending while invalidated completion evidence remains"
     },
     {
@@ -405,7 +410,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 15,
+  "revision": 16,
   "run_id": "2026-10-28-backlog-completion",
   "schema_version": 2,
   "status": "running",
