@@ -185,12 +185,18 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/10",
+      "attempt_id": "checker-2",
       "evidence": "Plan v1 native-windows-matrix is mandatory for work-unit/final acceptance. Current host is Linuxx86_64; native compiler/Windows execution host unavailable, no explicit waiver/reconciled plan. No Windows build/CTest/LoadLibrary fixture was executed. See runs/issue-10/issue10-20261028/evidence/check-native-environment.log and check-review.log.",
       "id": "CHK10-WINDOWS-001",
       "location": "plan.gates[native-windows-matrix]; shared https://github.com/robinwassen/Fossilize/issues/8 remaining verification",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/10",
+        "evidence": "Fresh checker /root/checker2_10 independently read authoritative windows-scope-decision.json authorization \"Ok, skip windows for now. Should be ok!\" bound to candidate a24e8afd8b584a3ad95d049885c3445ba3f1fa9c. Plan2 makes native-windows-matrix optional deferred_unverified_by_explicit_human_exception. Native Windows remains unverified, not passed; Linux and compatibility gates remain required. This resolves the run blocker by explicit authorized deferment; parent8 remains open.",
+        "finding_id": "CHK10-WINDOWS-001"
+      },
       "required_action": "Supply native Windows Debug/Release execution evidence, or obtain an explicit human platform decision and reconcile plan without claiming Windows verified.",
       "route": "environment",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/10",
@@ -754,7 +760,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 40,
+  "revision": 41,
   "root_issue": {
     "id": 6079794262,
     "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
