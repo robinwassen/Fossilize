@@ -91,13 +91,14 @@
       "observations": [],
       "operation": "replan",
       "plan_version": 1,
+      "report": "runs/issue-39/issue39-20261028/reports/planner-2.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793208840.062815,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/39",
       "worker_id": "/root/replanner39"
     }
@@ -243,15 +244,15 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "replan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
       "requirement": "## Problem\n\nThe approved wrap-up of [PR #38](https://github.com/robinwassen/Fossilize/pull/38) required repeated AI reasoning, individual Git/GitHub calls, temporary Python scripts, and manual post-delivery state updates. Squash merge, branch cleanup, ticket closeout and evidence reconciliation are a mechanical process. Reconstructing that process in each conversation wastes tokens and adds opportunities for mistakes.\n\n## Required outcome\n\nOnce the verified PR is open and attached, the harness prompts the user for approval. After explicit approval, the agent invokes **one supported wrap-up command**. That command performs the complete approved delivery workflow and returns a compact result. AI reasoning is reserved for review, the approval conversation and exceptional decisions.\n\n## Acceptance criteria\n\n- Update the skill to present the PR link and a concise verification summary, then request approval to squash-merge and wrap up. Decline/defer leaves the PR open. Honor approval already given in the conversation without asking again; opening a PR alone is not approval.\n- Bind approval to the repository, PR and accepted head. The script checks eligibility and stops for a meaningful decision if the head, required verification or merge conditions changed. Preserve existing independent-checking gates.\n- After approval, a single repository-owned command performs the squash merge, verifies the resulting commit/tree against the accepted candidate, deletes the intended remote/local source branch safely, confirms eligible tickets are closed as completed, and posts concise delivery evidence. Preserve unrelated worktrees, user edits and unfinished parent issues.\n- Add a supported post-delivery state transition. Record the merge commit separately from the original accepted candidate; preserve acceptance, reports, budgets and history. Update PR/delivery status, keep the active pointer correct, and publish/confirm the exact orphan artifact checkpoint. No ad-hoc scripts or direct coordinator state surgery are needed.\n- The command owns durable intent, returned identities, readback and recovery for its steps. Restarting the same command reconciles partial/uncertain outcomes without duplicate merges/comments, incorrect deletion or fabricated completion. Already-merged PRs, already-deleted branches and already-closed tickets are handled explicitly.\n- Return one compact structured result and human summary: delivered, incomplete with the same resumption command, or a specific decision needed. The agent does not reason through or narrate each successful mechanical step. Avoid repeatedly reading or copying unchanged full history; retain the existing publication and integrity guarantees.\n\n## Verification\n\nUse assertion-bearing fake-gh and real disposable Git/bare-remote tests for the approved happy path, no approval, stale head, merge rejection, dirty/unrelated work preservation, interruption/response loss at each mutation boundary, retry/idempotence, completed-run state updates and artifact publication failure. Verify the normal agent workflow requires one approval interaction and one wrap-up command invocation.\n\n## Scope and context\n\nHarness command, approval handoff, policy/skill guidance and regression tests. Builds on the delivered issue-based harness in [#37](https://github.com/robinwassen/Fossilize/issues/37). No implementation work is requested by filing this issue; no automatic approval, new scheduler, or changes to Fossilize C++ behavior.\n\n<!-- harness-followup:approval-wrapup-command-v1 -->\n"
     }
   ],
-  "phase": "planning",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -379,6 +380,26 @@
         "id": "W13",
         "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py and existing test_*.py; local-docs/verification.md",
         "title": "Regression discovery and package validation"
+      },
+      {
+        "assertions": [
+          "Run every original W09-W11 assertion unchanged in meaning. Four direct merge/comment dispatch-publication failures (before/after push) prove no effect call occurred, then fresh same-command retries confirm exact artifacts and finish with one merge and one managed comment.",
+          "Genuine service success plus lost response is reconciled without duplicate mutation; failed/partial/delayed lookup is not absence. Ambiguous process death after published dispatch cannot be blindly re-sent, and yields a specific decision/incomplete result retaining operation identity and precise reconciliation.",
+          "The initial-publication injection seams actually execute with production failure handling in scope; the W11 scenario inventory covers every original stage/event/phase and terminal/rejection assertion."
+        ],
+        "id": "W14",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Known-unsent recovery and genuinely uncertain writes remain distinct"
+      },
+      {
+        "assertions": [
+          "Fresh full unittest discovery emits a nonzero unique inventory and deterministic exact group ownership. Four named W11 shard IDs expose all scenarios without duplicate execution or hidden skipped subcases.",
+          "The actual executed-ID union across every required group equals full discovered IDs exactly once; scenario union equals full expected boundary inventory exactly once. All statuses pass, no skips/errors/failures/timeouts, all manifests bind identical candidate and inventory.",
+          "Negative controls reject omitted/duplicate/stale/wrong-candidate/failed/skipped/empty/unfinished results. All command deadlines remain<=600 seconds, and updated guidance contains supported commands."
+        ],
+        "id": "W15",
+        "location": ".agents/skills/implement-change-harness/scripts/run_harness_tests.py; test_harness_runner.py; local-docs/verification.md",
+        "title": "Complete bounded suite execution is independently auditable"
       }
     ],
     "gates": [
@@ -388,17 +409,321 @@
         ],
         "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
         "expected": [
-          "Exit 0 before real 600-second deadline; nonzero discovered/executed IDs; no mandatory skips.",
-          "Every W01-W13 case mapped to actual executed assertion-bearing test IDs, including each named mutation boundary/failure phase and original-defect detection.",
-          "Full existing helper suite passes; disposable test effects only."
+          "Exit0; actual full test_*.py discovery IDs, stable ownership, scenario manifest, candidate SHA and inventory digest retained. No fixtures executed during inventory."
         ],
-        "id": "delivery-suite",
+        "id": "suite-inventory",
         "kind": "both",
-        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --inventory --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json",
         "prerequisites": [
-          "Exact committed candidate worktree (checker may substitute its detached path for cwd).",
-          "Python3 standard library, Git, POSIX flock; fake gh and real disposable bare repositories only.",
-          "All W01-W13 tests registered; discovery and executed unique test IDs retained in a small sanitized log outside source."
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-regression-test_harness_artifacts",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_artifacts --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/regression-test_harness_artifacts.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-regression-test_harness_closeout",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_closeout --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/regression-test_harness_closeout.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-regression-test_harness_issue_artifacts",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_artifacts --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/regression-test_harness_issue_artifacts.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-regression-test_harness_issue_closeout",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_closeout --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/regression-test_harness_issue_closeout.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-regression-test_harness_migration",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_migration --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/regression-test_harness_migration.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-regression-test_harness_state",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_state --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/regression-test_harness_state.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-regression-test_issue_guidance",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_guidance --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/regression-test_issue_guidance.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-regression-test_issue_migration",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_migration --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/regression-test_issue_migration.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-regression-test_issue_source",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_source --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/regression-test_issue_source.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-delivery-ordinary",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-ordinary --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/delivery-ordinary.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-delivery-w09",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w09 --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/delivery-w09.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-delivery-w11-0",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-0 --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/delivery-w11-0.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-delivery-w11-1",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-1 --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/delivery-w11-1.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-delivery-w11-2",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-2 --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/delivery-w11-2.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-delivery-w11-3",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-3 --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/delivery-w11-3.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0 within real600 seconds; every owned unittest ID actually executes and passes, no mandatory skip/fail/error. Empty catch-all group permitted only if the inventory proves it has no owners; it never substitutes for a nonzero full suite.",
+          "Record all selected/executed IDs and scenario coverage, real command duration and statuses; fresh helper instances and all substantive original assertions remain."
+        ],
+        "id": "suite-regression-extra",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-extra --inventory \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/inventory.json --output \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"/regression-extra.json",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "suite-inventory completed on this exact candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit0; independently freshly discovered IDs equal inventory and disjoint actual executed union exactly; every group result present, current and passing, no omitted/duplicate/unexecuted/skipped test or boundary scenario.",
+          "All original W01-W13 and additional W14-W15 mapped to actual executed test/scenario IDs. Exactly one owner per unittest/scenario ID; all113 static candidate1 methods accounted for with explicit W11 refactor mapping.",
+          "Retained issue/migration/stale-worker/final/evidence/budget/closeout/endpoint/ancestor/competing-writer/publication regressions all pass."
+        ],
+        "id": "suite-complete-union",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --verify-results \"${HARNESS_EVIDENCE_DIR:?set a fresh outside-source directory for this exact attempt}\"",
+        "prerequisites": [
+          "Exact committed candidate; checker substitutes its own detached candidate cwd. Python3 standard library, Git and POSIX flock; disposable fake-gh service and real Git/bare remotes only.",
+          "HARNESS_EVIDENCE_DIR is a new absolute outside-source directory unique to this implementer/checker attempt; do not reuse another attempt results. Record resolved exact command/cwd/environment and external real timeout status.",
+          "Every suite group completed; verifier rejects missing/unfinished/mismatched results."
         ]
       },
       {
@@ -443,6 +768,26 @@
       {
         "details": "Add discoverable W01-W12 tests using subprocess fake gh and actual disposable Git/bare remotes/worktrees; deterministic mutation-boundary fault matrix, no sleeps/races. Reuse existing fixtures where helpful but execute real squash/tree/ref behavior. Extend fake gh with merge/check state/issue closure/comment loss as required. Update verification guide and narrow prior PR-only assertions to permit explicitly approved delivery while preserving all legacy safeguards.",
         "step": "Assertion-bearing regression suite and guidance"
+      },
+      {
+        "details": "Fix CHK39-NO-SEND-PUBLICATION-RECOVERY in delivery_wrapup.py: dispatch checkpoint is currently committed with dispatched=true before publish returns and effect() begins. On a caught publication failure prior to effect, preserve a durable known-unsent disposition bound to the exact operation/attempt/checkpoint, without deleting the original dispatch evidence. Fresh same-command retry must first confirm required orphan publication, then safely execute the known-unsent operation once. If persisting/publishing this disposition also fails, retain the actual partial state and resume precisely. Never reset all dispatched flags or use absent service readback as proof of no send. A genuinely sent response-loss case must reconcile authoritative identity and avoid duplicate merge/comments; genuinely ambiguous process death must return a specific incomplete/decision-needed reason with stable scope/resumption rather than claim delivery. Use existing lock/CAS, append-only history and bound endpoint. No acknowledgment-only checkpoint or force publication may stand in for exact tip confirmation.",
+        "step": "Repair known-unsent publication failure without weakening uncertain-send safety"
+      },
+      {
+        "details": "Implement standard-library repository-owned run_harness_tests.py with --inventory, --run-group GROUP and --verify-results. Discovery uses unittest.TestLoader.discover(scripts, pattern=test_*.py) and flattens actual IDs, including loader errors. All test IDs have exactly one deterministic group owner; every test_*.py module is included, new runner tests included, unknown/new modules enter a catch-all regression-extra group rather than disappear. Result records contain candidate SHA, inventory digest, group, all discovered/selected/executed IDs and per-ID status, subcase scenario IDs, skipped/fail/error details. Count actual startTest/stopTest and failures; do not infer execution from printed names. Reject empty inventory, duplicate IDs/owners, missing/unexpected tests or scenarios, mismatched candidate/inventory, skipped mandatory tests, nonzero/timeout/unfinished groups, and stale result files. The verifier must compare the disjoint executed union to a fresh full discovery inventory exactly. Inventory-only never runs fixture setUp or external mutations. Add fast synthetic runner controls that intentionally omit/duplicate/fail/skip/invalidate a group and require verifier failure.",
+        "step": "Make all original assertions runnable through bounded complete discovery groups"
+      },
+      {
+        "details": "Refactor only test organization of the monolithic W11 matrix into four uniquely named discoverable unittest shard methods, each selecting scenario index modulo4 from one deterministic test-owned inventory of every (stage,event,before-push|after-push) checkpoint publication pair. Do not run the same unittest ID four times under hidden environment selection. The inventory control independently captures actual successful-path checkpoint events and asserts equality to the test-owned explicit event inventory, all EXPECTED_MUTATIONS and the disjoint four-shard scenario union. Every original assertion, real bare-remote rejection hook, terminal failure case, exact publication check and recovery repeat remains. Preserve origin-method-to-expanded-ID mapping in evidence so the original113-method static inventory is accounted for; unchanged legacy modules are not renamed or omitted. W09 effect/death matrix remains its own full gate. If an added publication checkpoint changes the runtime inventory, expand expected scenarios rather than sample them.",
+        "step": "Deterministically divide the W11 matrix while retaining every boundary"
+      },
+      {
+        "details": "W11 must inject before/after-push failure in the actual original checkpoint publication call, with the known-unsent failure handler in scope. Current fixture captures a prefix after dispatch is already locally committed and injects only during resume publication; this cannot establish production no-send knowledge and must not be used as proof that blind redispatch is safe. Save an earlier safe prefix, target the exact original (stage,event) seam during real execution, assert seam hit once, then fresh retry. Retain coverage of the formerly restored dispatched prefix as a genuinely ambiguous process-death control requiring no duplicate write and explicit reconciliation. Add four direct merge/ticket-comment-8 x before-push/after-push probes: assert first result incomplete, zero merge/comment send at failed dispatch, stable resume, exact publication on retry, eventual delivered, exactly one merge/comment after repeat. Add genuine successful service mutation plus lost response, delayed/failed lookup, removed returned identity and duplicate/conflicting comment controls to establish authoritative readback/decision behavior.",
+        "step": "Inject real initial publication failures and preserve uncertainty controls"
+      },
+      {
+        "details": "Update local-docs/verification.md and relevant tracked skill guidance to document inventory, every supported group, four W11 shards, union verification and validator with real per-command<=600 deadlines. Preserve full discovery as the inventory source; replace its infeasible mandatory one-process execution instruction with complete bounded sharded execution. State that discovery alone, a single passing shard and historical reports are not a complete pass. Implementer, fresh unit checker and separate fresh final checker independently execute all required gates on their exact candidate and retain actual timings/statuses/scenario inventories. Resolve neither finding in planner or implementer reports; only a fresh checker may provide resolution evidence.",
+        "step": "Document supported bounded commands and honest evidence"
       }
     ],
     "non_goals": [
@@ -473,21 +818,71 @@
         "new assertion-bearing delivery tests",
         "authoritative SKILL.md/references/state.md/references/roles.md",
         "local-docs/issue-workflow.md",
-        "local-docs/verification.md"
+        "local-docs/verification.md",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        ".agents/skills/implement-change-harness/scripts/test_harness_runner.py"
       ],
       "problem": "Approved delivery currently requires repeated agent-driven Git/GitHub/state operations, while PR publication terminal state hides completed runs from normal active-run mutations.",
       "risks": [
         "GitHub merge and Git ref operations are not a distributed transaction; journal/readback must expose races and partial outcomes.",
         "Completed-run updates must coexist with active-null validation and immutable historical reports.",
         "Branch cleanup must not remove code/worktree needed to resume.",
-        "GitHub may auto-close issues at merge, so delivery material-input validation must allow only that expected state transition."
+        "GitHub may auto-close issues at merge, so delivery material-input validation must allow only that expected state transition.",
+        "A durable dispatch intent does not establish that an external request was sent. Publication failure before the call can be known unsent; process death between publication and service observation can remain genuinely ambiguous. Never infer safe comment redispatch from an empty list alone.",
+        "Full discovery exceeds one 600-second command. Bounded groups must cover the entire real discovered inventory, including dynamically expanded publication shards, exactly once; aggregate completeness needs a separately checked manifest."
       ]
     },
     "verification_notes": {
-      "evidence": "Implementer/checker record exact candidate/base/plan, actual commands/cwd/environment/status, nonzero discovered/executed IDs, case mappings and small sanitized logs. Unit and separate fresh final checker rerun both mandatory gates. Reviewer inspects full diff and tests against original issue, including that normal handoff uses one interaction and one command.",
+      "bounded_suite": {
+        "commands": "Inventory then all run-group commands then verify-results; validator independently. Each invocation has an external real timeout; no aggregate timeout increase. If a planned group cannot finish within600, optimize fixture overhead while preserving all assertions; otherwise report incomplete for decision, never omit it.",
+        "deadline_per_process_seconds": 600,
+        "group_ownership": "Each legacy module owns its named regression group; delivery-ordinary owns all delivery tests except W09 effect matrix and four expanded W11 publication shards; delivery-w09 owns the full existing W09 effect-boundary method; each W11 shard owns its unique discovered method; regression-extra owns runner tests and any new/unknown module. Additional delivery recovery controls belong delivery-ordinary unless a uniquely named expanded scenario belongs an explicit W11 shard.",
+        "groups": [
+          "regression-test_harness_artifacts",
+          "regression-test_harness_closeout",
+          "regression-test_harness_issue_artifacts",
+          "regression-test_harness_issue_closeout",
+          "regression-test_harness_migration",
+          "regression-test_harness_state",
+          "regression-test_issue_guidance",
+          "regression-test_issue_migration",
+          "regression-test_issue_source",
+          "delivery-ordinary",
+          "delivery-w09",
+          "delivery-w11-0",
+          "delivery-w11-1",
+          "delivery-w11-2",
+          "delivery-w11-3",
+          "regression-extra"
+        ],
+        "runner": ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "runtime_evidence": "Source inspection and reported prior run establish infeasibility of one process, not timing proof for new groups. Implementer/checkers must measure each bounded group; no passing claim now.",
+        "w11_shards": 4
+      },
+      "evidence": "Implementer, fresh unit checker and separate fresh final checker independently run every required group and exact-union verifier plus package validator. All report gates bind exact candidate/base/plan2/attempt, resolved commands/cwd/environment/status/timing and small immutable logs. Preserve full discovery and scenario inventories plus explicit mappings to all original W01-W13 assertions and W14-W15. Any timeout, omitted group/scenario, skip, failure, stale result or unresolved finding blocks acceptance. Gates may run concurrently only with separate fixture/temp directories and CPU capacity; no nested agents needed.",
       "exclusions": [
         "No C++ builds/CTest/GPU/Steam tests: changes only harness Python and guidance.",
         "Disposable fake gh cannot prove live GitHub branch-protection/service conduct; real service mutation is outside this issue verification. Read-only live issue matches original snapshot."
+      ],
+      "findings_preserved": [
+        {
+          "affected_task": "https://github.com/robinwassen/Fossilize/issues/39",
+          "evidence": "Independent four-case probe confirmed merge and ticket-comment-8 dispatch checkpoint publication failure both before-push and after-push exits before effect(). In all four cases, two fresh retries confirm exact orphan publication but remain incomplete because dispatched=true/status=intent triggers the pending guard. Merge cases retain merge_count0; comment cases retain merge_count1 and delivery_comment_count0. Source persists dispatched before publication returns; no retry path distinguishes this known no-send outcome. This violates same-command recoverability required by AC1 and planned W09-W11. See runs/issue-39/issue39-20261028/evidence/checker-1-probe.log",
+          "id": "CHK39-NO-SEND-PUBLICATION-RECOVERY",
+          "location": ".agents/skills/implement-change-harness/scripts/delivery_wrapup.py:126-132",
+          "required_change": "Preserve durable distinction/reconciliation for known unsent effects when dispatch publication fails, while retaining fail-closed behavior for genuinely uncertain sent effects. Keep and pass every W11 case and add any missing dispatch/publication boundary assertions needed; do not solve by blindly redispatching uncertain writes.",
+          "route": "implementation",
+          "status": "open"
+        },
+        {
+          "affected_task": "https://github.com/robinwassen/Fossilize/issues/39",
+          "evidence": "The sole behavioral gate requires full standard-library discovery exit0 within600 seconds. Exact-candidate implementer command was externally timed out with exit124 during W11 after14 passing methods and four failed dispatch-publication subcases; W12 and subsequent retained regression modules did not execute. Reviewed log is embedded as runs/issue-39/issue39-20261028/evidence/checker-1-reviewed-implementer-suite5.log; this checker did not relabel it as independent passing execution. The large exhaustive real-Git publication/recovery matrix plus existing suite needs a feasible bounded gate design.",
+          "id": "CHK39-MANDATORY-GATE-RUNTIME-DESIGN",
+          "location": "plan1 gate delivery-suite; local-docs/verification.md:Change-harness skill checks",
+          "required_change": "Replan a bounded complete verification design, such as shards each under600 seconds whose explicit union covers the identical full discovered test set and every W01-W13 assertion. Preserve all existing safety/history/publication regressions and exact candidate unit/final checks; do not drop assertions or raise the command bound silently. Re-run independently after repair.",
+          "route": "planner",
+          "status": "open"
+        }
       ],
       "limits": {
         "command_timeout_seconds": 600,
@@ -495,12 +890,45 @@
         "repairs": 3,
         "replans": 1
       },
-      "publication": "Existing source publication/attachment and exact orphan artifact gates remain mandatory coordinator workflow gates; this plan does not authorize merging the implementation PR. New delivery command behavior is verified in disposable repositories."
+      "publication": "Existing source publication/attachment and exact orphan artifact gates remain mandatory coordinator workflow gates; this plan does not authorize merging the implementation PR. New delivery command behavior is verified in disposable repositories.",
+      "replan_reason": "CHK39-MANDATORY-GATE-RUNTIME-DESIGN: mandatory original full600 discovery timed out exit124 during W11 after14 methods; unrun tests and four dispatch failures remain incomplete. Version2 changes scheduling and adds coverage controls without removing a case/assertion or raising bounds."
     },
-    "version": 1,
+    "version": 2,
     "work_units": []
   },
   "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/39"
+        ],
+        "digest": "7d3c54558c56058b747ebf9da8ab88d4eb62397b3b625acc50ea91ebdb81733c",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/39": {
+            "blocked_by": [],
+            "body": "## Problem\n\nThe approved wrap-up of [PR #38](https://github.com/robinwassen/Fossilize/pull/38) required repeated AI reasoning, individual Git/GitHub calls, temporary Python scripts, and manual post-delivery state updates. Squash merge, branch cleanup, ticket closeout and evidence reconciliation are a mechanical process. Reconstructing that process in each conversation wastes tokens and adds opportunities for mistakes.\n\n## Required outcome\n\nOnce the verified PR is open and attached, the harness prompts the user for approval. After explicit approval, the agent invokes **one supported wrap-up command**. That command performs the complete approved delivery workflow and returns a compact result. AI reasoning is reserved for review, the approval conversation and exceptional decisions.\n\n## Acceptance criteria\n\n- Update the skill to present the PR link and a concise verification summary, then request approval to squash-merge and wrap up. Decline/defer leaves the PR open. Honor approval already given in the conversation without asking again; opening a PR alone is not approval.\n- Bind approval to the repository, PR and accepted head. The script checks eligibility and stops for a meaningful decision if the head, required verification or merge conditions changed. Preserve existing independent-checking gates.\n- After approval, a single repository-owned command performs the squash merge, verifies the resulting commit/tree against the accepted candidate, deletes the intended remote/local source branch safely, confirms eligible tickets are closed as completed, and posts concise delivery evidence. Preserve unrelated worktrees, user edits and unfinished parent issues.\n- Add a supported post-delivery state transition. Record the merge commit separately from the original accepted candidate; preserve acceptance, reports, budgets and history. Update PR/delivery status, keep the active pointer correct, and publish/confirm the exact orphan artifact checkpoint. No ad-hoc scripts or direct coordinator state surgery are needed.\n- The command owns durable intent, returned identities, readback and recovery for its steps. Restarting the same command reconciles partial/uncertain outcomes without duplicate merges/comments, incorrect deletion or fabricated completion. Already-merged PRs, already-deleted branches and already-closed tickets are handled explicitly.\n- Return one compact structured result and human summary: delivered, incomplete with the same resumption command, or a specific decision needed. The agent does not reason through or narrate each successful mechanical step. Avoid repeatedly reading or copying unchanged full history; retain the existing publication and integrity guarantees.\n\n## Verification\n\nUse assertion-bearing fake-gh and real disposable Git/bare-remote tests for the approved happy path, no approval, stale head, merge rejection, dirty/unrelated work preservation, interruption/response loss at each mutation boundary, retry/idempotence, completed-run state updates and artifact publication failure. Verify the normal agent workflow requires one approval interaction and one wrap-up command invocation.\n\n## Scope and context\n\nHarness command, approval handoff, policy/skill guidance and regression tests. Builds on the delivered issue-based harness in [#37](https://github.com/robinwassen/Fossilize/issues/37). No implementation work is requested by filing this issue; no automatic approval, new scheduler, or changes to Fossilize C++ behavior.\n\n<!-- harness-followup:approval-wrapup-command-v1 -->\n",
+            "children": [],
+            "id": 6083245574,
+            "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
+            "number": 39,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/9",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "Prompt for PR approval and run delivery wrap-up with one command",
+            "url": "https://github.com/robinwassen/Fossilize/issues/39"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/39"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    },
+    {
+      "superseded_plan": {
+        "version": 1,
+        "work_units": []
+      }
+    },
     {
       "prior_issue_snapshot": {
         "deliverables": [
@@ -543,7 +971,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 24,
+  "revision": 25,
   "root_issue": {
     "id": 6083245574,
     "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
@@ -553,7 +981,7 @@
   },
   "run_id": "issue39-20261028",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-39",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/39",
   "verification": [],
