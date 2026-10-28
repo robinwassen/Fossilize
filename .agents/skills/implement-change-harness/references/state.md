@@ -210,13 +210,74 @@ candidate/base/plan. Then use a normal non-force source push and publish-observa
    the helper paginates/readbacks those exact facts before attach.
 5. Call attach_artifact, then event=attachment with matching url and success.
    Failure leaves attachment only pending. Predeclared required_after_pr CI needs
-   event=ci, result=passed and evidence before completion. The helper never merges.
+   event=ci, result=passed and evidence before completion. Completion records an
+   authoritative successful required-check baseline for later approved delivery.
 
 Each observation rechecks accepted source/base/head and live task input. Ref races
 remain observable facts, not a distributed transaction. Reconcile the same PR
 identity rather than creating another. After attachment/required CI, terminal
 state and active.json=null commit atomically, then exact artifact publication
 must confirm before workflow_complete=true.
+
+## Approved delivery after PR publication
+
+After exact PR-ready terminal publication, present the attached PR URL and concise
+independent verification/limits. Request approval to squash-merge and wrap up once;
+honor explicit approval already given for the same repository, PR and accepted
+head. Decline/defer leaves the PR open. PR creation is never approval. A flag is
+an assertion of actual human approval, not authority inferred from issue text.
+
+The coordinator invokes one command (replace all placeholders with recorded facts):
+
+```sh
+python3 -B .agents/skills/implement-change-harness/scripts/harness_state.py --repo /absolute/implementation wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/NUMBER --run-id RUN --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/PR --approved-head FULL_ACCEPTED_SHA --accepted-revision TERMINAL_REVISION
+```
+
+`Harness(repo).wrap_up(approval)` provides the same supported transition. Selection
+uses the exact completed root/run, even with active.json=null. Accepted revision
+is the original PR-ready terminal revision; resumption retains it while delivery
+revisions increase. A different active run blocks delivery before mutation.
+The same command remains runnable from the retained implementation worktree,
+which may detach safely at the accepted candidate; no worktree is removed.
+
+The command holds the existing common-directory lock and uses the same artifact
+CAS, bound push endpoint and integrity checks. It validates independent unit/final
+reports and mandatory gates, attachment, eligible closeout targets, current material
+issue graph, exact actual PR repositories/head/base, required successful checks and
+merge conditions. Historical PR-ready runs without a required-check baseline need
+review and renewed readiness through the supported publication workflow; no baseline
+or acceptance is invented. Changed requirements/head/base/checks require a decision.
+
+Every intent, dispatch, returned identity and readback has a durable checkpoint
+with exact-tip publication before progression. Restart the same command after
+interruption or response loss; authoritative reads reconcile merged PRs, absent
+branches, completed tickets and marked comments before any retry. An uncertain
+merge/comment is never blindly redispatched. All Git/gh subprocesses have finite
+deadlines (at most 60 seconds each; artifact transport has its own bounded deadline)
+and the command checks a 600-second overall progression deadline.
+
+After squash merge, independently fetch the intended target from the bound push
+endpoint and require reachability, exactly one accepted-base parent, a distinct
+merge identity and the accepted candidate tree. Keep the real merge SHA separately
+from original candidate and all original acceptance. Conditional remote deletion
+uses expected-SHA lease; local update-ref deletion also requires the accepted SHA.
+Dirty/changed/unexpectedly occupied source worktrees require a decision. Unrelated
+worktrees, user edits, artifact inspection files and unfinished parents survive.
+Only independently verified closeout targets may close as completed; cancelled
+issues require a decision. Paginated marked comment readback proves exactly one
+concise delivery comment per target with PR/candidate/merge/verification limits.
+Expected completed auto-closure does not invalidate unchanged material requirements.
+
+The supported terminal transition changes only delivery/PR bookkeeping, next action
+and monotonic revision plus new append-only delivery evidence. It preserves plans,
+acceptance, reports, history, allocations and original budgets. The active pointer
+stays null. Delivery records the original accepted candidate separately from merge.
+
+CLI prints one compact JSON object including `summary`, scope, real identities,
+checkpoint and `resume_command`: `delivered` (exit0), `incomplete` (exit3, resume the
+same command), or `decision-needed` (exit2, specific reason). A local delivered
+record without exact confirmed orphan publication still returns incomplete.
+No ad-hoc scripts, direct state surgery or agent-managed mechanical steps are needed.
 
 ## Artifact publication and recovery
 

@@ -109,6 +109,20 @@ Relevant configuration matrix: GCC/Clang; Debug/Release; `FOSSILIZE_ENABLE_EXCEP
 - **Existing research runner:** `python3 local-docs/reviews/observability-sweep-evidence/reproduce.py --repo /absolute/repo --out /tmp/fresh-fossilize-probes`. Requires a new output directory, Linux/g++ and populated dependencies; directly compiles probes without CMake. It records historical defects E1–E9, including false-success exits, and runs the existing system test. It is an observation runner, **not** a passing observability conformance suite; follow the issues' assertion-bearing acceptance requirements.
 - **Exploratory unstable-driver stress:** the disabled `SIMULATE_UNSTABLE_DRIVER` macro in `cli/fossilize_replay.cpp` injects random crashes/deadlocks during creation/teardown. No CMake switch exists. Use a disposable diagnostic build; nondeterministic stress is not a regression oracle or an ordinary Steam deployment build.
 
+
+Approved delivery regression coverage lives in
+`.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py` (W01–W13).
+Run it with the full standard-library discovery command above. The fixture uses
+subprocess fake gh and real disposable Git/bare remotes to produce actual squash
+commits and inspect tree/topology/ref identities. Tests assert approval/acceptance
+fences, live drift, conditional cleanup, dirty/unrelated preservation, completed
+terminal-run bookkeeping, ticket/comment evidence, explicit mutation-boundary
+process-death recovery and exact publication failures. Fixture service response
+loss and artifact publication seams require fresh helper instances on retry.
+The CLI happy path invokes one approved wrap-up command and emits compact results.
+These tests do not mutate production PRs/issues or prove live GitHub protection
+behavior. No C++ build, GPU or Steam verification applies to harness-only changes.
+
 ## GPU-independent CLI, database and embedding checks
 
 Use a small known valid fixture, including required dependencies, and capture stdout, stderr and status separately:
