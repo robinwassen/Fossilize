@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/FOS-000026/2026-10-28-backlog-completion/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793165733.9403925,
-      "status": "running",
+      "status": "complete",
       "unit": "FOS-000026",
       "worker_id": "/root/planner_26"
     }
@@ -39,8 +40,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -75,8 +76,194 @@
       "requirement": "Apply the resulting completion rule to this item in its implementation PR.   Reconcile the stale FOS-000025 status only against its actual merged PR and   retained verification evidence; do not mark other pending backlog work Done."
     }
   ],
-  "phase": "planning",
-  "plan": null,
+  "phase": "implementing",
+  "plan": {
+    "cases": [
+      {
+        "assertions": "A completed unsplit root enters a durable closeout stage instead of proceeding directly to publication; absent/unrecorded closeout blocks final acceptance/publication. A committed tracked root Done update with evidence/reference can be recorded only after accepted requirements and passing mandatory checks. Assert real Markdown bytes, state, candidate SHA, and clean source, not merely a status field.",
+        "id": "C01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py and/or test_harness_closeout.py"
+      },
+      {
+        "assertions": "A split fixture with tracked canonical root and two registered child definitions marks only accepted children Done; incomplete or failed child leaves root incomplete and closeout/publication blocked. Once every required child accepts, root and children can close in the one tracked branch. Original keys, titles, criteria, dependencies and registry allocation bytes remain intact. Artifact-only canonical units are rejected or explicitly migrated without duplicate definitions.",
+        "id": "C02",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_closeout.py (real disposable tracked backlog fixture)"
+      },
+      {
+        "assertions": "Parameterize failed, unsupported, unavailable, incomplete, skipped/missing and zero-executed mandatory verification: none permits a valid Done/closeout claim or final/publication acceptance. Preserve existing evidence-completeness tests; add closeout-specific gate attempts and assert unchanged authoritative checkpoint where an action is rejected.",
+        "id": "C03",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py and/or test_harness_closeout.py"
+      },
+      {
+        "assertions": "After a proposed Done bookkeeping commit, an independent checker rejection invalidates root/affected child closeout and leaves a durable cleanup obligation. Realistic coordinator recovery removes stale Done from tracked source before repair acceptance, leaves unfinished items open, rechecks corrected behavior, closes once, and obtains fresh separate unit/final acceptance at the revised commit. Probe implementation, planner and environment rejection routes and affected dependency scope.",
+        "id": "C04",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_closeout.py"
+      },
+      {
+        "assertions": "Interrupt/reopen Harness before closeout intent, after intent before commit, after source commit before completion record, and after invalidation before cleanup. State and tracked source observations must retain a precise pending next action, no successful bookkeeping claim or cleared active pointer. Resume reconciles the existing source commit without duplicating edits/PRs or adopting dirty/wrong/unrelated commits. Exercise artifact checkpoint fault/CAS behavior for the new durable record.",
+        "id": "C05",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_closeout.py using fresh Harness instances and real Git commits"
+      },
+      {
+        "assertions": "A bookkeeping commit changes candidate SHA and invalidates approvals; stale accepted tuples cannot publish. All required renewed checks and separate final checking refer to the exact committed candidate containing the backlog edits. Later source/backlog/base/replan changes invalidate closeout as applicable. Successful renewal does not request another closeout commit indefinitely.",
+        "id": "C06",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py and/or test_harness_closeout.py"
+      },
+      {
+        "assertions": "Isolated end-to-end coordinator exercise follows documented helper operations, writes/commits actual Markdown statuses, executes assertion-bearing fixture tests, reads final detached candidate, pushes once to local bare remote, reconciles one deterministic PR identity including response loss/attachment retry, and locally merges the source branch. Assert intended Done/evidence/reference bytes arrive on target with source, no artifact history or second closeout invocation, no automatic merge performed by helper, no fabricated early PR URL and no duplicate creation dispatch. Existing publication tests remain intact.",
+        "id": "C07",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_closeout.py (registered standard-library unittest workflow)"
+      },
+      {
+        "assertions": "A fixture reproducing the current already initialized schema-2 run without new closeout fields resumes under the new helper with identical immutable identity/original requirements, reports, history, budget and current acceptance provenance, and pending closeout. An already complete legacy FOS-000025 record remains intact. Real old candidate acceptance is not fabricated into new-candidate acceptance; source adoption follows the documented self-application sequence.",
+        "id": "C08",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_closeout.py and backward-compatibility regression coverage"
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6",
+          "AC7",
+          "AC8"
+        ],
+        "cwd": "<exact candidate worktree>",
+        "expected": "All existing T01-T17 mappings remain meaningfully covered; added C01-C08 tests are discovered and actually executed with no skip. Retain exact command/environment/status/log, discovery/execution IDs and case mapping. Review new assertions for original-defect detection; focused baseline regression or counterexample must demonstrate bypass under old mechanics where feasible.",
+        "id": "G01",
+        "kind": "both",
+        "method": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v",
+        "prerequisites": "Python 3, Git, POSIX flock, disposable temporary directories and local bare remote; 600-second real process deadline per command; do not use real artifact ref or GitHub test PRs."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "<exact candidate worktree>",
+        "expected": "Validator succeeds and links/role/state/API documentation agree with actual implementation; no global skill installation change required.",
+        "id": "G02",
+        "kind": "both",
+        "method": "python3 -B /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+        "prerequisites": "Host skill-creator validator and its PyYAML dependency; standard-library helper runtime remains dependency-free."
+      },
+      {
+        "criteria": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6",
+          "AC7",
+          "AC8"
+        ],
+        "cwd": "<exact candidate worktree>",
+        "expected": "Behavior and docs agree; no loophole around missing closeout, stale Done invalidation or exact-candidate acceptance; closeout terminates after bounded renewal; one source PR carries canonical root/subtask status and evidence; no unsupported product/CI/merge claims. Before actual closeout, FOS-000026 may honestly remain pending; final gate G05 requires its actual Done update.",
+        "id": "G03",
+        "kind": "both",
+        "method": "Independent review of original FOS-000026 criteria, full git diff BASE..CANDIDATE, helper/test assertions and documented coordinator sequence; git diff --check BASE..CANDIDATE; compare preserved criteria/dependencies/registry and unaffected backlog snapshots. Inspect actual realistic-workflow test execution, not text matching alone.",
+        "prerequisites": "Fresh detached checker worktree at exact candidate; original input cc36967be308feb58ca0963e9ad161cb545b3b7a; immutable plan and factual implementer commands."
+      },
+      {
+        "criteria": [
+          "AC8"
+        ],
+        "cwd": "<exact candidate worktree>",
+        "expected": "PR #2 is actually MERGED at merge commit 35a72926c8e313a11c8de5ce61c1356cbfa4eccd with accepted head e01fa9d68ade5384f214ec46a6ddc352b22a03de. Retained final report accepts that head/base bbe8ae4acd9ad527658bb58e6b06474924a06284, records 27 discovered/executed and no skipped tests plus passed metadata validation; completed run records the same one PR and attachment. Canonical FOS-000025 update is strictly supported historical evidence; other pending work remains pending.",
+        "id": "G04",
+        "kind": "both",
+        "method": "Read-only gh pr view 2 --repo robinwassen/Fossilize --json state,mergedAt,mergeCommit,headRefOid,url and git show retained FOS-000025 checker-final report/run state/G01-G02 logs; verify accepted candidate linkage and merged commit ancestry.",
+        "prerequisites": "Read-only GitHub access and retained local harness-artifacts records; coordinator can supply sanitized actual observations to detached role if network access differs. Unavailable provenance blocks this reconciliation; do not substitute guessed evidence."
+      },
+      {
+        "criteria": [
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6",
+          "AC7",
+          "AC8"
+        ],
+        "cwd": "<exact candidate worktree>",
+        "expected": "FOS-000026 actually Done with branch-proposal qualification, concise true passing evidence and stable implementation compare/branch reference; FOS-000025 supported Done with actual merged PR #2; no other pending item Done. Final check covers those bytes at the exact candidate/base/plan. No unrecorded closeout remains, no stale approvals reused, no final source status commit remains to perform after checker acceptance.",
+        "id": "G05",
+        "kind": "final",
+        "method": "Independent exact-candidate closeout audit: inspect current run durable closeout intent/completion/renewal records, source git show CANDIDATE:local-docs/reviews/harness-backlog.md and local-docs/specs/basic-change-harness-plan.md, full base-to-candidate diff, preserved immutable criteria/registry, and actual helper identity/candidate transitions.",
+        "prerequisites": "This run used the resulting rule, all required verification and renewed unit checking passed, clean committed bookkeeping candidate, separate fresh final checker."
+      },
+      {
+        "criteria": [
+          "AC4",
+          "AC5",
+          "AC7"
+        ],
+        "cwd": "/home/robin/dev/fossilize-FOS-000026",
+        "expected": "Exactly one ready-for-review PR to robinwassen/Fossilize master includes root implementation/status updates and any completed subtasks; reference is honest before creation and actual PR URL retained afterward. No merge by harness, no post-PR source closeout write, no second closeout invocation/PR. Required live publication observations remain distinct from isolated deterministic tests.",
+        "id": "G06",
+        "kind": "publication",
+        "method": "Coordinator follows existing fetch/base comparison, persistent publish intent, non-force push and remote SHA, exact all-state head/base/repository PR lookup, one create-dispatched only after empty lookup, reconciliation and attach_artifact; verify PR file diff includes source and backlog updates.",
+        "prerequisites": "Separate final acceptance at current clean source/base/plan, all findings resolved, valid durable closeout, current target base, GitHub publication access."
+      }
+    ],
+    "implementation": [
+      "Update SKILL.md and role/state guidance with an explicit closeout stage after all applicable work-unit requirements and mandatory verification have independently passed, before the separate final checker and publication. A Done marker on an unmerged branch describes verified proposed branch state and must explicitly avoid claiming master has landed. Final acceptance still covers the entire committed candidate including bookkeeping.",
+      "Add the minimum helper state/actions/guards needed to make closeout concrete and recoverable. Persist closeout intent before editing and record its completed source candidate only after committed canonical backlog edits actually exist. Track exact candidate/base/plan, required root/unit keys and canonical locations, concise passing evidence and an honest branch/compare reference. Missing, unfinished, stale or invalidated closeout cannot permit final acceptance/publication/completion. Keep old reports and evidence append-only, source editing with the coordinator/implementer rather than silently rewriting source from state.",
+      "Use a bounded two-pass lifecycle: accepted implementation -> durable closeout intent -> bookkeeping commit -> recorded prepared closeout candidate -> renewed applicable unit checks at that candidate -> separate final checker -> one publication. Bookkeeping changes invalidate prior exact-commit approvals. Prepared closeout survives successful renewal so another bookkeeping edit is not requested after each successful checker. Reuse existing evidence only as provenance; never relabel old unit acceptance as acceptance of the new SHA. A renewal path may dispatch checker-only unit checks where no implementation work changed; avoid consuming repair rounds just for metadata or looping through closeout again. Action names/layout are implementer choices if these invariants hold.",
+      "On checker rejection or source/base/plan change, invalidate affected closeout claims together with existing approvals. Persist an explicit required removal/reconciliation obligation and next action. Before any repair candidate can be accepted or published, restore affected canonical Done markers to an honest incomplete status in source and record that fact; root loses Done whenever a required child/criterion is open. Preserve independently completed unaffected children only with applicable evidence. An interruption between invalidation and source cleanup remains visibly unfinished and cannot publish. Re-establish Done only after fresh applicable checks, then renew exact-candidate checks once.",
+      "Future split units must have canonical definitions/statuses in tracked source documentation carried by the implementation PR. Update the current artifact-only canonical-subtask guidance where necessary; do not maintain two canonical definitions. Legacy artifact-only units require explicit location migration with permanent keys/titles/original criteria/dependencies preserved before closeout. This run remains unsplit, so allocate no keys and change no registry allocation state.",
+      "Use a stable GitHub branch or compare reference such as https://github.com/robinwassen/Fossilize/compare/master...codex/FOS-000026-backlog-completion in FOS-000026 bookkeeping; say it is the proposed implementation branch/compare, not an already existing PR. Avoid embedding the self-referential final SHA in its own commit. A later actual PR URL belongs in publication state/PR description; no post-review source edit is needed solely to replace the stable reference.",
+      "Reconcile FOS-000025 only using actual merged PR #2 and retained checker-final/run evidence. Update its stale canonical status and the misleading document-level v1-candidate status consistently, preserving its requirement paragraph. Summarize historical 27-test independent verification and metadata validation at e01fa9d68ade5384f214ec46a6ddc352b22a03de, linked actual PR #2; do not imply those historical executions verify new changes.",
+      "Self-apply this flow in the current run. Preserve already recorded schema-2 initialization/planner/worker facts and immutable original acceptance. Make new closeout fields backward compatible for the current old-helper state or provide an explicit minimal normalization with provenance; absent fields mean pending closeout, never fabricated completion. After the first independently accepted implementation candidate, coordinator adopts the new implementation helper, records closeout, commits FOS-000026 Done with concise actual evidence, renews required exact-candidate checks, and obtains separate final acceptance. Continue the same run and one-PR identity; preserve the old completed FOS-000025 record."
+    ],
+    "non_goals": [
+      "Fossilize C++/Vulkan/Steam changes or product verification claims",
+      "Automatic merge, merge monitoring, scheduling, direct master writes, extra closeout PRs or early PR creation",
+      "Unrelated backlog completion or changing permanent keys, acceptance criteria, dependencies or allocation states",
+      "A generic arbitrary-Markdown editor, hostile-coordinator authentication, or a new agent/runtime service"
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Update the skill, role/state guidance and helper only as needed to make this   a concrete final step. The planner decides the appropriate implementation and   necessary test-suite additions using the [verification guide](../verification.md)."
+      },
+      {
+        "id": "AC2",
+        "requirement": "Mark the root and each completed subtask Done in their canonical backlog   definitions only after the applicable acceptance criteria and required   verification pass. A parent stays incomplete while any required subtask or   criterion remains open. Failed, unsupported, unavailable or incomplete required   checks cannot justify Done."
+      },
+      {
+        "id": "AC3",
+        "requirement": "Preserve permanent keys, canonical definitions, dependencies and original   acceptance criteria. Leave unfinished items open. Do not change allocation   state in the permanent key registry to represent implementation completion."
+      },
+      {
+        "id": "AC4",
+        "requirement": "Retain concise verification evidence and an honest implementation-PR reference   with the status update. Do not invent a PR number or claim a PR exists before   creation. The planner must choose a reference that works with the publication   order; a stable branch/compare reference is acceptable until an actual PR URL   is known. Do not create an early PR solely to obtain a number."
+      },
+      {
+        "id": "AC5",
+        "requirement": "Include the bookkeeping changes in the final independently reviewed candidate.   If source or backlog edits occur after review, invalidate/repeat the affected   checks under the existing exact-commit rules. Publishing an unreviewed status   commit must not bypass the checker or produce duplicate PRs."
+      },
+      {
+        "id": "AC6",
+        "requirement": "A checker rejection or later change that invalidates completion must also   invalidate the corresponding Done claim. Interruption/resume must preserve   unfinished closeout work rather than report successful bookkeeping that never   happened."
+      },
+      {
+        "id": "AC7",
+        "requirement": "One implementation PR carries the root, subtasks and backlog updates. The   harness never merges it automatically. Merging it is sufficient to update the   backlog on `master`, with no subsequent closeout invocation required."
+      },
+      {
+        "id": "AC8",
+        "requirement": "Apply the resulting completion rule to this item in its implementation PR.   Reconcile the stale FOS-000025 status only against its actual merged PR and   retained verification evidence; do not mark other pending backlog work Done."
+      }
+    ],
+    "scope": "One unsplit FOS-000026: make canonical backlog completion a durable, verified part of the existing one-PR change harness; apply it to FOS-000026 and reconcile only FOS-000025 from its actual retained evidence.",
+    "subtasks": [],
+    "version": 1
+  },
   "provenance": [],
   "publishing": {
     "ci_policy": "local",
@@ -93,12 +280,19 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 3,
+  "revision": 4,
   "run_id": "2026-10-28-backlog-completion",
   "schema_version": 2,
-  "status": "running",
+  "status": "ready",
   "task_key": "FOS-000026",
   "task_location": "local-docs/reviews/harness-backlog.md#fos-000026--include-backlog-completion-in-the-implementation-pr",
-  "units": [],
+  "units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "key": "FOS-000026",
+      "status": "ready"
+    }
+  ],
   "verification": []
 }
