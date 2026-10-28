@@ -1,0 +1,12 @@
+#!/bin/bash
+set -euo pipefail
+configuration=$1
+exceptions=$2
+cmake=/tmp/fossilize-10/tools/cmake/data/bin/cmake
+ctest=/tmp/fossilize-10/tools/cmake/data/bin/ctest
+build=/tmp/fossilize-10/build-${configuration,,}-${exceptions,,}
+log=/tmp/fossilize-10/${configuration,,}-${exceptions,,}
+"$cmake" -S /home/robin/dev/fossilize-issue-10 -B "$build" -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE="$configuration" -DFOSSILIZE_ENABLE_EXCEPTIONS="$exceptions" -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TESTS=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 > "$log-configure.log" 2>&1
+"$cmake" --build "$build" --parallel 6 > "$log-build.log" 2>&1
+"$ctest" --test-dir "$build" -N > "$log-discovery.log" 2>&1
+"$ctest" --test-dir "$build" --output-on-failure > "$log-ctest.log" 2>&1

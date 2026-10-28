@@ -1,0 +1,46 @@
+Actual build output excerpt; repeated Vulkan prototype conflict diagnostics omitted after first45 lines.
+FAILED: [code=1] test/CMakeFiles/diagnostic-compatibility-test.dir/diagnostic_compatibility_test.cpp.o 
+/usr/bin/c++  -I/home/robin/dev/fossilize-issue-10 -I/home/robin/dev/fossilize-issue-10/rapidjson/include -I/home/robin/dev/fossilize-issue-10/khronos -I/home/robin/dev/fossilize-issue-10/miniz -I/home/robin/dev/fossilize-issue-10/cli -I/home/robin/dev/fossilize-issue-10/cli/volk -I/home/robin/dev/fossilize-issue-10/cli/../khronos -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -MD -MT test/CMakeFiles/diagnostic-compatibility-test.dir/diagnostic_compatibility_test.cpp.o -MF test/CMakeFiles/diagnostic-compatibility-test.dir/diagnostic_compatibility_test.cpp.o.d -o test/CMakeFiles/diagnostic-compatibility-test.dir/diagnostic_compatibility_test.cpp.o -c /home/robin/dev/fossilize-issue-10/test/diagnostic_compatibility_test.cpp
+In file included from /home/robin/dev/fossilize-issue-10/cli/device.hpp:25,
+                 from /home/robin/dev/fossilize-issue-10/test/diagnostic_compatibility_test.cpp:8:
+/home/robin/dev/fossilize-issue-10/cli/volk/volk.h:18:9: error: #error To use volk, you need to define VK_NO_PROTOTYPES before including vulkan.h
+   18 | #       error To use volk, you need to define VK_NO_PROTOTYPES before including vulkan.h
+      |         ^~~~~
+/home/robin/dev/fossilize-issue-10/cli/volk/volk.h:2096:27: error: ‘VkResult (* vkCreateDevice)(VkPhysicalDevice, const VkDeviceCreateInfo*, const VkAllocationCallbacks*, VkDevice_T**)’ redeclared as different kind of entity
+ 2096 | extern PFN_vkCreateDevice vkCreateDevice;
+      |                           ^~~~~~~~~~~~~~
+In file included from /home/robin/dev/fossilize-issue-10/khronos/vulkan/vulkan.h:11,
+                 from /home/robin/dev/fossilize-issue-10/fossilize.hpp:25,
+                 from /home/robin/dev/fossilize-issue-10/test/diagnostic_compatibility_test.cpp:4:
+/home/robin/dev/fossilize-issue-10/khronos/vulkan/vulkan_core.h:4717:32: note: previous declaration ‘VkResult vkCreateDevice(VkPhysicalDevice, const VkDeviceCreateInfo*, const VkAllocationCallbacks*, VkDevice_T**)’
+ 4717 | VKAPI_ATTR VkResult VKAPI_CALL vkCreateDevice(
+      |                                ^~~~~~~~~~~~~~
+/home/robin/dev/fossilize-issue-10/cli/volk/volk.h:2097:29: error: ‘VkResult (* vkCreateInstance)(const VkInstanceCreateInfo*, const VkAllocationCallbacks*, VkInstance_T**)’ redeclared as different kind of entity
+ 2097 | extern PFN_vkCreateInstance vkCreateInstance;
+      |                             ^~~~~~~~~~~~~~~~
+/home/robin/dev/fossilize-issue-10/khronos/vulkan/vulkan_core.h:4664:32: note: previous declaration ‘VkResult vkCreateInstance(const VkInstanceCreateInfo*, const VkAllocationCallbacks*, VkInstance_T**)’
+ 4664 | VKAPI_ATTR VkResult VKAPI_CALL vkCreateInstance(
+      |                                ^~~~~~~~~~~~~~~~
+/home/robin/dev/fossilize-issue-10/cli/volk/volk.h:2098:30: error: ‘void (* vkDestroyInstance)(VkInstance, const VkAllocationCallbacks*)’ redeclared as different kind of entity
+ 2098 | extern PFN_vkDestroyInstance vkDestroyInstance;
+      |                              ^~~~~~~~~~~~~~~~~
+/home/robin/dev/fossilize-issue-10/khronos/vulkan/vulkan_core.h:4669:28: note: previous declaration ‘void vkDestroyInstance(VkInstance, const VkAllocationCallbacks*)’
+ 4669 | VKAPI_ATTR void VKAPI_CALL vkDestroyInstance(
+      |                            ^~~~~~~~~~~~~~~~~
+/home/robin/dev/fossilize-issue-10/cli/volk/volk.h:2099:49: error: ‘VkResult (* vkEnumerateDeviceExtensionProperties)(VkPhysicalDevice, const char*, uint32_t*, VkExtensionProperties*)’ redeclared as different kind of entity
+ 2099 | extern PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties;
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/robin/dev/fossilize-issue-10/khronos/vulkan/vulkan_core.h:4732:32: note: previous declaration ‘VkResult vkEnumerateDeviceExtensionProperties(VkPhysicalDevice, const char*, uint32_t*, VkExtensionProperties*)’
+ 4732 | VKAPI_ATTR VkResult VKAPI_CALL vkEnumerateDeviceExtensionProperties(
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/robin/dev/fossilize-issue-10/cli/volk/volk.h:2100:45: error: ‘VkResult (* vkEnumerateDeviceLayerProperties)(VkPhysicalDevice, uint32_t*, VkLayerProperties*)’ redeclared as different kind of entity
+ 2100 | extern PFN_vkEnumerateDeviceLayerProperties vkEnumerateDeviceLayerProperties;
+      |                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/robin/dev/fossilize-issue-10/khronos/vulkan/vulkan_core.h:4742:32: note: previous declaration ‘VkResult vkEnumerateDeviceLayerProperties(VkPhysicalDevice, uint32_t*, VkLayerProperties*)’
+ 4742 | VKAPI_ATTR VkResult VKAPI_CALL vkEnumerateDeviceLayerProperties(
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/robin/dev/fossilize-issue-10/cli/volk/volk.h:2101:51: error: ‘VkResult (* vkEnumerateInstanceExtensionProperties)(const char*, uint32_t*, VkExtensionProperties*)’ redeclared as different kind of entity
+ 2101 | extern PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
+      |                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/robin/dev/fossilize-issue-10/khronos/vulkan/vulkan_core.h:4727:32: note: previous declaration ‘VkResult vkEnumerateInstanceExtensionProperties(const char*, uint32_t*, VkExtensionProperties*)’
+ 4727 | VKAPI_ATTR VkResult VKAPI_CALL vkEnumerateInstanceExtensionProperties(

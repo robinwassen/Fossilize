@@ -1,0 +1,17 @@
+#!/bin/bash
+set -euo pipefail
+base=/tmp/fossilize-10/compatibility-sensitivity
+caller=$base/prebuilt-layer-caller
+for kind in compute raytracing; do
+    mkdir "$base/baseline-qa-$kind" "$base/candidate-qa-$kind"
+    set +e
+    (cd "$base/baseline-qa-$kind" && "$caller" "$base/baseline-layer.so" qa "$kind" reject) > "$base/baseline-qa-$kind.log" 2>&1
+    status=$?
+    set -e
+    test "$status" -eq 1
+    rg 'FAIL correct-resource-phase' "$base/baseline-qa-$kind.log"
+    rg 'Recording graphics pipeline failed' "$base/baseline-qa-$kind.log"
+    (cd "$base/candidate-qa-$kind" && "$caller" /tmp/fossilize-10/build-debug-off/layer/libVkLayer_fossilize.so qa "$kind" reject) > "$base/candidate-qa-$kind.log" 2>&1
+done
+/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-10/build-debug-off -N > /tmp/fossilize-10/discovery-debug-committed.log 2>&1
+/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-10/build-debug-off --output-on-failure > /tmp/fossilize-10/ctest-debug-committed.log 2>&1

@@ -1,0 +1,9 @@
+#!/bin/bash
+set -euo pipefail
+cmake=/tmp/fossilize-10/tools/cmake/data/bin/cmake
+ctest=/tmp/fossilize-10/tools/cmake/data/bin/ctest
+build=/tmp/fossilize-10/build-debug-off
+"$cmake" -S /home/robin/dev/fossilize-issue-10 -B "$build" -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TESTS=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 > /tmp/fossilize-10/configure-debug-off-retry.log 2>&1
+"$cmake" --build "$build" --parallel 4 > /tmp/fossilize-10/build-debug-off.log 2>&1
+"$ctest" --test-dir "$build" -N > /tmp/fossilize-10/discovery-debug-off.log 2>&1
+"$ctest" --test-dir "$build" --output-on-failure > /tmp/fossilize-10/ctest-debug-off.log 2>&1
