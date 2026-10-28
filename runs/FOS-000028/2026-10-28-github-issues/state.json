@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/FOS-000028/2026-10-28-github-issues/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793191260.7584884,
-      "status": "running",
+      "status": "complete",
       "unit": "FOS-000028",
       "worker_id": "/root/planner_1"
     }
@@ -42,8 +43,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -82,8 +83,249 @@
       "requirement": "**Remove the repository backlog after verification.** Remove canonical task\n   definitions, registry, backlog status sections, obsolete links and instructions\n   from the source tree, including this proposal. Do not leave an archived copy,\n   generated task mirror, live legacy fallback or new task ledger elsewhere in\n   the repo. Explicitly supersede the old rule requiring the tracked FOS registry\n   forever: retain legacy identities and mapping on GitHub and historical Git\n   evidence, while future identity allocation belongs to GitHub. Keep valuable\n   specifications, research, fixtures and sanitized execution evidence; replace\n   task references with issue links and ensure retained documents do not operate\n   as another backlog. Test fixtures may describe legacy formats when necessary\n   for compatibility tests, without becoming real task definitions. No destructive\n   Git history rewrite is requested."
     }
   ],
-  "phase": "planning",
-  "plan": null,
+  "phase": "implementing",
+  "plan": {
+    "cases": [
+      {
+        "assertions": "Inventory committed current/archived definitions, permanent registry, every artifact allocation/plan/provenance and relevant unkeyed reports; assert one disposition per source obligation and no missing/duplicate legacy identity. Initial expected keyed union is FOS-000001..000028; artifact journal currently only issues1..25/high_water25 and must not erase registry26..28 or invent historical reservations. Existing artifact plans are unsplit; recheck all before migration. Distinguish retained research/specifications from active tasks.",
+        "id": "I01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_issue_migration.py + live inventory/coverage evidence on harness-artifacts"
+      },
+      {
+        "assertions": "Compare full original source sections, every per-item automated acceptance bullet, evidence link and metadata with live issue bodies; preserve all shared observability acceptance paragraphs, platform/configuration/compatibility gates, E1..E9 ownership and delivery notes in Observability parent context. Shared requirements must be referenced from children. No silent task merge; document overlapping unkeyed known issue and external Steam-owned concerns explicitly.",
+        "id": "I02",
+        "location": ".agents/skills/implement-change-harness/scripts/test_issue_migration.py + independent full source-to-GitHub coverage audit"
+      },
+      {
+        "assertions": "Native hierarchy exactly groups all observability and harness tasks; every declared depends-on including standalone metadata is a directed dependent blocked_by prerequisite edge. Validate missing nodes/cycles and all paginated reads. Check the two documented critical paths, a transitive chain and reasons; complete-propagation edges remain prerequisites while numeric ordering remains advice. Epic membership creates no implicit blocking edge.",
+        "id": "I03",
+        "location": ".agents/skills/implement-change-harness/scripts/test_issue_migration.py + live native relationship audit"
+      },
+      {
+        "assertions": "Reconcile FOS25/26/27 completion using actual merged PR2/5/6, merge SHAs and retained checker/artifact evidence; migration root and unfinished observability children stay open. Cancelled/not_planned prerequisites are unsatisfied. Parent epic cannot complete while required children or uncovered acceptance remain open.",
+        "id": "I04",
+        "location": ".agents/skills/implement-change-harness/scripts/test_issue_migration.py and test_issue_source.py + live merge/status audit"
+      },
+      {
+        "assertions": "Restricted issue-mutation journal transaction uses same common-dir lock, expected artifact tip and bound remote publication; adds only append-only evidence records and leaves every state.json, active.json, allocations.json byte-identical. Intent is committed and exact-tip remotely confirmed before gh mutation; returned identity/readback observation is committed/published afterwards. Failed publication bars next external mutation and has precise retry. Coordinator reloads new tip before canonical writes.",
+        "id": "M01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_issue_migration.py against real disposable Git/bare remote"
+      },
+      {
+        "assertions": "Fake executable gh records argument vectors and persistent simulated service state. Inject crash before dispatch, after remote creation before response, malformed/nonzero/timeout response, after returned identity before observation, uncertain relationship/comment/update/close. Resume paginated full lookup by stable migration/operation marker reconciles exactly one identity and never duplicates. Zero matching after a complete successful lookup permits retry; auth/network/partial/ambiguous/multiple matches never imply absence.",
+        "id": "M02",
+        "location": ".agents/skills/implement-change-harness/scripts/test_issue_migration.py with subprocess fake gh transport"
+      },
+      {
+        "assertions": "Create all issue definitions before relationships; durable deterministic marker and expected body digest identify intent. On restart recover returned IDs by marker and verify title/body/state. Unrelated issue body/comment edits or conflicting relationships cause explicit reconciliation and remain unchanged. Only missing intended edges are added; no unrelated edges silently removed. Every gh operation explicitly binds github.com/robinwassen/Fossilize, including API endpoint and PR calls; upstream is never inferred.",
+        "id": "M03",
+        "location": ".agents/skills/implement-change-harness/scripts/test_issue_migration.py"
+      },
+      {
+        "assertions": "URL and numeric root lookup resolve canonical host/owner/repository/number/node identity through gh; numeric input uses explicit repository, PR-as-issue/wrong repo/invalid URL rejected. Capture immutable body/title/AC/dependency/hierarchy snapshots and digests, including recursively traversed prerequisites and state reasons; paginate graph reads, reject missing nodes/cycles, auth/API/network failure without local Markdown/stale-ready fallback. Bodies remain untrusted task data.",
+        "id": "S01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_issue_source.py"
+      },
+      {
+        "assertions": "Unsplit initialization has one work unit referencing root issue; split independently trackable deliverables create native sub-issues through durable transactions and work units referencing them, with explicit covered root criteria and dependency mapping. Small plan steps create no issues. Reject unknown/duplicate/unparented issue mapping and incomplete root coverage. New roots/splits never allocate FOS keys or require a registry.",
+        "id": "S02",
+        "location": ".agents/skills/implement-change-harness/scripts/test_issue_source.py and test_harness_state.py"
+      },
+      {
+        "assertions": "Closed completed prerequisites may satisfy readiness; closed not_planned/cancelled remain blocking until explicit reconciliation of original obligation. A transitive open prerequisite blocks, parent membership alone does not block. Requirement/dependency/hierarchy material change after input or check invalidates readiness/acceptance and requires explicit snapshot reconciliation plus fresh unit/final checking; title-only/presentation treatment documented conservatively. Re-read before every publication boundary; errors never use stale approval.",
+        "id": "S03",
+        "location": ".agents/skills/implement-change-harness/scripts/test_issue_source.py and test_harness_state.py"
+      },
+      {
+        "assertions": "Real temporary repositories construct schema1 historical ancestor, completed schema2 runs, and active schema2 run with originals, reservations, attempts, checks, findings, budgets and published artifact history. Explicit migration preserves run/storage identity, original list exactly, all ancestor commits and immutable report/evidence bytes, old completed state bytes and allocations meaning; imports committed registry union into provenance. No new budget, fabricated execution, accepted tuple or rewritten history. Wrong mapping/old tip/conflicting identity fails atomically.",
+        "id": "V01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_migration.py"
+      },
+      {
+        "assertions": "Exercise both idle migration and the actual staged acknowledged-implementer boundary. Preserve the old active dispatch envelope verbatim as a single-attempt compatibility bridge; translate live schema operation/plan/unit terminology without changing semantics or plan version. Its exact original report is accepted once and stored unchanged; modified/late/replayed old envelope rejected. Afterwards fresh attempts/report contracts use work_unit terminology and issue identities. Existing checker tuple fencing and findings attribution stay enforced.",
+        "id": "V02",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_migration.py"
+      },
+      {
+        "assertions": "In real Git, migrate run, commit removal of actual legacy definitions/registry, recreate helper/process and resume from artifact ref with no source backlog. Fresh clone fetches candidate + orphan artifacts, explicitly rebinds local worktree/common-dir execution location without changing logical repository/run/task identity; initialize a new issue-based run and resume existing migrated run in separate disposable histories. Assert no duplicate worker/issue/PR, retained deadline and acceptance, all-history publication validation and dirty inspection preservation.",
+        "id": "V03",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_migration.py + fresh-checkout smoke evidence"
+      },
+      {
+        "assertions": "New closeout prepares concise managed issue evidence for exact accepted candidate/base/plan and real PR link when available; readiness keeps issue open. Failed check/source/base/plan/requirement change supersedes or invalidates stale readiness using journaled idempotent comment/update; unrelated human comments preserved. No source Done edit is needed. Root and required issue children map exactly to fully satisfied criteria; incomplete epic excluded from closing references.",
+        "id": "D01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_issue_closeout.py (replacing live Markdown closeout expectations)"
+      },
+      {
+        "assertions": "Real bare-remote one-PR simulation checks independent unit then distinct final checker, stale candidate rejection, explicit closing references only for fully covered deliverables, open issues while PR unmerged, and completed state only after simulated user default-branch merge. PR creation response loss finds exactly same PR; evidence comment loss reconciles markers. The helper never merges and live migration PR must remain unmerged/open.",
+        "id": "D02",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_issue_closeout.py and test_harness_artifacts.py"
+      },
+      {
+        "assertions": "Retain T01..T17/C01..C08/P01..P12 invariant mapping with meaningful migrated equivalents: real CAS/locking/dirty worktree protection, worker liveness and stale envelopes, required assertion-bearing evidence, scoped findings, bounded repairs/replan/deadline, separate final approval, non-force exact artifact publication, descendant/divergent history and terminal/null-active retry. Registry/Markdown tests become explicitly isolated legacy compatibility fixtures, never live fallback. No weakened or skipped checks hidden by renamed methods.",
+        "id": "R01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py, test_harness_issue_closeout.py, test_harness_artifacts.py, test_harness_migration.py"
+      },
+      {
+        "assertions": "Source policy has short mandatory AGENTS link and detailed issue workflow; all current helper interfaces, live state/reports/instructions/tests distinguish issue/sub-issue/work unit/step. Review every tracked Markdown link and obsolete authority reference. Remove canonical definitions, registry, this proposal, status sections and future FOS allocation instructions; keep research/specifications/evidence without task mirrors. Legacy examples only identified compatibility fixtures/history. Tracked package metadata validates; installed personal skill matches authoritative candidate package with stale files handled.",
+        "id": "G01",
+        "location": "AGENTS.md; local-docs/issue-workflow.md; local-docs/README.md; local-docs/verification.md; .agents/skills/implement-change-harness/; /home/robin/.codex/skills/implement-change-harness/"
+      },
+      {
+        "assertions": "Independent checker reads original input revision task sections and live issue bodies/relationships, reruns all decisive tests and live audit read-only at exact clean candidate/base/plan, reviews entire diff and actual self-migration artifacts. Production run retains fresh-role evidence, bounds, same one PR and exact remote artifact confirmation. All passing claims state scope; no C++/Vulkan/Steam guarantee inferred.",
+        "id": "L01",
+        "location": "fresh checker worktree + production artifact and GitHub readback"
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6",
+          "AC7"
+        ],
+        "cwd": "Exact committed candidate implementation worktree for implementer; fresh detached exact candidate worktree for checker.",
+        "expected": "Exit0, nonzero discovered/executed counts, zero mandatory skipped tests; meaningful assertions for all planned behavioral cases and retained T/C/P invariant mapping. Tests inspect actual Git records and fake-service effects; no API success-only assertions.",
+        "id": "G01",
+        "kind": "both",
+        "method": "timeout 600s env PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v; separately enumerate discovered/executed IDs and map every I/M/S/V/D/R planned case to concrete asserting methods.",
+        "prerequisites": "Python3 standard library, Git, POSIX flock, disposable filesystem/bare remotes and subprocess fake gh executable; no live failure-test issues."
+      },
+      {
+        "criteria": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC7"
+        ],
+        "cwd": "Exact committed candidate implementation worktree for implementer; fresh detached exact candidate worktree for checker.",
+        "expected": "I01..I04/M03 pass for every task/edge; all 28 known legacy tasks accounted plus any newly discovered source obligations; native epics visible/open; both critical paths retained; completed legacy tasks supported by actual merged PR/checker evidence. No unknown/unaccounted requirement or silently cancelled prerequisite.",
+        "id": "G02",
+        "kind": "both",
+        "method": "python3 -B .agents/skills/implement-change-harness/scripts/issue_migration.py inventory --repo IMPLEMENTATION --source-sha 73f891d6c0cf498ac92e804d7d0f0cd344a083f5 --output /tmp/fos28-inventory.json; python3 -B .agents/skills/implement-change-harness/scripts/issue_migration.py audit --repo EXACT_CHECKER_WORKTREE --inventory /tmp/fos28-inventory.json; independent full source-to-GitHub coverage review and real merged PR2/5/6 readback. Persist exact commands and all counts.",
+        "prerequisites": "gh authenticated with Issues read access; all issue mutations finished, durable journal and immutable source identity available."
+      },
+      {
+        "criteria": [
+          "AC4",
+          "AC5",
+          "AC6",
+          "AC9"
+        ],
+        "cwd": "Exact committed candidate implementation worktree for implementer; fresh detached exact candidate worktree for checker.",
+        "expected": "Current run still same run/storage root with immutable AC1..AC9; original attempt report fenced/retained, budgets/reservations/history intact, source-free issue initialization/resume works. No new approvals/budget or source-definition fallback fabricated.",
+        "id": "G03",
+        "kind": "both",
+        "method": "Run test_harness_migration.py decisive V01..V03 cases plus fresh checkout smoke using candidate and fetched orphan artifact branch; inspect actual coordinator self-migration intent/report bridge/provenance and clean deletion commit evidence read-only. Record exact executed commands and log paths.",
+        "prerequisites": "Real disposable Git repositories; production coordinator has completed explicit schema migration at staged boundary before cleanup; no production state writes from checker."
+      },
+      {
+        "criteria": [
+          "AC5",
+          "AC8",
+          "AC9"
+        ],
+        "cwd": "Exact committed candidate implementation worktree for implementer; fresh detached exact candidate worktree for checker.",
+        "expected": "Skill is valid, diff whitespace clean, source contains policy/specifications/research rather than task definitions/status ledger; legitimate compatibility/history references explicitly identified; package equality with no stale live instructions. No accidental source/build/private artifact inclusion.",
+        "id": "G04",
+        "kind": "both",
+        "method": "python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness; git diff --check; full diff/link/rg audit of all tracked source for canonical FOS headings, registry links, obsolete allocator/Done/subtask authority and generated task mirrors; compare installed package file hashes to exact candidate.",
+        "prerequisites": "Skill validator including PyYAML; all documentation cleanup and authorized personal skill synchronization completed."
+      },
+      {
+        "criteria": [
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6",
+          "AC7",
+          "AC8",
+          "AC9"
+        ],
+        "cwd": "Exact committed candidate implementation worktree for implementer; fresh detached exact candidate worktree for checker.",
+        "expected": "Separate final acceptance binds exact candidate/base/plan and fresh material issue snapshot; issue evidence honest, no stale readiness, no incomplete epic closure. Required unsupported/unavailable/incomplete remains a blocker; publication gates deferred until real PR exists.",
+        "id": "G05",
+        "kind": "final",
+        "method": "Fresh final checker reviews full base-to-candidate diff, original task at immutable input, live migration audit, self-migration role records and all planned cases; independently reruns G01..G04. Inspect issue-closeout readiness at current candidate and proposed PR closing-reference eligibility; re-read root/dependency snapshots through gh.",
+        "prerequisites": "All work units accepted under new schema, prepared honest issue evidence, no unresolved findings, current clean source/base/plan; production issue root remains open."
+      },
+      {
+        "criteria": [
+          "AC3",
+          "AC4",
+          "AC6",
+          "AC7"
+        ],
+        "cwd": "Dedicated implementation worktree /home/robin/dev/fossilize-FOS-000028",
+        "expected": "One ready-for-review PR to robinwassen/Fossilize master carries explicit Closes reference for only fully satisfied migrated root/deliverables, real PR link in issue evidence. Root remains open before merge; epics with unfinished children remain open. Workflow complete only exact terminal artifacts confirmed; failed comment/create/attach/push is resumable without duplicate effects. No automatic merge or monitor.",
+        "id": "G06",
+        "kind": "publication",
+        "method": "Coordinator uses new helper durable publish-intent; fetches master and revalidates accepted tuple + live issue snapshots; normal non-force source push, exact remote-head readback, all-state exact PR lookup, persisted create-dispatched then at most one gh pr create; lookup after response loss, attach_artifact, journal/readback actual PR issue evidence and terminal exact artifact publication.",
+        "prerequisites": "Separate final acceptance, unchanged live task input, accepted current base/candidate/plan, no unresolved findings, gh write access and artifact publication confirmed."
+      }
+    ],
+    "implementation": [
+      "Use one unsplit implementation work unit; subtasks=[] in this schema-2 planner contract. Implement the coherent migration as staged steps, not new FOS keys or dozens of execution sub-issues. Observability/Harness epics and migrated tasks are persistent GitHub entities, distinct from this run decomposition.",
+      "Inventory from immutable input plus execution-time union: every tracked current/archive canonical definition and registry, complete artifact issued/reserved history and plans/provenance, relevant unkeyed known issue/research reports. Produce coverage/disposition/evidence outside source tree; migrate all 28 known keyed tasks individually plus two native parent outcomes and any additional independently trackable unkeyed obligation found. Preserve full requirement/AC text and shared observability requirements on GitHub. Use real merged PRs2/5/6 and retained evidence for25..27, not stale source statuses. Classify known-issue overlap and external Steam ownership explicitly.",
+      "Add standard-library gh task-source/transport and restricted append-only external-operation journal. Every live mutation is explicit fork-bound, preceded by committed/remotely confirmed intent and followed by verified observation; serialize with same lock/CAS. Restricted journal may add only allowed evidence records and leaves all canonical run/state/active/allocation bytes unchanged. Stable operation/body markers + paginated full reads reconcile uncertainty before retry. Reject conflicting/unrelated edits rather than replacing whole existing user content. Create every issue before attaching parent/blocked-by edges, then audit full content/status/graph/mapping live.",
+      "Build schema3 issue authority and work_unit terminology throughout helper, state/report interfaces, instructions/tests. Canonical task identity is github.com/owner/repository/issues/number plus server ID; numerical root input resolves with explicit fork. Separate immutable run/storage identity from live root_issue so legacy artifact paths remain valid. Snapshot issue body/requirements/dependencies/hierarchy/state reason immutably. Current task reads always use gh; prerequisite graph readiness checks require completed rather than merely closed; material input drift invalidates approvals and requires explicit reconciliation and fresh checks before publication.",
+      "Implement explicit migrate-state from schema2 (and retained explicit schema1 import path), preserving completed records/history/reports/evidence/legacy allocation facts and the original deadline. Store old active state/provenance, registry union and exact mapping/snapshot. Translate live plans/operations/fields without rewriting historical reports or changing semantic plan version. Keep plan.original exact. Acknowledged live implementer migration is permitted only with exact preserved pre-migration dispatch tuple as a one-attempt bridge; no checker approval carries across transition. All future attempts use work_unit terminology. Test complete idle and active transition before production use.",
+      "Staged self-application: implementer commits tested candidate A with new helper and source definitions still present, finishes live issue migration/audit, then pauses and reports candidate A plus mapping and exact migration action/payload to coordinator. Coordinator alone reloads artifact tip, invokes candidate migrate-state on same run, publishes checkpoint, confirms preserved live attempt bridge and sends success. Implementer resumes only after this acknowledgement, removes task definitions/registry and stale guidance, updates retained docs, synchronizes installed personal skill, runs all gates, commits final candidate B and returns the frozen original implementation report envelope. Coordinator records through candidate helper; fresh independent unit and final check follow new issue-evidence closeout. No reset/import into a new run, duplicate worker or fake repair round.",
+      "Replace Markdown Done closeout with prepared issue readiness/evidence, no premature closure. Accepted work units and run/PR readiness are separate from issue delivery. Keep current root open; use exact implementation PR closing references so merge into master closes only fully satisfied root/children. Managed evidence comment operations and invalidations have durable markers/recovery; actual PR link is appended after creation and read back without changing source candidate or inventing an early PR. Historical delivered25..27 can be marked completed only on verified existing merge evidence; epics remain open.",
+      "Remove canonical task definitions/status/registry and proposal from source only after coordinator self-migration and full live coverage/readback. No generated mirror/archive/task ledger in source. Retain valuable research/specifications/fixtures/sanitized evidence with issue links; historical harness proposal must be rewritten/trimmed so obsolete active allocation/closeout mechanics cannot guide agents. Short AGENTS direction explicitly supersedes forever-registry rule; detailed issue-workflow policy contains no per-task definitions/status. Update index/verification/skill examples and installed package from tracked candidate.",
+      "Write actual behavioral regressions with fake gh subprocess + real isolated Git, migrate existing T/C/P fixtures without losing invariants, then independently check final candidate. Every command has real at-most600s deadline; run initial+3repair/1replan/4h budgets unchanged. Final coordinator publishes one source PR and exact orphan artifacts. No source or external mutations by planner/checker; no auto-merge."
+    ],
+    "non_goals": [
+      "Fossilize C++/Vulkan implementation or migrated observability fixes",
+      "Automatic PR merge, background monitor, daemon or scheduler",
+      "Mandatory GitHub Project/custom issue types or account configuration",
+      "Git history rewriting or additional source PRs",
+      "Treating artifact evidence/legacy fixtures as a new task authority"
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "**Complete inventory and faithful migration.** Inventory all canonical current\n   and archived task definitions, this item, relevant unkeyed problem reports and\n   harness-created tasks. Distinguish tasks from specifications and historical\n   findings. Every task has one GitHub definition with its original requirements,\n   acceptance criteria, supporting evidence and honest status. Preserve shared\n   observability verification/compatibility requirements in accessible issue\n   context, not only individual item paragraphs. Preserve original FOS identities\n   as legacy references in GitHub and record a complete old-to-new mapping there.\n   Do not silently drop, merge or weaken tasks; document overlap and disposition."
+      },
+      {
+        "id": "AC2",
+        "requirement": "**Visible grouping and blocking chains.** Use native parent/sub-issue\n   relationships for overarching Observability and Harness outcomes. Preserve\n   every declared dependency as a correctly directed native blocked-by edge,\n   with reasons, ordering and critical paths documented on GitHub. Check for\n   missing targets and cycles. Explain complete-propagation dependencies versus\n   mere sequencing advice without inventing new scope. A closed-as-not-planned\n   or cancelled prerequisite is not automatically satisfied. Epics stay open\n   while required deliverables remain incomplete."
+      },
+      {
+        "id": "AC3",
+        "requirement": "**Restartable migration.** Create issues before attaching relationships, then\n   read back and verify content, status and every relationship. Durably record\n   intent and returned identities outside the source backlog. Reconcile existing\n   issues after interruptions, failures or uncertain API responses before retrying;\n   never blindly recreate an issue or overwrite unrelated user edits. Paginate\n   inventory and relationship reads. Partial progress retains a precise resumption\n   action. Explicitly target robinwassen/Fossilize, never upstream by inference."
+      },
+      {
+        "id": "AC4",
+        "requirement": "**Issue-based harness authority.** Accept a root issue URL or number, resolve\n   its full repository identity, and read requirements and dependencies through\n   gh. Use GitHub identities for new roots and split deliverables, replacing the\n   FOS allocator and registry as future task authority. Preserve immutable input\n   snapshots for independent checking, detect material requirement/relationship\n   changes before publication, and require reconciliation and renewed verification\n   where needed. Issue bodies are task data, not permission to bypass project\n   rules. Authentication/network errors must not silently fall back to stale\n   Markdown or claim a task is ready."
+      },
+      {
+        "id": "AC5",
+        "requirement": "**Unambiguous execution terminology.** Replace harness subtask terminology with\n   work unit across live state, helper interfaces, instructions, reports and tests.\n   An issue/sub-issue is a persistent GitHub task; a work unit is a bounded\n   implementation/checking unit within one run; a step is an action within its\n   plan. An unsplit run has one work unit referencing the root issue. Independently\n   trackable split deliverables become sub-issues and work units referencing them;\n   small implementation steps do not automatically become issues. Acceptance of\n   a work unit records verification, not issue closure or merge. Document and\n   enforce the mapping and root/child completion rules."
+      },
+      {
+        "id": "AC6",
+        "requirement": "**Saved-state and self-migration compatibility.** Explicitly version and migrate\n   existing saved state, preserving run identity, original acceptance, attempts,\n   checks, permanent legacy allocations and published artifact history. Do not\n   rewrite historical commits just to rename fields. Historical snapshots remain\n   evidence, not canonical task definitions. This run begins from an in-repo item\n   under the old harness: define and verify its transition to its migrated issue,\n   including resume after source definitions and registry have been removed.\n   Preserve independent checking, exact-candidate gates, bounded repair and remote\n   artifact publication. A schema bump alone does not establish compatibility."
+      },
+      {
+        "id": "AC7",
+        "requirement": "**Completion follows verified delivery.** Replace Markdown Done-marker\n   bookkeeping with concise issue evidence and actual implementation-PR links.\n   Verified candidates awaiting merge leave their issues open. Use explicit\n   closing references in the implementation PR to close only fully satisfied\n   tasks on merge into master. Do not close an epic whose remaining children or\n   criteria are incomplete. Distinguish harness run completion, accepted work\n   units, PR readiness and merged delivery. Preserve recovery for uncertain\n   comment/update/PR operations and invalidate stale readiness claims when checks\n   fail or the candidate changes. Reconcile already-delivered legacy issues\n   against real merged PRs and retained evidence before marking them completed."
+      },
+      {
+        "id": "AC8",
+        "requirement": "**Small entry-point guidance, detailed separate policy.** Create\n   local-docs/issue-workflow.md for issue creation, identity, grouping, labels,\n   dependencies, readiness, evidence, completion and the gh interface. AGENTS.md\n   gives a short mandatory instruction to use the fork's issues and read that\n   document. Harness mechanics stay in its tracked skill/references, linked to\n   the shared policy. Update the documentation index, verification guide, examples\n   and installed personal skill as needed so agents cannot follow stale backlog\n   instructions. Keep policy documents free of per-task definitions and statuses."
+      },
+      {
+        "id": "AC9",
+        "requirement": "**Remove the repository backlog after verification.** Remove canonical task\n   definitions, registry, backlog status sections, obsolete links and instructions\n   from the source tree, including this proposal. Do not leave an archived copy,\n   generated task mirror, live legacy fallback or new task ledger elsewhere in\n   the repo. Explicitly supersede the old rule requiring the tracked FOS registry\n   forever: retain legacy identities and mapping on GitHub and historical Git\n   evidence, while future identity allocation belongs to GitHub. Keep valuable\n   specifications, research, fixtures and sanitized execution evidence; replace\n   task references with issue links and ensure retained documents do not operate\n   as another backlog. Test fixtures may describe legacy formats when necessary\n   for compatibility tests, without becoming real task definitions. No destructive\n   Git history rewrite is requested."
+      }
+    ],
+    "scope": "Faithful live GitHub Issues migration for robinwassen/Fossilize, native hierarchy/dependencies, restartable gh transactions, complete issue-based harness/state self-migration, policy/install cleanup, independent verification and one PR.",
+    "subtasks": [],
+    "version": 1
+  },
   "provenance": [],
   "publishing": {
     "ci_policy": "local",
@@ -100,12 +342,19 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 3,
+  "revision": 4,
   "run_id": "2026-10-28-github-issues",
   "schema_version": 2,
-  "status": "running",
+  "status": "ready",
   "task_key": "FOS-000028",
   "task_location": "local-docs/reviews/github-issues-migration.md#fos-000028--migrate-repository-task-tracking-and-the-change-harness-to-github-issues",
-  "units": [],
+  "units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "key": "FOS-000028",
+      "status": "ready"
+    }
+  ],
   "verification": []
 }

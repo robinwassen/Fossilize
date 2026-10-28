@@ -1,0 +1,60 @@
+# FOS-000028 planner handoff (plan 1)
+
+The machine plan is `/tmp/fos28-planner-report.json`; its `original` array comes verbatim from `/tmp/fos28-init.json`. One unsplit work unit, no FOS allocation and no nested agents. No source or production state was changed by this planner.
+
+## Minimum implementation shape
+
+Extend the existing helper; a small `github_issues.py` transport/task reader and `issue_migration.py` one-time migration CLI are sensible separate files. Standard library and `gh` subprocess arguments only. Avoid a general-purpose workflow engine. Keep source requirement extraction/audit restricted to an explicit immutable historical revision; it must never be a live task fallback.
+
+Use these concrete CLI contracts (implement equivalent names only after recording their exact replacements):
+
+```sh
+python3 -B .agents/skills/implement-change-harness/scripts/issue_migration.py inventory --repo /home/robin/dev/fossilize-FOS-000028 --source-sha 73f891d6c0cf498ac92e804d7d0f0cd344a083f5 --output /tmp/fos28-inventory.json
+python3 -B .agents/skills/implement-change-harness/scripts/issue_migration.py audit --repo /home/robin/dev/fossilize-FOS-000028 --inventory /tmp/fos28-inventory.json
+```
+
+Inventory outputs immutable evidence and coverage/disposition data; audit is read-only and does full live `gh` readback. Keep any body staging files outside tracked source. Persist sanitized inventory/mapping/audit on `harness-artifacts`; GitHub parent/root context holds the complete human-readable legacy-to-issue mapping. No new mutable source task ledger.
+
+`gh api --paginate repos/robinwassen/Fossilize/issues?state=all&per_page=100` inventories Issues (filter pull requests). Paginate per-issue native `sub_issues` and `dependencies/blocked_by` endpoints and comments as well; use API link/pagination rather than an arbitrary first page. Root lookup must reject PR records. All mutation endpoints and `gh issue`/`gh pr` arguments explicitly name the fork. Check actual server capabilities before the first mutation. No native support means a mandatory prerequisite failure, not permission to replace edges with prose.
+
+At inspected input there are 28 keyed canonical tasks, no split deliverables in saved plans, and permanent artifact journal entries only1..25/high_water25. Inventory all source/archive/allocation/provenance before relying on those counts. Preserve registry26..28 as imported historical allocation provenance without claiming they were previously journaled. There are two new parent outcomes; unkeyed known-issue text must receive an explicit overlap/disposition for Fossilize versus external Steam ownership. Do not invent an extra Steam implementation requirement. Shared observability automated acceptance, compatibility rules and delivery notes belong in accessible parent context referenced by all24 children.
+
+## Durable external writes and ownership
+
+Coordinator remains sole production state writer. A restricted journal operation may append bounded immutable evidence records in the active run under existing Store locking/CAS/publication, while byte-preserving every state.json, active.json, allocations.json and old evidence/report. It has no state transition or worker authority. Coordinator can execute all these operations on implementer request; if implementer executes them, coordinator explicitly grants only this restricted interface and reloads artifact tip before its next state action.
+
+Each external operation has stable ID, destination, intended effect/body digest, expected prior observation and marker. Commit and exact-tip publish intent **before** dispatching `gh`. Record returned identity and live verification in a second append-only observation and publish it. Failure to publish pauses later external writes. State revision is unchanged for restricted records-only transactions; tip changes. Reconstruct operation status from committed records after restart.
+
+After response loss, paginate authoritative service reads and reconcile markers/IDs. Never interpret failed/partial lookup as empty. Multiple marker matches, changed user text or conflicting relationships retain facts and stop with a precise reconciliation action. For created definitions, verify full text/digests; avoid overwriting an adopted existing issue with altered user content. For managed evidence use a dedicated marked comment, never rewrite arbitrary user comments/body. Edge addition is idempotent after readback and must not remove unrelated edges. All definitions are created/read back first, then attach relationships and verify the complete graph.
+
+A local JSON log without committed/published intent is insufficient for this production run. Do not grant implementer the normal `Harness.apply` state API as a shortcut.
+
+## Staged self-migration protocol
+
+1. Implementer builds tests/new helper, commits candidate A **with old definitions retained**, creates/verifies live issues, and pauses before cleanup. Send coordinator A SHA, mapped root issue, immutable input snapshot and exact `migrate-state` JSON action. No second implementer launch.
+2. Coordinator reloads current artifact tip, invokes candidate helper's explicit `migrate-state` under CAS on the same active run, and publishes. Migration changes schema/live task source and terminology; immutable run/storage identity and historical paths remain. Root task authority is a repository-qualified issue identity, independent from storage token `FOS-000028`.
+3. Preserve the acknowledged implementer's old dispatch envelope **verbatim** as an explicit one-attempt bridge. No role or tuple broadening: accept only that exact old envelope once, keep its report bytes unchanged, and translate its execution result to the existing work unit. Preserve plan version/original; current normalized plan can use `work_units`/gate `work_unit`, while historical planner report remains schema2 evidence. Record normalization provenance. Clear any current approvals rather than treating legacy acceptance as certification of new issue input. Preserve budgets/deadline/worker facts/findings/source PR facts.
+4. Coordinator confirms migrated checkpoint and issue snapshot; implementer then removes source definitions/registry, updates retained documents/guidance/installed package, tests and commits final B. Return the original bridge envelope, candidate B and factual evidence. Coordinator uses **candidate helper**, never old helper, to record it. Fresh checker attempts use the new contract.
+5. After independent work-unit acceptance, issue-evidence closeout prepares readiness without source bookkeeping/closure; separate fresh final checker verifies exact B. Final source publication still follows durable one-PR lookup/create-once/attach/exact-artifact rules. Root issue remains open until user merges PR into master.
+
+Explicit compatibility tests must run this active-attempt sequence and idle schema2 migration. Retain schema1 history/import compatibility, all previous completed state blobs and artifact ancestry without rewriting them. An unsafe active migration must pause **before deletion**, never silently restart the run or fabricate an implementer/checker report. No extra repair count for the planned pause.
+
+## Tests and checks
+
+The JSON plan defines18 cases and6 gates. Main suite remains:
+
+```sh
+timeout 600s env PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v
+python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness
+git diff --check
+```
+
+Use actual subprocess fake `gh`, backed by persistent service fixtures, for lost-response/auth/pagination/edit-conflict failures; assert remote objects and call counts, not only returned flags. Use actual disposable Git repositories/bare remotes for migration, old report byte retention, CAS/publication barriers, source deletion/restart and new-run/resume fresh clones. A fresh-clone resume needs explicit execution-location rebind; validate same logical repository/run/task identity while changing common-dir/worktree paths, rather than disabling identity checks globally. Never use production test issues for injected failures.
+
+Preserve T01–T17/C01–C08/P01–P12 semantic coverage. Migrate normal fixtures to issue authority; legacy allocator/Markdown tests are isolated compatibility cases. C tests now assert open readiness versus user-merged completion; retain exact candidate renewal and stale evidence invalidation. Keep all artifact endpoint/ancestor/divergence/terminal-null-pointer invariants.
+
+Live audit and checker source-to-issue review are required in addition to mocks. Exercise both critical paths:5→9→(10,11)→12→13→14 and3→16→17→19; include every other declared edge and reasons. Verify actual merged PRs2/5/6 before closing25/26/27 as completed. Epics stay open with incomplete children.
+
+Update personal package from authoritative tracked candidate, preserving any unrelated customization via backup outside repo. Installed package currently lacks newer closeout/artifact tests and has bytecode. Record package hashes and install synchronization; generated bytecode is not source authority.
+
+Final checker is read-only on production: inspect real self-migration records and live issues; run its own isolated mutations/tests. Publication gate is coordinator's later external sequence, not falsely reported as executed by a pre-PR checker. No C++/Vulkan/Steam or Windows product claim follows from these checks.
