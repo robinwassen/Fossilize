@@ -1,0 +1,36 @@
+import pathlib, subprocess, json, time, os
+area=pathlib.Path('/tmp/fossilize-10/final-matrix'); area.mkdir(exist_ok=False)
+root=pathlib.Path('/home/robin/dev/fossilize-issue-10')
+cmake='/tmp/fossilize-10/tools/cmake/data/bin/cmake'; ctest='/tmp/fossilize-10/tools/cmake/data/bin/ctest'
+rows=[]
+def run(id,args,cwd=root):
+ log=area/(id+'.log'); start=time.monotonic()
+ with log.open('w') as f:
+  p=subprocess.run(args,cwd=cwd,stdout=f,stderr=subprocess.STDOUT,timeout=600)
+ rows.append(dict(id=id,command=args,cwd=str(cwd),environment={'platform':'Linux','compiler':'/usr/bin/c++'},exit_code=p.returncode,seconds=time.monotonic()-start,log=str(log)))
+ (area/'results.json').write_text(json.dumps(rows,indent=2))
+ if p.returncode: raise RuntimeError(id+' failed: '+log.read_text()[-2000:])
+ print(id,p.returncode,flush=True)
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()=='a24e8afd8b584a3ad95d049885c3445ba3f1fa9c'
+assert not subprocess.check_output(['git','status','--porcelain'],cwd=root,text=True)
+submodules=subprocess.check_output(['git','submodule','status','--recursive'],cwd=root,text=True)
+assert all(line.startswith(' ') for line in submodules.splitlines()),submodules
+(area/'submodules.log').write_text(submodules)
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd='/tmp/fossilize-10/checker-final',text=True).strip()=='a24e8afd8b584a3ad95d049885c3445ba3f1fa9c'
+assert not subprocess.check_output(['git','status','--porcelain'],cwd='/tmp/fossilize-10/checker-final',text=True)
+for config in ['debug-off','debug-on','release-off','release-on']:
+ build=pathlib.Path('/tmp/fossilize-10/build-'+config)
+ cache=(build/'CMakeCache.txt').read_text()
+ expected={'CMAKE_HOME_DIRECTORY:INTERNAL':str(root),'CMAKE_BUILD_TYPE:STRING':'Debug' if config.startswith('debug') else 'Release','FOSSILIZE_ENABLE_EXCEPTIONS:BOOL':'OFF' if config.endswith('off') else 'ON','FOSSILIZE_CLI:BOOL':'ON','FOSSILIZE_VULKAN_LAYER:BOOL':'ON','FOSSILIZE_TESTS:BOOL':'ON','CMAKE_MAKE_PROGRAM:UNINITIALIZED':'/tmp/fossilize-10/tools/bin/ninja'}
+ for k,v in expected.items(): assert k+'='+v in cache,(config,k,v)
+ (area/(config+'-identity.log')).write_text(json.dumps({'candidate':'a24e8afd8b584a3ad95d049885c3445ba3f1fa9c','base':'b42b22c2e73bcfed731ee17752c244e2be7e737f','plan':2,'cache':expected},indent=2))
+ run(config+'-build',[cmake,'--build',str(build),'--parallel','3'])
+ run(config+'-discovery',[ctest,'--test-dir',str(build),'-N'])
+ run(config+'-inventory',[ctest,'--test-dir',str(build),'--show-only=json-v1'])
+ run(config+'-ctest',[ctest,'--test-dir',str(build),'--output-on-failure'])
+ text=(area/(config+'-ctest.log')).read_text(); assert '100% tests passed out of 54' in text
+ inventory=json.loads((area/(config+'-inventory.log')).read_text())
+ assert len(inventory['tests'])==54
+ assert len({t['name'] for t in inventory['tests']})==54
+ assert all(not any(p['name']=='DISABLED' and p['value'] for p in t.get('properties',[])) for t in inventory['tests'])
+ print(config,'54/54 asserted',flush=True)
