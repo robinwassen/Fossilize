@@ -25,6 +25,30 @@
       "status": "complete",
       "unit": "FOS-000028",
       "worker_id": "/root/planner_1"
+    },
+    {
+      "actual": {
+        "effort": "high",
+        "model": "gpt-6.1-sol"
+      },
+      "attempt_id": "implementer-1",
+      "base_sha": "73f891d6c0cf498ac92e804d7d0f0cd344a083f5",
+      "candidate_sha": null,
+      "fallback_reason": "Raised effort for difficult correctness work: serialized saved-state self-migration, exact identity fencing and uncertain external mutation/publication recovery.",
+      "input_revision": 4,
+      "input_sha": "73f891d6c0cf498ac92e804d7d0f0cd344a083f5",
+      "observations": [],
+      "operation": "implement",
+      "plan_version": 1,
+      "requested": {
+        "effort": "medium",
+        "model": "gpt-6.1-sol"
+      },
+      "role": "implementer",
+      "started": 1793191714.182631,
+      "status": "intent",
+      "unit": "FOS-000028",
+      "worker_id": null
     }
   ],
   "closeout": {
@@ -38,12 +62,14 @@
     "deadline": 1793205645.008914,
     "exhausted": false,
     "extensions": [],
-    "implementation_counts": {},
+    "implementation_counts": {
+      "FOS-000028": 1
+    },
     "repairs": 3,
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "dispatch fresh implementer for first ready unit",
+  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
   "operation": "implement",
   "original": [
     {
@@ -342,10 +368,10 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 4,
+  "revision": 5,
   "run_id": "2026-10-28-github-issues",
   "schema_version": 2,
-  "status": "ready",
+  "status": "running",
   "task_key": "FOS-000028",
   "task_location": "local-docs/reviews/github-issues-migration.md#fos-000028--migrate-repository-task-tracking-and-the-change-harness-to-github-issues",
   "units": [
