@@ -1,0 +1,11 @@
+{
+  "observation": {
+    "body": "Legacy identity: `FOS-000003`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n3. **FOS-000003 \u2014 Check shared file-helper flush/close completion.** **S; no dependencies; \u00a76.** [file:56](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/file.cpp#L56) and `write_buffer_to_file()` return true after unchecked `fclose()` (E3). Return failure for write/flush/close errors, preserving the first raw error and operation. Keep destructor/cleanup behavior nonthrowing. **Check:** `/dev/full`, nonexistent destination and successful normal write. Successful close means completion through the OS interface, not power-loss durability. This supplies a truthful primitive for later exporters.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with injectable file operations:** Open, short-write, flush and close failures each return failure; when several occur, the first error and its operation survive cleanup. Close is attempted exactly once for each opened handle.\n   - **Filesystem integration tests:** E3 fails on Linux /dev/full; a portable injected close-error case covers other platforms. Normal and empty writes succeed and read back byte-for-byte; no result claims stronger durability than tested flush/close completion.\n\n<!-- fossilize-migration-v1:FOS-000003 -->\n",
+    "html_url": "https://github.com/robinwassen/Fossilize/issues/12",
+    "id": 6079804510,
+    "node_id": "I_kwDOVZpjbc8AAAABamJ0Xg",
+    "number": 12,
+    "title": "FOS-000003 \u2014 Check shared file-helper flush/close completion"
+  },
+  "operation": "7589cd41084e4bda2a06ae7c5ee639dfae132262bc6e86459bd5911b598784a9"
+}
