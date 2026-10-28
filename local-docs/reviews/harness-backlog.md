@@ -80,7 +80,8 @@ claims of unperformed verification, or unrelated backlog implementation.
 
 ## FOS-000027 — Commit and publish harness artifacts to the remote orphan branch
 
-**Status:** Pending implementation.
+**Status:** Done (verified proposed branch state; not landed on master).
+**Completion evidence:** Independent unit checker passed 51/51 Python/Git tests with no skips, metadata validation, original-criteria review and allocation-history counterexamples. Required exact-candidate renewal and separate final review follow bookkeeping; no C++/GPU/Steam coverage claimed. https://github.com/robinwassen/Fossilize/compare/master...codex/FOS-000027-artifact-publication
 
 **Depends on:** FOS-000025 (existing harness checkpoint and publication mechanics).
 
