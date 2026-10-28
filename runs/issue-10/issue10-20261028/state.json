@@ -425,15 +425,15 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "journal actual implementation PR URL on each closeout issue, then publish-observation event=issue-evidence",
-  "operation": "publish",
+  "next_action": "PR opened and attached; no merge",
+  "operation": "complete",
   "original": [
     {
       "id": "AC1",
       "requirement": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n"
     }
   ],
-  "phase": "publishing",
+  "phase": "complete",
   "plan": {
     "assumptions": [
       "Issue #10 initial sites define this small coherent increment; later subsystem-wide coverage remains future work per original wording.",
@@ -817,6 +817,11 @@
     }
   ],
   "publishing": {
+    "attachment": {
+      "event": "attachment",
+      "success": true,
+      "url": "https://github.com/robinwassen/Fossilize/pull/42"
+    },
     "ci_policy": "local",
     "creation_intent": {
       "at": 1793221124.7232716,
@@ -877,6 +882,11 @@
       },
       {
         "event": "issue-evidence"
+      },
+      {
+        "event": "attachment",
+        "success": true,
+        "url": "https://github.com/robinwassen/Fossilize/pull/42"
       }
     ],
     "pr": {
@@ -888,7 +898,8 @@
       "url": "https://github.com/robinwassen/Fossilize/pull/42"
     },
     "remote_sha": "a24e8afd8b584a3ad95d049885c3445ba3f1fa9c",
-    "stage": "attach"
+    "required_checks": [],
+    "stage": "done"
   },
   "repository": {
     "base_sha": "b42b22c2e73bcfed731ee17752c244e2be7e737f",
@@ -901,7 +912,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 57,
+  "revision": 58,
   "root_issue": {
     "id": 6079794262,
     "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
@@ -911,7 +922,7 @@
   },
   "run_id": "issue10-20261028",
   "schema_version": 3,
-  "status": "ready",
+  "status": "complete",
   "task_key": "issue-10",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/10",
   "verification": [
