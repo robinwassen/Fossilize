@@ -189,7 +189,7 @@
     "generation": 44,
     "marker": "<!-- harness-ready:issue10-20261028:a5571f75770029b785d91258905b2945b71e60edf3384aa9a3e8d064dc953a29 -->",
     "plan_version": 2,
-    "stage": "intent",
+    "stage": "prepared",
     "targets": [
       {
         "evidence": "Independent checker accepted candidate a24e8afd8b584a3ad95d049885c3445ba3f1fa9c under plan v2. Linux GCC13.3 full CLI/layer Debug/Release x exceptions OFF/ON: 54/54 registered CTests passed each. Fresh baseline-header caller, unchanged layer consumer and compiled regression controls passed expected outcomes. Native Windows explicitly deferred and unverified by human authorization; no hardware/Steam/cache-durability claim. Parent #8 remains open.",
@@ -377,15 +377,15 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "journal concise readiness comments on exact issue targets; keep issues open; then closeout-record",
-  "operation": "closeout",
+  "next_action": "dispatch separate fresh final checker at unchanged candidate",
+  "operation": "final",
   "original": [
     {
       "id": "AC1",
       "requirement": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n"
     }
   ],
-  "phase": "closing",
+  "phase": "checking",
   "plan": {
     "assumptions": [
       "Issue #10 initial sites define this small coherent increment; later subsystem-wide coverage remains future work per original wording.",
@@ -783,7 +783,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 44,
+  "revision": 45,
   "root_issue": {
     "id": 6079794262,
     "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
