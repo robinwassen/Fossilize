@@ -135,6 +135,7 @@
     {
       "actual": "Both legitimate next roles are fenced; missing-design rejection cannot resume via the saved next action.",
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/37",
+      "attempt_id": "checker-unit-2",
       "counterexample_command": "timeout 600s env PYTHONDONTWRITEBYTECODE=1 python3 /tmp/fos28-cu1-routing-probe.py Probe.runTest",
       "criteria": [
         "AC6",
@@ -149,9 +150,16 @@
         "D01"
       ],
       "priority": 1,
+      "recheck": {
+        "evidence": "Independent checker-unit-2 at 7f821f6b91fa32333a9330c027dc4f85b7f33b01 reran the original routing probe against checker-2 imports: final planner rejection, supersession and cleanup retain planning/replan; implementer cannot bypass and planner dispatch succeeds. The registered live regression also passed in its independently executed102-test suite, including restart, v2 plan, cleared approvals, unchanged originals and renewed implementation/checking. Durable probe log: runs/FOS-000028/2026-10-28-github-issues/evidence/resolution-cu1-01.log",
+        "finding_id": "CU1-01",
+        "records": {
+          "runs/FOS-000028/2026-10-28-github-issues/evidence/resolution-cu1-01.log": ".\n----------------------------------------------------------------------\nRan 1 test in 4.513s\n\nOK\nImported helper: /home/robin/dev/fossilize-FOS-000028-checker-2/.agents/skills/implement-change-harness/scripts/harness_state.py\n{\"before_cleanup\": {\"phase\": \"planning\", \"operation\": \"replan\", \"resume_phase\": \"planning\"}, \"after_cleanup\": {\"phase\": \"planning\", \"operation\": \"replan\", \"next_action\": \"dispatch fresh planner after supersession\"}, \"dispatch_rejections\": {\"implementer\": \"role does not match phase\"}}\n"
+        }
+      },
       "required_change": "Restore the checker-selected resume phase/operation and appropriate approval handling; add a registered live-schema final planner-rejection \u2192 supersession \u2192 cleanup \u2192 planner-dispatch regression.",
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Preserve planner routing through readiness cleanup"
     },
     {
@@ -1399,7 +1407,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 16,
+  "revision": 17,
   "root_issue": {
     "id": 6079927386,
     "node_id": "I_kwDOVZpjbc8AAAABamRUWg",
