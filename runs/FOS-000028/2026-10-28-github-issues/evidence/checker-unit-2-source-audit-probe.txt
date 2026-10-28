@@ -1,0 +1,32 @@
+from pathlib import Path
+import hashlib,json,re,subprocess
+repo=Path('/home/robin/dev/fossilize-FOS-000028-checker-2')
+def git(*args):return subprocess.check_output(['git','-C',str(repo),*args],timeout=600).decode()
+assert git('rev-parse','HEAD').strip()=='7f821f6b91fa32333a9330c027dc4f85b7f33b01'
+assert not git('status','--porcelain')
+files=git('ls-files').splitlines();paths=[];links=[];authority=[]
+for name in files:
+ p=repo/name
+ if name.endswith('.md'):
+  t=p.read_text()
+  for target in re.findall(r'\[[^\]]*\]\(([^)]+)\)',t):
+   if '://' in target or target.startswith(('#','mailto:','/')):continue
+   q=(p.parent/target.split('#')[0]).resolve()
+   if not q.exists():links.append({'path':name,'target':target})
+  if name=='AGENTS.md' or name.startswith('local-docs/') or name.startswith('.agents/skills/'):
+   assert not re.search(r'(?m)^(?:#{1,6}\s+|\d+\.\s+\*\*)FOS-\d{6,}\s+[—–-]',t),name
+   assert 'backlog-keys.md' not in t,name
+   paths.append(name)
+# Some upstream README links intentionally refer to platform contents/submodules;
+# changed first-party guidance links are all required to exist.
+assert not [r for r in links if r['path'] in paths],links
+root=repo/'.agents/skills/implement-change-harness';installed=Path('/home/robin/.codex/skills/implement-change-harness')
+tracked={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file()}
+actual={str(p.relative_to(installed)):hashlib.sha256(p.read_bytes()).hexdigest() for p in installed.rglob('*') if p.is_file()}
+assert tracked==actual,(set(tracked)^set(actual),[p for p in tracked if tracked[p]!=actual.get(p)])
+assert len(tracked)==18
+changed=git('diff','--name-only','73f891d6c0cf498ac92e804d7d0f0cd344a083f5..HEAD').splitlines()
+assert all(n.startswith(('.agents/skills/implement-change-harness/','local-docs/')) or n=='AGENTS.md' for n in changed)
+result={'result':'passed','candidate_sha':git('rev-parse','HEAD').strip(),'base_sha':'73f891d6c0cf498ac92e804d7d0f0cd344a083f5','clean':True,'changed_files':changed,'guidance_files_reviewed':paths,'guidance_broken_links':[],'upstream_link_inventory':links,'installed_package_files':tracked,'file_count':18,'scope':'Harness, tests, tracked policy/docs only; no product C++ or generated task mirror'}
+Path('/tmp/fos28-cu2-source-audit.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({k:result[k] for k in ('result','clean','guidance_broken_links','file_count','scope')}))

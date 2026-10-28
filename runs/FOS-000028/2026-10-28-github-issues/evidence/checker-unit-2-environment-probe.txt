@@ -1,0 +1,33 @@
+import sys,unittest,json
+sys.path.insert(0,'/home/robin/dev/fossilize-FOS-000028-checker-2/.agents/skills/implement-change-harness/scripts')
+from test_harness_issue_closeout import IssueCloseoutTests
+from harness_state import Harness
+import harness_state
+class Probe(IssueCloseoutTests):
+ def runTest(self):
+  candidate,target=self.prepare();old=self.state['closeout'].copy();self.launch('checker')
+  self.act('report',dict(self.report(),verdict='unable_to_verify',findings=[{'id':'temporary-environment','status':'open','evidence':'Mandatory environment unavailable; needs real rerun after restoration.','route':'environment','affected_task':self.root_issue['html_url']}],next_action='Restore mandatory environment, supersede stale readiness and independently rerun the required gate'))
+  self.assertEqual(self.state['status'],'awaiting_decision');self.assertEqual((self.state['phase'],self.state['operation']),('checking','final'))
+  self.harness=Harness(self.source,clock=lambda:self.now)
+  self.act('resume',{'observation':'Mandatory fixture environment is restored; no acceptance or waiver granted','next_action':'Supersede invalid readiness and rerun required final assertions'})
+  self.gh.api(f"issues/{self.root_issue['number']}/comments",'POST',{'body':'Superseded readiness after unavailable required environment. '+old['marker']})
+  self.act('closeout-cleanup',{'observation':'Exact supersession read back; required final check remains open'})
+  self.assertEqual((self.state['phase'],self.state['operation']),('checking','final'))
+  self.assertEqual(self.state['closeout']['stage'],'pending')
+  # Final checker can actually rerun the missing gate and record finding resolution.
+  # It cannot accept while readiness is pending, so preserve its observation and
+  # terminate it before renewing closeout using the still-valid unit acceptance.
+  self.launch('checker')
+  import subprocess,os
+  checked=subprocess.run([sys.executable,'-m','unittest','-v','test_behavior'],cwd=self.source,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'),capture_output=True,text=True,timeout=60)
+  self.assertEqual(checked.returncode,0);self.assertIn('test_value',checked.stderr)
+  self.act('resolve-finding',{'finding_id':'temporary-environment','evidence':'Restored environment assertion rerun passed; final acceptance still requires renewed prepared readiness'})
+  self.act('reconcile',{'attempt_id':self.state['attempts'][-1]['attempt_id'],'liveness':'terminated','observation':'Independent prerequisite recheck returned; preserve finding resolution, prepare renewed readiness before final acceptance','next_action':'Persist renewed closeout intent and independent final check'})
+  renewed=dict(target,evidence='Original unit assertions passed; restored mandatory environment independently rechecked.')
+  self.act('closeout-intent',{'targets':[renewed]});current=self.state['closeout'].copy()
+  self.assertNotEqual(current['marker'],old['marker']);self.assertEqual(current['candidate_sha'],candidate)
+  self.gh.api(f"issues/{self.root_issue['number']}/comments",'POST',{'body':renewed['evidence']+' '+renewed['reference']+' '+current['binding']+' '+current['marker']})
+  self.act('closeout-record',{'candidate_sha':candidate});self.accepted()
+  self.assertEqual(self.state['final_acceptance']['candidate_sha'],candidate)
+  print(json.dumps({'helper':harness_state.__file__,'result':'passed','candidate_unchanged':True,'old_marker':old['marker'],'new_marker':current['marker'],'phase':self.state['phase'],'issues_open':self.gh.issue(self.root_issue['number'])['state']=='open','decision_sequence':'resume after prerequisite restoration; exact supersession; cleanup; fresh checker resolves finding; reconcile terminated recheck worker; new closeout-intent/readback; fresh final checker acceptance'}))
+if __name__=='__main__':unittest.main(defaultTest='Probe.runTest')

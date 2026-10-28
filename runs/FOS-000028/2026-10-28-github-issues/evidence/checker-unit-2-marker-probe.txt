@@ -1,0 +1,22 @@
+import sys,json,unittest
+sys.path.insert(0,'/home/robin/dev/fossilize-FOS-000028-checker-2/.agents/skills/implement-change-harness/scripts')
+from test_harness_issue_closeout import IssueCloseoutTests
+import harness_state
+print('Imported helper:', harness_state.__file__)
+class Probe(IssueCloseoutTests):
+ def runTest(self):
+  candidate,target=self.prepare();oldmarker=self.state['closeout']['marker'];self.launch('checker')
+  self.act('report',dict(self.report(),verdict='changes_required',findings=[{'id':'probe-transient','status':'open','evidence':'Required check failed; rerun needed before readiness.','route':'implementation','affected_task':self.root_issue['html_url']}],next_action='Renew required checks and readiness at current candidate'))
+  self.gh.api(f"issues/{self.root_issue['number']}/comments",'POST',{'body':'Superseded readiness because final check failed. '+oldmarker})
+  self.act('closeout-cleanup',{'observation':'Read back exact superseding marker after failed final check'})
+  self.launch('implementer');self.act('report',dict(self.report(),result_candidate_sha=candidate,test_mapping={'C1':'test_behavior.Behavior.test_value'},commands=[{'command':'python unittest','exit_code':0}]))
+  self.launch('checker');self.act('resolve-finding',{'finding_id':'probe-transient','evidence':'Required test rerun passes at the unchanged exact candidate'})
+  real_launch=self.launch;self.launch=lambda role:None
+  self.accepted();self.launch=real_launch
+  self.act('closeout-intent',{'targets':[target]});newmarker=self.state['closeout']['marker']
+  body=target['evidence']+' '+target['reference']+' '+self.state['closeout']['binding']+' '+newmarker
+  self.gh.api(f"issues/{self.root_issue['number']}/comments",'POST',{'body':body})
+  comments=self.gh.comments(self.root_issue['number']);matches=[r for r in comments if newmarker in r['body']]
+  print(json.dumps({'candidate':candidate,'oldmarker':oldmarker,'newmarker':newmarker,'marker_matches':len(matches)}))
+  self.act('closeout-record',{'candidate_sha':candidate})
+if __name__=='__main__':unittest.main(defaultTest='Probe.runTest')

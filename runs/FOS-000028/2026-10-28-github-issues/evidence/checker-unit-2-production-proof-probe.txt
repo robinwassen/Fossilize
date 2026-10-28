@@ -1,0 +1,42 @@
+from pathlib import Path
+import sys,json,hashlib,subprocess
+repo=Path('/home/robin/dev/fossilize-FOS-000028-checker-2');sys.path.insert(0,str(repo/'.agents/skills/implement-change-harness/scripts'))
+import harness_state as hs
+from harness_state import Store,encoded,git
+s=Store(repo);tip=s.tip();rows=s.records(tip);active=json.loads(rows['active.json']);state=json.loads(rows[active['state']]);original=json.load(open('/tmp/fos28-init.json'))['original'];proof=json.load(open('/tmp/fos28-coordinator-transition-check.json'))
+oldrows=s.records(proof['before_tip']);newrows=s.records(proof['after_tip']);old=json.loads(oldrows[active['state']]);new=json.loads(newrows[active['state']])
+assert old['schema_version']==2 and new['schema_version']==state['schema_version']==3
+assert list(p for p in oldrows if oldrows[p]!=newrows[p])==[active['state']]
+assert all(newrows[p]==v for p,v in oldrows.items() if p!=active['state'])
+assert old['task_key']==new['task_key']==state['task_key']=='FOS-000028'
+assert old['run_id']==new['run_id']==state['run_id']=='2026-10-28-github-issues'
+assert old['original']==new['original']==state['original']==original
+for key in ('deadline','repairs','replans','command_timeout','replan_count','extensions'):
+ assert old['limits'][key]==new['limits'][key]==state['limits'][key],key
+assert sum(old['limits']['implementation_counts'].values())==sum(new['limits']['implementation_counts'].values())==1
+assert len(state['attempts'])==5 and len(new['attempts'])==len(old['attempts'])==2
+provenance=next(p for p in state['provenance'] if p.get('legacy_schema')==2)
+assert provenance['legacy_state']==old
+bridge=state['legacy_report_bridge'];assert bridge['consumed'] and not new['legacy_report_bridge']['consumed']
+assert bridge['envelope']==new['legacy_report_bridge']['envelope']
+assert bridge['envelope']['worker_id']=='/root/implementer_1'
+submitted=json.load(open('/tmp/fos28-implementer-submit.json'));stored=json.loads(rows[state['attempts'][1]['report']])
+assert stored==submitted,'actual exact submitted report must be retained'
+proofpath='runs/FOS-000028/2026-10-28-github-issues/evidence/coordinator-self-migration.json'
+assert json.loads(rows[proofpath])==proof
+assert proofpath in submitted['records']
+assert submitted['records'][proofpath]==proof
+assert not state['final_acceptance'] and state['closeout']['stage']=='pending'
+assert all(u['status']!='accepted' for u in state['work_units'])
+assert len(state['plan']['cases'])==18 and state['plan']['version']==1 and 'subtasks' not in state['plan']
+assert state['attempts'][-1]['attempt_id']=='checker-unit-2' and state['attempts'][-1]['status']=='running'
+assert state['limits']['implementation_counts']=={'https://github.com/robinwassen/Fossilize/issues/37':2}
+git(repo,'merge-base','--is-ancestor',proof['before_tip'],proof['after_tip']);git(repo,'merge-base','--is-ancestor',proof['after_tip'],tip)
+for p in oldrows:
+ if p.endswith('/state.json') and p!=active['state']:assert rows[p]==oldrows[p]
+assert rows['allocations.json']==oldrows['allocations.json'] and rows['active.json']==oldrows['active.json']
+production_remote=git(repo,'ls-remote','origin',hs.REF).decode().split()[0]
+assert production_remote==tip
+sha=lambda v:hashlib.sha256(v).hexdigest()
+result={'result':'passed','candidate_sha':git(repo,'rev-parse','HEAD').decode().strip(),'imported_helper':hs.__file__,'artifact_tip':tip,'remote_artifact_tip':production_remote,'before_tip':proof['before_tip'],'after_tip':proof['after_tip'],'schema_transition':[2,3],'source_and_storage_identity_retained':True,'original_count':9,'budget_and_deadline_retained':True,'historical_records_and_active_allocation_bytes_retained':True,'old_state_exact_provenance':True,'bridge_consumed_once':True,'actual_submitted_report_sha256':sha(encoded(stored)),'submitted_report_exact':True,'coordinator_proof_separate_and_exact':True,'current_attempt':'checker-unit-2','closeout':'pending','actual_source_pr_created':False,'production_mutations':False}
+Path('/tmp/fos28-cu2-production-proof.json').write_bytes(encoded(result));print(json.dumps(result))
