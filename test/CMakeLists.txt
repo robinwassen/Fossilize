@@ -63,3 +63,51 @@ if (NOT WIN32)
     endif()
 endif()
 
+
+# GPU-independent diagnostics exercise production replay/device branches and the
+# layer's exported loader entrypoints. Give every process a private output path.
+if (FOSSILIZE_CLI)
+    foreach(diagnostic replay device)
+        add_executable(${diagnostic}-diagnostic-test ${diagnostic}_diagnostic_test.cpp)
+        target_link_libraries(${diagnostic}-diagnostic-test PRIVATE fossilize cli-utils)
+        target_compile_options(${diagnostic}-diagnostic-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
+        set_target_properties(${diagnostic}-diagnostic-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
+        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${diagnostic}-diagnostic")
+        add_test(NAME ${diagnostic}-diagnostic-test COMMAND ${diagnostic}-diagnostic-test)
+        set_tests_properties(${diagnostic}-diagnostic-test PROPERTIES TIMEOUT 60
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${diagnostic}-diagnostic")
+    endforeach()
+endif()
+if (FOSSILIZE_VULKAN_LAYER)
+    add_executable(capture-diagnostic-test capture_diagnostic_test.cpp)
+    target_include_directories(capture-diagnostic-test PRIVATE ${CMAKE_SOURCE_DIR}/khronos)
+    target_link_libraries(capture-diagnostic-test PRIVATE ${CMAKE_DL_LIBS})
+    target_compile_options(capture-diagnostic-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
+    set_target_properties(capture-diagnostic-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
+    foreach(mode normal qa paranoid eager binary)
+        foreach(kind graphics compute raytracing)
+            foreach(outcome reject success vulkan-error)
+                set(case_name capture-diagnostic-${mode}-${kind}-${outcome})
+                file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${case_name}")
+                add_test(NAME ${case_name} COMMAND capture-diagnostic-test
+                    $<TARGET_FILE:VkLayer_fossilize> ${mode} ${kind} ${outcome})
+                set_tests_properties(${case_name} PROPERTIES TIMEOUT 60
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${case_name}")
+            endforeach()
+        endforeach()
+    endforeach()
+endif()
+if (FOSSILIZE_CLI)
+    add_executable(diagnostic-compatibility-test diagnostic_compatibility_test.cpp)
+    target_link_libraries(diagnostic-compatibility-test PRIVATE fossilize cli-utils)
+    target_compile_options(diagnostic-compatibility-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
+    set_target_properties(diagnostic-compatibility-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/diagnostic-compatibility")
+    add_test(NAME diagnostic-compatibility-test COMMAND ${CMAKE_COMMAND}
+        -DCALLER=$<TARGET_FILE:diagnostic-compatibility-test>
+        -DREPLAY=$<TARGET_FILE:fossilize-replay>
+        -DWORK=${CMAKE_CURRENT_BINARY_DIR}/diagnostic-compatibility
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/diagnostic_compatibility.cmake)
+    set_tests_properties(diagnostic-compatibility-test PROPERTIES TIMEOUT 90
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/diagnostic-compatibility")
+endif()

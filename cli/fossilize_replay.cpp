@@ -55,6 +55,7 @@
 #include <utility>
 #include <map>
 #include <assert.h>
+#include <errno.h>
 
 #ifdef FOSSILIZE_REPLAYER_SPIRV_VAL
 #include "spirv-tools/libspirv.hpp"
@@ -1523,7 +1524,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (result == VK_PIPELINE_COMPILE_REQUIRED)
 		{
 			graphics_pipeline_compile_required_count.fetch_add(1, std::memory_order_relaxed);
-			LOGE("Recompile required for graphics pipeline hash 0x%016" PRIx64 ".\n", work_item.hash);
+			LOGE("Replay/create graphics pipeline requires compilation: hash=0x%016" PRIx64 ", VkResult=%d.\n",
+			     work_item.hash, int(result));
 
 			if (!opts.skip_pipelines_on_compile_required)
 			{
@@ -1556,7 +1558,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 		else
 		{
-			LOGE("Failed to create graphics pipeline for hash 0x%016" PRIx64 ".\n", work_item.hash);
+			LOGE("Replay/create graphics pipeline failed: hash=0x%016" PRIx64 ", VkResult=%d.\n",
+			     work_item.hash, int(result));
 		}
 	}
 
@@ -1587,7 +1590,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (result == VK_PIPELINE_COMPILE_REQUIRED)
 		{
 			compute_pipeline_compile_required_count.fetch_add(1, std::memory_order_relaxed);
-			LOGE("Recompile required for compute pipeline hash 0x%016" PRIx64 ".\n", work_item.hash);
+			LOGE("Replay/create compute pipeline requires compilation: hash=0x%016" PRIx64 ", VkResult=%d.\n",
+			     work_item.hash, int(result));
 
 			if (!opts.skip_pipelines_on_compile_required)
 			{
@@ -1620,7 +1624,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 		else
 		{
-			LOGE("Failed to create compute pipeline for hash 0x%016" PRIx64 ".\n", work_item.hash);
+			LOGE("Replay/create compute pipeline failed: hash=0x%016" PRIx64 ", VkResult=%d.\n",
+			     work_item.hash, int(result));
 		}
 	}
 
@@ -1651,7 +1656,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (result == VK_PIPELINE_COMPILE_REQUIRED)
 		{
 			raytracing_pipeline_compile_required_count.fetch_add(1, std::memory_order_relaxed);
-			LOGE("Recompile required for raytracing pipeline hash 0x%016" PRIx64 ".\n", work_item.hash);
+			LOGE("Replay/create raytracing pipeline requires compilation: hash=0x%016" PRIx64 ", VkResult=%d.\n",
+			     work_item.hash, int(result));
 
 			if (!opts.skip_pipelines_on_compile_required)
 			{
@@ -1684,7 +1690,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 		else
 		{
-			LOGE("Failed to create raytracing pipeline for hash 0x%016" PRIx64 ".\n", work_item.hash);
+			LOGE("Replay/create raytracing pipeline failed: hash=0x%016" PRIx64 ", VkResult=%d.\n",
+			     work_item.hash, int(result));
 		}
 	}
 
@@ -1832,6 +1839,42 @@ struct ThreadedReplayer : StateCreatorInterface
 		total_peak_memory.fetch_add(peak_memory, std::memory_order_relaxed);
 	}
 
+	// CRT errors belong to the failing operation. Preserve them before close/logging,
+	// which may themselves change errno. A zero errno does not establish a cause.
+	static void log_cache_export_error(const char *kind, const char *operation, int error)
+	{
+		if (error)
+			LOGE("Replay/export %s cache failed: operation=%s, errno=%d, hash=not-applicable.\n",
+			     kind, operation, error);
+		else
+			LOGE("Replay/export %s cache failed: operation=%s, errno=unknown, hash=not-applicable.\n",
+			     kind, operation);
+	}
+
+	static void write_cache_data(const char *path, const char *kind, const void *data, size_t size)
+	{
+		// Existing signal-handler callers already use stdio; this adds no signal-safety guarantee.
+		errno = 0;
+		FILE *file = fopen(path, "wb");
+		if (!file)
+		{
+			int error = errno;
+			log_cache_export_error(kind, "open", error);
+			return;
+		}
+
+		errno = 0;
+		bool written = fwrite(data, 1, size, file) == size;
+		int write_error = written ? 0 : errno;
+		errno = 0;
+		int close_result = fclose(file);
+		int close_error = close_result == 0 ? 0 : errno;
+		if (!written)
+			log_cache_export_error(kind, "write", write_error);
+		if (close_result != 0)
+			log_cache_export_error(kind, "close", close_error);
+	}
+
 	void flush_pipeline_cache()
 	{
 		if (device && disk_pipeline_cache)
@@ -1844,12 +1887,8 @@ struct ThreadedReplayer : StateCreatorInterface
 					vector<uint8_t> pipeline_buffer(pipeline_cache_size);
 					if (vkGetPipelineCacheData(device->get_device(), disk_pipeline_cache, &pipeline_cache_size, pipeline_buffer.data()) == VK_SUCCESS)
 					{
-						// This isn't safe to do in a signal handler, but it's unlikely to be a problem in practice.
-						FILE *file = fopen(opts.on_disk_pipeline_cache_path.c_str(), "wb");
-						if (!file || fwrite(pipeline_buffer.data(), 1, pipeline_buffer.size(), file) != pipeline_buffer.size())
-							LOGE("Failed to write pipeline cache data to disk.\n");
-						if (file)
-							fclose(file);
+						write_cache_data(opts.on_disk_pipeline_cache_path.c_str(), "pipeline",
+						                 pipeline_buffer.data(), pipeline_buffer.size());
 					}
 				}
 			}
@@ -1870,12 +1909,8 @@ struct ThreadedReplayer : StateCreatorInterface
 					vector<uint8_t> validation_buffer(validation_cache_size);
 					if (vkGetValidationCacheDataEXT(device->get_device(), validation_cache, &validation_cache_size, validation_buffer.data()) == VK_SUCCESS)
 					{
-						// This isn't safe to do in a signal handler, but it's unlikely to be a problem in practice.
-						FILE *file = fopen(opts.on_disk_validation_cache_path.c_str(), "wb");
-						if (!file || fwrite(validation_buffer.data(), 1, validation_buffer.size(), file) != validation_buffer.size())
-							LOGE("Failed to write pipeline cache data to disk.\n");
-						if (file)
-							fclose(file);
+						write_cache_data(opts.on_disk_validation_cache_path.c_str(), "validation",
+						                 validation_buffer.data(), validation_buffer.size());
 					}
 				}
 			}

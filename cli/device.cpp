@@ -273,11 +273,17 @@ bool VulkanDevice::init_device(const Options &opts)
 		return true;
 	}
 
-	if (volkInitialize() != VK_SUCCESS)
-	{
-		LOGE("volkInitialize failed.\n");
+	int gpu_index = -1;
+	const auto checked = [&](VkResult result, const char *operation, const char *resource) {
+		if (result == VK_SUCCESS)
+			return true;
+		LOGE("Device/setup %s failed: resource=%s, gpu_index=%d (-1 unknown), hash=not-applicable, VkResult=%d.\n",
+		     operation, resource, gpu_index, int(result));
 		return false;
-	}
+	};
+
+	if (!checked(volkInitialize(), "volkInitialize", "loader"))
+		return false;
 
 	uint32_t instance_api_version = major_minor_version(volkGetInstanceVersion());
 	if (instance_api_version == 0)
@@ -297,20 +303,20 @@ bool VulkanDevice::init_device(const Options &opts)
 
 	// Enable all extensions (FIXME: this is likely a problem).
 	uint32_t ext_count = 0;
-	if (vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, nullptr) != VK_SUCCESS)
+	if (!checked(vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, nullptr), "instance-extension-count", "instance"))
 		return false;
 	vector<VkExtensionProperties> exts(ext_count);
-	if (ext_count && vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, exts.data()) != VK_SUCCESS)
+	if (ext_count && !checked(vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, exts.data()), "instance-extension-data", "instance"))
 		return false;
 
 	vector<const char *> active_layers;
 	if (opts.enable_validation)
 	{
 		uint32_t layer_count = 0;
-		if (vkEnumerateInstanceLayerProperties(&layer_count, nullptr) != VK_SUCCESS)
+		if (!checked(vkEnumerateInstanceLayerProperties(&layer_count, nullptr), "instance-layer-count", "instance"))
 			return false;
 		vector<VkLayerProperties> layers(layer_count);
-		if (vkEnumerateInstanceLayerProperties(&layer_count, layers.data()) != VK_SUCCESS)
+		if (!checked(vkEnumerateInstanceLayerProperties(&layer_count, layers.data()), "instance-layer-data", "instance"))
 			return false;
 
 		if (find_layer(layers, "VK_LAYER_KHRONOS_validation"))
@@ -347,9 +353,8 @@ bool VulkanDevice::init_device(const Options &opts)
 	instance_info.enabledExtensionCount = uint32_t(active_exts.size());
 	instance_info.ppEnabledExtensionNames = active_exts.empty() ? nullptr : active_exts.data();
 
-	if (vkCreateInstance(&instance_info, nullptr, &instance) != VK_SUCCESS)
+	if (!checked(vkCreateInstance(&instance_info, nullptr, &instance), "vkCreateInstance", "instance"))
 	{
-		LOGE("Failed to create instance.\n");
 		return false;
 	}
 
@@ -362,12 +367,12 @@ bool VulkanDevice::init_device(const Options &opts)
 		cb_info.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT;
 		cb_info.pUserData = this;
 
-		if (vkCreateDebugReportCallbackEXT(instance, &cb_info, nullptr, &callback) != VK_SUCCESS)
+		if (!checked(vkCreateDebugReportCallbackEXT(instance, &cb_info, nullptr, &callback), "vkCreateDebugReportCallbackEXT", "debug-callback"))
 			return false;
 	}
 
 	uint32_t gpu_count = 0;
-	if (vkEnumeratePhysicalDevices(instance, &gpu_count, nullptr) != VK_SUCCESS)
+	if (!checked(vkEnumeratePhysicalDevices(instance, &gpu_count, nullptr), "physical-device-count", "physical-device"))
 		return false;
 	vector<VkPhysicalDevice> gpus(gpu_count);
 
@@ -377,7 +382,7 @@ bool VulkanDevice::init_device(const Options &opts)
 		return false;
 	}
 
-	if (vkEnumeratePhysicalDevices(instance, &gpu_count, gpus.data()) != VK_SUCCESS)
+	if (!checked(vkEnumeratePhysicalDevices(instance, &gpu_count, gpus.data()), "physical-device-data", "physical-device"))
 		return false;
 
 	for (uint32_t i = 0; i < gpu_count; i++)
@@ -404,6 +409,7 @@ bool VulkanDevice::init_device(const Options &opts)
 	else
 		gpu = gpus.front();
 
+	gpu_index = opts.device_index >= 0 ? opts.device_index : 0;
 	vkGetPhysicalDeviceProperties(gpu, &gpu_props);
 	LOGI("Chose GPU:\n");
 	LOGI("  name: %s\n", gpu_props.deviceName);
@@ -428,10 +434,10 @@ bool VulkanDevice::init_device(const Options &opts)
 
 	vector<const char *> active_device_extensions;
 	uint32_t device_ext_count = 0;
-	if (vkEnumerateDeviceExtensionProperties(gpu, nullptr, &device_ext_count, nullptr) != VK_SUCCESS)
+	if (!checked(vkEnumerateDeviceExtensionProperties(gpu, nullptr, &device_ext_count, nullptr), "device-extension-count", "device"))
 		return false;
 	vector<VkExtensionProperties> device_ext_props(device_ext_count);
-	if (device_ext_count && vkEnumerateDeviceExtensionProperties(gpu, nullptr, &device_ext_count, device_ext_props.data()) != VK_SUCCESS)
+	if (device_ext_count && !checked(vkEnumerateDeviceExtensionProperties(gpu, nullptr, &device_ext_count, device_ext_props.data()), "device-extension-data", "device"))
 		return false;
 
 	for (auto &ext : device_ext_props)
@@ -612,9 +618,8 @@ bool VulkanDevice::init_device(const Options &opts)
 		for (uint32_t i = 0; i < device_info.enabledExtensionCount; i++)
 			LOGI("Enabling device extension: %s\n", device_info.ppEnabledExtensionNames[i]);
 
-	if (vkCreateDevice(gpu, &device_info, nullptr, &device) != VK_SUCCESS)
+	if (!checked(vkCreateDevice(gpu, &device_info, nullptr, &device), "vkCreateDevice", "device"))
 	{
-		LOGE("Failed to create device.\n");
 		return false;
 	}
 
@@ -623,7 +628,7 @@ bool VulkanDevice::init_device(const Options &opts)
 	if (supports_pipeline_binary)
 	{
 		VkPipelineBinaryKeyKHR key = { VK_STRUCTURE_TYPE_PIPELINE_BINARY_KEY_KHR };
-		if (vkGetPipelineKeyKHR(device, nullptr, &key) == VK_SUCCESS)
+		if (checked(vkGetPipelineKeyKHR(device, nullptr, &key), "vkGetPipelineKeyKHR", "pipeline-binary-key"))
 		{
 			char str[VK_MAX_PIPELINE_BINARY_KEY_SIZE_KHR * 2 + 1];
 			pipeline_binary_key_to_str(str, key);

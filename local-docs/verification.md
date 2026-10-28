@@ -110,7 +110,32 @@ For multi-configuration generators, build with `--config Debug` and test with `-
 | `linux-futex-test` / `spinlock-futex-test` | `test/futex-test` | Non-Windows concurrent lock stress; Apple uses the spinlock name. |
 | `layer-test` | `test/layer-test` | Optional real Vulkan layer integration; see below. |
 
-A normal Linux CLI-enabled build registers six tests before optional layer integration; Windows registers five. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
+A full CLI/layer build also registers the diagnostics regression tests for
+[issue #10](https://github.com/robinwassen/Fossilize/issues/10):
+
+| Registered CTest name | Scope |
+|---|---|
+| `replay-diagnostic-test` | Actual replay pipeline creation and cache-export branches with deterministic Vulkan/CRT failure injection, compile-required retries, exact errno retention and cleanup checks. |
+| `device-diagnostic-test` | Actual device initialization with fake loader/dispatch, distinct results at every checked setup stage, safe destruction, successful/null-device and support-limit controls. |
+| `capture-diagnostic-<mode>-<kind>-<outcome>` (45 tests) | Exported layer entrypoints through a fake loader: normal, QA, paranoid, eager and pipeline-binary recording; graphics/compute/raytracing; rejection, successful recording and controlled Vulkan failure. Each process has its own output directory and spam counters. |
+| `diagnostic-compatibility-test` | Preserved source interfaces, dependency-complete known-hash FOZ fixture/readback and real `fossilize-replay --null-device` CLI invocation. |
+
+These are CPU-only assertions, including explicit checks that survive `NDEBUG`.
+New runners inherit the project exception/sanitizer flags and have process
+timeouts. The layer caller in `test/capture_diagnostic_test.cpp` loads the
+library by path with `dlopen`/`LoadLibrary`; it can be built against baseline
+headers, run with the baseline library, and then run unchanged with the candidate
+library as limited Vulkan layer C ABI evidence. The caller in
+`test/diagnostic_compatibility_test.cpp` can likewise be compiled against baseline
+headers and linked to candidate libraries for source compatibility evidence.
+This does not establish a general C++ binary ABI guarantee. Preserve those
+executables and exact baseline/candidate identities outside source when checking
+compatibility. Human diagnostics intentionally add operation/result context and
+correct pipeline names; there is no new stable log parsing contract or result
+schema. Cache close failures become visible without changing aggregate CLI exit
+policy. These tests do not demonstrate driver compilation or durable cache output.
+
+A normal Linux CLI/layer-enabled build registers 54 tests before optional layer integration; Windows registers 53. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
 
 The `*-library-only-*` presets disable **both CLI and tests**. They are build/package checks, not test coverage; their test presets/workflows must not be reported as a passing suite. To test the core without CLI/SPIR-V dependencies:
 

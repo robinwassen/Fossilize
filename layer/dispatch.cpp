@@ -766,7 +766,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateGraphicsPipelinesNormal(Device *laye
 					layer->requiresModuleIdentifiers()
 					? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 			{
-				LOGW_LEVEL("Recording graphics pipeline failed, usually caused by unsupported pNext.\n");
+				LOGW_LEVEL("Capture/record graphics pipeline failed: mode=qa, batch_index=%u, hash=unknown, reason=unknown.\n", index);
 			}
 		};
 
@@ -802,7 +802,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateGraphicsPipelinesNormal(Device *laye
 				device,
 				layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 		{
-			LOGW_LEVEL("Recording graphics pipeline failed, usually caused by unsupported pNext.\n");
+			LOGW_LEVEL("Capture/record graphics pipeline failed: mode=normal, batch_index=%u, hash=unknown, reason=unknown.\n", i);
 		}
 	}
 
@@ -839,7 +839,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateGraphicsPipelinesParanoid(Device *la
 				VK_NULL_HANDLE, info, nullptr, 0, 0,
 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 		{
-			LOGW_LEVEL("Failed to capture eagerly.\n");
+			LOGW_LEVEL("Capture/record graphics pipeline failed: mode=eager, batch_index=%u, hash=unknown, reason=unknown.\n", i);
 		}
 
 		// Have to create all pipelines here, in case the application makes use of basePipelineIndex.
@@ -854,7 +854,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateGraphicsPipelinesParanoid(Device *la
 				res == VK_SUCCESS ? pPipelines[i] : VK_NULL_HANDLE, info, nullptr, 0, 0,
 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 		{
-			LOGW_LEVEL("Failed to record graphics pipeline, usually caused by unsupported pNext.\n");
+			LOGW_LEVEL("Capture/record graphics pipeline failed: mode=paranoid, batch_index=%u, hash=unknown, reason=unknown.\n", i);
 		}
 
 		if (res == VK_PIPELINE_COMPILE_REQUIRED_EXT)
@@ -915,7 +915,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelinesNormal(Device *layer
 					layer->requiresModuleIdentifiers()
 					? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 			{
-				LOGW_LEVEL("Recording graphics pipeline failed, usually caused by unsupported pNext.\n");
+				LOGW_LEVEL("Capture/record compute pipeline failed: mode=qa, batch_index=%u, hash=unknown, reason=unknown.\n", index);
 			}
 		};
 
@@ -940,7 +940,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelinesNormal(Device *layer
 				device,
 				layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 		{
-			LOGW_LEVEL("Failed to record compute pipeline, usually caused by unsupported pNext.\n");
+			LOGW_LEVEL("Capture/record compute pipeline failed: mode=normal, batch_index=%u, hash=unknown, reason=unknown.\n", i);
 		}
 	}
 
@@ -977,7 +977,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelinesParanoid(Device *lay
 				VK_NULL_HANDLE, info, nullptr, 0, 0,
 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 		{
-			LOGW_LEVEL("Failed to capture eagerly.\n");
+			LOGW_LEVEL("Capture/record compute pipeline failed: mode=eager, batch_index=%u, hash=unknown, reason=unknown.\n", i);
 		}
 
 		// Have to create all pipelines here, in case the application makes use of basePipelineIndex.
@@ -992,7 +992,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelinesParanoid(Device *lay
 				res == VK_SUCCESS ? pPipelines[i] : VK_NULL_HANDLE, info, nullptr, 0, 0,
 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 		{
-			LOGW_LEVEL("Failed to record compute pipeline, usually caused by unsupported pNext.\n");
+			LOGW_LEVEL("Capture/record compute pipeline failed: mode=paranoid, batch_index=%u, hash=unknown, reason=unknown.\n", i);
 		}
 
 		if (res == VK_PIPELINE_COMPILE_REQUIRED_EXT)
@@ -1053,7 +1053,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateRayTracingPipelinesNormal(Device *la
 					layer->requiresModuleIdentifiers()
 					? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 			{
-				LOGW_LEVEL("Recording graphics pipeline failed, usually caused by unsupported pNext.\n");
+				LOGW_LEVEL("Capture/record raytracing pipeline failed: mode=qa, batch_index=%u, hash=unknown, reason=unknown.\n", index);
 			}
 		};
 
@@ -1099,7 +1099,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateRayTracingPipelinesNormal(Device *la
 				pPipelines[i], pCreateInfos[i], pPipelines, createInfoCount, 0,
 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 		{
-			LOGW_LEVEL("Failed to record compute pipeline, usually caused by unsupported pNext.\n");
+			LOGW_LEVEL("Capture/record raytracing pipeline failed: mode=normal, batch_index=%u, hash=unknown, reason=unknown.\n", i);
 		}
 	}
 
@@ -1137,7 +1137,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateRayTracingPipelinesParanoid(Device *
 				VK_NULL_HANDLE, info, nullptr, 0, 0,
 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 		{
-			LOGW_LEVEL("Failed to capture eagerly.\n");
+			LOGW_LEVEL("Capture/record raytracing pipeline failed: mode=eager, batch_index=%u, hash=unknown, reason=unknown.\n", i);
 		}
 
 		// Have to create all pipelines here, in case the application makes use of basePipelineIndex.
@@ -1154,7 +1154,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateRayTracingPipelinesParanoid(Device *
 				res == VK_SUCCESS ? pPipelines[i] : VK_NULL_HANDLE, info, nullptr, 0, 0,
 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
 		{
-			LOGW_LEVEL("Failed to record compute pipeline, usually caused by unsupported pNext.\n");
+			LOGW_LEVEL("Capture/record raytracing pipeline failed: mode=paranoid, batch_index=%u, hash=unknown, reason=unknown.\n", i);
 		}
 
 		if (res == VK_PIPELINE_COMPILE_REQUIRED)
@@ -1450,21 +1450,21 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreatePipelineBinariesKHR(
 				if (!layer->getRecorder().record_graphics_pipeline(
 						VK_NULL_HANDLE, *static_cast<const VkGraphicsPipelineCreateInfo *>(pnext), nullptr, 0, 0,
 						device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
-					LOGW_LEVEL("Recording graphics pipeline failed, usually caused by unsupported pNext.\n");
+					LOGW_LEVEL("Capture/record graphics pipeline failed: mode=binary, handle=not-applicable, hash=unknown, reason=unknown.\n");
 				break;
 
 			case VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO:
 				if (!layer->getRecorder().record_compute_pipeline(
 						VK_NULL_HANDLE, *static_cast<const VkComputePipelineCreateInfo *>(pnext), nullptr, 0, 0,
 						device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
-					LOGW_LEVEL("Recording compute pipeline failed, usually caused by unsupported pNext.\n");
+					LOGW_LEVEL("Capture/record compute pipeline failed: mode=binary, handle=not-applicable, hash=unknown, reason=unknown.\n");
 				break;
 
 			case VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR:
 				if (!layer->getRecorder().record_raytracing_pipeline(
 						VK_NULL_HANDLE, *static_cast<const VkRayTracingPipelineCreateInfoKHR *>(pnext), nullptr, 0, 0,
 						device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
-					LOGW_LEVEL("Recording ray tracing pipeline failed, usually caused by unsupported pNext.\n");
+					LOGW_LEVEL("Capture/record raytracing pipeline failed: mode=binary, handle=not-applicable, hash=unknown, reason=unknown.\n");
 				break;
 
 			default:
