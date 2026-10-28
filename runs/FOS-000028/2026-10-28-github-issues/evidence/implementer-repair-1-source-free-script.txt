@@ -1,0 +1,56 @@
+from pathlib import Path
+import hashlib,json,os,subprocess,sys,tempfile
+source=Path('/home/robin/dev/fossilize-FOS-000028')
+sys.path.insert(0,str(source/'.agents/skills/implement-change-harness/scripts'))
+from harness_state import Harness,Invalid,REF,encoded,git,validate_state
+candidate=git(source,'rev-parse','HEAD').decode().strip()
+root=Path(tempfile.mkdtemp(prefix='fos28-source-free-'));clone=root/'clone';bare=root/'isolated-origin.git'
+endpoint=git(source,'remote','get-url','--push','origin').decode().strip()
+git(source,'clone','--no-local','--single-branch','--branch','codex/FOS-000028-github-issues',str(source),str(clone))
+git(clone,'config','user.name','Issue smoke fixture');git(clone,'config','user.email','smoke@example.invalid')
+assert git(clone,'rev-parse','HEAD').decode().strip()==candidate
+for path in ('local-docs/backlog-keys.md','local-docs/reviews/harness-backlog.md','local-docs/reviews/github-issues-migration.md'):assert not (clone/path).exists()
+# Fetch real published history into an inspection namespace, never the canonical
+# write ref. All state mutations below target only a disposable bare remote.
+git(clone,'fetch',endpoint,REF+':refs/remotes/evidence/harness-artifacts')
+observed=git(clone,'rev-parse','refs/remotes/evidence/harness-artifacts').decode().strip()
+remote=git(clone,'ls-remote',endpoint,REF).decode().split()[0];assert remote==observed
+h=Harness(clone);rows=h.store.records(observed);active=json.loads(rows['active.json']);production=json.loads(rows[active['state']])
+assert production['schema_version']==3 and production['root_issue']['url']=='https://github.com/robinwassen/Fossilize/issues/37'
+original=json.load(open('/tmp/fos28-init.json'))['original'];assert production['original']==original
+assert production['legacy_report_bridge']['envelope']['worker_id']=='/root/implementer_1' and production['legacy_report_bridge']['consumed']
+baseproof=json.load(open('/tmp/fos28-production-before-journal.json'))
+assert all(hashlib.sha256(rows[path]).hexdigest()==value for path,value in baseproof['sha256'].items() if path!=active['state'])
+legacy=next(item['legacy_state'] for item in production['provenance'] if item.get('legacy_schema')==2)
+assert hashlib.sha256(encoded(legacy)).hexdigest()==baseproof['sha256'][active['state']]
+try:validate_state(production,clone)
+except Invalid as error:assert 'repository identity' in str(error)
+else:raise AssertionError('fresh clone must require explicit execution-location rebind')
+assert h.store.tip() is None
+# Isolated new-run/resume smoke reads the real root and completed prerequisites.
+# Its artifact destination is a new local bare repo, so no production state,
+# worker, issue, relationship, readiness comment or PR is created/changed.
+git(clone,'init','--bare',str(bare));git(clone,'push',str(bare),'73f891d6c0cf498ac92e804d7d0f0cd344a083f5:refs/heads/master')
+git(clone,'remote','set-url','origin',str(bare));git(clone,'checkout','-b','codex/source-free-smoke',candidate)
+payload={'root_issue':37,'run_id':'source-free-disposable-smoke','repository':{'input_sha':candidate,'base_sha':'73f891d6c0cf498ac92e804d7d0f0cd344a083f5','target_remote':'origin','target_repository':'robinwassen/Fossilize','target_branch':'master','branch':'codex/source-free-smoke','implementation_worktree':str(clone)}}
+payload_path=root/'initialize.json';payload_path.write_bytes(encoded(payload))
+helper=clone/'.agents/skills/implement-change-harness/scripts/harness_state.py'
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1')
+commands=[]
+def invoke(tip,revision):
+ command=[sys.executable,'-B',str(helper),'--repo',str(clone),'initialize','--payload',str(payload_path),'--expected-tip',tip,'--expected-revision',str(revision)]
+ run=subprocess.run(command,cwd=clone,env=env,capture_output=True,text=True,timeout=600)
+ commands.append({'argv':command,'exit_code':run.returncode,'stderr':run.stderr})
+ assert run.returncode==0,run.stderr
+ return json.loads(run.stdout)
+first=invoke('none',0);assert first['artifact_publication']['status']=='confirmed'
+assert first['state']['schema_version']==3 and first['state']['root_issue']['url']==production['root_issue']['url']
+assert first['state']['attempts']==[] and first['state']['task_key']=='issue-37'
+second=invoke(first['tip'],first['state']['revision']);assert second['resumed'] is True and second['tip']==first['tip']
+assert len(git(clone,'rev-list','--parents',first['tip']).decode().split())==1
+fresh=Harness(clone).show();assert fresh['artifact_publication']['status']=='confirmed'
+assert json.loads(Harness(clone).store.records(first['tip'])['allocations.json'])['issued']==[]
+assert git(clone,'ls-remote',endpoint,REF).decode().split()[0]==observed
+result={'candidate_sha':candidate,'production_artifact_tip_inspected':observed,'production_root':production['root_issue']['url'],'original_criteria_retained':len(original),'canonical_bytes_retained':5,'legacy_state_bytes_retained':True,'source_backlogs_absent':True,'production_location_fence':'passed','isolated_initialize':'passed','isolated_resume':'passed','isolated_artifact_tip':first['tip'],'isolated_path':str(root),'commands':commands,'production_state_mutated':False,'workers_issues_relationships_prs_created':0,'result':'passed'}
+Path('/tmp/fos28-repair-1-source-free-smoke.json').write_bytes(encoded(result))
+print(json.dumps({key:result[key] for key in ('candidate_sha','production_artifact_tip_inspected','isolated_initialize','isolated_resume','result')}))

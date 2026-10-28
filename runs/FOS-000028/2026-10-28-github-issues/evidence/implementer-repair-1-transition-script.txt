@@ -1,0 +1,20 @@
+import json,sys,hashlib,subprocess
+from pathlib import Path
+sys.path.insert(0,'.agents/skills/implement-change-harness/scripts')
+from harness_state import Harness,encoded
+h=Harness(Path.cwd());tip=h.store.tip();rows=h.store.records(tip);active=json.loads(rows['active.json']);state=json.loads(rows[active['state']])
+legacy=next(p['legacy_state'] for p in state['provenance'] if p.get('legacy_schema')==2)
+original=json.load(open('/tmp/fos28-init.json'))['original'];assert state['original']==original==legacy['original']
+assert state['task_key']==legacy['task_key'] and state['run_id']==legacy['run_id']
+for field in ('deadline','repairs','replans','command_timeout'):assert state['limits'][field]==legacy['limits'][field]
+assert state['legacy_report_bridge']['consumed']
+report=rows['runs/FOS-000028/2026-10-28-github-issues/reports/implementer-1.json']
+checker_proof=json.loads(rows['runs/FOS-000028/2026-10-28-github-issues/evidence/checker-unit-1-transition.json'])
+assert hashlib.sha256(report).hexdigest()==checker_proof['submitted_report_sha256']
+proof=json.load(open('/tmp/fos28-production-before-journal.json'));assert hashlib.sha256(encoded(legacy)).hexdigest()==proof['sha256'][active['state']]
+retained=0
+for path,sha in proof['sha256'].items():
+ if path==active['state']:continue
+ assert hashlib.sha256(rows[path]).hexdigest()==sha;retained+=1
+result={'result':'passed','candidate_sha':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'production_artifact_tip':tip,'schema_version':state['schema_version'],'revision':state['revision'],'task_key':state['task_key'],'run_id':state['run_id'],'root_issue':state['root_issue']['url'],'original_criteria':len(original),'consumed_exact_original_bridge':True,'original_submitted_report_bytes_retained':True,'submitted_report_sha256':hashlib.sha256(report).hexdigest(),'legacy_state_bytes_retained':True,'prior_other_canonical_blobs_retained':retained,'unchanged_limits':{k:state['limits'][k] for k in ('deadline','repairs','replans','command_timeout')},'state_mutated':False}
+Path('/tmp/fos28-repair-1-transition.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result))
