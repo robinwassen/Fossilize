@@ -36,7 +36,7 @@ class HarnessTests(unittest.TestCase):
         self.root_key = "FOS-000025"
         self.registry_rows = [f"| `{self.root_key}` | Root task | [task](task.md) | Allocated |"]
         self.write_registry(self.repo)
-        (self.repo / "local-docs/task.md").write_text("# FOS-000025 — Root task\n\nReferences to FOS-000025 are not definitions.\n")
+        (self.repo / "local-docs/task.md").write_text("# FOS-000025 — Root task\n\n**Status:** Pending implementation.\nReferences to FOS-000025 are not definitions.\n")
         (self.repo / "behavior.py").write_text("def value():\n    return 1\n")
         (self.repo / "test_behavior.py").write_text("import unittest\nfrom behavior import value\nclass Behavior(unittest.TestCase):\n    def test_value(self):\n        self.assertEqual(value(), 1)\n")
         git(self.repo, "add", ".")
@@ -78,7 +78,21 @@ class HarnessTests(unittest.TestCase):
                            "cwd": str(self.source), "prerequisites": "Python and Git", "expected": "one assertion passes"}],
                 "subtasks": []}
 
+    def cleanup(self):
+        for target in self.state["closeout"]["targets"]:
+            path = self.source / target["location"]
+            path.write_text("".join(line for line in path.read_text().replace("**Status:** Done (verified proposed branch state; not landed on master).", "**Status:** Pending implementation.").splitlines(keepends=True) if not line.startswith("**Completion evidence:**")))
+        git(self.source, "add", ".")
+        git(self.source, "commit", "-m", "remove invalid completion")
+        candidate = git(self.source, "rev-parse", "HEAD").decode().strip()
+        self.act("closeout-cleanup", {"candidate_sha": candidate, "observation": "Canonical pending source restored."})
+
     def launch(self, role, **overrides):
+        if getattr(self, "automatic_closeout", True):
+            if self.state and self.state["phase"] == "closing":
+                self.closeout()
+            if self.state and self.state.get("closeout", {}).get("stage") == "cleanup" and role in ("implementer", "planner"):
+                self.cleanup()
         self.counter += 1
         model = {"model": "gpt-6.1-sol", "effort": "high"}
         payload = {"role": role, "attempt_id": f"{role}-{self.counter}", "requested": model, "actual": model,
@@ -133,9 +147,39 @@ class HarnessTests(unittest.TestCase):
                       records={log: result.stdout + result.stderr})
         return report
 
+    def closeout(self, renew=True):
+        targets = [{"key": self.root_key, "location": "local-docs/task.md", "evidence": "Assertion-bearing fixture test passed; independent unit acceptance.", "reference": "https://github.com/example/project/compare/master...codex/test"}]
+        targets += [{"key": u["key"], "location": "local-docs/" + u["title"] + ".md", "evidence": targets[0]["evidence"], "reference": targets[0]["reference"]} for u in self.state["units"] if u["key"] != self.root_key]
+        self.act("closeout-intent", {"targets": targets})
+        for target in targets:
+            path = self.source / target["location"]
+            text = path.read_text().replace("**Status:** Pending implementation.", "**Status:** Done (verified proposed branch state; not landed on master).")
+            text += "**Completion evidence:** " + target["evidence"] + " " + target["reference"] + "\n"
+            path.write_text(text)
+        git(self.source, "add", ".")
+        git(self.source, "commit", "-m", "close canonical backlog")
+        candidate = git(self.source, "rev-parse", "HEAD").decode().strip()
+        self.act("closeout-record", {"candidate_sha": candidate})
+        while renew and self.state["operation"] == "subtask":
+            self.launch("checker")
+            report = self.check_report()
+            if "C2" in {c["id"] for c in self.state["plan"]["cases"]}:
+                env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+                result = subprocess.run([sys.executable, "-m", "unittest", "-v", "test_second"], cwd=self.source, env=env, capture_output=True, text=True, timeout=30)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                second = "test_second.Second.test_second"
+                report["discovered"].append(second)
+                report["executed"].append(second)
+                report["test_mapping"]["C2"] = {"location": "test_second.py", "tests": [second]}
+                report["records"][report["evidence"][0]["log"]] += result.stdout + result.stderr
+                report["evidence"][0]["command"].append("test_second")
+            self.act("report", report)
+
     def checked(self):
         self.launch("checker")
         self.act("report", self.check_report())
+        if self.state["phase"] == "closing":
+            self.closeout()
 
     def accepted(self):
         self.planned()
@@ -195,7 +239,7 @@ class HarnessTests(unittest.TestCase):
         self.unchanged_rejection("report", dict(self.report(), verdict="changes_required", findings=[finding], next_action="repair"), "duplicate finding")
         self.act("resolve-finding", {"finding_id": "same", "evidence": "fresh checker reran concrete reproducer successfully"})
         self.act("report", self.check_report())
-        self.assertEqual(self.state["operation"], "final")
+        self.assertEqual(self.state["operation"], "closeout")
         self.assertEqual([f["status"] for f in self.state["findings"]], ["resolved"])
 
     def test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness(self):
@@ -272,11 +316,12 @@ class HarnessTests(unittest.TestCase):
         self.act("report", report)
         self.assertEqual(self.state["operation"], "budget")
         self.assertEqual(self.state["attempts"][-1]["status"], "complete")
-        self.assertEqual(self.state["limits"]["resume_operation"], "final")
+        self.assertEqual(self.state["limits"]["resume_operation"], "closeout")
         self.unchanged_rejection("budget-extension", {"repairs": 4, "authorization": "human approved", "reason": "insufficient deadline"}, "unexpired deadline")
         self.act("budget-extension", {"deadline": self.now + 100, "authorization": "human approved", "reason": "continue"})
-        self.assertEqual((self.state["operation"], self.state["status"]), ("final", "ready"))
-        self.assertEqual(self.state["next_action"], "dispatch separate fresh final checker over combined branch")
+        self.assertEqual((self.state["operation"], self.state["status"]), ("closeout", "ready"))
+        self.assertIn("closeout-intent", self.state["next_action"])
+        self.closeout()
         self.checked()
         self.assertEqual(self.state["phase"], "publishing")
 
@@ -315,7 +360,7 @@ class HarnessTests(unittest.TestCase):
         self.assertGreater(self.state["revision"], 15)
         self.assertEqual(before, (git(self.repo, "status", "--porcelain"), git(self.repo, "rev-parse", "HEAD"), (common_dir(self.repo) / "index").read_bytes()))
         self.assertEqual((self.repo / "private.txt").read_text(), "user untracked")
-        self.assertEqual(git(self.source, "diff", self.base, "--name-only").decode(), "")
+        self.assertEqual(git(self.source, "diff", self.base, "--name-only").decode(), "local-docs/task.md\n")
 
     def test_T02_failure_boundaries_and_real_cas_loser(self):
         self.initialize()
@@ -569,7 +614,7 @@ class HarnessTests(unittest.TestCase):
         # Optional diagnostics may be unavailable, separately recorded.
         report["evidence"].append({"gate": "optional-profile", "result": "unsupported", "reason": "tool missing"})
         self.act("report", report)
-        self.assertEqual(self.state["operation"], "final")
+        self.assertEqual(self.state["operation"], "closeout")
 
     def test_T09b_repeated_unchanged_rejection_stops_early(self):
         self.planned()
@@ -628,11 +673,13 @@ class HarnessTests(unittest.TestCase):
         self.initialize()
         keys = []
         for title in ("First", "Second"):
-            self.act("reserve", {"title": title, "location": "harness-artifacts:subtask/" + title})
+            self.act("reserve", {"title": title, "location": "local-docs/" + title + ".md"})
             row = json.loads(self.harness.store.records(self.tip)["allocations.json"])["issued"][-1]
             keys.append(row["key"])
-            self.registry_rows.append(f"| `{row['key']}` | {title} | harness-artifacts:subtask/{title} | Allocated |")
+            self.registry_rows.append(f"| `{row['key']}` | {title} | [task]({title}.md) | Allocated |")
         self.write_registry(self.source)
+        for key, title in zip(keys, ("First", "Second")):
+            (self.source / ("local-docs/" + title + ".md")).write_text(f"# {key} — {title}\n**Status:** Pending implementation.\n")
         git(self.source, "add", ".")
         git(self.source, "commit", "-m", "register synthetic subtasks")
         plan = self.plan()
@@ -659,7 +706,7 @@ class HarnessTests(unittest.TestCase):
             else:
                 key = bad["subtasks"][0]["key"]
                 old = (self.source / "local-docs/backlog-keys.md").read_text()
-                (self.source / "local-docs/backlog-keys.md").write_text(old.replace(f"{key}` | First | harness-artifacts:subtask/First | Allocated", f"{key}` | First | harness-artifacts:subtask/First | Retired"))
+                (self.source / "local-docs/backlog-keys.md").write_text(old.replace(f"{key}` | First | [task](First.md) | Allocated", f"{key}` | First | [task](First.md) | Retired"))
                 git(self.source, "add", ".")
                 git(self.source, "commit", "-m", "retired fixture")
             self.unchanged_rejection("report", dict(self.report(), plan=bad))
@@ -689,8 +736,9 @@ class HarnessTests(unittest.TestCase):
         second_report.update(discovered=[second_id], executed=[second_id], test_mapping={"C2": {"location": "test_second.py:4", "tests": [second_id]}})
         second_report["evidence"][0]["command"][-1] = "test_second"
         self.act("report", second_report)
-        self.assertTrue(all(u["status"] == "accepted" for u in self.state["units"]))
-        self.assertEqual(self.state["operation"], "final")
+        self.closeout(renew=False)
+        self.assertTrue(all(u["status"] == "ready" for u in self.state["units"]))
+        self.assertEqual(self.state["operation"], "subtask")
         # The independent integration run finds an effect outside subtask evidence.
         self.launch("checker")
         failure = subprocess.run([sys.executable, "-m", "unittest", "-v", "test_behavior", "test_second"], cwd=self.source, env=env, capture_output=True, text=True)
@@ -733,6 +781,8 @@ class HarnessTests(unittest.TestCase):
         renewed.update(discovered=[second_id], executed=[second_id], test_mapping={"C2": {"location": "test_second.py:4", "tests": [second_id]}})
         renewed["evidence"][0]["command"][-1] = "test_second"
         self.act("report", renewed)
+        self.closeout()
+        corrected = self.state["repository"]["candidate_sha"]
         subtask_attempt = renewed["attempt_id"]
         self.assertEqual(self.state["operation"], "final")
         self.assertIsNone(self.state["final_acceptance"])
@@ -788,6 +838,8 @@ class HarnessTests(unittest.TestCase):
         self.unchanged_rejection("report", self.check_report(), "unresolved prior finding")
         self.act("resolve-finding", {"finding_id": "final-defect", "evidence": success.stderr})
         self.act("report", self.check_report())
+        self.closeout()
+        corrected = self.state["repository"]["candidate_sha"]
         subtask_attempt = self.state["attempts"][-1]["attempt_id"]
         self.assertEqual(self.state["operation"], "final")
         self.assertIsNone(self.state["final_acceptance"])
@@ -860,6 +912,9 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(self.harness.show()["state"], self.state)
         self.unchanged_rejection("publish-intent", self.intent(), "final acceptance")
 
+        # Reconcile stale status before the prerequisite repair; source behavior is unchanged.
+        self.cleanup()
+        candidate = self.state["repository"]["candidate_sha"]
         # First honors its scope: return the same commit without fixing Second.
         unchanged = git(self.source, "rev-parse", "HEAD"), (self.source / "second.py").read_bytes()
         self.implemented(candidate)
@@ -890,6 +945,8 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(self.state["findings"][0]["affected_task"], second)
         self.assertEqual(self.state["findings"][0]["status"], "resolved")
         self.act("report", success)
+        self.closeout()
+        corrected = self.state["repository"]["candidate_sha"]
         subtask_attempt = success["attempt_id"]
         self.assertEqual(self.state["operation"], "final")
         self.unchanged_rejection("publish-intent", self.intent(), "final acceptance")

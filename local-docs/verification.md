@@ -29,7 +29,11 @@ real disposable repositories/worktrees, ref transactions, local bare-remote effe
 and assertion-bearing test commands, with deterministic worker/PR observations.
 It never mutates the real artifact ref, launches actual agents or creates test PRs.
 Record nonzero discovered/executed IDs, statuses and the T01–T17 method mapping;
-passing this suite does not prove actual role conduct or live GitHub behavior.
+`test_harness_closeout.py` additionally covers C01–C08 canonical completion,
+actual tracked Markdown commits, renewal/cleanup, pending schema-2 adoption and
+a one-PR local-remote publication/merge simulation. The test explicitly performs
+the simulated user merge; the helper never merges. Passing this suite does not
+prove actual role conduct or live GitHub behavior.
 Independent checker review and the real publication gates remain separate.
 Disable bytecode as shown so verification does not dirty the candidate worktree.
 No product C++/Vulkan build, driver or Steam claim follows from this Python suite.

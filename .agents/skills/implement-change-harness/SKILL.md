@@ -33,14 +33,24 @@ all roles read the project's verification guide before selecting/running checks.
 4. Validate the planner's versioned implementation and test plan, then dispatch
    one fresh implementer for the first ready work unit. An unsplit root is the
    unit itself, with no second canonical definition. For a split, durably reserve
-   permanent keys, register them under project rules, then define the subtasks.
+   permanent keys, register them under project rules, then define the subtasks in tracked canonical local-docs carried by this PR.
+   Legacy artifact-only definitions must migrate explicitly before closeout;
+   preserve keys/titles/original criteria/dependencies and remove duplicate definitions.
 5. At the committed candidate, dispatch a fresh checker in a new detached
    worktree. Require actual required-gate execution and planned-test mappings.
    Route incorrect/missing planned tests to implementation, missing test design
    to the planner, and unavailable mandatory prerequisites to a decision. Only
    the checker accepts. The coordinator never overrules a failed checker.
-6. After every unit accepts, dispatch a separate fresh final checker over the
-   combined branch. Changed source, plan or target base requires renewed checks.
+6. After every unit accepts, persist `closeout-intent` with tracked canonical
+   root/unit locations, concise passing evidence and an honest implementation
+   compare reference. Commit their Done metadata on the implementation branch,
+   then `closeout-record` the clean bookkeeping candidate. Done means verified
+   proposed branch state until merge. Renew every unit with checker-only dispatch
+   at the new SHA, then dispatch a separate fresh final checker including these
+   backlog bytes. Successful renewal keeps prepared closeout; do not edit again.
+   Rejection or later source/plan/base changes require committed removal of stale
+   Done markers and `closeout-cleanup` before repair/replanning. Resume the same
+   run and PR identity. Changed source, plan or target base requires renewed checks.
    Enforce repair/replan/deadline bounds; stop with a precise resumption action.
 7. Fetch origin/master and compare the accepted base. Persist publication intent,
    write the PR body with the required [section headings](references/state.md#pr-description),

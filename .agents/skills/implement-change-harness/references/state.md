@@ -58,7 +58,7 @@ Use `ci_policy=required_after_pr` only when declared before work.
 Schema 2 requires immutable root/run/task/original/repository identity, monotonic
 revision, phase/operation/status/next action, plans, units, attempts, verification,
 findings, budgets, provenance and publishing. Phases are planning, implementing,
-checking and publishing (plus initializing/complete); status is distinct. Current
+checking, closing and publishing (plus initializing/complete); status is distinct. Current
 state is `runs/<root>/<run>/state.json`; `active.json` points to it until completion.
 Completion and clearing the active pointer occur in the same commit. Failed or
 incomplete work keeps the pointer.
@@ -281,3 +281,64 @@ previously running implementer, before continuing. Preserve its report as a fact
 new fenced checks provide current tuple-bound results. If any worker outcome
 is unknown, stop for intervention. This is an explicit schema migration and
 procedural handoff, not retrospective certification of incomplete old records.
+
+
+## Canonical backlog closeout (FOS-000026)
+
+After all required units have independently accepted, the next action is durable
+closeout rather than final checking. A parent remains incomplete while any required
+child/criterion is open. Every unit must have one tracked canonical definition;
+artifact-only legacy subtasks need explicit migration preserving permanent keys,
+titles, original criteria/dependencies and the registry's allocation meaning.
+The helper verifies the canonical inventory at closeout; it does not edit Markdown.
+It conservatively invalidates all closeout targets after rejection or source/base/
+plan change. Independently completed unrelated work outside this root is untouched.
+
+1. `closeout-intent` payload:
+   `{"targets":[{"key":"FOS-000026","location":"local-docs/reviews/harness-backlog.md","evidence":"Independent unit checker passed required gates; concise actual counts and limits.","reference":"https://github.com/robinwassen/Fossilize/compare/master...codex/FOS-000026-backlog-completion"}]}`.
+   Include the root and every required unit exactly once. All units must have
+   accepted, with applicable base/plan and no unresolved findings. The helper
+   persists their acceptance provenance and the exact pre-bookkeeping source SHA.
+2. In one direct child commit, edit only target canonical files and these metadata
+   lines inside each target definition (add/replace a status line in the same place):
+   `**Status:** Done (verified proposed branch state; not landed on master).`
+   and `**Completion evidence:** <exact evidence> <exact reference>`.
+   Preserve every other byte, including blank lines, original acceptance,
+   dependencies, titles, registry allocations and unrelated definitions. This
+   restricted project grammar deliberately does not implement arbitrary Markdown.
+   A stable compare reference avoids a self-referential SHA or invented early PR.
+3. `closeout-record` takes `{"candidate_sha":"FULL_BOOKKEEPING_SHA"}`. It requires
+   the clean matching branch and one direct bookkeeping commit containing actual
+   Done/evidence/reference bytes. It clears exact-commit unit/final approvals and
+   enters checker-only `subtask` renewal. Dispatch/acknowledge/report as usual,
+   without implementer dispatch or repair-budget consumption. Renewed acceptance
+   of every unit enters separate `final`; prepared closeout survives successful
+   renewal and is required for final acceptance and every publication operation.
+4. Rejection or later tuple changes persist `stage=cleanup`, the original targets,
+   reason and an explicit pending cleanup action. Interruption keeps active state.
+   Remove stale Done metadata and completion evidence from all affected targets,
+   commit the honest incomplete source, then `closeout-cleanup` with
+   `{"candidate_sha":"FULL_CLEANUP_SHA","observation":"Stale Done removed; required work remains open."}`.
+   It verifies no targeted Done marker remains, retains invalidated provenance,
+   clears approvals, and returns to repair/replan. A fresh implementer and checks
+   resolve the concrete finding; only then repeat intent/bookkeeping/renewal once.
+   An environment rejection first needs the existing prerequisite `resume` action.
+
+Reopen with `show` after interruption. Pending -> persist intent; intent with no
+commit -> make the bookkeeping commit; intent with the clean direct child already
+committed -> record that same SHA without duplicating edits. Prepared -> resume
+checker-only renewal/final. Cleanup -> reconcile tracked source before dispatch.
+Dirty/wrong/unrelated candidates cannot be adopted as bookkeeping. Every action
+uses the usual artifact tip/revision CAS and append-only report/log transaction.
+
+Existing active schema-2 records lacking `closeout` are read as pending; the next
+mutation persists that field without changing immutable requirements, reports,
+worker facts, history or budgets. No new run, import, deadline or fabricated
+acceptance is needed. Complete historical records remain byte-for-byte untouched.
+For self-application, first accept the implementation candidate using the existing
+run. Invoke the resulting helper from that candidate in the same implementation
+worktree, persist closeout intent, commit FOS-000026's actual status/evidence,
+record the new candidate, renew unit checks and obtain separate final acceptance.
+The stable compare link remains valid after PR creation; actual PR URL belongs in
+publication records/description. Publish exactly once under the existing sequence;
+no subsequent closeout invocation or automatic merge occurs.
