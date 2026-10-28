@@ -511,6 +511,28 @@ class ArtifactTests(unittest.TestCase):
         self.assertEqual(result["artifact_publication"]["status"], "incomplete")
         self.assertEqual(self.remote_tip(), parent)
 
+    def test_P09d_concurrent_endpoint_reread_cannot_retarget_publication(self):
+        self.initialize()
+        sentinel = self.root / "retarget.git"
+        git(self.source, "init", "--bare", str(sentinel))
+        original_git = hs.git
+        changed = []
+        def retarget_on_reread(repo, *args, **kwargs):
+            if args == ("remote", "get-url", "--push", "origin") and not changed:
+                original_git(self.source, "remote", "set-url", "origin", str(sentinel))
+                changed.append(True)
+            return original_git(repo, *args, **kwargs)
+        try:
+            with patch.object(hs, "git", side_effect=retarget_on_reread):
+                result = self.raw("publish-artifacts")
+            self.assertTrue(changed)
+            self.assertEqual(result["artifact_publication"]["status"], "incomplete")
+            self.assertIn("changed during binding", result["artifact_publication"]["detail"])
+            self.assertIsNone(self.remote_tip(sentinel))
+            self.assertEqual(self.remote_tip(self.bare), self.tip)
+        finally:
+            original_git(self.source, "remote", "set-url", "origin", str(self.bare))
+
 
 if __name__ == "__main__":
     unittest.main()

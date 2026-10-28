@@ -377,7 +377,10 @@ class Harness:
                         "artifact repository identity differs from retained run")
         actual = artifact_destination(self.repo, {"target_remote": "origin", "target_repository": policy["repository"]})
         require(all(policy.get(k) == v for k, v in actual.items()), "artifact endpoint changed; restore recorded destination and retry")
-        return git(self.repo, "remote", "get-url", "--push", "origin").decode().strip()
+        endpoint = git(self.repo, "remote", "get-url", "--push", "origin").decode().strip()
+        require(hashlib.sha256(endpoint.encode()).hexdigest() == policy["endpoint_sha256"],
+                "artifact endpoint changed during binding; restore recorded destination and retry")
+        return endpoint
 
     def remote_history(self, tip, local_records, policy, preserve=True, bound=True):
         """Validate every adopted ancestor, then ensure no local durable fact is lost."""
