@@ -5,6 +5,7 @@ import unittest
 from github_issues import IssueError
 from harness_state import Harness, Invalid, git
 from issue_migration import Migration
+from unittest.mock import patch
 from test_harness_migration import LiveFixture
 from test_issue_migration import RecordingJournal
 
@@ -53,6 +54,80 @@ class IssueCloseoutTests(LiveFixture,unittest.TestCase):
         self.gh.api(f"issues/{self.root_issue['number']}/comments",'POST',{'body':'Superseded readiness: new candidate requires new independent checks. '+self.state['closeout']['marker']})
         self.act('closeout-cleanup',{'observation':'Read back marked superseding evidence; unrelated comments retained'})
         self.assertEqual(self.state['closeout']['stage'],'pending');self.assertEqual(self.gh.issue(self.root_issue['number'])['state'],'open')
+
+    def reject_final(self, route, finding_id):
+        self.launch('checker')
+        self.act('report',dict(self.report(),verdict='changes_required',findings=[{
+            'id':finding_id,'status':'open','evidence':'Required verification needs renewed design or execution.',
+            'route':route,'affected_task':self.root_issue['html_url']}],next_action='Renew required verification'))
+
+    def supersede_ready(self):
+        self.gh.api(f"issues/{self.root_issue['number']}/comments",'POST',{
+            'body':'Superseded readiness; fresh independent verification required. '+self.state['closeout']['marker']})
+        self.act('closeout-cleanup',{'observation':'Read back exact marked supersession; preserve prior comments'})
+
+    def accept_rechecked(self, finding_id):
+        self.launch('checker')
+        self.act('resolve-finding',{'finding_id':finding_id,'evidence':'Fresh independent fixture assertion passed'})
+        # Run the actual assertion/evidence path using this already-active checker.
+        with patch.object(self,'launch',return_value=None):self.accepted()
+
+    def test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route(self):
+        self.prepare();old_original=copy.deepcopy(self.state['original'])
+        self.reject_final('planner','missing-design')
+        self.assertEqual((self.state['phase'],self.state['operation']),('planning','replan'))
+        self.harness=Harness(self.source,clock=lambda:self.now)
+        self.supersede_ready()
+        self.assertEqual((self.state['phase'],self.state['operation']),('planning','replan'))
+        self.assertIsNone(self.state['final_acceptance'])
+        self.launch('planner')
+        self.assertEqual(self.state['attempts'][-1]['operation'],'replan')
+        plan=self.plan();plan['version']=2
+        self.act('report',dict(self.report(),plan=plan))
+        self.assertTrue(all(unit['accepted'] is None for unit in self.state['work_units']))
+        self.assertEqual(self.state['original'],old_original)
+        self.implemented();self.accept_rechecked('missing-design')
+        self.assertEqual(self.state['phase'],'closing')
+        self.assertEqual(self.state['limits']['replan_count'],1)
+
+    def test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments(self):
+        candidate,target=self.prepare();old=copy.deepcopy(self.state['closeout'])
+        human=self.gh.api(f"issues/{self.root_issue['number']}/comments",'POST',{'body':'Unrelated human comment: keep exactly.'})
+        self.reject_final('implementation','renew-check')
+        self.supersede_ready()
+        historical=self.gh.comments(self.root_issue['number'])
+        self.harness=Harness(self.source,clock=lambda:self.now)
+        self.launch('implementer')
+        self.act('report',dict(self.report(),result_candidate_sha=candidate,test_mapping={'C1':'test_behavior.Behavior.test_value'},commands=[{'command':'renewed fixture assertion','exit_code':0}]))
+        self.accept_rechecked('renew-check')
+        renewed=dict(target,evidence='Fresh independent verification: renewed assertion passed at unchanged candidate.')
+        self.act('closeout-intent',{'targets':[renewed]})
+        current=copy.deepcopy(self.state['closeout'])
+        self.assertNotEqual(current['marker'],old['marker'])
+        self.assertNotEqual(current['generation'],old['generation'])
+        self.assertEqual(current['candidate_sha'],old['candidate_sha'])
+        self.harness=Harness(self.source,clock=lambda:self.now)
+        self.act('closeout-intent',{'targets':[renewed]})
+        self.assertEqual(self.state['closeout'],current)
+        changed=dict(renewed,evidence='Changed in-flight body must not silently reuse the operation identity.')
+        with self.assertRaises(Invalid):self.act('closeout-intent',{'targets':[changed]})
+        # Stable journal operation identity derives from the saved generation marker.
+        migration=Migration(self.source,{'source_sha':self.base},self.gh,RecordingJournal())
+        operation='ready-'+current['marker']
+        body=renewed['evidence']+' '+renewed['reference']+' '+current['binding']+' '+current['marker']
+        migration.comment(operation,self.root_issue['number'],body)
+        self.harness=Harness(self.source,clock=lambda:self.now)
+        migration=Migration(self.source,{'source_sha':self.base},self.gh,RecordingJournal())
+        migration.comment(operation,self.root_issue['number'],body)
+        comments=self.gh.comments(self.root_issue['number'])
+        self.assertEqual(len(comments),len(historical)+1)
+        self.assertEqual(comments[:-1],historical)
+        self.assertIn(human,comments)
+        self.assertEqual(sum(current['marker'] in row['body'] for row in comments),1)
+        self.assertEqual(sum(old['marker'] in row['body'] for row in comments),2)
+        self.act('closeout-record',{'candidate_sha':candidate});self.accepted()
+        self.assertEqual(self.state['final_acceptance']['candidate_sha'],candidate)
+        self.assertEqual(self.gh.issue(self.root_issue['number'])['state'],'open')
 
     def test_P11_live_terminal_null_active_failure_restart_and_retry(self):
         candidate,target=self.prepare();self.accepted()

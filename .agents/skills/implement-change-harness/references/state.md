@@ -168,14 +168,22 @@ units accepted a different candidate, the action first schedules checker-only
 renewal of every unit at the combined candidate, with no implementation-budget
 consumption; repeat closeout-intent after those checks. The helper
 prepares eligible closing_references, an exact candidate/base/plan/input binding
-and a stable tuple-specific readiness marker. Journal one
-managed readiness comment per target with that binding/marker/evidence/reference; then
+and a readiness generation identified by the committed intent revision. Its marker
+binds that generation as well as the tuple. Replaying closeout-intent with the
+exact saved targets retains the same generation after interruption; changed
+in-flight evidence requires explicit supersession. Renewed verification creates
+a new generation even at an unchanged candidate. Journal one
+managed readiness comment per target with that binding/marker/evidence/reference.
+Derive its journal operation key from the saved marker and target issue identity,
+so restart replays the same operation and later generations have distinct keys; then
 closeout-record with exact candidate_sha reads comments and prepares separate
 final checking. It creates no source bookkeeping commit or premature issue closure.
 
 After rejection/input/source changes, journal a marked superseding readiness
 comment containing "superseded" on each target, then closeout-cleanup with concrete
-observation. Unrelated human comments remain untouched. Renew affected checks;
+observation. Cleanup restores the saved phase/operation, including planner/replan
+routing for missing-design rejection. Unrelated human comments remain untouched.
+Renew affected checks;
 accepted work units, PR readiness, run completion and merged delivery are distinct.
 
 PR descriptions use these explicit level-two headings: Problem; What changes;

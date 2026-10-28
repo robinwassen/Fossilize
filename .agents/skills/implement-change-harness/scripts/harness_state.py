@@ -931,10 +931,11 @@ class Harness:
             state["closeout"] = {"stage": "pending"}
 
     @staticmethod
-    def invalidate_closeout(state, reason):
+    def invalidate_closeout(state, reason, resume_phase=None, resume_operation=None):
         closeout = state.get("closeout", {"stage": "pending"})
         if closeout["stage"] in ("intent", "prepared", "cleanup"):
-            state["closeout"] = dict(closeout, stage="cleanup", reason=reason, resume_phase=state["phase"])
+            state["closeout"] = dict(closeout, stage="cleanup", reason=reason,
+                resume_phase=resume_phase or state["phase"], resume_operation=resume_operation or state["operation"])
             state["final_acceptance"] = None
             state["next_action"] = "journal superseding issue evidence, then closeout-cleanup"
 
@@ -945,6 +946,11 @@ class Harness:
         c = state.get('closeout', {'stage':'pending'})
         r = state['repository']
         if action == 'closeout-intent':
+            if c['stage'] == 'intent':
+                require(p.get('targets') == c['targets'] and c['candidate_sha'] == r['candidate_sha']
+                        and c['base_sha'] == r['base_sha'] and c['plan_version'] == state['plan']['version'],
+                        'readiness intent replay must preserve exact targets and accepted tuple')
+                return
             require(c['stage'] == 'pending' and state['work_units'] and all(unit['status']=='accepted' for unit in state['work_units']), 'accepted work units required')
             require(not any(f['status']!='resolved' for f in state['findings']), 'unresolved closeout findings')
             accepted_tuple={'candidate_sha':r['candidate_sha'],'base_sha':r['base_sha'],'plan_version':state['plan']['version']}
@@ -963,8 +969,12 @@ class Harness:
                 # Uncovered required children prohibit epic closing references.
                 required = set(issue['children']) - keys
                 require(all((lambda child: child['state']=='closed' and child['state_reason']=='completed')(GitHub().issue(url)) for url in required), 'incomplete child prevents root completion')
-            state['closeout'] = {'stage':'intent','candidate_sha':r['candidate_sha'],'base_sha':r['base_sha'],
-                'plan_version':state['plan']['version'],'targets':targets,'closing_references':['Closes '+target['issue'] for target in targets], 'binding':'Candidate: `'+r['candidate_sha']+'`; base: `'+r['base_sha']+'`; plan: `'+str(state['plan']['version'])+'`; issue input: `'+state['issue_snapshot']['digest']+'`.', 'marker':'<!-- harness-ready:'+state['run_id']+':'+digest({'candidate':r['candidate_sha'],'base':r['base_sha'],'plan':state['plan']['version'],'input':state['issue_snapshot']['digest']})+' -->'}
+            # The committed intent revision identifies this readiness generation.
+            # Replaying that intent retains its marker; renewed checks get a new
+            # generation even when candidate/base/plan/input are unchanged.
+            generation = state['revision']
+            state['closeout'] = {'stage':'intent','generation':generation,'candidate_sha':r['candidate_sha'],'base_sha':r['base_sha'],
+                'plan_version':state['plan']['version'],'targets':targets,'closing_references':['Closes '+target['issue'] for target in targets], 'binding':'Candidate: `'+r['candidate_sha']+'`; base: `'+r['base_sha']+'`; plan: `'+str(state['plan']['version'])+'`; issue input: `'+state['issue_snapshot']['digest']+'`.', 'marker':'<!-- harness-ready:'+state['run_id']+':'+digest({'candidate':r['candidate_sha'],'base':r['base_sha'],'plan':state['plan']['version'],'input':state['issue_snapshot']['digest'],'generation':generation})+' -->'}
             state.update(phase='closing',operation='closeout',next_action='journal concise readiness comments on exact issue targets; keep issues open; then closeout-record')
         elif action == 'closeout-record':
             require(c['stage']=='intent' and p.get('candidate_sha')==c['candidate_sha'], 'exact prepared candidate required')
@@ -983,7 +993,9 @@ class Harness:
                 require(any(marker in (comment.get('body') or '') and 'superseded' in comment['body'].lower() for comment in comments), 'journal a marked superseding comment before cleanup')
             state['provenance'].append({'invalidated_closeout':c,'observation':p['observation']})
             state['closeout']={'stage':'pending'}
-            state.update(phase='implementing',operation='repair',next_action='fresh implementation/checks after invalidating stale readiness')
+            phase = c.get('resume_phase', 'implementing')
+            operation = c.get('resume_operation', 'replan' if phase == 'planning' else 'repair')
+            state.update(phase=phase,operation=operation,next_action='dispatch fresh planner after supersession' if phase == 'planning' else 'fresh implementation/checks after invalidating stale readiness')
 
     def reduce(self, state, action, p, journal, records):
         repository = state["repository"]
@@ -1004,7 +1016,8 @@ class Harness:
             state['provenance'].append({'prior_issue_snapshot':state['issue_snapshot'],'reconciliation':p['observation']})
             state['issue_snapshot'] = snapshot
             state['final_acceptance'] = None
-            self.invalidate_closeout(state, 'requirements or relationships changed')
+            self.invalidate_closeout(state, 'requirements or relationships changed',
+                'implementing' if state['plan'] else 'planning', 'repair' if state['plan'] else 'plan')
             for unit in state['work_units']:unit.update(status='ready',accepted=None)
             state.update(phase='implementing' if state['plan'] else 'planning',operation='repair' if state['plan'] else 'plan',status='ready',next_action='renew plan/implementation and independent checks against reconciled input')
         elif action in ("closeout-intent", "closeout-record", "closeout-cleanup"):
@@ -1075,7 +1088,7 @@ class Harness:
             self.source(state, candidate)
             base = normalize_sha(self.repo, p.get("base_sha", repository["base_sha"]))
             require(candidate != repository["candidate_sha"] or base != repository["base_sha"], "source tuple unchanged")
-            self.invalidate_closeout(state, "source/base changed")
+            self.invalidate_closeout(state, "source/base changed", "implementing", "repair")
             repository.update(candidate_sha=candidate, base_sha=base)
             state["final_acceptance"] = None
             previous = state["publishing"]
@@ -1188,7 +1201,7 @@ class Harness:
                 # removes their units. Full prior plans remain in role reports.
                 state["provenance"].append({"superseded_plan": {
                     "version": state["plan"]["version"], "work_units": state["plan"].get("work_units", [])}})
-            self.invalidate_closeout(state, "plan changed")
+            self.invalidate_closeout(state, "plan changed", "implementing", "implement")
             state["plan"] = plan
             state["work_units"] = self.units(state)
             snapshot = GitHub().snapshot(root_identity(state), [unit['issue'] for unit in state['work_units']])
