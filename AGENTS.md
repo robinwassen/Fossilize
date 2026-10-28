@@ -12,13 +12,9 @@ Use these documents to guide implementation, investigation and review. The pilla
 
 `AGENTS.md` and `local-docs/` are shared project guidance tracked in Git. Keep them available to collaborators and agent worktrees; do not exclude them through local or shared ignore rules. Keep generated build outputs, temporary run artifacts and private machine configuration separate from this documentation.
 
-## Backlog item keys
+## Task tracking
 
-- Every item has one permanent, project-wide unique `FOS-` key with at least six digits; list numbers only indicate order.
-- Before adding items, register keys in the [registry](local-docs/backlog-keys.md), increasing beyond the highest ever issued. Check all backlogs, including archives, for collisions and coordinate concurrent allocations.
-- Never reuse or change keys. Keep registry entries forever; update locations on moves and retire removed items with their last location/replacement. Splits get new keys; retain the parent key or retire it with replacement links. Merges retain one key or get a new one; retire superseded keys.
-- Use keys in dependencies, implementation references, acceptance evidence and status updates. On backlog edits, verify one canonical definition per key, registered allocations and valid cross-file dependencies.
-
+Use [robinwassen/Fossilize Issues](https://github.com/robinwassen/Fossilize/issues) as task authority. Before creating, implementing or reviewing a task, read the [issue workflow](local-docs/issue-workflow.md).
 
 ## Verification
 

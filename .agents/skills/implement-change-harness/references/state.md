@@ -1,13 +1,12 @@
-# State, artifact publication and recovery contract
+# State, issue authority and publication
 
-## Authority and invocation
+## Invocation and ownership
 
-Python 3 standard library, Git and POSIX `flock` are runtime requirements. Run from
-the implementation worktree (or pass `--repo`). The helper acquires the same
-`harness-run.lock` in the repository's common Git directory from every worktree.
-It fails promptly on contention. Never delete the lock file or bypass a live
-owner. An existing bootstrap coordinator holding it must finish its write and
-release it before helper handoff. Worker liveness is independent of lock liveness.
+Python3 standard library, Git, gh and POSIX flock are required. Run the helper
+from the implementation worktree, or pass --repo. Every mutation uses a JSON
+payload, exact artifact tip and expected state revision from the previous result.
+The common Git directory's harness-run.lock coordinates every local worktree;
+never delete the lock or bypass a live owner. Worker liveness is separate.
 
 ```sh
 python3 -B .agents/skills/implement-change-harness/scripts/harness_state.py --repo /absolute/implementation show
@@ -16,30 +15,30 @@ python3 -B .agents/skills/implement-change-harness/scripts/harness_state.py --re
 python3 -B .agents/skills/implement-change-harness/scripts/harness_state.py --repo /absolute/implementation detached-worktree /tmp/new-checker FULL_CANDIDATE_SHA
 ```
 
-Every mutation uses a JSON file (`--payload -` reads stdin), exact artifact tip and
-expected state revision from the last result. A stale tip/revision fails without
-advancing the ref. `show` reads committed blobs; it never adopts uncommitted files.
-The equivalent importable API is `Harness(repo).show()` and
-`Harness(repo).apply(action, payload, expected_tip, expected_revision)`.
-`Harness.tuple_fields(state['attempts'][-1])` builds a report envelope.
-`detached_worktree(repo, path, sha)` creates a new path only; it never resets or
-cleans an existing worktree. CLI wraps it in the repository lock.
+Harness(repo).apply(action,payload,expected_tip,expected_revision) is equivalent.
+show reads committed records and never adopts dirty inspection files. A stale
+CAS/revision fails without changing the ref. detached_worktree creates a new path
+only; it never resets an existing worktree. The coordinator is the sole canonical
+state writer. A worker needs explicit permission for the restricted records-only
+interface, which appends active-run evidence and byte-preserves every state.json,
+active.json, allocations.json and prior report/evidence record.
 
-An initialization payload (replace SHAs/paths and original acceptance):
+## Initialization and task source
+
+An initialization payload uses root_issue (full URL or numeric issue number),
+run_id, repository and optional limits/ci_policy:
 
 ```json
 {
-  "task_key": "FOS-000025",
-  "run_id": "2026-10-27-example",
-  "task_location": "local-docs/specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill",
-  "original": [{"id": "AC1", "requirement": "Exact original requirement"}],
+  "root_issue": "https://github.com/robinwassen/Fossilize/issues/NUMBER",
+  "run_id": "unique-run-token",
   "repository": {
     "input_sha": "FULL_INPUT_SHA",
     "base_sha": "FULL_TARGET_MASTER_SHA",
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize",
     "target_branch": "master",
-    "branch": "codex/FOS-000025-example",
+    "branch": "codex/issue-N-description",
     "implementation_worktree": "/absolute/implementation"
   },
   "limits": {"repairs": 3, "replans": 1, "command_timeout": 600},
@@ -47,403 +46,250 @@ An initialization payload (replace SHAs/paths and original acceptance):
 }
 ```
 
-`initialize` requires the root's active registration and canonical definition in
-committed local-docs. The same active identity resumes idempotently; another root
-or run is rejected. Completed identities cannot be reused. The default deadline
-is invocation time plus four hours; optionally supply an absolute Unix `deadline`.
-Use `ci_policy=required_after_pr` only when declared before work.
+Replace NUMBER/N and SHAs/paths. Numeric identity always resolves in the explicit
+fork. gh resolves repository/server/node identity and rejects PR records. New-run
+original acceptance is AC1 containing the exact root issue body; a supplied
+original must match. Migrated runs retain their existing original list exactly.
+Current requirements never come from Markdown. Authentication/API/network errors
+fail closed, with no stale-task fallback.
 
-## Artifact transaction and schema
+The immutable issue snapshot includes every deliverable's title/body, full
+identity, state/reason, parent, children and recursive blocked-by graph. Reads
+paginate; missing nodes/cycles fail. Internal deliverables may remain open while
+accepted units coordinate their dependency order. External prerequisites require
+closed/completed; not-planned/cancelled is unsatisfied. Parent membership creates
+no implicit edge. Titles are conservatively material; labels, timestamps and
+ordinary comments are not readiness authority.
 
-Schema 2 requires immutable root/run/task/original/repository identity, monotonic
-revision, phase/operation/status/next action, plans, units, attempts, verification,
-findings, budgets, provenance and publishing. Phases are planning, implementing,
-checking, closing and publishing (plus initializing/complete); status is distinct. Current
-state is `runs/<root>/<run>/state.json`; `active.json` points to it until completion.
-Completion and clearing the active pointer occur in the same commit. Failed or
-incomplete work keeps the pointer.
+Re-read material snapshots before checker dispatch and each publication boundary.
+reconcile-input takes exact live snapshot plus concrete observation, preserves the
+old snapshot as provenance, clears approvals and requires renewed work/checks.
+Never silently adopt changed requirements. The same active root/run resumes;
+another root/run or reused completed storage identity is rejected.
 
-The helper constructs a complete records tree with a private temporary index,
-`hash-object`, `write-tree`, `commit-tree`, then `update-ref` with expected old tip.
-The artifact branch starts orphaned and has no source ancestors. Every adopted
-ancestor is checked for regular, bounded UTF-8 records only. Permitted paths are
-`active.json`, `allocations.json`, and each run's state, `reports/<name>.json`, or
-`evidence/<name>.json|txt|log`. Individual records are at most 1 MiB; no symlinks,
-binary/NUL data, traversal or arbitrary source paths. Reports/evidence are
-append-only. A failed write/tree/commit/CAS leaves the old checkpoint authoritative;
-unreachable Git objects may remain until normal Git garbage collection.
+## Schema3 and artifact records
 
-A separate artifact worktree is an inspection view. Ref updates intentionally do
-not rewrite its index/files. Before refreshing it, inspect its status and preserve
-unexpected edits separately; use a new detached view rather than discarding edits.
-Never merge/push artifacts with the source PR. Each required records checkpoint
-is published separately as described below. Independent clones do not share this
-repository-local lock or allocation authority.
+Live state uses schema_version=3, immutable task_key/run_id storage identity,
+root_issue, issue_snapshot, exact original acceptance, repository identity,
+revision, phase/operation/status/next_action, plan, work_units, active_work_unit,
+attempts, verification, findings, limits, closeout, publishing, final_acceptance
+and provenance. A new storage token is issue-N. A migrated legacy token stays
+unchanged; it is a storage path, never future task allocation authority.
 
-## Plans and permanent keys
+Phases are planning, implementing, checking, closing, publishing and complete
+(plus initializing); status is distinct. Artifact records are active.json,
+allocations.json and runs/<storage>/<run>/state.json, reports/<name>.json or
+evidence/<name>.json|txt|log. allocations.json preserves historical permanent
+legacy allocation/publication facts; current workflows allocate no FOS keys.
+Reports/evidence are append-only, regular bounded UTF-8 records, at most1MiB each.
+Traversal, arbitrary source paths, symlinks, binary/NUL content and malformed JSON
+are rejected. Every ancestor is validated. Immutable blob/tree caching and batched
+Git object/index operations preserve those per-object checks.
 
-A planner report's `plan` uses:
+A private index plus hash-object/write-tree/commit-tree/update-ref expected-old CAS
+creates records checkpoints on the separate orphan harness-artifacts ref. Failed
+writes/trees/commits/CAS retain the old authoritative checkpoint. Unreachable
+objects may remain until ordinary Git garbage collection. A separate artifact
+worktree is only an inspection view; ref updates never reset its files/index.
+Preserve dirty/untracked contents, using a fresh detached view when necessary.
+Never merge or push artifact history as source changes.
 
-- `version`, exact `original`, `scope`, `non_goals`, `implementation`;
-- `cases`: objects with unique `id`, `assertions`, `location`, and optionally
-  `units` containing applicable split keys (final checking always covers all);
-- `gates`: unique `id`, `kind` (`subtask`, `final`, `both`, `publication`, `optional`),
-  nonempty `criteria` IDs, `method`, `cwd`, `prerequisites`, `expected`;
-- `subtasks`: empty for an unsplit root, otherwise objects with unique registered
-  `key`, permanent `title`, `definition`, `dependencies`, `criteria`.
+## Plans, work units and reports
 
-The helper validates criterion coverage, registrations, reservations and acyclic
-subtask dependencies. Initial plans, replans and source resets select the first
-dependency-ready unit regardless of array order; implementer dispatch also checks
-that all dependencies have accepted. It does not decide semantic plan adequacy.
-An implementation rejection at final checking invalidates every unit approval and
-restarts with the first dependency-ready unit; renewed unit checks precede another
-separate final check.
-`publication` gates describe the coordinator's external sequence below, rather than checks that
-could already have passed before a PR exists. Include review of publication
-readiness in final gates as appropriate. Keep the original detailed planner report
-as a separate artifact when normalizing its fields into this compact schema.
+A plan contains version, exact original, scope, non_goals, implementation, cases,
+gates and work_units. cases have unique id, assertions, location and optional
+work_units selecting applicable issue identities. Gates have unique id, kind
+(work_unit/final/both/publication/optional), criteria IDs, method, cwd,
+prerequisites and expected assertions. Required gates cover every original
+criterion; semantic adequacy remains the independent checker's responsibility.
 
-`reserve` takes `title` and branch-qualified canonical `location`. It reserves
-strictly above the union of registry rows, canonical current/archived definitions,
-journal entries and journal high-water. Interrupted reservations remain issued.
-Then the coordinator updates and commits the tracked registry before publishing
-a subtask definition in a plan. Reads/reservations never edit the registry.
+work_units=[] means one execution unit references the root issue. Split rows
+contain key/issue (the same full child URL), title, definition, dependencies and
+criteria. Every child must have the native root parent, unique identity and native
+deliverable prerequisite mapping; together their criteria cover the root. The
+helper selects a dependency-ready unit independent of array order. New issues
+and native edges are created through journaled external operations before plan
+recording; small steps alone do not create issues.
 
-The Markdown scanner recognizes this project's ledger table, keyed headings and
-numbered bold keyed definitions; prose references are not definitions. It verifies
-one canonical location/title per key and explicit `depends on` clauses in definition
-metadata. Other backlog syntaxes require an explicit reviewed parser extension;
-do not claim arbitrary Markdown or cross-machine allocation support. Retired
-entries contribute to high-water and cannot be reused as active subtasks.
+dispatch takes role, unused attempt_id, requested/actual model+effort, observed
+catalog and fallback_reason where needed. Record intent before launch, then
+acknowledge the returned worker_id. Unknown/live workers fence replacement;
+reconcile needs attempt_id, liveness (live/unknown/terminated), concrete observation
+and next_action. Confirm termination before a fresh replacement attempt.
 
-## Attempts, reports and bounds
+Reports carry the exact tuple in roles.md. Planner reports include the versioned
+plan. Implementer reports include committed result_candidate_sha, nonempty
+ test_mapping and actual commands. Checker reports include verdict, findings,
+evidence, discovered/executed nonzero unique IDs, empty mandatory skipped and
+planned-case mappings to executed tests. Each required gate evidence entry has
+gate, result=passed, exit_code=0, command/cwd/environment/log/criteria and exact
+candidate_sha/base_sha/plan_version/attempt_id. Its log must be an existing small
+artifact record. Records may be supplied with the action; canonical state cannot
+be overwritten through that interface. Reports themselves are committed unchanged.
 
-`dispatch` takes `role`, unused `attempt_id`, `requested` and `actual` model/effort
-objects and the observed `catalog` mapping model names to supported effort arrays.
-Different requested/actual choices require `fallback_reason`. Record the actual
-runtime catalog; the helper cannot query or authenticate it. It stores intent
-before launch. `acknowledge` takes that attempt ID and actual `worker_id`.
+Findings have unique IDs, status/evidence/route and permanent affected_task issue
+scope. Missing legacy attribution remains root-wide. Unit acceptance blocks on
+its own, transitive prerequisite and root findings; unrelated later-unit findings
+remain for their owner. Unknown/orphaned scope is conservative. Replans preserve
+prior attribution/provenance; no resolution narrows scope. resolve-finding requires
+concrete recheck evidence during a fresh active checker. Final acceptance and
+publication require every finding resolved and every work unit accepted.
 
-`report` must carry every exact identity-envelope field from roles.md, plus:
+## Bounds and changes
 
-- planner: the complete `plan` (initial version 1, then increment by one);
-- implementer: `result_candidate_sha`, nonempty `test_mapping` and `commands`;
-- checker: `verdict`, findings and exact evidence below. Rejection needs findings
-  and `next_action`; acceptance cannot contain unresolved findings.
+Default bounds are initial implementation plus3 repairs per unit, one replan and
+four hours from initialization; command timeout is600 seconds. command-intent
+records command/cwd/timeout before a real external process deadline. The helper
+does not execute shell text, launch workers or run a timeout watcher. Record actual
+commands and outcomes; no build/empty suite substitutes for assertion-bearing tests.
 
-Finding IDs must be unique both within one report and across durable findings; a
-duplicate report is rejected without advancing the checkpoint.
-`affected_task` permanently attributes each finding to the root (task-wide) or a
-registered unit in the report's current plan. Missing attribution in old or new
-reports means root-wide; explicit null, empty, unknown, retired or unplanned keys
-are invalid. Use root-wide scope for uncertain or multiple-unit effects. This is
-ownership of a concrete finding, not a waiver: subtask acceptance blocks on all
-unresolved durable findings for its own unit, its transitive dependencies or the
-root, while explicitly unrelated unit findings remain open for their owner's
-repair. Accepted reports cannot introduce any unresolved finding. Final acceptance
-and every publication guard continue to require all findings resolved.
+Budget exhaustion pauses forward work and preserves the exact operation/action.
+Late reports and worker observations remain facts, then require a budget decision;
+they never authorize late publication. budget-extension needs explicit human
+authorization/reason and increased limits with an unexpired deadline. Migration
+never resets the deadline or counts. Repeated unchanged rejection also stops;
+new_evidence distinguishes a new probe. Unsupported required checks remain open.
 
-Replans retain prior validated unit declarations under `provenance` entries named
-`superseded_plan` (version and subtasks); full old plans remain in their reports.
-Finding attribution is preserved when plans change. A finding whose unit is absent
-from the new plan conservatively blocks every unit, rather than disappearing.
-Current dependency relationships determine applicable findings for remaining units;
-replans still invalidate every prior approval. No resolution or replan action may
-reassign an existing finding to a narrower task.
+observe-source requires a clean matching branch/worktree at committed candidate
+(and optional base), clears approvals and invalidates stale issue readiness.
+Changed HEAD, dirty/untracked files, plan/base/input drift or checker rejection
+cannot publish against old acceptance. A final implementation rejection clears
+all unit approvals and returns to dependency-ready implementation, followed by
+renewed unit and separate final checking.
 
-Supply additional small text/JSON artifacts in `records`, a mapping of permitted
-full run evidence/report paths to text or JSON values. Accepted/rejected role
-reports themselves are committed automatically at `reports/<attempt_id>.json`.
-For checker acceptance, each mandatory gate for the operation needs `gate`,
-`result=passed`, `exit_code=0`, `command`, `cwd`, `environment`, existing `log` path,
-`criteria`, `candidate_sha`, `base_sha`, `plan_version`, `attempt_id`. The report
-also needs nonzero `discovered` and `executed` test-ID arrays, empty `skipped`, and
-`test_mapping` mapping each applicable planned case to `location` and executed
-`tests` IDs. Missing/failed/unsupported/incomplete/not-run evidence blocks acceptance.
-Optional diagnostics retain their own outcomes. Logs and declared discovery are
-procedural evidence, not authenticated proof that a command ran or tests are good.
-The checker independently establishes meaning and completeness.
+## Issue closeout and one PR
 
-`reconcile` records `attempt_id`, `liveness` (live/unknown/terminated), concrete
-`observation`, `next_action`. Intent without worker acknowledgement is ambiguous;
-only confirmed termination unlocks a replacement. Old reports remain fenced.
-`resolve-finding` takes `finding_id` and concrete `evidence`, only during a fresh
-active checker. It retains `affected_task`; an optional conflicting attribution is
-rejected. `resume` records resolved-prerequisite `observation`/`next_action`
-for an environment decision; it cannot waive mandatory evidence or exhausted bounds.
+After all units independently accept, closeout-intent takes targets containing
+issue, concise passing evidence and the exact source compare URL:
+https://github.com/robinwassen/Fossilize/compare/<base>...<branch>.
+Targets are the root and required unit issues exactly once. Open issue state,
+current acceptance and no incomplete uncovered child are required. If earlier
+units accepted a different candidate, the action first schedules checker-only
+renewal of every unit at the combined candidate, with no implementation-budget
+consumption; repeat closeout-intent after those checks. The helper
+prepares eligible closing_references, an exact candidate/base/plan/input binding
+and a readiness generation identified by the committed intent revision. Its marker
+binds that generation as well as the tuple. Replaying closeout-intent with the
+exact saved targets retains the same generation after interruption; changed
+in-flight evidence requires explicit supersession. Renewed verification creates
+a new generation even at an unchanged candidate. Journal one
+managed readiness comment per target with that binding/marker/evidence/reference.
+Derive its journal operation key from the saved marker and target issue identity,
+so restart replays the same operation and later generations have distinct keys; then
+closeout-record with exact candidate_sha reads comments and prepares separate
+final checking. It creates no source bookkeeping commit or premature issue closure.
 
-Initial implementation plus three repairs per unit and one replan are defaults.
-Forward-work invocations (`dispatch`, `command-intent`, `observe-source`,
-`reserve`, `publish-intent` and every `publish-observation`) pause before progress
-when the deadline or a recorded budget is exhausted. Valid late reports and worker
-observations are retained as facts, then leave the run awaiting a budget decision;
-even late final acceptance cannot authorize publication. The pause saves the exact
-operation, status and next action. An authorized extension with an unexpired
-deadline restores that step, preserving live-worker fences and completed reports.
-Repair/replan counters are also checked at dispatch. Repeated unchanged rejection
-also stops early; concrete `new_evidence` in a report distinguishes a new probe.
-`budget-extension` needs recorded human `authorization`, `reason`, and increased
-`deadline`/`repairs`/`replans` as applicable. No automatic timeout watcher exists.
-`command-intent` takes `command`, `cwd`, positive `timeout` at most the configured
-command timeout; persist it before the coordinator executes that command using a
-real process deadline. The helper does not execute shell text or cancel processes.
+After rejection/input/source changes, journal a marked superseding readiness
+comment containing "superseded" on each target, then closeout-cleanup with concrete
+observation. Cleanup restores the saved phase/operation, including planner/replan
+routing for missing-design rejection. Unrelated human comments remain untouched.
+Renew affected checks;
+accepted work units, PR readiness, run completion and merged delivery are distinct.
 
-`observe-source` takes committed `candidate_sha` and optionally `base_sha`. It
-requires a clean matching implementation branch/worktree, invalidates unit/final
-acceptance and returns to implementation. It preserves prior publication facts.
-Changed HEAD/dirty/untracked work cannot publish under an older final acceptance.
-
-## PR description
-
-Use these explicit level-two Markdown headings in every harness PR description.
-Write plain language that a reader familiar only with the project can understand.
-Keep each section proportional to the change; headings do not require long text.
-
-```markdown
-## Problem
-Describe the affected workflow and observable problem.
-
-## What changes
-Explain the behavior before and after the change.
-
-## Why this matters
-Explain why solving the problem matters for this project.
-
-## Why this approach
-Explain the chosen shape and scope, including a meaningful tradeoff when relevant.
-
-## Verification and limits
-State what was actually checked and what remains unverified.
-
-## Task references
-List the root and any subtask keys with links to their canonical definitions.
-```
-
-Do not include private machine configuration, full transcripts or inaccessible
-evidence links. The description must make sense without reading the run history.
-
-## Publication observations
+PR descriptions use these explicit level-two headings: Problem; What changes;
+Why this matters; Why this approach; Verification and limits; Task references.
+Write for a reviewer without conversation history. Include eligible full-URL
+Closes references only for fully satisfied tasks; incomplete epics stay open.
 
 After separate final acceptance, fetch target master and compare accepted base.
-If moved, integrate through implementation and recheck. `publish-intent` takes
-exact `target_remote`, `target_repository`, `target_branch`, `branch` from state.
-It validates clean matching local HEAD, current observed remote base and accepted
-candidate/base/plan before persisting intent. It does not push or call GitHub.
+publish-intent requires exact target_remote/target_repository/target_branch/branch,
+clean matching candidate, unchanged live inputs, resolved findings and exact final
+candidate/base/plan. Then use a normal non-force source push and publish-observation:
 
-Use normal non-force `git push origin <branch>`. `publish-observation` takes:
+1. event=push with remote_sha: helper independently verifies remote head.
+2. event=lookup with all_states=true, unambiguous=true, matches=[] or one exact
+   open non-draft PR object (target_repository, target_branch, branch, state,
+   draft, url). Closed/merged/multiple/wrong PRs require a decision. The helper
+   also reads the actual gh PR head/base/state and closingIssuesReferences;
+   it must close exactly the fully verified targets.
+3. Exact empty lookup permits event=create-dispatched before the one create call.
+   Always look up again after success or response loss. Never blindly recreate.
+4. A matching PR enters issue-evidence. Journal one actual-PR comment per target
+   containing PR URL, exact candidate and marker
+   <!-- harness-pr:<run_id>:<candidate_sha> -->. Record event=issue-evidence;
+   the helper paginates/readbacks those exact facts before attach.
+5. Call attach_artifact, then event=attachment with matching url and success.
+   Failure leaves attachment only pending. Predeclared required_after_pr CI needs
+   event=ci, result=passed and evidence before completion. The helper never merges.
 
-1. `event=push`, `remote_sha`: helper independently reads `ls-remote` and validates
-   the candidate head. Failure/conflict preserves source; never force push.
-2. `event=lookup`, `all_states=true`, `unambiguous=true`, `matches=[]` or a singleton
-   exact PR object: `target_repository`, `target_branch`, `branch`, `state=open`,
-   `draft=false`, `url`. Closed/merged/multiple/wrong matches block progress.
-3. Only an exact empty lookup permits `event=create-dispatched`. Commit this
-   *before* the coordinator's one GitHub create call; stage returns to lookup.
-   Always reconcile using step 2, including after response loss. Never infer
-   absence from a failed or ambiguous lookup.
-4. With a recorded matching open PR, call Codex `attach_artifact`, then record
-   `event=attachment`, matching `url`, `success` and useful outcome. A failed
-   attachment leaves only attachment pending. Success completes and clears active
-   atomically. Under predeclared required-after-PR CI, record `event=ci`,
-   `result=passed`, `evidence` before completion.
+Each observation rechecks accepted source/base/head and live task input. Ref races
+remain observable facts, not a distributed transaction. Reconcile the same PR
+identity rather than creating another. After attachment/required CI, terminal
+state and active.json=null commit atomically, then exact artifact publication
+must confirm before workflow_complete=true.
 
-Before each publication observation the helper rechecks local candidate, remote
-base and (after push) remote head. This covers observed commits only; target refs
-can move after the observation. GitHub lookup/create/attachment observations must
-come from the actual tools; the helper has no network/API transport and cannot
-validate a fabricated PR object. Preserve the one-PR identity across recovery.
+## Artifact publication and recovery
 
-## Explicit bootstrap import
+Every mutation publishes its authoritative checkpoint separately to the orphan
+origin harness-artifacts ref, then independently reads the bound push endpoint.
+A successful push alone does not prove exact current-tip coverage. The journal's
+artifact_publication policy binds version, origin, declared repository/ref, SHA256
+of the single actual push endpoint and sanitized semantic privacy-review identity.
+Hosted endpoint paths must match the declared repository. Multiple push URLs,
+endpoint changes, wrong repositories/refs and upstream destinations fail closed;
+credentials and raw endpoints never enter records. Different fetch/push URLs are
+handled by using the bound push endpoint consistently.
 
-Legacy schema 1 is rejected by `show` and ordinary mutations. Inspect it read-only
-with `git show harness-artifacts:runs/<root>/<run>/state.json`. After the live lock
-owner releases the common-dir lock, use `import-bootstrap` with expected legacy
-tip/revision, the initialization identity/original fields, and a normalized `plan`
-matching the existing planner report/version. Do not invent a plan if absent.
-If an actual legacy implementation report is already committed, optionally supply
-`implementation_report` with its full run report path. Its role/attempt/input/plan
-identity and clean candidate HEAD must match known legacy facts. The candidate is
-imported as unverified, and the known implementation count consumes its budget;
-it still requires fresh independent subtask and final checks. No legacy fenced
-attempt or test evidence is fabricated.
+Every result carries artifact_publication.status=confirmed/incomplete, checkpoint,
+observed remote SHA, outcome and precise retry API envelope. CLI exit3 indicates
+incomplete publication (JSON still returns); invalid/stale input exits2. show is
+read-only and reports pending status. Only workflow_complete=true certifies both
+terminal local state and exact confirmed remote tip. Pending terminal artifacts
+still block another initialization despite the null active pointer.
 
-Import verifies root/run/location/branch/input/base/original acceptance consistency,
-normalizes abbreviated commit SHAs, keeps the old state verbatim in provenance,
-keeps old report blobs and Git ancestry, and reconciles registry-location
-placeholders. The oldest state commit timestamp starts the old four-hour budget;
-migration never grants a new one. No old test execution or acceptance is fabricated.
-Legacy worker facts stay in provenance, not in new fenced attempts.
+Use publish-artifacts with {}, exact current tip and active revision (0 if null)
+to verify/retry that checkpoint. It creates no self-acknowledgement commit, worker,
+PR or allocation. Forward work pauses behind pending artifacts; safety facts may
+be retained locally. An observed remote ancestor covers only that ancestor.
 
-Import stops at `bootstrap-reconciliation`. `reconcile` then requires concrete
-runtime `observation`, `terminated_workers` listing every known legacy worker,
-and `next_action`. Confirm completed/terminated actual workers, including a
-previously running implementer, before continuing. Preserve its report as a fact;
-new fenced checks provide current tuple-bound results. If any worker outcome
-is unknown, stop for intervention. This is an explicit schema migration and
-procedural handoff, not retrospective certification of incomplete old records.
+A remote descendant is fetched to refs/harness/observed/<sha>, every ancestor and
+record/policy/identity is validated, and durable local facts must survive. Automatic
+adoption permits only identical existing state plus safe append-only evidence and
+retained legacy allocation facts. Evolved worker/budget/approval/source state needs
+explicit coordination; divergence/malformed/dropped records retain both tips and
+precise reconciliation. Adoption returns incomplete and requires show/new CAS.
+Never force-push, retarget, overwrite or silently merge competing evidence.
 
+For policy-less existing history, semantically review all unique historical record
+blobs, supported by structural and credential-pattern auditing. Pattern absence
+alone is not privacy proof. adopt-artifacts needs reviewed_tip and review_summary;
+null-active adoption also needs explicit repository identity. It changes only the
+publication policy, not old run/report bytes, original criteria, budgets or ancestry.
+Disallowed history remains local for a decision; never silently rewrite/redact it.
 
-## Canonical backlog closeout (FOS-000026)
+## Explicit saved-state and self-migration
 
-After all required units have independently accepted, the next action is durable
-closeout rather than final checking. A parent remains incomplete while any required
-child/criterion is open. Every unit must have one tracked canonical definition;
-artifact-only legacy subtasks need explicit migration preserving permanent keys,
-titles, original criteria/dependencies and the registry's allocation meaning.
-The helper verifies the canonical inventory at closeout; it does not edit Markdown.
-It conservatively invalidates all closeout targets after rejection or source/base/
-plan change. Independently completed unrelated work outside this root is untouched.
+Ordinary operations reject schema1/2 active state. import-bootstrap explicitly
+imports schema1 using its original identity/acceptance, normalized historical plan,
+known worker/report facts and oldest-record start time; no old acceptance is
+fabricated. The private legacy compatibility engine has no CLI or normal task
+mutation authority. Historical fixtures alone opt into its old API.
 
-1. `closeout-intent` payload:
-   `{"targets":[{"key":"FOS-000026","location":"local-docs/reviews/harness-backlog.md","evidence":"Independent unit checker passed required gates; concise actual counts and limits.","reference":"https://github.com/robinwassen/Fossilize/compare/master...codex/FOS-000026-backlog-completion"}]}`.
-   Include the root and every required unit exactly once. All units must have
-   accepted, with applicable base/plan and no unresolved findings. The helper
-   persists their acceptance provenance and the exact pre-bookkeeping source SHA.
-2. In one direct child commit, edit only target canonical files and these metadata
-   lines inside each target definition (add/replace a status line in the same place):
-   `**Status:** Done (verified proposed branch state; not landed on master).`
-   and `**Completion evidence:** <exact evidence> <exact reference>`.
-   Preserve every other byte, including blank lines, original acceptance,
-   dependencies, titles, registry allocations and unrelated definitions. This
-   restricted project grammar deliberately does not implement arbitrary Markdown.
-   A stable compare reference avoids a self-referential SHA or invented early PR.
-3. `closeout-record` takes `{"candidate_sha":"FULL_BOOKKEEPING_SHA"}`. It requires
-   the clean matching branch and one direct bookkeeping commit containing actual
-   Done/evidence/reference bytes. It clears exact-commit unit/final approvals and
-   enters checker-only `subtask` renewal. Dispatch/acknowledge/report as usual,
-   without implementer dispatch or repair-budget consumption. Renewed acceptance
-   of every unit enters separate `final`; prepared closeout survives successful
-   renewal and is required for final acceptance and every publication operation.
-4. Rejection or later tuple changes persist `stage=cleanup`, the original targets,
-   reason and an explicit pending cleanup action. Interruption keeps active state.
-   Remove stale Done metadata and completion evidence from all affected targets,
-   commit the honest incomplete source, then `closeout-cleanup` with
-   `{"candidate_sha":"FULL_CLEANUP_SHA","observation":"Stale Done removed; required work remains open."}`.
-   It verifies no targeted Done marker remains, retains invalidated provenance,
-   clears approvals, and returns to repair/replan. A fresh implementer and checks
-   resolve the concrete finding; only then repeat intent/bookkeeping/renewal once.
-   An environment rejection first needs the existing prerequisite `resume` action.
+migrate-state takes legacy_root, run_id, exact original, complete legacy-to-issue
+mapping and exact live snapshot. It migrates schema2 to3 under the same lock/CAS,
+retaining storage/run paths, all ancestor commits, completed-state/report/evidence
+bytes, permanent allocations, original deadline/budgets, findings and provenance.
+Committed historical source/registry union is imported as evidence only. Live plan
+fields/operations/work-unit identities normalize without changing semantic plan
+version; original acceptance and historical reports remain verbatim.
 
-Reopen with `show` after interruption. Pending -> persist intent; intent with no
-commit -> make the bookkeeping commit; intent with the clean direct child already
-committed -> record that same SHA without duplicating edits. Prepared -> resume
-checker-only renewal/final. Cleanup -> reconcile tracked source before dispatch.
-Dirty/wrong/unrelated candidates cannot be adopted as bookkeeping. Every action
-uses the usual artifact tip/revision CAS and append-only report/log transaction.
+Idle migration clears approvals. Active migration permits only one acknowledged
+implementer, with its exact original tuple supplied as bridge. The helper stores
+that envelope verbatim and accepts its original report once, unchanged, translating
+only live execution state. Modified/replayed/other old envelopes fail. No checker
+approval carries forward. Any pending schema1 worker uncertainty must be resolved
+with concrete termination facts before forward work.
 
-Existing active schema-2 records lacking `closeout` are read as pending; the next
-mutation persists that field without changing immutable requirements, reports,
-worker facts, history or budgets. No new run, import, deadline or fabricated
-acceptance is needed. Complete historical records remain byte-for-byte untouched.
-For self-application, first accept the implementation candidate using the existing
-run. Invoke the resulting helper from that candidate in the same implementation
-worktree, persist closeout intent, commit FOS-000026's actual status/evidence,
-record the new candidate, renew unit checks and obtain separate final acceptance.
-The stable compare link remains valid after PR creation; actual PR URL belongs in
-publication records/description. Publish exactly once under the existing sequence;
-no subsequent closeout invocation or automatic merge occurs.
+For self-application, commit and test candidateA while definitions remain; complete
+live issue/content/native-graph readback; pause and give the coordinator candidate,
+root mapping, snapshot and exact action. Only the coordinator invokes candidate
+migrate-state on the existing run and confirms publication/bridge. Then resume
+that same implementer, remove source task authority, update guidance/package, run
+checks and commit candidateB. Return the original bridge envelope. Do not start a
+new run, fake a repair, replace the worker or delete definitions before confirmation.
 
-
-## Artifact publication (FOS-000027)
-
-This policy supersedes the original local-only proposal. Initialization, every
-state transition/report/evidence addition, permanent reservation, interruption or
-reconciliation, closeout, source-publication observation and terminal commit are
-required artifact checkpoints. The helper commits records locally first, then
-makes one bounded non-force push of `CHECKPOINT_SHA:refs/heads/harness-artifacts`.
-It independently reads the actual remote ref before retry and after push. Its
-transport attempt has a 60-second total deadline and at most 20 seconds per network
-command, with terminal prompting disabled. Network errors are sanitized.
-
-`allocations.json.artifact_publication` binds policy version, `origin`, declared
-owner/repository, exact artifact ref, SHA-256 of the actual single push endpoint,
-and sanitized semantic privacy review identity/summary. This journal-level policy
-survives clearing the active pointer. Fetch, push and confirmation all use the
-bound push endpoint, including when origin has a different fetch URL. Hosted URL
-repository paths must match the declared repository; local file transports bind
-the explicitly configured endpoint. Multiple push URLs, changed endpoints, wrong
-repositories/refs or upstream destinations fail closed. No credential or raw URL
-is copied into publication records. Historical repository identity is retained.
-
-Every result includes `artifact_publication.status` (`confirmed` or `incomplete`),
-checkpoint SHA, destination, independently observed remote SHA, outcome and exact
-retry API envelope. CLI exits 3 for an incomplete mutation/publication (JSON is
-still returned); malformed/stale requests exit 2. `show` exits zero for inspection
-and reports incompleteness explicitly. Only `workflow_complete=true` certifies
-both terminal local records and confirmation of the exact current artifact tip.
-A complete historical state by itself describes its old workflow, not evidence
-that the new policy was applied retrospectively.
-
-Forward mutations require reconciliation of the previous checkpoint. During an
-outage the helper can still retain report/acknowledgement/liveness/budget facts
-locally, but cannot dispatch work, allocate keys, authorize source publication or
-finish while the prior tip is pending. Restore transport/authentication or remove
-the rejecting remote hook, inspect `show`, then retry only the recorded operation:
-
-```sh
-python3 -B .agents/skills/implement-change-harness/scripts/harness_state.py --repo /absolute/implementation publish-artifacts --payload /tmp/empty.json --expected-tip FULL_CURRENT_TIP --expected-revision CURRENT_REVISION
-```
-
-Here `/tmp/empty.json` contains `{}`. The corresponding API is
-`Harness(repo).apply("publish-artifacts", {}, tip, revision)`. When active.json is
-null, use revision 0. This retry creates no acknowledgement commit, attempt, PR or
-allocation. Already confirmed tips are idempotent. An ancestor on the remote means
-only ancestor coverage: the current checkpoint remains incomplete until exact-tip
-confirmation. Command success, caller-provided SHA and an intervening remote
-advance cannot certify the requested current tip.
-
-For an observed remote descendant, the helper fetches into
-`refs/harness/observed/<observed-sha>`, validates all ancestors (including permitted
-legacy schema-1 records and an empty orphan bootstrap root), JSON/run/pointer and
-allocation identities, publication policy, retained local records and append-only
-evidence. Automatic adoption is deliberately conservative: existing run-state
-bytes must be identical, additions may retain evidence and extend allocation
-reservations/high-water. Any evolved run state requires explicit reconciliation
-between writers; the helper does not decide whether changed budgets, worker facts,
-acceptances or PR state are compatible. A safe descendant advances the local ref
-under CAS, returns incomplete with `remote-advance-adopted`, and requires `show`
-and a fresh invocation at that tip/revision. `show` never adopts an artifact tip.
-Divergence, malformed history, dropped reservations or altered records retains both
-tips and a fetch/compare/coordinate action. Never force push, silently discard a
-writer's records, or automatically merge distributed state. Cross-machine key
-allocation remains separately coordinated; local flock is not a distributed lock.
-
-### Existing-history adoption and privacy
-
-After implementation acceptance, invoke the helper from the candidate worktree,
-in the same run. Before the first production push, inspect **all unique historical
-record blobs**, including reports and representative log payloads, for small,
-sanitized allowed harness records. Combine structural all-ancestor validation,
-credential-pattern audit and semantic review. Pattern absence alone is not privacy
-proof. Do not print secrets into review output. If disallowed content is found,
-retain history locally and report its exact blocked scope for a decision; never
-silently redact/rewrite, force push or publish that history.
-
-Record a short sanitized review summary, then use:
-
-```json
-{"reviewed_tip":"FULL_REVIEWED_ARTIFACT_TIP","review_summary":"All unique historical records reviewed semantically; describe allowed contents and audit scope concisely."}
-```
-
-Call `apply("adopt-artifacts", payload, tip, active_revision)` or CLI action
-`adopt-artifacts` with the usual payload/CAS flags. For null-active history, use
-revision 0 and include `repository` containing `target_remote=origin` and the
-actual `target_repository`. The adoption commit changes only the allocation
-journal policy; original requirements, completed states, current worker/PR facts,
-reports, budgets and ancestry remain intact. No old publication is fabricated and
-no deadline is extended. Schema-1 bootstrap import additionally requires the same
-`reviewed_tip`/`review_summary` when it binds publication in its import transaction.
-A pending policy-less tip blocks normal forward operations until explicit adoption.
-
-### Finite terminal ordering
-
-Source PR lookup/create-once/attachment and any required CI follow their existing
-sequence. The last local artifact transaction already contains terminal run state
-and `active.json=null` atomically; the helper then publishes and verifies that
-exact commit. Failure returns `workflow_complete=false`, even though the local
-historical state says complete or the PR is attached. Restart discovers the global
-journal policy and pending tip despite the null pointer. A following initialize
-cannot conceal it. `publish-artifacts` reconciles that same terminal checkpoint
-without rerunning accepted work or duplicating a PR. Read-only status and retry
-produce no self-acknowledgement commit, so publication terminates finitely.
+After fetching source plus orphan artifacts into a fresh clone, rebind-execution
+requires exact root_issue/run_id/old_common_dir and candidate_sha. It validates the
+same logical repository/destination/run/task while explicitly updating local
+common-dir/worktree location, retaining prior location as provenance. Ordinary
+show/mutations never silently disable execution identity checks.
