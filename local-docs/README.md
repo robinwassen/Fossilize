@@ -11,6 +11,7 @@
 - [Repository observability sweep and ordered implementation backlog](reviews/observability-sweep.md)
 - [Basic change harness plan (proposed)](specs/basic-change-harness-plan.md)
 - [Harness backlog](reviews/harness-backlog.md)
+- [GitHub Issues migration backlog](reviews/github-issues-migration.md)
 - `specs/` — project specifications.
 
 This directory and the root `AGENTS.md` are tracked project guidance. Specifications and plans labelled proposed describe desired behavior, not verified implementation. Historical evidence records the revision and environment observed; it is not proof of current behavior.
