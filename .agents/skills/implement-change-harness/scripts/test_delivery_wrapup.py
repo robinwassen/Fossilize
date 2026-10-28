@@ -28,6 +28,28 @@ EXPECTED_MUTATIONS = {'approval', 'merge', 'merge-verification', 'detach', 'remo
 EFFECT_STAGES = ('merge', 'merge-verification', 'detach', 'remote-delete', 'local-delete', 'ticket-close-8', 'ticket-comment-8')
 EFFECT_PHASES = ('before-intent', 'before-dispatch', 'after-effect', 'after-returned', 'after-readback')
 READ_STAGES = ('approval', 'complete')
+# Explicit, test-owned successful-path inventory. Runtime capture must match it.
+PUBLICATION_POINTS = (('approval', 'intent'),) + tuple(
+    (stage, event) for stage in EFFECT_STAGES
+    for event in ('intent', 'dispatch', 'returned', 'readback')) + (('complete', 'readback'),)
+W11_SCENARIOS = tuple((stage, event, phase) for stage, event in PUBLICATION_POINTS
+                      for phase in ('before-push', 'after-push'))
+
+
+def scenario_id(case, *parts):
+    return case + ':' + ':'.join(parts)
+
+
+def scenario_inventory():
+    result = {f'test_W11_publication_shard_{shard}': [scenario_id('W11', *point)
+              for index, point in enumerate(W11_SCENARIOS) if index % 4 == shard] for shard in range(4)}
+    result['test_W09_W10_every_effect_boundary_process_death_and_recovery'] = [
+        scenario_id('W09', stage, phase) for stage in EFFECT_STAGES for phase in EFFECT_PHASES]
+    result['test_W09_observational_and_terminal_boundaries'] = [
+        scenario_id('W09', stage, phase) for stage in READ_STAGES for phase in ('before-intent', 'after-readback')]
+    result['test_W14_known_unsent_dispatch_publication_recovers_exactly_once'] = [
+        scenario_id('W14', stage, phase) for stage in ('merge', 'ticket-comment-8') for phase in ('before-push', 'after-push')]
+    return result
 SCRIPT = Path(__file__).with_name('harness_state.py').resolve()
 
 
@@ -460,7 +482,7 @@ class DeliveryTests(LiveFixture, unittest.TestCase):
         covered = set()
         for stage in EFFECT_STAGES:
             for boundary in EFFECT_PHASES:
-                with self.subTest(stage=stage, boundary=boundary):
+                with self.subTest(stage=stage, boundary=boundary, scenario_id=scenario_id('W09', stage, boundary)):
                     self.restore_case(Path(prefixes.name) / stage)
                     hit = []
                     def death(current, phase, delivery):
@@ -487,7 +509,7 @@ class DeliveryTests(LiveFixture, unittest.TestCase):
         covered = set()
         for stage in READ_STAGES:
             for boundary in ('before-intent', 'after-readback'):
-                with self.subTest(stage=stage, boundary=boundary):
+                with self.subTest(stage=stage, boundary=boundary, scenario_id=scenario_id('W09', stage, boundary)):
                     self.restore()
                     def death(current, phase, delivery):
                         if (current, phase) == (stage, boundary):
@@ -516,39 +538,50 @@ class DeliveryTests(LiveFixture, unittest.TestCase):
         changed = self.run_delivery(dict(self.approval, head='d' * 40))
         self.assertEqual(changed['outcome'], 'decision-needed')
 
-    def test_W11_every_checkpoint_publication_response_loss_and_rejection(self):
+    def publication_matrix(self, shard):
         self.fast_reads = True
-        # Capture the actual bounded set of checkpoint (stage,event) pairs, then
-        # fail every before/after publication at those exact mutation boundaries.
         publications = []
         prefixes = tempfile.TemporaryDirectory(prefix='delivery-publications-')
         self.addCleanup(prefixes.cleanup)
         def inventory(stage, phase, delivery):
+            if phase == 'before-intent':
+                self.save_case(Path(prefixes.name) / stage)
             if phase == 'before-publication' and stage != 'resume':
-                event = git(self.source, 'log', '-1', '--format=%s', delivery.tip).decode().strip()
-                point = (stage, event)
-                if point not in publications:
-                    publications.append(point)
-                    self.save_case(Path(prefixes.name) / str(len(publications)-1))
+                event = git(self.source, 'log', '-1', '--format=%s', delivery.tip).decode().strip().rsplit(' ', 1)[1]
+                if (stage, event) not in publications:
+                    publications.append((stage, event))
         self.assert_delivered(self.run_delivery(fault=inventory))
-        points = list(dict.fromkeys(publications))
-        self.assertTrue(points)
-        self.assertEqual({stage.rsplit('-',1)[0] if stage.startswith('ticket-') else stage for stage,_ in points}, EXPECTED_MUTATIONS)
-        for index, (stage, event) in enumerate(points):
-            # Both response-loss seams run for every intent/dispatch/returned/
-            # readback checkpoint, including terminal state. This is not a
-            # hard-coded sample that silently misses new checkpoint types.
-            for phase in ('before-push', 'after-push'):
-                with self.subTest(stage=stage, event=event, phase=phase):
-                    self.restore_case(Path(prefixes.name) / str(index))
-                    def response_loss(current, boundary, delivery):
-                        if (current, boundary) == ('resume', 'before-publication'):
+        self.assertEqual(tuple(publications), PUBLICATION_POINTS)
+        self.assertEqual({stage.rsplit('-', 1)[0] if stage.startswith('ticket-') else stage
+                          for stage, _ in publications}, EXPECTED_MUTATIONS)
+        for index, (stage, event, phase) in enumerate(W11_SCENARIOS):
+            if index % 4 != shard:
+                continue
+            with self.subTest(scenario_id=scenario_id('W11', stage, event, phase)):
+                # Start BEFORE this stage's first checkpoint so the original
+                # publication call and no-send handler execute in this process.
+                self.restore_case(Path(prefixes.name) / stage)
+                hits = []
+                def response_loss(current, boundary, delivery):
+                    if current == stage and boundary == 'before-publication':
+                        actual = git(self.source, 'log', '-1', '--format=%s', delivery.tip).decode().strip().rsplit(' ', 1)[1]
+                        if actual == event:
+                            hits.append((current, actual, phase))
                             delivery.h.store.fail = phase
-                    result = self.run_delivery(fault=response_loss)
-                    self.assertEqual(result['outcome'], 'incomplete', result)
-                    self.assertFalse(result['delivered'])
-                    self.assert_delivered(self.run_delivery())
-        self.restore()
+                result = self.run_delivery(fault=response_loss)
+                self.assertEqual(hits, [(stage, event, phase)])
+                self.assertEqual(result['outcome'], 'incomplete', result)
+                self.assertFalse(result['delivered'])
+                again = self.run_delivery()
+                self.assertEqual(again['resume_command'], result['resume_command'])
+                self.assert_delivered(again)
+                self.assert_delivered(self.run_delivery())
+
+    def test_W11_publication_inventory_and_rejection(self):
+        self.assertEqual(len(set(W11_SCENARIOS)), len(W11_SCENARIOS))
+        owned = scenario_inventory()
+        self.assertEqual(sorted(item for key, values in owned.items() if key.startswith('test_W11_publication_shard_')
+                                for item in values), sorted(scenario_id('W11', *point) for point in W11_SCENARIOS))
         hook = self.bare / 'hooks/pre-receive'
         hook.write_text('#!/bin/sh\nwhile read old new ref; do\n case "$ref" in refs/heads/harness-artifacts) exit 1;; esac\ndone\n');hook.chmod(0o755)
         result = self.run_delivery()
@@ -556,6 +589,66 @@ class DeliveryTests(LiveFixture, unittest.TestCase):
         self.assertNotIn('merge_count', self.service())
         self.assertEqual(result['resume_command'], dw.Delivery(Harness(self.source), self.approval).command())
         hook.unlink()
+        self.assert_delivered(self.run_delivery())
+
+    def test_W14_known_unsent_dispatch_publication_recovers_exactly_once(self):
+        self.fast_reads = True
+        for stage in ('merge', 'ticket-comment-8'):
+            for phase in ('before-push', 'after-push'):
+                with self.subTest(scenario_id=scenario_id('W14', stage, phase)):
+                    self.restore()
+                    hits = []
+                    def reject(current, boundary, delivery):
+                        row = delivery.delivery['steps'].get(stage, {}) if delivery.delivery else {}
+                        if (current, boundary) == (stage, 'before-publication') and row.get('dispatched') and row['status'] == 'intent':
+                            hits.append(stage);delivery.h.store.fail = phase
+                    first = self.run_delivery(fault=reject)
+                    self.assertEqual(hits, [stage])
+                    self.assertEqual(first['outcome'], 'incomplete', first)
+                    service = self.service()
+                    self.assertEqual(service.get('merge_count', 0), 0 if stage == 'merge' else 1)
+                    self.assertEqual([c for c in service['issues']['8'].get('comments_data', []) if '<!-- harness-delivery:' in c['body']], [])
+                    saved = json.loads(Store(self.source).records(Store(self.source).tip())[self.path])
+                    row = saved['delivery']['steps'][stage]
+                    self.assertFalse(row['dispatched']);self.assertTrue(row['not_sent'])
+                    for _ in range(2):
+                        result = self.run_delivery()
+                        self.assertEqual(result['resume_command'], first['resume_command'])
+                        self.assert_delivered(result)
+
+    def test_W14_ambiguous_published_dispatch_never_blindly_resends(self):
+        self.fast_reads = True
+        for stage in ('merge', 'ticket-comment-8'):
+            for publication_boundary in ('before-publication', 'after-publication'):
+                self.restore()
+                def death(current, boundary, delivery):
+                    if (current, boundary) == (stage, publication_boundary):
+                        row = delivery.delivery['steps'].get(stage, {})
+                        if row.get('dispatched') and row['status'] == 'intent':raise Interrupted()
+                with self.assertRaises(Interrupted):self.run_delivery(fault=death)
+                # The former W11 local dispatched prefix and a published one
+                # both lack durable no-send proof after genuine process death.
+                for _ in range(2):
+                    result = self.run_delivery()
+                    self.assertEqual(result['outcome'], 'incomplete', result)
+                    self.assertIn('reconcile service', result['summary'])
+                    self.assertEqual(self.service().get('merge_count', 0), 0 if stage == 'merge' else 1)
+                    self.assertEqual([c for c in self.service()['issues']['8'].get('comments_data', []) if '<!-- harness-delivery:' in c['body']], [])
+                    self.assertEqual(result['artifact_publication']['status'], 'confirmed')
+
+    def test_W14_successful_comment_lost_response_delayed_and_failed_readback(self):
+        self.fast_reads = True
+        self.update(lose_comment_response=True)
+        first = self.run_delivery()
+        self.assertEqual(first['outcome'], 'incomplete')
+        for observer in (lambda *a: [], lambda *a: (_ for _ in ()).throw(dw.IssueError('lookup unavailable'))):
+            with patch.object(FastReadGitHub, 'comments', observer):
+                result = self.run_delivery()
+            self.assertEqual(result['outcome'], 'incomplete', result)
+            self.assertEqual(result['resume_command'], first['resume_command'])
+            self.assertEqual(self.service()['merge_count'], 1)
+            self.assertEqual(len([c for c in self.service()['issues']['8']['comments_data'] if '<!-- harness-delivery:' in c['body']]), 1)
+        self.assert_delivered(self.run_delivery())
         self.assert_delivered(self.run_delivery())
 
     def test_W11_terminal_publication_failure_is_not_delivery(self):
@@ -610,6 +703,17 @@ class DeliveryTests(LiveFixture, unittest.TestCase):
         self.assertEqual(result['outcome'], 'decision-needed')
         self.assertIn('artifact', result['summary'])
         self.assertNotIn('merge_count', self.service())
+
+
+def _publication_shard(shard):
+    def test(self):
+        self.publication_matrix(shard)
+    test.__name__ = f'test_W11_publication_shard_{shard}'
+    return test
+
+
+for _shard in range(4):
+    setattr(DeliveryTests, f'test_W11_publication_shard_{_shard}', _publication_shard(_shard))
 
 
 if __name__ == '__main__':

@@ -253,7 +253,9 @@ Changed requirements/head/base/checks/closing targets require a decision.
 Every intent, dispatch, returned identity and readback has a durable checkpoint
 with exact-tip publication before progression. Restart the same command after
 interruption or response loss; authoritative reads reconcile merged PRs, absent
-branches, completed tickets and marked comments before any retry. An uncertain
+branches, completed tickets and marked comments before any retry. A caught dispatch-publication failure records a durable `not-sent` checkpoint
+before returning incomplete, because this process knows it never called the effect.
+A crash after dispatched publication has no such proof. An uncertain
 merge/comment is never blindly redispatched. All Git/gh subprocesses have finite
 deadlines (at most 60 seconds each; artifact transport has its own bounded deadline)
 and the command checks a 600-second overall progression deadline.

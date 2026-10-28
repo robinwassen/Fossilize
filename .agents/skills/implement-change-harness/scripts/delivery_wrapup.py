@@ -126,8 +126,19 @@ class Delivery:
             if row.get('dispatched') and (stage == 'merge' or stage.startswith('ticket-comment')):
                 raise Pending('Dispatched ' + stage + ' is not yet authoritative; reconcile service before retry.')
             self.seam(stage, 'before-dispatch')
+            row.pop('not_sent', None)
             row['dispatched'] = True
-            self.checkpoint(stage, 'dispatch')
+            try:
+                self.checkpoint(stage, 'dispatch')
+            except Pending as error:
+                # This process caught a failed dispatch publication before
+                # calling effect(). Persist that positive no-send knowledge in
+                # a new local checkpoint even when transport remains down.
+                # BaseException/process death deliberately bypasses this path:
+                # a restored dispatched prefix is still genuinely ambiguous.
+                row.update(dispatched=False, status='intent', not_sent=True)
+                self.checkpoint(stage, 'not-sent')
+                raise Pending('Dispatch checkpoint unconfirmed; effect not sent. Resume the same command.') from error
             try:
                 returned = effect()
             except (Invalid, IssueError, OSError, subprocess.TimeoutExpired, Pending) as error:

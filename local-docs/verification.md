@@ -15,18 +15,45 @@ Inventory checked against first-party source and the local Steam installation on
 ## Change-harness skill checks
 
 The repository skill has a separate standard-library Python suite; CTest does not
-discover it. From the exact implementation/checker candidate worktree, use:
+discover it. The full discovered suite is mandatory, scheduled in bounded groups.
+From the exact committed implementation/checker candidate, create a fresh directory
+outside source and use the supported runner (each invocation has its own real
+600-second process deadline):
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v
-python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness
+export HARNESS_EVIDENCE_DIR="$(mktemp -d /tmp/fossilize-harness-check.XXXXXX)"
+timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --inventory --output "$HARNESS_EVIDENCE_DIR/inventory.json"
+for group in regression-test_harness_artifacts regression-test_harness_closeout regression-test_harness_issue_artifacts regression-test_harness_issue_closeout regression-test_harness_migration regression-test_harness_state regression-test_issue_guidance regression-test_issue_migration regression-test_issue_source delivery-ordinary delivery-w09 delivery-w11-0 delivery-w11-1 delivery-w11-2 delivery-w11-3 regression-extra; do
+  timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group "$group" --inventory "$HARNESS_EVIDENCE_DIR/inventory.json" --output "$HARNESS_EVIDENCE_DIR/$group.json" || break
+done
+timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --verify-results "$HARNESS_EVIDENCE_DIR"
+timeout --signal=TERM --kill-after=5s 600s python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness
 ```
 
+Inventory uses actual full `unittest` discovery of `test_*.py`, without running
+fixtures. Every discovered ID has exactly one owner, including a catch-all for
+new modules. Four distinct W11 unittest IDs partition the complete explicit
+publication scenario inventory; each independently checks runtime checkpoint
+capture against that inventory. W09 retains its full effect-boundary matrix.
+The original 113 methods are accounted for by a checked compatibility manifest;
+the original W11 method maps to its four shards and inventory/rejection control.
+The verifier freshly discovers all tests and requires exact disjoint executed
+and scenario unions, current candidate/attempt/digest, completed passing statuses,
+and every group result. Missing, skipped, failed, stale, duplicate, unfinished or
+unexecuted results fail. Use a new directory after changing candidate or retrying
+a failed attempt. Independent groups may run in at most three isolated processes
+concurrently; their tempfile repositories/services are separate.
+
+Discovery alone, one passing shard and historical reports do not establish a
+complete pass. Ordinary full discovery remains available for exploration:
+`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v`.
+It is too large for a single mandatory 600-second gate; the complete bounded union
+above replaces that gate without removing assertions or increasing any deadline.
 The validator path is this host's installed skill-creator tool; resolve it on
-another host. PyYAML belongs to that validator, not the helper runtime. Use a real
-600-second process deadline for the complete suite. Record nonzero discovered and
-executed IDs, statuses and case mappings; a passing Python suite does not prove
-actual role conduct, live GitHub behavior or C++/Vulkan/Steam behavior.
+another host. PyYAML belongs to that validator, not the helper runtime. Record
+exact commands, timings, nonzero discovered/executed IDs and case/scenario mappings.
+A passing Python suite does not prove actual role conduct, live GitHub behavior
+or C++/Vulkan/Steam behavior.
 
 `test_issue_source.py` and `test_issue_migration.py` use a subprocess fake gh service
 for identities, paginated reads, complete requirement/graph migration, uncertainty,
@@ -111,8 +138,9 @@ Relevant configuration matrix: GCC/Clang; Debug/Release; `FOSSILIZE_ENABLE_EXCEP
 
 
 Approved delivery regression coverage lives in
-`.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py` (W01–W13).
-Run it with the full standard-library discovery command above. The fixture uses
+`.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py` (W01–W14), with W15 runner controls in
+`test_harness_runner.py`. Run every bounded group and the exact-union verifier
+above. The fixture uses
 subprocess fake gh and real disposable Git/bare remotes to produce actual squash
 commits and inspect tree/topology/ref identities. Tests assert approval/acceptance
 fences, live drift, conditional cleanup, dirty/unrelated preservation, completed
