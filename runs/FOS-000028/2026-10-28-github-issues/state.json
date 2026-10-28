@@ -65,13 +65,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "70a9a384f7ba83de2386dc60aa8d52b65a8b8c433884e8384cec2a0eb87cc1d9",
+      "report": "runs/FOS-000028/2026-10-28-github-issues/reports/checker-unit-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793198623.4547715,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/37",
       "worker_id": "/root/checker_unit_1"
     }
@@ -80,7 +82,50 @@
     "stage": "pending"
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "actual": "Both legitimate next roles are fenced; missing-design rejection cannot resume via the saved next action.",
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/37",
+      "counterexample_command": "timeout 600s env PYTHONDONTWRITEBYTECODE=1 python3 /tmp/fos28-cu1-routing-probe.py Probe.runTest",
+      "criteria": [
+        "AC6",
+        "AC7"
+      ],
+      "evidence": "Disposable exact-candidate live-schema probe first prepares readiness, submits final checker changes_required with route=planner, journals supersession, then calls closeout-cleanup. Before cleanup phase=planning/operation=replan/resume_phase=planning; after cleanup phase=implementing/operation=repair. Planner dispatch then fails role does not match phase; implementer dispatch fails implementer unit dependencies are not accepted because accepted units were retained. Original helper cleanup preserved resume_phase. See runs/FOS-000028/2026-10-28-github-issues/evidence/checker-unit-1-planner-routing.log",
+      "expected": "Cleanup retains planner/replan routing and permits a fresh bounded planner before renewed implementation and independent checks.",
+      "id": "CU1-01",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:986",
+      "planned_cases": [
+        "R01",
+        "D01"
+      ],
+      "priority": 1,
+      "required_change": "Restore the checker-selected resume phase/operation and appropriate approval handling; add a registered live-schema final planner-rejection \u2192 supersession \u2192 cleanup \u2192 planner-dispatch regression.",
+      "route": "implementation",
+      "status": "open",
+      "title": "Preserve planner routing through readiness cleanup"
+    },
+    {
+      "actual": "Renewed readiness cannot be recorded; old comments make the exact-count readback permanently fail unless history is deleted or an otherwise unnecessary tuple change is invented.",
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/37",
+      "counterexample_command": "timeout 600s env PYTHONDONTWRITEBYTECODE=1 python3 /tmp/fos28-cu1-marker-probe.py",
+      "criteria": [
+        "AC7"
+      ],
+      "evidence": "Disposable probe prepares readiness, submits final changes_required, journals a superseding comment, cleans up, records renewed implementation and resolves/reaccepts checks at the unchanged candidate/base/plan/input. New closeout-intent reuses exactly the old harness-ready marker. Original readiness+supersession+renewed readiness produce3 marker matches; closeout-record at line975 requires exactly1 and rejects. Even replaying the original journaled comment retains2 matches. See runs/FOS-000028/2026-10-28-github-issues/evidence/checker-unit-1-readiness-marker.log",
+      "expected": "Same-tuple renewed verification can publish distinct current readiness while preserving stale/superseding evidence and unrelated comments.",
+      "id": "CU1-02",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:967",
+      "planned_cases": [
+        "D01"
+      ],
+      "priority": 1,
+      "required_change": "Use a durable readiness generation/attempt identity or equivalent unambiguous current-generation selection in marker, journal operation and readback. Add registered live-schema same-candidate rejection/cleanup/reacceptance tests, including restart and changed evidence text.",
+      "route": "implementation",
+      "status": "open",
+      "title": "Give renewed readiness an identity distinct from superseded evidence"
+    }
+  ],
   "issue_snapshot": {
     "deliverables": [
       "https://github.com/robinwassen/Fossilize/issues/37"
@@ -182,8 +227,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Repair CU1-01 and CU1-02 with registered live-schema assertions under fresh bounded implementer attempt; preserve original requirements/run/storage/deadline/history and existing GitHub migration. Commit new candidate, synchronize installed authoritative package, then dispatch fresh work-unit checker and later separate final checker. Do not publish readiness/PR from rejected candidate.",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -222,7 +267,7 @@
       "requirement": "**Remove the repository backlog after verification.** Remove canonical task\n   definitions, registry, backlog status sections, obsolete links and instructions\n   from the source tree, including this proposal. Do not leave an archived copy,\n   generated task mirror, live legacy fallback or new task ledger elsewhere in\n   the repo. Explicitly supersede the old rule requiring the tracked FOS registry\n   forever: retain legacy identities and mapping on GitHub and historical Git\n   evidence, while future identity allocation belongs to GitHub. Keep valuable\n   specifications, research, fixtures and sanitized execution evidence; replace\n   task references with issue links and ensure retained documents do not operate\n   as another backlog. Test fixtures may describe legacy formats when necessary\n   for compatibility tests, without becoming real task definitions. No destructive\n   Git history rewrite is requested."
     }
   ],
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -1305,7 +1350,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 10,
+  "revision": 11,
   "root_issue": {
     "id": 6079927386,
     "node_id": "I_kwDOVZpjbc8AAAABamRUWg",
@@ -1315,7 +1360,7 @@
   },
   "run_id": "2026-10-28-github-issues",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "FOS-000028",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/37",
   "verification": [],

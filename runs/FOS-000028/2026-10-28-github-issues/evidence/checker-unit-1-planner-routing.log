@@ -1,0 +1,17 @@
+F
+======================================================================
+FAIL: runTest (__main__.Probe.runTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/fos28-cu1-routing-probe.py", line 17, in runTest
+    self.assertEqual(self.state['phase'],'planning','cleanup must preserve explicit checker planner routing')
+AssertionError: 'implementing' != 'planning'
+- implementing
++ planning
+ : cleanup must preserve explicit checker planner routing
+
+----------------------------------------------------------------------
+Ran 1 test in 4.405s
+
+FAILED (failures=1)
+{"before_cleanup": {"phase": "planning", "operation": "replan", "resume_phase": "planning"}, "after_cleanup": {"phase": "implementing", "operation": "repair", "next_action": "fresh implementation/checks after invalidating stale readiness"}, "dispatch_rejections": {"planner": "role does not match phase", "implementer": "implementer unit dependencies are not accepted"}}
