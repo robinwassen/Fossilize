@@ -382,7 +382,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -1492,6 +1492,23 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793202277.3674834,
+      "event": "create-dispatched",
+      "records": {
+        "runs/FOS-000028/2026-10-28-github-issues/evidence/pr-create-intent.json": {
+          "base": "master",
+          "body": "## Problem\nRepository tasks and harness completion depend on Markdown backlogs and a permanent key registry. Those mechanisms duplicate task status and make discovery, dependencies, and recovery specific to this checkout.\n\n## What changes\nMove the 28 legacy tasks to GitHub Issues with separate Observability and Harness parent issues and 72 native blocking relationships. Preserve the original requirements, shared acceptance rules, evidence, and legacy identity mapping. Remove source backlogs after verified migration and replace them with a short entry point and detailed issue policy.\n\nThe harness reads issue requirements through gh, uses work units for execution, checks for material task changes, and records issue readiness while keeping delivery open until merge. Explicit saved-state migration preserves existing run identity, reports, budgets, and orphan artifact history. Journaled GitHub operations reconcile uncertain outcomes before retrying.\n\n## Why this matters\nContributors can find the work and its blocking chains on GitHub while independent checks and recoverable artifact publication continue to gate implementation PRs.\n\n## Why this approach\nGitHub owns persistent tasks; the harness owns bounded execution and verification. Immutable historical snapshots support recovery without maintaining a second source backlog. Native hierarchy and dependencies avoid requiring a GitHub Project or a background service. Persisted readiness generations distinguish renewed verification at the same commit while retaining superseded comments and the selected recovery route.\n\n## Verification and limits\n102 Python/Git/gh tests passed with zero skips, independently rerun by the work-unit checker and a separate final checker at the accepted commit. Live readback verified all 28 task definitions, two open parent outcomes, 28 native parent links and 72 dependency edges, including shared acceptance requirements and both critical paths. Saved-state/self-migration, source-free initialization/resume, failure recovery, guidance links, metadata and installed-package equality passed.\n\nVerification covers the harness, migration and documentation. No C++/Vulkan/GPU/Steam/Windows product behavior or hosted-CI result is claimed. The implementation issue remains open until this PR merges; the harness does not merge PRs.\n\n## Task references\nCloses https://github.com/robinwassen/Fossilize/issues/37\n\nLegacy reference: FOS-000028. [Observability parent](https://github.com/robinwassen/Fossilize/issues/8); [Harness parent](https://github.com/robinwassen/Fossilize/issues/9). Parent issues remain open where delivery is incomplete.\n",
+          "body_sha256": "42a7684daec03ce4a537947062bf0ac82fbb47c742176a69950c42f08f15d734",
+          "candidate_sha": "7f821f6b91fa32333a9330c027dc4f85b7f33b01",
+          "closing_issue": "https://github.com/robinwassen/Fossilize/issues/37",
+          "head": "codex/FOS-000028-github-issues",
+          "policy": "one create call after exact empty all-state lookup; reconcile lookup after response loss; never merge",
+          "repository": "robinwassen/Fossilize",
+          "title": "Move task tracking and change harness to GitHub Issues"
+        }
+      }
+    },
     "intent": {
       "base_sha": "73f891d6c0cf498ac92e804d7d0f0cd344a083f5",
       "branch": "codex/FOS-000028-github-issues",
@@ -1522,10 +1539,26 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "event": "create-dispatched",
+        "records": {
+          "runs/FOS-000028/2026-10-28-github-issues/evidence/pr-create-intent.json": {
+            "base": "master",
+            "body": "## Problem\nRepository tasks and harness completion depend on Markdown backlogs and a permanent key registry. Those mechanisms duplicate task status and make discovery, dependencies, and recovery specific to this checkout.\n\n## What changes\nMove the 28 legacy tasks to GitHub Issues with separate Observability and Harness parent issues and 72 native blocking relationships. Preserve the original requirements, shared acceptance rules, evidence, and legacy identity mapping. Remove source backlogs after verified migration and replace them with a short entry point and detailed issue policy.\n\nThe harness reads issue requirements through gh, uses work units for execution, checks for material task changes, and records issue readiness while keeping delivery open until merge. Explicit saved-state migration preserves existing run identity, reports, budgets, and orphan artifact history. Journaled GitHub operations reconcile uncertain outcomes before retrying.\n\n## Why this matters\nContributors can find the work and its blocking chains on GitHub while independent checks and recoverable artifact publication continue to gate implementation PRs.\n\n## Why this approach\nGitHub owns persistent tasks; the harness owns bounded execution and verification. Immutable historical snapshots support recovery without maintaining a second source backlog. Native hierarchy and dependencies avoid requiring a GitHub Project or a background service. Persisted readiness generations distinguish renewed verification at the same commit while retaining superseded comments and the selected recovery route.\n\n## Verification and limits\n102 Python/Git/gh tests passed with zero skips, independently rerun by the work-unit checker and a separate final checker at the accepted commit. Live readback verified all 28 task definitions, two open parent outcomes, 28 native parent links and 72 dependency edges, including shared acceptance requirements and both critical paths. Saved-state/self-migration, source-free initialization/resume, failure recovery, guidance links, metadata and installed-package equality passed.\n\nVerification covers the harness, migration and documentation. No C++/Vulkan/GPU/Steam/Windows product behavior or hosted-CI result is claimed. The implementation issue remains open until this PR merges; the harness does not merge PRs.\n\n## Task references\nCloses https://github.com/robinwassen/Fossilize/issues/37\n\nLegacy reference: FOS-000028. [Observability parent](https://github.com/robinwassen/Fossilize/issues/8); [Harness parent](https://github.com/robinwassen/Fossilize/issues/9). Parent issues remain open where delivery is incomplete.\n",
+            "body_sha256": "42a7684daec03ce4a537947062bf0ac82fbb47c742176a69950c42f08f15d734",
+            "candidate_sha": "7f821f6b91fa32333a9330c027dc4f85b7f33b01",
+            "closing_issue": "https://github.com/robinwassen/Fossilize/issues/37",
+            "head": "codex/FOS-000028-github-issues",
+            "policy": "one create call after exact empty all-state lookup; reconcile lookup after response loss; never merge",
+            "repository": "robinwassen/Fossilize",
+            "title": "Move task tracking and change harness to GitHub Issues"
+          }
+        }
       }
     ],
     "remote_sha": "7f821f6b91fa32333a9330c027dc4f85b7f33b01",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "73f891d6c0cf498ac92e804d7d0f0cd344a083f5",
@@ -1538,7 +1571,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 33,
+  "revision": 34,
   "root_issue": {
     "id": 6079927386,
     "node_id": "I_kwDOVZpjbc8AAAABamRUWg",
