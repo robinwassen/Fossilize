@@ -2,7 +2,7 @@
 
 This is the project-wide allocation ledger for backlog item keys. Keys are independent of file, order and implementation status. Never delete an issued key or assign it to another logical item. Retain retired entries with their last location and any replacement keys. References to an allocated key may occur in many files; its canonical definition belongs to one item.
 
-Format: `FOS-` followed by at least six decimal digits. Allocate the next number above the highest ever issued, including retired keys; do not fill gaps. The highest number currently issued is **26**; the next allocation is **FOS-000027**. Update this allocation summary and append the registry row before creating a new item. Serialize concurrent allocations and recheck for collisions when combining changes.
+Format: `FOS-` followed by at least six decimal digits. Allocate the next number above the highest ever issued, including retired keys; do not fill gaps. The highest number currently issued is **27**; the next allocation is **FOS-000028**. Update this allocation summary and append the registry row before creating a new item. Serialize concurrent allocations and recheck for collisions when combining changes.
 
 “Allocated” below records key issuance, not implementation completion. The backlog owns implementation status and acceptance evidence. On moves, update the canonical location without changing the key. On removal, change the allocation state to “Retired” and preserve the row.
 
@@ -34,3 +34,4 @@ Format: `FOS-` followed by at least six decimal digits. Allocate the next number
 | `FOS-000024` | Bound diagnostics without sampling away outcomes | [Observability backlog](reviews/observability-sweep.md) | Allocated |
 | `FOS-000025` | Implement the change harness skill | [Harness proposal](specs/basic-change-harness-plan.md#fos-000025--implement-the-change-harness-skill) | Allocated |
 | `FOS-000026` | Include backlog completion in the implementation PR | [Harness backlog](reviews/harness-backlog.md#fos-000026--include-backlog-completion-in-the-implementation-pr) | Allocated |
+| `FOS-000027` | Commit and publish harness artifacts to the remote orphan branch | [Harness backlog](reviews/harness-backlog.md#fos-000027--commit-and-publish-harness-artifacts-to-the-remote-orphan-branch) | Allocated |
