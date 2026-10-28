@@ -762,7 +762,7 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
+  "next_action": "journal actual implementation PR URL on each closeout issue, then publish-observation event=issue-evidence",
   "operation": "publish",
   "original": [
     {
@@ -1508,10 +1508,33 @@
         "command": "timeout --signal=TERM --kill-after=5s 600s gh pr create --repo robinwassen/Fossilize --base master --head codex/issue-39-delivery-wrapup --title 'Add approved one-command squash delivery wrap-up' --body-file /tmp/fossilize-39/pr-body.md",
         "event": "create-dispatched",
         "title": "Add approved one-command squash delivery wrap-up"
+      },
+      {
+        "all_states": true,
+        "event": "lookup",
+        "matches": [
+          {
+            "branch": "codex/issue-39-delivery-wrapup",
+            "draft": false,
+            "state": "open",
+            "target_branch": "master",
+            "target_repository": "robinwassen/Fossilize",
+            "url": "https://github.com/robinwassen/Fossilize/pull/41"
+          }
+        ],
+        "unambiguous": true
       }
     ],
+    "pr": {
+      "branch": "codex/issue-39-delivery-wrapup",
+      "draft": false,
+      "state": "open",
+      "target_branch": "master",
+      "target_repository": "robinwassen/Fossilize",
+      "url": "https://github.com/robinwassen/Fossilize/pull/41"
+    },
     "remote_sha": "48ac3bdd418d3473689f978ecfc8ab298704d753",
-    "stage": "lookup"
+    "stage": "issue-evidence"
   },
   "repository": {
     "base_sha": "796bba75ab32c13e1b50ee01fd7d067f17112cdf",
@@ -1524,7 +1547,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 101,
+  "revision": 102,
   "root_issue": {
     "id": 6083245574,
     "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
