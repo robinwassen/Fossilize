@@ -138,7 +138,14 @@
       "fallback_reason": null,
       "input_revision": 19,
       "input_sha": "d287a490f3b58e49a29a5cb782f05c31ef43b9ed",
-      "observations": [],
+      "observations": [
+        {
+          "attempt_id": "checker-renewal",
+          "liveness": "terminated",
+          "next_action": "Dispatch a fresh checker-only unit renewal at d287a490f3b58e49a29a5cb782f05c31ef43b9ed; preserve prepared closeout and prior unit provenance.",
+          "observation": "collaboration.list_agents reports checker27_renewal errored at account usage limit; interrupt_agent confirmed previous errored status. Worker cannot provide acceptance; no candidate changes occurred."
+        }
+      ],
       "operation": "subtask",
       "plan_version": 1,
       "requested": {
@@ -147,7 +154,7 @@
       },
       "role": "checker",
       "started": 1793187075.5286715,
-      "status": "running",
+      "status": "terminated",
       "unit": "FOS-000027",
       "worker_id": "/root/checker27_renewal"
     }
@@ -214,7 +221,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
+  "next_action": "Dispatch a fresh checker-only unit renewal at d287a490f3b58e49a29a5cb782f05c31ef43b9ed; preserve prepared closeout and prior unit provenance.",
   "operation": "subtask",
   "original": [
     {
@@ -465,10 +472,10 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 21,
+  "revision": 22,
   "run_id": "2026-10-28-artifact-publication",
   "schema_version": 2,
-  "status": "running",
+  "status": "ready",
   "task_key": "FOS-000027",
   "task_location": "local-docs/reviews/harness-backlog.md#fos-000027--commit-and-publish-harness-artifacts-to-the-remote-orphan-branch",
   "units": [
