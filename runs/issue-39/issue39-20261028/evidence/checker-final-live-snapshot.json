@@ -1,0 +1,23 @@
+{
+  "root": "https://github.com/robinwassen/Fossilize/issues/39",
+  "deliverables": [
+    "https://github.com/robinwassen/Fossilize/issues/39"
+  ],
+  "nodes": {
+    "https://github.com/robinwassen/Fossilize/issues/39": {
+      "url": "https://github.com/robinwassen/Fossilize/issues/39",
+      "id": 6083245574,
+      "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
+      "repository": "robinwassen/Fossilize",
+      "number": 39,
+      "title": "Prompt for PR approval and run delivery wrap-up with one command",
+      "body": "## Problem\n\nThe approved wrap-up of [PR #38](https://github.com/robinwassen/Fossilize/pull/38) required repeated AI reasoning, individual Git/GitHub calls, temporary Python scripts, and manual post-delivery state updates. Squash merge, branch cleanup, ticket closeout and evidence reconciliation are a mechanical process. Reconstructing that process in each conversation wastes tokens and adds opportunities for mistakes.\n\n## Required outcome\n\nOnce the verified PR is open and attached, the harness prompts the user for approval. After explicit approval, the agent invokes **one supported wrap-up command**. That command performs the complete approved delivery workflow and returns a compact result. AI reasoning is reserved for review, the approval conversation and exceptional decisions.\n\n## Acceptance criteria\n\n- Update the skill to present the PR link and a concise verification summary, then request approval to squash-merge and wrap up. Decline/defer leaves the PR open. Honor approval already given in the conversation without asking again; opening a PR alone is not approval.\n- Bind approval to the repository, PR and accepted head. The script checks eligibility and stops for a meaningful decision if the head, required verification or merge conditions changed. Preserve existing independent-checking gates.\n- After approval, a single repository-owned command performs the squash merge, verifies the resulting commit/tree against the accepted candidate, deletes the intended remote/local source branch safely, confirms eligible tickets are closed as completed, and posts concise delivery evidence. Preserve unrelated worktrees, user edits and unfinished parent issues.\n- Add a supported post-delivery state transition. Record the merge commit separately from the original accepted candidate; preserve acceptance, reports, budgets and history. Update PR/delivery status, keep the active pointer correct, and publish/confirm the exact orphan artifact checkpoint. No ad-hoc scripts or direct coordinator state surgery are needed.\n- The command owns durable intent, returned identities, readback and recovery for its steps. Restarting the same command reconciles partial/uncertain outcomes without duplicate merges/comments, incorrect deletion or fabricated completion. Already-merged PRs, already-deleted branches and already-closed tickets are handled explicitly.\n- Return one compact structured result and human summary: delivered, incomplete with the same resumption command, or a specific decision needed. The agent does not reason through or narrate each successful mechanical step. Avoid repeatedly reading or copying unchanged full history; retain the existing publication and integrity guarantees.\n\n## Verification\n\nUse assertion-bearing fake-gh and real disposable Git/bare-remote tests for the approved happy path, no approval, stale head, merge rejection, dirty/unrelated work preservation, interruption/response loss at each mutation boundary, retry/idempotence, completed-run state updates and artifact publication failure. Verify the normal agent workflow requires one approval interaction and one wrap-up command invocation.\n\n## Scope and context\n\nHarness command, approval handoff, policy/skill guidance and regression tests. Builds on the delivered issue-based harness in [#37](https://github.com/robinwassen/Fossilize/issues/37). No implementation work is requested by filing this issue; no automatic approval, new scheduler, or changes to Fossilize C++ behavior.\n\n<!-- harness-followup:approval-wrapup-command-v1 -->\n",
+      "state": "open",
+      "state_reason": null,
+      "parent": "https://github.com/robinwassen/Fossilize/issues/9",
+      "children": [],
+      "blocked_by": []
+    }
+  },
+  "digest": "7d3c54558c56058b747ebf9da8ab88d4eb62397b3b625acc50ea91ebdb81733c"
+}
