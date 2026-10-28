@@ -386,7 +386,8 @@ class Harness:
         """Validate every adopted ancestor, then ensure no local durable fact is lost."""
         remote_records = self.store.records(tip)
         policy_identity = hashlib.sha256(encoded(policy)).hexdigest()
-        for commit in git(self.repo, "rev-list", tip).decode().splitlines():
+        for ancestry in git(self.repo, "rev-list", "--parents", tip).decode().splitlines():
+            commit, *parents = ancestry.split()
             cache_key = (commit, policy_identity)
             if cache_key in self.validated_artifact_history:
                 continue
@@ -419,6 +420,38 @@ class Harness:
                         validate_state(state, self.repo)
                     if active and active["state"] == path:
                         self.validate_pointer(active, state)
+            # Permanent reservations survive every ancestry edge, including each
+            # merge parent. Comparing only final local/remote journals misses an
+            # intermediate issue followed by removal, rewriting or high-water loss.
+            for parent in parents:
+                if not git(self.repo, "ls-tree", "-r", "--name-only", parent).strip():
+                    continue  # Empty orphan bootstrap root is validated separately.
+                parent_rows = self.store.records(parent)
+                parent_journal = json.loads(parent_rows["allocations.json"])
+                retained = journal["issued"][:len(parent_journal["issued"])]
+                expected = copy.deepcopy(parent_journal["issued"])
+                if retained != expected:
+                    # Explicit schema-1 import historically resolved registry
+                    # placeholders. Verify that exact migration, never waive
+                    # retention merely because an ancestor has an old schema.
+                    for path, content in rows.items():
+                        if not path.endswith("/state.json") or path not in parent_rows:
+                            continue
+                        old_state, state = json.loads(parent_rows[path]), json.loads(content)
+                        imports = [p for p in state.get("provenance", [])
+                                   if p.get("imported_from_tip") == parent and p.get("legacy_schema") == 1
+                                   and p.get("legacy_state") == old_state]
+                        if old_state.get("schema_version") != 1 or state.get("schema_version") != 2 or not imports:
+                            continue
+                        revision = state["repository"].get("candidate_sha") or state["repository"]["input_sha"]
+                        registry, _, _ = canonical_inventory(self.repo, parent_journal, revision)
+                        for row in expected:
+                            registered = registry.get(row["key"])
+                            if (registered and row.get("location") == "local-docs/backlog-keys.md"
+                                    and (not row.get("title") or row["title"] == registered["title"])):
+                                row.update(location=registered["location"], title=registered["title"])
+                require(retained == expected and journal["high_water"] >= parent_journal["high_water"],
+                        "artifact ancestor drops issued allocations")
             old_policy = journal.get(POLICY)
             if old_policy:
                 require(old_policy == policy, "remote artifact policy identity conflict")

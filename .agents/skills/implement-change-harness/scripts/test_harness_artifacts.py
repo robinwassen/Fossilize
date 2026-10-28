@@ -139,7 +139,20 @@ class ArtifactTests(unittest.TestCase):
         path = state_path(self.root_key, "run-1")
         old = json.loads(legacy[path]); old["schema_version"] = 1
         legacy[path] = encoded(old)
+        legacy_journal = json.loads(legacy["allocations.json"])
+        legacy_journal["high_water"] = 25
+        legacy_journal["issued"] = [{"key": self.root_key, "location": "local-docs/backlog-keys.md"}]
+        legacy["allocations.json"] = encoded(legacy_journal)
         first = Store(self.source).checkpoint(legacy, empty, "Historical schema 1")
+        # Preserve the supported explicit bootstrap placeholder reconciliation.
+        for rows in (completed, current):
+            imported = json.loads(rows[path])
+            imported["provenance"].append({"imported_from_tip": first, "legacy_schema": 1, "legacy_state": old})
+            rows[path] = encoded(imported)
+            journal = json.loads(rows["allocations.json"])
+            journal["high_water"] = 25
+            journal["issued"] = [{"key": self.root_key, "location": "local-docs/task.md", "title": "Root task"}]
+            rows["allocations.json"] = encoded(journal)
         second = Store(self.source).checkpoint(completed, first, "Historical completed schema 2")
         self.tip = Store(self.source).checkpoint(current, second, "Active pre-policy schema 2")
         old_tip = self.tip
@@ -309,6 +322,66 @@ class ArtifactTests(unittest.TestCase):
             if extra_parent:
                 args += ["-p", extra_parent]
             return git(self.source, *args, data=b"Adversarial remote fixture\n").decode().strip()
+
+    def test_P08c_historical_allocations_survive_every_parent_edge(self):
+        self.initialize()
+        parent = self.tip
+        writer = self.clone_writer()
+        original = Store(writer).records(parent)
+        rows = dict(original)
+        journal = json.loads(rows["allocations.json"])
+        journal.update(high_water=27, issued=[{
+            "key": "FOS-000026", "title": "Permanent remote reservation",
+            "location": "local-docs/reserved.md"}])
+        rows["allocations.json"] = encoded(journal)
+        issued = self.writer_checkpoint(writer, parent, rows)
+        git(self.source, "fetch", "origin", REF)
+        mutations = {
+            "removed reservation": dict(journal, issued=[]),
+            "rewritten reservation": dict(journal, issued=[dict(journal["issued"][0], title="Reused meaning")]),
+            "high-water regression": dict(journal, high_water=26),
+        }
+        for name, changed in mutations.items():
+            with self.subTest(case=name):
+                bad_rows = dict(rows, **{"allocations.json": encoded(changed)})
+                # The issue is historical: tip-vs-local comparison alone accepts all three.
+                bad = self.raw_commit(bad_rows, issued)
+                git(self.source, "push", "origin", bad + ":" + REF)
+                result = self.raw("publish-artifacts")
+                self.assertEqual(result["artifact_publication"]["status"], "incomplete")
+                self.assertEqual((self.tip, self.remote_tip()), (parent, bad))
+                self.assertIn("ancestor drops issued allocations", result["artifact_publication"]["detail"])
+                self.assertEqual(git(self.source, "rev-parse", "refs/harness/observed/" + bad).decode().strip(), bad)
+                self.raw("reserve", {"title": "Must remain blocked", "location": "local-docs/blocked.md"})
+                self.assertEqual(self.tip, parent)
+                self.assertEqual(json.loads(Store(writer).records(issued)["allocations.json"]), journal)
+                git(self.bare, "update-ref", REF, issued, bad)  # Disposable fixture restoration.
+        # A merge must retain allocations from its second parent too.
+        merged_bad = self.raw_commit(original, parent, extra_parent=issued)
+        git(self.source, "push", "origin", merged_bad + ":" + REF)
+        result = self.raw("publish-artifacts")
+        self.assertEqual((self.tip, self.remote_tip()), (parent, merged_bad))
+        self.assertIn("ancestor drops issued allocations", result["artifact_publication"]["detail"])
+        # The same guard applies before publishing a locally constructed bad history.
+        git(self.bare, "update-ref", REF, parent, merged_bad)
+        git(self.source, "update-ref", REF, merged_bad, parent)
+        self.tip = merged_bad
+        result = self.raw("publish-artifacts")
+        self.assertEqual(self.remote_tip(), parent)
+        self.assertIn("ancestor drops issued allocations", result["artifact_publication"]["detail"])
+        git(self.source, "update-ref", REF, parent, merged_bad)
+        self.tip = parent
+        # A compatible merge preserving both parents' journal remains adoptable.
+        merged_good = self.raw_commit(rows, parent, extra_parent=issued)
+        git(self.source, "push", "origin", merged_good + ":" + REF)
+        result = self.raw("publish-artifacts")
+        self.assertEqual(result["artifact_publication"]["outcome"], "remote-advance-adopted")
+        self.assertEqual(self.tip, merged_good)
+        self.assertEqual(self.raw("publish-artifacts")["artifact_publication"]["status"], "confirmed")
+        self.raw("reserve", {"title": "Next permanent reservation", "location": "local-docs/next.md"})
+        final = json.loads(self.assert_remote()["allocations.json"])
+        self.assertEqual(final["issued"][:-1], journal["issued"])
+        self.assertEqual(final["issued"][-1]["key"], "FOS-000028")
 
     def test_P09_invalid_remote_history_destination_and_upstream_preservation(self):
         self.initialize()
