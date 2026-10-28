@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/issue-39/issue39-20261028/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793205789.469111,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/39",
       "worker_id": "/root/planner39"
     }
@@ -65,17 +66,291 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
       "requirement": "## Problem\n\nThe approved wrap-up of [PR #38](https://github.com/robinwassen/Fossilize/pull/38) required repeated AI reasoning, individual Git/GitHub calls, temporary Python scripts, and manual post-delivery state updates. Squash merge, branch cleanup, ticket closeout and evidence reconciliation are a mechanical process. Reconstructing that process in each conversation wastes tokens and adds opportunities for mistakes.\n\n## Required outcome\n\nOnce the verified PR is open and attached, the harness prompts the user for approval. After explicit approval, the agent invokes **one supported wrap-up command**. That command performs the complete approved delivery workflow and returns a compact result. AI reasoning is reserved for review, the approval conversation and exceptional decisions.\n\n## Acceptance criteria\n\n- Update the skill to present the PR link and a concise verification summary, then request approval to squash-merge and wrap up. Decline/defer leaves the PR open. Honor approval already given in the conversation without asking again; opening a PR alone is not approval.\n- Bind approval to the repository, PR and accepted head. The script checks eligibility and stops for a meaningful decision if the head, required verification or merge conditions changed. Preserve existing independent-checking gates.\n- After approval, a single repository-owned command performs the squash merge, verifies the resulting commit/tree against the accepted candidate, deletes the intended remote/local source branch safely, confirms eligible tickets are closed as completed, and posts concise delivery evidence. Preserve unrelated worktrees, user edits and unfinished parent issues.\n- Add a supported post-delivery state transition. Record the merge commit separately from the original accepted candidate; preserve acceptance, reports, budgets and history. Update PR/delivery status, keep the active pointer correct, and publish/confirm the exact orphan artifact checkpoint. No ad-hoc scripts or direct coordinator state surgery are needed.\n- The command owns durable intent, returned identities, readback and recovery for its steps. Restarting the same command reconciles partial/uncertain outcomes without duplicate merges/comments, incorrect deletion or fabricated completion. Already-merged PRs, already-deleted branches and already-closed tickets are handled explicitly.\n- Return one compact structured result and human summary: delivered, incomplete with the same resumption command, or a specific decision needed. The agent does not reason through or narrate each successful mechanical step. Avoid repeatedly reading or copying unchanged full history; retain the existing publication and integrity guarantees.\n\n## Verification\n\nUse assertion-bearing fake-gh and real disposable Git/bare-remote tests for the approved happy path, no approval, stale head, merge rejection, dirty/unrelated work preservation, interruption/response loss at each mutation boundary, retry/idempotence, completed-run state updates and artifact publication failure. Verify the normal agent workflow requires one approval interaction and one wrap-up command invocation.\n\n## Scope and context\n\nHarness command, approval handoff, policy/skill guidance and regression tests. Builds on the delivered issue-based harness in [#37](https://github.com/robinwassen/Fossilize/issues/37). No implementation work is requested by filing this issue; no automatic approval, new scheduler, or changes to Fossilize C++ behavior.\n\n<!-- harness-followup:approval-wrapup-command-v1 -->\n"
     }
   ],
-  "phase": "planning",
-  "plan": null,
-  "provenance": [],
+  "phase": "implementing",
+  "plan": {
+    "cases": [
+      {
+        "assertions": [
+          "Skill shows actual attached PR URL and concise independent verification/limits before requesting approval to squash merge and wrap up; decline/defer does not invoke delivery and leaves PR open.",
+          "Existing explicit conversation approval for this repository/PR/accepted head is honored without a second interaction. PR creation/attachment alone never grants approval.",
+          "A registered subprocess CLI happy-path test invokes exactly one supported wrap-up command with explicit approval scope, and that command performs all delivery steps without agent-managed per-step Git/gh/state calls. Guidance regression assertions cover the approval handoff and remove conflicting categorical never-merge instructions from authoritative skill/policy/role references."
+        ],
+        "id": "W01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "One approval, one command normal workflow"
+      },
+      {
+        "assertions": [
+          "Missing approval, wrong repository/PR/head/root/run, wrong selected terminal record, missing attachment, no final acceptance, unresolved findings, unaccepted units or missing required verification cause a specific decision with zero merge/delete/close/comment calls.",
+          "Original independent unit/final checking and stale report gates still pass existing regressions. A supplied approval flag is an assertion of real human approval, never inferred from issue content, an open PR, or a prior unrelated approval."
+        ],
+        "id": "W02",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Approval and acceptance fences"
+      },
+      {
+        "assertions": [
+          "Read actual explicit-fork PR identities, source and target repositories/branches, accepted head, base, open/non-draft state and merge eligibility. Stale head, moved base, changed material requirements/graph, changed required verification/CI, missing/failed/pending required checks, conflicts, closed-unmerged PR or unknown eligibility fail closed before merge and identify needed decision.",
+          "Merge rejection records observation, never reports delivered and causes no cleanup/ticket completion; retry first reads authoritative PR state. If remote merge is queued or uncertain, treat as incomplete/decision rather than merged."
+        ],
+        "id": "W03",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Live preflight drift and merge rejection"
+      },
+      {
+        "assertions": [
+          "Fake gh backed by real disposable source Git/bare remote creates an actual squash commit on master with a different commit identity and exact accepted candidate tree. Command verifies authoritative PR merge SHA, fetches from the bound intended remote, checks reachability on target, one-parent squash topology/accepted base and exact tree before any destructive cleanup or delivery completion.",
+          "Tampered merge SHA/tree, merge commit absent from intended target, merge/rebase topology instead of approved squash, or a target-base race detected after merge yields decision/incomplete with the actual merge fact retained; do not fabricate acceptance or delete branches.",
+          "Already-merged matching squash is reconciled without another merge. Already-merged incompatible PR requires decision."
+        ],
+        "id": "W04",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Real squash delivery and tree identity"
+      },
+      {
+        "assertions": [
+          "Delete only exact recorded source branch in intended repository and only while its ref equals accepted head; use expected-SHA conditional deletion/readback so an intervening branch advance is preserved and reported. Never delete master, artifact refs, another remote branch or a fork branch accidentally.",
+          "Local branch deletion is conditional on its exact accepted SHA and occupancy safety. A clean intended implementation worktree can detach at the accepted candidate; it remains present with runnable helper source for same-command recovery. Never remove the command worktree or reset/clean user files.",
+          "Already-deleted remote/local refs reconcile as explicit completed steps. A changed ref, unexpected branch occupancy or uncertain deletion cannot be called completed."
+        ],
+        "id": "W05",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Safe remote/local branch cleanup"
+      },
+      {
+        "assertions": [
+          "Real worktree fixtures contain tracked edits, untracked files, unrelated checked-out branches/worktrees and dirty artifact inspection view. Snapshot files/index/HEAD/ref contents before delivery and assert they remain byte-identical where unrelated.",
+          "Dirty intended worktree, changed local source branch, or source branch occupied by an unexpected worktree produces a meaningful safe decision; no force detach/reset/clean/worktree removal occurs. Preflight rejects known cleanup hazards before merge where feasible; any post-merge race remains incomplete with retained merge evidence."
+        ],
+        "id": "W06",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Dirty and unrelated work survives"
+      },
+      {
+        "assertions": [
+          "Use exactly recorded independently verified closeout targets and full explicit-fork issue URLs. Recheck immutable material input/hierarchy/prerequisites while allowing only expected delivery target state transitions; do not reuse unchanged(snapshot) in a way that rejects legitimate merge auto-closure.",
+          "Confirm each eligible target closed with state_reason=completed, accepting auto-closed/already-completed targets explicitly; if still open, journal supported closure and read it back. Cancelled/not-planned or changed/incomplete targets require decision and are not silently overwritten.",
+          "Incomplete parent issue and unrelated issue/comments remain untouched. One stable marked concise delivery comment per intended target contains real PR, accepted candidate, merge SHA and verification/limits; paginated authoritative readback detects missing/duplicate/conflicting marker bodies."
+        ],
+        "id": "W07",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Eligible completed tickets and concise evidence"
+      },
+      {
+        "assertions": [
+          "Delivery selects the exact already-complete PR-ready run even when active.json=null, through supported API/CLI, and retains original candidate separately from merge SHA. Persist delivery/PR status and actual evidence without falsifying original verification.",
+          "Compare original acceptance, plan, reports/evidence bytes, unit/final acceptance, limits/deadline/counters, provenance/history and permanent allocation records before/after: unchanged apart from deliberate delivery/PR fields and monotonic revision/new delivery journal records.",
+          "active.json remains correct: a completed selected run is never falsely reactivated or repointed; another active run, if present, is preserved or rejected with explicit decision before mutation. Stale/wrong run selection cannot update a different historical record. Exact orphan checkpoint publication/readback is required for delivered=true."
+        ],
+        "id": "W08",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Supported completed-run transition"
+      },
+      {
+        "assertions": [
+          "Enumerate the actual mutation stages in a test-owned explicit coverage list: initial approval/delivery intent, merge dispatch, merge returned identity, merge readback, worktree detach if used, remote deletion, local deletion, each ticket close, each comment, final delivery/PR state transition and all artifact checkpoint publications.",
+          "For every applicable boundary inject deterministic interruption before dispatch, after service/local mutation before response/checkpoint, after returned-identity checkpoint before readback, and after readback before advance. Use fresh helper/process instances on retry. Assert stable operation IDs, intent exact-tip published before external mutation, returned identities retained where available, and authoritative reconciliation after response loss.",
+          "The test matrix asserts its covered stage set equals the implementation mutation inventory; no silent untested mutation boundary. Recovery never makes duplicate merge/comment/unsafe delete or falsely completes an uncertain step. Failed/incomplete lookups are not absence; duplicates/conflicts require decision."
+        ],
+        "id": "W09",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Every mutation has recoverable durable boundaries"
+      },
+      {
+        "assertions": [
+          "Rerun the exact same approval-bound command after successful delivery and after each W09 interruption; merge count remains one, managed comment count per target remains one, absent branches stay absent, completed tickets are not rewritten needlessly, and merge/candidate identities remain correct.",
+          "Resume an interrupted command from still-present detached accepted worktree. Changed command scope cannot reuse a saved approval/journal. All local mutations use the existing lock/CAS and preserve dirty inspection views and immutable reports."
+        ],
+        "id": "W10",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Idempotent restart and already-completed steps"
+      },
+      {
+        "assertions": [
+          "Real bare-remote rejection hooks and before/after-push response-loss seams at delivery intent, returned identities/observations and terminal checkpoint yield incomplete with exact checkpoint/remote observation and the same delivery resumption command.",
+          "No later destructive effect runs while the required preceding intent checkpoint is unconfirmed; an external success with failed observation publication remains recoverable and is not redispatched blindly. Terminal local delivered state plus unconfirmed artifact tip cannot yield delivered success.",
+          "Recovery confirms exact current orphan ref without force or acknowledgment-only commit. Existing endpoint binding, malformed ancestor rejection, competing-tip preservation and non-force artifact integrity tests remain enabled."
+        ],
+        "id": "W11",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Publication failure and competing writers"
+      },
+      {
+        "assertions": [
+          "CLI emits one compact JSON object plus a concise human summary represented consistently (e.g. summary field); delivered, incomplete, and decision-needed are distinct outcomes with scope, real identities, precise reason and exact same resumption command when appropriate. It does not dump entire state/history/reports on normal delivery.",
+          "A deterministic fixture with many historical commits/reports asserts output size remains bounded independent of history size and that within a single delivery invocation immutable records/ancestors are not repeatedly decoded/validated/read for every step. Count Git object/validation calls rather than flaky elapsed-time thresholds; preserve all-ancestor integrity validation and reject a malicious old ancestor.",
+          "All Git/gh/network subprocesses have real finite deadlines within the command timeout; normal command runs through one retained helper/cache context. Do not add a persistent trust cache that lets changed/unvalidated history bypass validation."
+        ],
+        "id": "W12",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "title": "Compact result and bounded work"
+      },
+      {
+        "assertions": [
+          "Full standard-library test discovery executes a nonzero set including every W01-W12 assertion-bearing case; no mandatory skipped tests, empty-suite success, or fake-only merge/tree assertions.",
+          "Existing issue authority, stale worker, required evidence, final checking, budgets, closeout, migration and exact artifact publication regressions remain passing. Update obsolete never-merge text/test expectations narrowly to permit only explicit bound approved delivery.",
+          "Skill package quick validator passes; docs describe supported command, terminal-run selection, approval semantics, outcomes and same-command recovery without ad-hoc coordinator state surgery."
+        ],
+        "id": "W13",
+        "location": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py and existing test_*.py; local-docs/verification.md",
+        "title": "Regression discovery and package validation"
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit 0 before real 600-second deadline; nonzero discovered/executed IDs; no mandatory skips.",
+          "Every W01-W13 case mapped to actual executed assertion-bearing test IDs, including each named mutation boundary/failure phase and original-defect detection.",
+          "Full existing helper suite passes; disposable test effects only."
+        ],
+        "id": "delivery-suite",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v",
+        "prerequisites": [
+          "Exact committed candidate worktree (checker may substitute its detached path for cwd).",
+          "Python3 standard library, Git, POSIX flock; fake gh and real disposable bare repositories only.",
+          "All W01-W13 tests registered; discovery and executed unique test IDs retained in a small sanitized log outside source."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "expected": [
+          "Exit 0 and valid skill frontmatter/package.",
+          "Gate supplements assertion-bearing delivery-suite; not a substitute for behavioral tests."
+        ],
+        "id": "skill-package",
+        "kind": "both",
+        "method": "timeout --signal=TERM --kill-after=5s 600s python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+        "prerequisites": [
+          "Installed skill-creator validator and PyYAML (separate tooling dependency); missing validator/dependency requires environment decision.",
+          "Exact candidate tracked skill package."
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "details": "Update tracked skill/policy/references to present actual PR and verification, ask once for squash merge plus cleanup/ticket/evidence wrap-up, honor prior bound approval and stop on decline/defer. Add a supported CLI action, e.g. harness_state.py --repo PATH deliver --root-issue URL --run-id ID --pr URL --accepted-head SHA --approve-squash. Names may vary, but command carries explicit immutable approval scope on its first invocation and unchanged restart; no second state-recording approval/agent command. Expose equivalent supported API. Do not infer approval from publication.",
+        "step": "Define approval handoff and one public command"
+      },
+      {
+        "details": "Under existing common-dir lock, select exact schema3 complete PR-ready run by root/run identity and actual recorded attached PR, validate independent acceptance/required CI and bound artifact policy, reconcile pending artifacts, then append delivery approval/intents and observations via supported checkpoint methods. Preserve accepted candidate, final reports, budgets and history exactly. Keep active pointer correct and avoid applying active-only apply/publication_guard semantics blindly to terminal merged runs. Track merge SHA and delivery/PR status separately.",
+        "step": "Select completed run and create durable delivery state"
+      },
+      {
+        "details": "Read actual explicit-fork PR/source/base identities, head/base/merge conditions/required verification and live material issue graph. Reject changed/unknown conditions with specific decision. Journal and exact-tip publish stable merge intent before one head-conditional squash request (gh or REST API, no automatic branch deletion). Persist returned identities and read back PR after success/loss. Fetch actual merge commit from intended remote and establish squash parent/base, target reachability and exact accepted tree before cleanup. Preserve actual mismatching merge facts on decision.",
+        "step": "Preflight and squash merge"
+      },
+      {
+        "details": "Check hazards before merge where feasible; detach only clean expected managed implementation worktree at accepted candidate, retain it for restart. Delete only intended remote/local source refs conditionally at accepted SHA, read back, handle already absent refs, and preserve edits/unrelated occupied worktrees. Confirm eligible closeout tickets completed, journal explicit close only when needed, preserve incomplete parents/cancelled issues. Journal one stable marked concise delivery evidence comment per target, paginate/read back identities/body, reconcile ambiguous writes without duplication.",
+        "step": "Own all safe cleanup and ticket evidence"
+      },
+      {
+        "details": "Every stage has durable intent, optional returned identity, authoritative readback and bounded recovery. Stop progression on unconfirmed artifacts; one retained Harness/Store cache context avoids rereading unchanged history each internal step. Resume the exact same command from durable journal after process death/response loss, including already merged/deleted/closed cases. Commit supported terminal delivery state with original candidate and separate merge SHA, publish/confirm exact orphan tip, and return compact delivered/incomplete/decision result with human summary and unchanged resumption command. Document finite timeout/exit behavior.",
+        "step": "Recovery, terminal publication and compact outcome"
+      },
+      {
+        "details": "Add discoverable W01-W12 tests using subprocess fake gh and actual disposable Git/bare remotes/worktrees; deterministic mutation-boundary fault matrix, no sleeps/races. Reuse existing fixtures where helpful but execute real squash/tree/ref behavior. Extend fake gh with merge/check state/issue closure/comment loss as required. Update verification guide and narrow prior PR-only assertions to permit explicitly approved delivery while preserving all legacy safeguards.",
+        "step": "Assertion-bearing regression suite and guidance"
+      }
+    ],
+    "non_goals": [
+      "No Fossilize C++/Vulkan behavior or CMake test/build changes.",
+      "No automatic approval, scheduler, branch-protection bypass, force push of artifact/source history, or production test mutation.",
+      "No unrelated issue closure, parent completion inference or history rewrite."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "## Problem\n\nThe approved wrap-up of [PR #38](https://github.com/robinwassen/Fossilize/pull/38) required repeated AI reasoning, individual Git/GitHub calls, temporary Python scripts, and manual post-delivery state updates. Squash merge, branch cleanup, ticket closeout and evidence reconciliation are a mechanical process. Reconstructing that process in each conversation wastes tokens and adds opportunities for mistakes.\n\n## Required outcome\n\nOnce the verified PR is open and attached, the harness prompts the user for approval. After explicit approval, the agent invokes **one supported wrap-up command**. That command performs the complete approved delivery workflow and returns a compact result. AI reasoning is reserved for review, the approval conversation and exceptional decisions.\n\n## Acceptance criteria\n\n- Update the skill to present the PR link and a concise verification summary, then request approval to squash-merge and wrap up. Decline/defer leaves the PR open. Honor approval already given in the conversation without asking again; opening a PR alone is not approval.\n- Bind approval to the repository, PR and accepted head. The script checks eligibility and stops for a meaningful decision if the head, required verification or merge conditions changed. Preserve existing independent-checking gates.\n- After approval, a single repository-owned command performs the squash merge, verifies the resulting commit/tree against the accepted candidate, deletes the intended remote/local source branch safely, confirms eligible tickets are closed as completed, and posts concise delivery evidence. Preserve unrelated worktrees, user edits and unfinished parent issues.\n- Add a supported post-delivery state transition. Record the merge commit separately from the original accepted candidate; preserve acceptance, reports, budgets and history. Update PR/delivery status, keep the active pointer correct, and publish/confirm the exact orphan artifact checkpoint. No ad-hoc scripts or direct coordinator state surgery are needed.\n- The command owns durable intent, returned identities, readback and recovery for its steps. Restarting the same command reconciles partial/uncertain outcomes without duplicate merges/comments, incorrect deletion or fabricated completion. Already-merged PRs, already-deleted branches and already-closed tickets are handled explicitly.\n- Return one compact structured result and human summary: delivered, incomplete with the same resumption command, or a specific decision needed. The agent does not reason through or narrate each successful mechanical step. Avoid repeatedly reading or copying unchanged full history; retain the existing publication and integrity guarantees.\n\n## Verification\n\nUse assertion-bearing fake-gh and real disposable Git/bare-remote tests for the approved happy path, no approval, stale head, merge rejection, dirty/unrelated work preservation, interruption/response loss at each mutation boundary, retry/idempotence, completed-run state updates and artifact publication failure. Verify the normal agent workflow requires one approval interaction and one wrap-up command invocation.\n\n## Scope and context\n\nHarness command, approval handoff, policy/skill guidance and regression tests. Builds on the delivered issue-based harness in [#37](https://github.com/robinwassen/Fossilize/issues/37). No implementation work is requested by filing this issue; no automatic approval, new scheduler, or changes to Fossilize C++ behavior.\n\n<!-- harness-followup:approval-wrapup-command-v1 -->\n"
+      }
+    ],
+    "scope": {
+      "assumptions": [
+        "Python standard library, POSIX flock, Git and gh as existing runtime requirements.",
+        "Human approval authenticity remains the honest coordinator responsibility; command enforces an explicit immutable repository/PR/accepted-head approval scope.",
+        "Conservative base policy: target must equal accepted base before merge; advance requires a decision/reverification. If an unavoidable GitHub race merges against another base, retain the merge fact and stop without claiming verified delivery.",
+        "Use exact closeout targets; no new task ledger or FOS allocations."
+      ],
+      "boundaries": "One unsplit root issue; no production merge/deletion/closure is authorized by this implementation issue itself. All mutations in verification use disposable Git repositories and fake gh.",
+      "expected_behavior": "After a verified PR is open and attached, one approval interaction (or existing correctly scoped approval) authorizes a single repository-owned squash-delivery command. The command safely performs, verifies, journals and resumes every mechanical step and returns one compact outcome.",
+      "files": [
+        ".agents/skills/implement-change-harness/scripts/harness_state.py",
+        "new focused delivery helper module if useful",
+        ".agents/skills/implement-change-harness/scripts/github_issues.py",
+        ".agents/skills/implement-change-harness/scripts/fake_gh_fixture.py",
+        "new assertion-bearing delivery tests",
+        "authoritative SKILL.md/references/state.md/references/roles.md",
+        "local-docs/issue-workflow.md",
+        "local-docs/verification.md"
+      ],
+      "problem": "Approved delivery currently requires repeated agent-driven Git/GitHub/state operations, while PR publication terminal state hides completed runs from normal active-run mutations.",
+      "risks": [
+        "GitHub merge and Git ref operations are not a distributed transaction; journal/readback must expose races and partial outcomes.",
+        "Completed-run updates must coexist with active-null validation and immutable historical reports.",
+        "Branch cleanup must not remove code/worktree needed to resume.",
+        "GitHub may auto-close issues at merge, so delivery material-input validation must allow only that expected state transition."
+      ]
+    },
+    "verification_notes": {
+      "evidence": "Implementer/checker record exact candidate/base/plan, actual commands/cwd/environment/status, nonzero discovered/executed IDs, case mappings and small sanitized logs. Unit and separate fresh final checker rerun both mandatory gates. Reviewer inspects full diff and tests against original issue, including that normal handoff uses one interaction and one command.",
+      "exclusions": [
+        "No C++ builds/CTest/GPU/Steam tests: changes only harness Python and guidance.",
+        "Disposable fake gh cannot prove live GitHub branch-protection/service conduct; real service mutation is outside this issue verification. Read-only live issue matches original snapshot."
+      ],
+      "limits": {
+        "command_timeout_seconds": 600,
+        "deadline_hours": 4,
+        "repairs": 3,
+        "replans": 1
+      },
+      "publication": "Existing source publication/attachment and exact orphan artifact gates remain mandatory coordinator workflow gates; this plan does not authorize merging the implementation PR. New delivery command behavior is verified in disposable repositories."
+    },
+    "version": 1,
+    "work_units": []
+  },
+  "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/39"
+        ],
+        "digest": "7d3c54558c56058b747ebf9da8ab88d4eb62397b3b625acc50ea91ebdb81733c",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/39": {
+            "blocked_by": [],
+            "body": "## Problem\n\nThe approved wrap-up of [PR #38](https://github.com/robinwassen/Fossilize/pull/38) required repeated AI reasoning, individual Git/GitHub calls, temporary Python scripts, and manual post-delivery state updates. Squash merge, branch cleanup, ticket closeout and evidence reconciliation are a mechanical process. Reconstructing that process in each conversation wastes tokens and adds opportunities for mistakes.\n\n## Required outcome\n\nOnce the verified PR is open and attached, the harness prompts the user for approval. After explicit approval, the agent invokes **one supported wrap-up command**. That command performs the complete approved delivery workflow and returns a compact result. AI reasoning is reserved for review, the approval conversation and exceptional decisions.\n\n## Acceptance criteria\n\n- Update the skill to present the PR link and a concise verification summary, then request approval to squash-merge and wrap up. Decline/defer leaves the PR open. Honor approval already given in the conversation without asking again; opening a PR alone is not approval.\n- Bind approval to the repository, PR and accepted head. The script checks eligibility and stops for a meaningful decision if the head, required verification or merge conditions changed. Preserve existing independent-checking gates.\n- After approval, a single repository-owned command performs the squash merge, verifies the resulting commit/tree against the accepted candidate, deletes the intended remote/local source branch safely, confirms eligible tickets are closed as completed, and posts concise delivery evidence. Preserve unrelated worktrees, user edits and unfinished parent issues.\n- Add a supported post-delivery state transition. Record the merge commit separately from the original accepted candidate; preserve acceptance, reports, budgets and history. Update PR/delivery status, keep the active pointer correct, and publish/confirm the exact orphan artifact checkpoint. No ad-hoc scripts or direct coordinator state surgery are needed.\n- The command owns durable intent, returned identities, readback and recovery for its steps. Restarting the same command reconciles partial/uncertain outcomes without duplicate merges/comments, incorrect deletion or fabricated completion. Already-merged PRs, already-deleted branches and already-closed tickets are handled explicitly.\n- Return one compact structured result and human summary: delivered, incomplete with the same resumption command, or a specific decision needed. The agent does not reason through or narrate each successful mechanical step. Avoid repeatedly reading or copying unchanged full history; retain the existing publication and integrity guarantees.\n\n## Verification\n\nUse assertion-bearing fake-gh and real disposable Git/bare-remote tests for the approved happy path, no approval, stale head, merge rejection, dirty/unrelated work preservation, interruption/response loss at each mutation boundary, retry/idempotence, completed-run state updates and artifact publication failure. Verify the normal agent workflow requires one approval interaction and one wrap-up command invocation.\n\n## Scope and context\n\nHarness command, approval handoff, policy/skill guidance and regression tests. Builds on the delivered issue-based harness in [#37](https://github.com/robinwassen/Fossilize/issues/37). No implementation work is requested by filing this issue; no automatic approval, new scheduler, or changes to Fossilize C++ behavior.\n\n<!-- harness-followup:approval-wrapup-command-v1 -->\n",
+            "children": [],
+            "id": 6083245574,
+            "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
+            "number": 39,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/9",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "Prompt for PR approval and run delivery wrap-up with one command",
+            "url": "https://github.com/robinwassen/Fossilize/issues/39"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/39"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    }
+  ],
   "publishing": {
     "ci_policy": "local",
     "stage": "none"
@@ -91,7 +366,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 3,
+  "revision": 4,
   "root_issue": {
     "id": 6083245574,
     "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
@@ -101,9 +376,17 @@
   },
   "run_id": "issue39-20261028",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-39",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/39",
   "verification": [],
-  "work_units": []
+  "work_units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/39",
+      "key": "https://github.com/robinwassen/Fossilize/issues/39",
+      "status": "ready"
+    }
+  ]
 }
