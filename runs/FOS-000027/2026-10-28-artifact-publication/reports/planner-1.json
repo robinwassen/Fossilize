@@ -1,0 +1,219 @@
+{
+  "attempt_id": "planner-1",
+  "base_sha": "fe0e26518e50f27a072c8bfe5f5062e4c81b4273",
+  "candidate_sha": null,
+  "input_revision": 1,
+  "input_sha": "cf7a4b78199312eaf4e94ce6dde9ebcc8bd122d1",
+  "operation": "plan",
+  "plan": {
+    "cases": [
+      {
+        "assertions": "A real bare origin initially has no artifact branch. Initialization commits a records-only orphan checkpoint, binds explicit origin/repository/ref identity, pushes the exact authoritative ref with an explicit non-force refspec, and independently confirms its SHA. A fresh clone sees active state and allocations; source master and implementation refs remain unchanged.",
+        "id": "P01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "Every successful mutation class publishes its cumulative authoritative checkpoint before reporting publication success: dispatch/ack/report with actual evidence, reserve/high-water, reconciliation/interruption, closeout and source-PR publication observations. Compare raw committed remote state/reports/evidence/journal bytes, not only a returned status. A publication failure blocks further forward work/terminal success but preserves safety records and precise retry action.",
+        "id": "P02",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "Construct genuine existing completed run history plus active schema-2 history without new publication metadata, including a valid schema-1 ancestor accepted by the existing Store. Explicit adoption of the new policy retains all ancestry, prior reports, immutable requirements, worker facts, budgets, current PR identity and issued keys. First push publishes that authoritative full history rather than an inspection checkout snapshot.",
+        "id": "P03",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "Create an artifact inspection worktree, let committed ref advance so the view is stale, then add unexpected tracked/untracked edits. Publishing and recovery preserve its bytes/index/status and dirty user source checkout; only committed allowed records reach remote. No source files or stale uncommitted record bytes are staged. Fresh clone inspection proves disjoint source/artifact ancestry and allowed tree paths.",
+        "id": "P04",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "Repeat publication of an already remote-confirmed checkpoint and restart after success without acknowledgement. Remote is inspected before retry; no extra checkpoint, duplicate allocation, implementation attempt or PR creation is produced. Published ancestor coverage is distinguished from exact current-tip confirmation.",
+        "id": "P05",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "Use a real bare receive hook to reject pushes and a nonexistent/unreachable transport for failure. Local state/report/journal checkpoint and previous remote ref survive; result is explicitly incomplete with checkpoint/ref/destination and retry operation. Restore transport/hook and resume only publication, preserving candidate acceptance and one-PR identity.",
+        "id": "P06",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "Deterministically interrupt before push and after the actual successful push but before confirmation/return using a narrow test seam or subprocess harness. New helper instance reads real remote ref, publishes only when needed, retains all committed state and does not rerun accepted implementation or create a second PR.",
+        "id": "P07",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "A second clone advances remote, both in a descendant case and a divergent concurrent-writer case (including reservation changes). Helper fetches/inspects actual remote, validates every adopted ancestor and active/allocation identity, never force-pushes or overwrites either tip, and either safely adopts compatible validated history or blocks with concrete reconciliation action preserving both tips and issued keys. Tests assert unresolved conflicts block forward work.",
+        "id": "P08",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "Remote history containing source ancestry, unexpected path, symlink, binary/NUL/oversize or malformed identity records cannot be adopted/pushed over. Existing path/content/CAS/append-only validation remains active. A changed origin endpoint, wrong repository/ref or upstream-only destination is rejected; a bare upstream sentinel receives no artifact/source changes.",
+        "id": "P09",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "A successful push command followed by a controlled competing remote advance, and a misleading caller-provided remote SHA, cannot certify the requested checkpoint as the current remote tip. Independent ls-remote/fetched commit identity is authoritative. No force retry occurs and both writers remain recoverable.",
+        "id": "P10",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "Drive the real helper source-PR lifecycle against a disposable bare origin with deterministic PR lookup/create/attach observations and at most one create-dispatched event. Final local commit contains terminal state and null active pointer atomically. Fail its artifact push: workflow completion is incomplete despite PR attachment/local terminal state; restarting finds this terminal pending checkpoint without active pointer, publishes it, verifies from fresh clone, then reports full completion without another acknowledgement commit. A following initialize is blocked until terminal publication is reconciled; repeated status/publish is idempotent.",
+        "id": "P11",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py"
+      },
+      {
+        "assertions": "Existing T01-T17 and C01-C08 tests still discover and execute with their actual assertions. Review exact base-to-candidate diff, publication instructions, migration/privacy instructions and canonical closeout bytes: original acceptance/key/dependency/registry preserved; only FOS-000027 receives its separately reviewed completion metadata, and the original local-only proposal is explicitly superseded by the current skill policy.",
+        "id": "P12",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py; .agents/skills/implement-change-harness/scripts/test_harness_closeout.py; .agents/skills/implement-change-harness/{SKILL.md,references/state.md,references/roles.md}; local-docs/reviews/harness-backlog.md"
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6"
+        ],
+        "cwd": "/home/robin/dev/fossilize-FOS-000027",
+        "expected": "Nonzero actual test discovery/execution, all T01-T17/C01-C08 plus P01-P11 behavior mappings passing, no skipped mandatory case; bare-remote bytes, preservation and recovery assertions prove observable behavior.",
+        "id": "G-artifact-suite",
+        "kind": "both",
+        "method": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v (run with a real 600-second deadline; retain stdout/stderr/status and discovered/executed IDs).",
+        "prerequisites": "Python 3 standard library, Git, POSIX flock, writable isolated temporary storage and local bare remotes. No GitHub or GPU required. Checker substitutes its exact detached candidate worktree."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-FOS-000027",
+        "expected": "Skill metadata validation succeeds. This is metadata evidence only, separate from behavioral suite.",
+        "id": "G-skill-validation",
+        "kind": "both",
+        "method": "python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+        "prerequisites": "Installed validator and its PyYAML dependency; checker uses its candidate worktree."
+      },
+      {
+        "criteria": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6"
+        ],
+        "cwd": "/home/robin/dev/fossilize-FOS-000027",
+        "expected": "Criterion-level concrete evidence with no unresolved findings, missing/vacuous/weakened tests or local-only/terminal-success loophole. Report unsupported/incomplete/unavailable separately; passing local tests do not claim live GitHub behavior or C++/GPU coverage.",
+        "id": "G-independent-review",
+        "kind": "both",
+        "method": "Independently read full base-to-candidate diff, helper transport/recovery guards and every P01-P12 assertion; derive credible counterexamples from original ACs; review current skill/state/role instructions and exact test mappings. Confirm explicit destination, bounded non-force transport, actual verification, records-only history, all checkpoint coverage and finite terminal ordering.",
+        "prerequisites": "Fresh independent checker at exact committed candidate/base/plan; required project guidance and implementer report available; no live production pushes by checker."
+      },
+      {
+        "criteria": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6"
+        ],
+        "cwd": "/home/robin/dev/fossilize-FOS-000027",
+        "expected": "FOS-000027 Done/evidence/reference included in same reviewed source PR; original requirements/keys/dependencies/unrelated backlog bytes preserved; no unreviewed source commit, no claim already merged, no stale acceptance or pending required records hidden.",
+        "id": "G-final-closeout",
+        "kind": "final",
+        "method": "Repeat required suite/validation/review at exact bookkeeping candidate in a separate fresh final check after unit renewal. Compare canonical FOS-000027 before/after bytes and registry; inspect final publication readiness and current recorded adoption/privacy checkpoint.",
+        "prerequisites": "All unit checks accepted at bookkeeping SHA, closeout prepared; exact candidate clean and required publication policy migration already reviewed/tested."
+      },
+      {
+        "criteria": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6"
+        ],
+        "cwd": "/home/robin/dev/fossilize-FOS-000027",
+        "expected": "Original FOS25/FOS26/current FOS27 records and allocations retained in ancestor history and remotely accessible; no private data/source content added, no force/upstream write, existing active run/accepted candidate/budgets preserved. Failures leave exact retry scope and remain incomplete.",
+        "id": "G-history-and-adoption",
+        "kind": "publication",
+        "method": "Coordinator invokes tested candidate helper against existing run for explicit policy adoption, after recording all-history structural/semantic privacy review (all unique historical blobs plus representative reports/logs and credential-pattern scan). Inspect actual origin/upstream identities; reconcile artifact remote, then publish authoritative existing history to origin exact artifact ref and independently verify remote SHA.",
+        "prerequisites": "Independent implementation acceptance; origin authenticated/available; all local artifact history valid and semantically approved for publication; no unresolved destination/divergence/privacy finding. Never expose sensitive contents in review logs."
+      },
+      {
+        "criteria": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6"
+        ],
+        "cwd": "/home/robin/dev/fossilize-FOS-000027",
+        "expected": "Exactly one ready source PR opened and attached, never auto-merged; terminal artifact tip equals independently observed remote ref, active pointer null in fetched records, expected artifacts/history present; repeated observation unchanged. Local-only, failed/unknown remote confirmation or unresolved divergence cannot yield full workflow completion.",
+        "id": "G-real-source-and-terminal",
+        "kind": "publication",
+        "method": "After final acceptance, run existing exact destination/base guarded source push, all-state PR lookup/create-once reconciliation and attach flow. Use artifact checkpoint publication for each resulting record and terminal/null-active commit. Independently ls-remote origin refs/heads/harness-artifacts and fetch into a new temporary clone; inspect committed active.json, current final state, required reports/evidence, allocations, historical ancestry and disjoint source/master history. Repeat read-only status/retry once to prove no additional self-ack commit.",
+        "prerequisites": "Exact final accepted clean candidate/base/plan, required history review/adoption passed, origin transport/GitHub/attachment available, one existing run and one source PR identity. Source target-base movement requires integration and renewed checks."
+      }
+    ],
+    "implementation": [
+      "Keep FOS-000027 unsplit. Modify the repository harness skill, state/role guidance, helper and committed standard-library Python tests only as needed for artifact publication; coordinator owns later canonical closeout. Preserve existing validation and exact original requirements. Do not change Fossilize C++ or allocate new task keys.",
+      "Introduce explicit artifact destination/publication policy bound to origin, target repository robinwassen/Fossilize, and refs/heads/harness-artifacts. Bind or validate the actual remote push endpoint using sanitized identity/fingerprint without recording credentials or private configuration. Refuse silent endpoint/remote/ref retargeting. Clearly distinguish repository-local flock/CAS from cross-machine coordination.",
+      "Implement bounded artifact synchronization of the authoritative Store tip under the existing repository lock: inspect actual remote before write/retry; fetch remote objects into a dedicated safe namespace when necessary; validate adopted full artifact ancestry and records; explicit non-force push of the exact committed checkpoint to the exact artifact ref; independent actual remote-ref confirmation. Never use inspection worktree contents as publication input.",
+      "Enforce publication checkpoints for initialization, every state/report/evidence transition, permanent reservations, interruption/reconciliation and source publication/terminal state. Commit local facts first, then attempt publication. Treat local checkpoint success and remote confirmation as distinct outcomes; include checkpoint SHA, recorded destination, observed remote SHA/outcome and an executable precise retry action in results. Failure must not roll back/drop accepted work or issued keys. Gate forward work and full completion on reconciliation, while retaining late reports/liveness/safety facts locally if needed.",
+      "Use remote observations rather than a commit acknowledging its own SHA: publication status/confirmation may be returned or derived read-only outside authoritative committed state. The final records commit must already contain terminal run state and null active pointer; publish/verify that exact commit as the last durable artifact change. Recovery must discover a pending terminal tip even when active.json is null; idempotent retry/status creates no acknowledgement commit, no new implementation attempt and no duplicate PR. Do not allow a next run to conceal unpublished terminal records.",
+      "For remote descendant/advance/divergence, preserve both tips and reconcile before any forward work. Safely adopt only fully validated, identity-compatible remote history with no loss of local checkpoints/reservations; otherwise stop with explicit local/remote SHAs and a concrete fetch/compare/decision action. Automatic distributed merging and cross-machine key allocation are out of scope; failure to reconcile is incomplete, never success. Handle races by ordinary non-force rejection plus fresh remote observation.",
+      "Provide an explicit existing-run/schema-2 adoption path for self-application: retain old completed states verbatim and all valid existing ancestor trees, including historical schema-1 ancestor blobs accepted by Store; do not fabricate prior remote publication or extend budgets. Record current destination/policy for the active run without rewriting original acceptance, reports or allocations. A complete historical local-only run is historical evidence, not a claim that its old policy performed remote publication.",
+      "Before the first real origin artifact push, coordinator reviews all unique historical record blobs semantically for permitted small sanitized records plus structural all-ancestor validation and credential-pattern audit. Record a concise sanitized review summary. Existing structural validity or pattern absence alone is not privacy proof. If disallowed historical content is found, retain it locally and report the exact blocked scope; do not silently redact/rewrite history, force push, or publish it. Existing safe history must otherwise be published intact.",
+      "Add test_harness_artifacts.py using genuine disposable bare remotes, independent clones, real hooks and deterministic fault seams. Adapt shared test fixtures to satisfy mandatory artifact publication without bypassing production guards. Retain T01-T17/C01-C08 method mapping, assert actual remote bytes and test nonzero discovery/execution. Transport commands use bounded subprocess deadlines within the 600-second command cap.",
+      "After independent unit acceptance, coordinator invokes tested candidate helper in the existing run/worktree, adopts the new artifact policy and publishes existing valid history; then follows existing closeout-intent/bookkeeping/record, renewed exact-candidate unit check and separate final check. FOS-000027 completion metadata uses the stable implementation compare reference. Continue the same one-PR source flow; every observation and final active-pointer commit is published and verified. Do not modify installed personal skill globally as part of this source change."
+    ],
+    "non_goals": [
+      "Fossilize C++/Vulkan changes or claims of product/GPU/Steam verification",
+      "Automatic merges, background scheduling, new task keys/subtasks or a second source/closeout PR",
+      "Force pushes/history rewrites or automatic divergent multiwriter merge",
+      "Cross-machine locks, distributed allocation authority or hostile-coordinator authentication",
+      "Publishing full transcripts/private configuration or bypassing historical privacy review",
+      "Global installation/configuration changes to the personal skill"
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Make committing and publishing the allowed harness records to `origin`'s `refs/heads/harness-artifacts` part of the normal workflow. Record the repository/remote identity explicitly, keep the branch orphaned and separate from source history, and update the skill, state guidance and helper as needed."
+      },
+      {
+        "id": "AC2",
+        "requirement": "Define and enforce publication checkpoints covering initialization, state transitions and reports/evidence, permanent allocation changes, interruption and terminal run state. Distinguish locally committed from remotely confirmed records; retain a precise retry action when publication is incomplete. A run cannot claim successful artifact publication or full workflow completion while required records exist only locally."
+      },
+      {
+        "id": "AC3",
+        "requirement": "Publish the authoritative committed ref, including existing valid local run history. Preserve the records-only tree and existing validation. Do not stage stale inspection files, copy source trees, or include build outputs, binaries, private configuration, secrets or full transcripts. Preserve unexpected local edits when inspecting or refreshing a worktree."
+      },
+      {
+        "id": "AC4",
+        "requirement": "Use explicit non-force pushes to the recorded artifact destination. Verify the remote ref against the checkpoint being published; command success alone is insufficient. Never merge artifact history into the implementation PR or `master`, and never push to `upstream` merely because it exists."
+      },
+      {
+        "id": "AC5",
+        "requirement": "Handle an absent remote branch, already published checkpoints, remote advances and divergent history without overwriting either writer's work. Validate any adopted remote artifact history. Reconcile remote state before continuing; unresolved conflicts retain local records and a concrete recovery action. A repository-local lock must not be described as cross-machine coordination."
+      },
+      {
+        "id": "AC6",
+        "requirement": "Network/authentication/rejection failures and ambiguous push outcomes preserve the local checkpoint and remain recoverable. Resume checks the actual remote ref before retrying, without rerunning accepted implementation work, duplicating a PR or dropping allocation reservations. Define terminal publication ordering so the final state/active-pointer update is also published, without an endless cycle of commits acknowledging their own publication."
+      }
+    ],
+    "scope": "One unsplit FOS-000027 change: normal origin orphan-artifact publication, authoritative-record retention, bounded recovery/terminal ordering, repository skill/helper/guidance and regression tests, plus existing canonical closeout workflow.",
+    "subtasks": [],
+    "version": 1
+  },
+  "plan_version": 0,
+  "role": "planner",
+  "summary": "Unsplit plan with twelve assertion cases and six required gates. Prefer locally committed facts plus independently derived exact remote confirmation, so the final terminal/null-active artifact commit can be published without a self-acknowledgement loop. Explicit adoption preserves current run and valid legacy ancestry; historical privacy review precedes first real origin push. No tests were run or implementation accepted by this planner. Existing budgets remain three repairs, one replan, 600 seconds per command and the original four-hour run deadline.",
+  "unit": "FOS-000027",
+  "worker_id": "/root/planner27"
+}
