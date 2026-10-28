@@ -200,12 +200,18 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/10",
+      "attempt_id": "checker-2",
       "evidence": "Plan v1 native-windows-matrix has kind=both and its expected assertions block acceptance absent explicit user waiver/reconciled plan. plan.platform_decision.rule expressly requires recorded plan reconciliation before marking native Windows optional. The artifact record read at checkpoint 0880f32fb65245dfb9b36522a94bfba9f60a04a3 records the human authorization \"Ok, skip windows for now. Should be ok!\", bound to candidate a24e8afd8b584a3ad95d049885c3445ba3f1fa9c, with original acceptance retained verbatim and native Windows explicitly unverified. /tmp/fossilize-10/latest.json records that decision while the current plan remains version 1. Live issue10 and parent issue8 were read through gh with explicit robinwassen/Fossilize identity; their original behavioral criteria remain required.",
       "id": "CHK10-SCOPE-PLAN-001",
       "location": "/tmp/fossilize-10/planner-report.json: plan.version, plan.gates[native-windows-matrix], plan.platform_decision.rule; runs/issue-10/issue10-20261028/evidence/windows-scope-decision.json",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/10",
+        "evidence": "Fresh checker /root/checker2_10 compared v1/v2 original acceptance and all six cases byte-for-byte: equal. Formal plan2 reconciles recorded human Windows exception, preserving required Linux/compatibility/sensitivity gates and all behavioral assertions. Complete 11-file diff and new runtime assertions/registration inspected; candidate unchanged clean a24e8afd8b584a3ad95d049885c3445ba3f1fa9c. Windows compatibility alone deferred, no Windows pass claim.",
+        "finding_id": "CHK10-SCOPE-PLAN-001"
+      },
       "required_action": "Fresh planner must produce plan v2 retaining exact original acceptance, all behavioral cases and required Linux/compatibility/sensitivity checks. Apply the recorded human exception only to the native Windows execution gate and its Windows compatibility portion for this run; describe them as waived/unverified, never passed. Reconcile platform_decision and dependent final/publication gates, then require renewed independent checking under v2.",
       "route": "planner",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -760,7 +766,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 41,
+  "revision": 42,
   "root_issue": {
     "id": 6079794262,
     "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
