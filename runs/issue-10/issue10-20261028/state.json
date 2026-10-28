@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/issue-10/issue10-20261028/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793212835.5919876,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/10",
       "worker_id": "/root/planner10"
     }
@@ -65,17 +66,331 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
       "requirement": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n"
     }
   ],
-  "phase": "planning",
-  "plan": null,
-  "provenance": [],
+  "phase": "implementing",
+  "plan": {
+    "assumptions": [
+      "Issue #10 initial sites define this small coherent increment; later subsystem-wide coverage remains future work per original wording.",
+      "All tests are GPU-independent and use production call paths with deterministic mocks, not unstable drivers.",
+      "Per-command deadline remains 600 seconds; total run retains initial+3 repairs, one replan and four-hour deadline."
+    ],
+    "cases": [
+      {
+        "assertions": [
+          "Execute actual replay graphics, compute and ray-tracing creation branches against fake Vulkan function pointers. For each inject VK_ERROR_OUT_OF_HOST_MEMORY (-1) and VK_ERROR_DEVICE_LOST (-4), and a distinct known 64-bit hash. Capture emitted production diagnostics and require exact signed numeric result, replay/create phase, correct pipeline kind and full known hash.",
+          "Inspect diagnostics after destruction/cleanup that changes unrelated error state; the originating VkResult must remain intact. Require distinct evidence for the two failures, no driver-crash claim, unchanged failure output handling.",
+          "VK_SUCCESS control for each pipeline kind preserves expected output/cleanup/counters and emits no failure diagnostic. Positive VK_PIPELINE_COMPILE_REQUIRED retains numeric context; a retry ending successfully emits no final creation-failure message, and an unsuccessful retry reports its final raw result."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixtures": "Minimal valid graphics/compute/raytracing create-info structures and output/hash-map slots; fake Vulkan dispatch with call counts and deterministic result sequence. Include the production replay TU in a test-only wrapper with its main renamed, or use a narrow internal seam; helper-format tests alone are insufficient.",
+        "id": "VK-PIPELINES",
+        "location": "test/replay_diagnostic_test.cpp; CTest replay-diagnostic-test"
+      },
+      {
+        "assertions": [
+          "Fake the loader/instance/device dispatch and drive production VulkanDevice::init_device. Inject distinct raw results at loader initialization, instance creation and device creation, and every other init_device VkResult failure branch added/changed by this slice, including enumeration count/data and optional debug-callback creation. Capture the operation/phase and exact numeric result.",
+          "Use known GPU/device ordinal or identifiers when available. Instance/loader stages have no resource hash: state unknown/not-applicable rather than fabricate one.",
+          "Failing init still returns false; cleanup runs safely. A complete fake successful init and the existing null-device init return true and emit no failure diagnostics. An API-version/no-device limitation remains its evidenced category, not a synthetic VkResult or driver crash."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixtures": "Minimal fake physical device, feature/property/extension/queue enumeration, fake Volk dispatch loading; isolated per-case callback/output capture and cleanup state. A narrow test-only injection seam is acceptable, public API changes are not required.",
+        "id": "VK-DEVICE",
+        "location": "test/device_diagnostic_test.cpp; CTest device-diagnostic-test"
+      },
+      {
+        "assertions": [
+          "Exercise production shared replay pipeline-cache and validation-cache export paths with injected fopen, short-fwrite and fclose failures. Inject at least EACCES and ENOSPC as distinct errno values. Immediately retain the originating errno before logging, fclose or Vulkan/cache destruction; deliberately overwrite errno during cleanup and assert the retained numeric value is emitted afterward with export phase, cache kind, operation and safe known identity.",
+          "Distinguish open/write/close and validation versus pipeline cache. If the API cannot establish an originating errno, report that uncertainty instead of attributing stale errno. Do not query GetLastError for CRT failures.",
+          "Success control writes exact expected bytes, closes once, destroys the cache once and emits no failure diagnostic. Failure controls preserve existing cleanup and application behavior. Tests inspect cleanup call order and counts, not only formatting."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixtures": "Deterministic local FILE-operation adapter or test-only wrappers around the actual export helper, fake cache-data Vulkan calls and isolated temporary files. No real disk exhaustion or permission assumptions; add one real missing-parent fopen check. No Win32 process API is changed in this slice.",
+        "id": "OS-CACHE",
+        "location": "test/replay_diagnostic_test.cpp (or separate test/diagnostic_context_test.cpp); CTest replay-diagnostic-test or diagnostic-context-test"
+      },
+      {
+        "assertions": [
+          "Invoke real graphics/compute/ray-tracing layer pipeline wrappers with fake Vulkan device dispatch and a recorder rejection fixture. Exercise normal recording, nonblocking QA recording lambda, paranoid recording and eager recording wherever each has a diagnostic site.",
+          "Recorder rejection diagnostics name graphics, compute and ray-tracing correctly and state recording/capture phase. Use only known identity (batch index/handle; hash only when available). Remove unsupported-pNext speculation from these generic pipeline rejection sites. Controlled Vulkan errors and recorder rejection do not claim driver crash or unsupported feature without evidence.",
+          "For each pipeline kind a successful recording control emits no rejection/failure diagnostic. Both rejection and success preserve the underlying VkResult, returned handles and the existing DestroyPipeline behavior; capture failure cannot turn application Vulkan success into failure."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixtures": "CPU-only fake instance/device dispatch, StateRecorder with meaningful malformed/unregistered dependency rejection, and valid baseline counterpart. Compile/include the actual production dispatch TU or invoke its exported wrappers through mock loader chains. Do not substitute a test-owned clone or source-string assertion. Isolate modes in processes if static spam counters would hide assertions.",
+        "id": "CAPTURE-KINDS",
+        "location": "test/capture_diagnostic_test.cpp; CTest capture-diagnostic-test"
+      },
+      {
+        "assertions": [
+          "Compile and run an old-source consumer using unchanged StateRecorder/log-callback and VulkanDevice::Options/init_device interfaces; run preserved fossilize-replay --null-device invocation on a small dependency-complete fixture and check exit status, expected resource set and no failure diagnostic.",
+          "Build a small Vulkan layer consumer against the baseline headers/library, keep that executable unchanged, and run it with the candidate layer library. Require unchanged exported entry-point lookup/calling convention and fake-loader pipeline VkResult/handle behavior; this is the limited prebuilt-consumer evidence for the layer C ABI claim.",
+          "Existing database/serialization roundtrip tests pass; no database, IPC or public result schema changes. Human diagnostic text intentionally gains phase/raw-result context and fixes resource names/speculation; no machine consumer contract is introduced."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixtures": "Baseline b42b22c headers/library and candidate build kept in separate directories, prebuilt consumer outside source, small fixed FOZ fixture/generated known hash set. Use platform dlopen/LoadLibrary only in the fixture, not production changes. Record limited binary scope; no general cross-compiler C++ ABI claim.",
+        "id": "COMPATIBILITY",
+        "location": "test/diagnostic_compatibility_test.cpp and/or committed test/fixtures/diagnostic_compatibility; CTest diagnostic-compatibility-test plus existing fossilize-system-test"
+      },
+      {
+        "assertions": [
+          "Demonstrate original-defect detection with baseline execution where feasible: failing replay results are indistinguishable, compute/raytracing mislabels are detected and unsupported-pNext speculation fails assertions.",
+          "If new test seams cannot compile against baseline, use a disposable candidate checkout to restore the relevant original log statements or move errno capture after the clobbering cleanup. The tests must fail for missing raw result, wrong resource kind, unsupported speculation and overwritten errno, then pass on unchanged candidate. Do not count compilation failure as defect detection.",
+          "All tests use explicit checks returning nonzero on failed expectations; Release/NDEBUG must not erase assertions. Register every new assertion runner with CTest and nonzero discovery."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixtures": "Deterministic mutants confined to disposable paths; never mutate accepted implementation candidate for testing. Record case IDs/failed assertions and restored candidate identity.",
+        "id": "REGRESSION-SENSITIVITY",
+        "location": "The new diagnostic CTest runners and isolated disposable mutation checkout outside source"
+      }
+    ],
+    "compatibility": {
+      "behavior": "Vulkan returns/handles, recorder success/failure behavior, CLI invocation/exit behavior preserved; diagnostics intentionally add facts/correct resource names and remove unsupported speculation. Close-time export diagnostics become visible without redefining aggregate CLI success.",
+      "binary": "Preserved existing Vulkan layer C ABI only, checked with baseline-prebuilt consumer against candidate shared library. No general C++ ABI guarantee is newly asserted for static library/internal C++ classes; no public layout is changed.",
+      "protocol": "No database/IPC/result schema change; existing serialization roundtrips exercise preserved consumers. Human log prose is intentionally changed and is not a promised stable machine protocol.",
+      "source": "Preserved public library/callback APIs, VulkanDevice Options and Vulkan layer entry-point signatures. Compile/run old-source fixtures."
+    },
+    "gates": [
+      {
+        "cases": [
+          "VK-PIPELINES",
+          "VK-DEVICE",
+          "OS-CACHE",
+          "CAPTURE-KINDS",
+          "COMPATIBILITY",
+          "REGRESSION-SENSITIVITY"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-10",
+        "expected": [
+          "All four full CLI/layer builds succeed; every registered applicable CPU CTest executes with nonzero count, including all new diagnostic cases; no skipped or disabled mandatory tests. Existing Linux count is six before new runners; enumerate final count explicitly.",
+          "Every original issue criterion maps to executed assertions and captured small logs with exact candidate/base/plan/configuration. Capture/log tests pass in Release and both exception configurations."
+        ],
+        "id": "linux-matrix",
+        "kind": "both",
+        "method": "For Debug/Release x FOSSILIZE_ENABLE_EXCEPTIONS=OFF/ON use separate external build/test directories: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S <exact-candidate-worktree> -B <build> -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/ninja/data/bin/ninja -DCMAKE_BUILD_TYPE=<Debug|Release> -DFOSSILIZE_ENABLE_EXCEPTIONS=<OFF|ON> -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TESTS=ON; independently deadline cmake --build <build> --parallel <bounded-jobs>; deadline ctest --test-dir <build> -N; deadline ctest --test-dir <build> --output-on-failure. Each command is separately bounded; independent configurations may reuse a matching exact-candidate build after validating identity/options.",
+        "prerequisites": [
+          "Linux GCC host and populated pinned submodules (available in implementation checkout). CMake 4.4.4 and Ninja 1.13.2 isolated under /tmp/fossilize-10/tools. No physical GPU required for baseline tests.",
+          "Use explicit PATH/absolute binaries and isolated CTest working directories; set per-test watchdogs. New targets inherit exception/sanitizer flags."
+        ],
+        "timeout_seconds": 600
+      },
+      {
+        "cases": [
+          "VK-PIPELINES",
+          "VK-DEVICE",
+          "OS-CACHE",
+          "CAPTURE-KINDS",
+          "COMPATIBILITY",
+          "REGRESSION-SENSITIVITY"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-10",
+        "expected": [
+          "Native Debug and Release builds and nonempty registered tests pass with the same raw-result/type/errno/compatibility assertions; report compiler, architecture and exception behavior.",
+          "No Win32 process implementation is touched; no invented CreateProcess/JobObjects/deadline behavioral matrix. This gate still tests the shared Windows build/application boundary. Unavailable native execution cannot be reported passed and blocks work-unit/final acceptance absent explicit user waiver/reconciled plan."
+        ],
+        "id": "native-windows-matrix",
+        "kind": "both",
+        "method": "In a prepared native Windows compiler environment, configure/build/ctest for Windows Debug and Release using separate directories (windows-debug/windows-release presets or equivalent CMake -S/-B configuration with CLI/layer/tests ON); enforce a real 600-second process deadline for each invocation. Execute the new CPU diagnostic tests including preserved-caller and prebuilt layer consumer fixtures. MSVC exceptions are enabled by the project; record this fact, and GCC Linux OFF/ON covers no-exception compilation. If native Windows MinGW is used instead, run both exception modes where the toolchain supports them.",
+        "prerequisites": [
+          "Native Windows host/compiler is currently unavailable: observed uname is Linux; no Windows host declared, no SSH configuration, and PATH has no Windows compiler/runtime. Historical appveyor.yml and .travis.yml invoke CTest but do not prove an active native job. This is a pending mandatory prerequisite under shared issue #8 unless the human user explicitly authorizes Linux-only acceptance with Windows left unverified.",
+          "New tests must be CTest-registered portably and therefore picked up by existing CTest CI invocation; adding a job/configuration is not evidence that it ran. Do not start hosted CI or alter global credentials without coordinator authorization."
+        ],
+        "timeout_seconds": 600
+      },
+      {
+        "cases": [
+          "VK-PIPELINES",
+          "VK-DEVICE",
+          "OS-CACHE",
+          "CAPTURE-KINDS",
+          "COMPATIBILITY",
+          "REGRESSION-SENSITIVITY"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-10",
+        "expected": [
+          "Claimed source/public C-layer ABI/protocol/behavior compatibility has direct fixture evidence; diagnostic wording changes are intentional and documented. Negative controls fail for the actual original defects, while clean candidate controls succeed."
+        ],
+        "id": "compatibility-and-sensitivity",
+        "kind": "both",
+        "method": "Deadline-bound execution of committed compatibility fixture and decisive regression-sensitivity controls in isolated directories; link/run old-source caller and baseline-prebuilt Vulkan consumer against candidate; run baseline-compatible assertions or controlled original-log/errno-order mutants and capture expected failing assertion IDs. Repeat actual candidate tests after controls.",
+        "prerequisites": [
+          "Exact base and candidate source/build identities, baseline headers/layer library, platform-specific fixture loader, committed fixture sources and registered CTest runners. Native Windows portion follows native-windows-matrix availability; Linux portion can proceed now."
+        ],
+        "timeout_seconds": 600
+      },
+      {
+        "cases": [
+          "VK-PIPELINES",
+          "VK-DEVICE",
+          "OS-CACHE",
+          "CAPTURE-KINDS",
+          "COMPATIBILITY",
+          "REGRESSION-SENSITIVITY"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-10",
+        "expected": [
+          "No unrelated schema/process/persistence redesign; all original criteria remain covered; no stale readiness or skipped/unavailable required check. Only issue #10 is an eligible closing target; parent #8 remains open."
+        ],
+        "id": "final-diff-and-live-input",
+        "kind": "final",
+        "method": "Fresh independent checker inspects complete base-to-candidate diff, registered tests and compatibility scope; re-reads gh issue view 10 and gh issue view 8 --repo robinwassen/Fossilize and authoritative issue snapshot/native graph through coordinator. Rerun all mandatory applicable gates on the exact committed final candidate. Confirm new tests are not silently excluded by platform/configuration options.",
+        "prerequisites": [
+          "Fresh checker, clean detached exact candidate, current plan, full immutable original acceptance and shared issue context, passing mandatory platform prerequisites or explicit user-approved reconciliation."
+        ],
+        "timeout_seconds": 600
+      },
+      {
+        "cases": [
+          "VK-PIPELINES",
+          "VK-DEVICE",
+          "OS-CACHE",
+          "CAPTURE-KINDS",
+          "COMPATIBILITY",
+          "REGRESSION-SENSITIVITY"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-10",
+        "expected": [
+          "PR closes only https://github.com/robinwassen/Fossilize/issues/10, cites exact tested configurations and platform limitations, and does not claim full observability-schema compliance or close parent #8."
+        ],
+        "id": "publication-local-policy",
+        "kind": "publication",
+        "method": "Coordinator performs required harness exact-candidate/source/issue readbacks and local-CI evidence checks before publication; no required_after_pr CI is assumed. Verify actual PR head/base/closing reference only after creation.",
+        "prerequisites": [
+          "Independent work-unit and separate final acceptance, complete required local/native evidence or explicit user-authorized platform reconciliation, clean candidate, current material issue inputs."
+        ],
+        "timeout_seconds": 600
+      }
+    ],
+    "implementation": [
+      {
+        "action": "Implement narrowly scoped internal diagnostic helpers only if useful, keeping raw VkResult signed numeric values and errno snapshots as explicit arguments. Preserve operation-specific wording, known resource identity and unknown context. No public result schema.",
+        "step": "I1"
+      },
+      {
+        "action": "Wire actual replay pipeline and device initialization failure branches to immediate values; cover compile-required/retry behavior without classifying controlled errors as crashes.",
+        "step": "I2"
+      },
+      {
+        "action": "Split selected shared cache export open/write/close failure branches to snapshot originating errno before cleanup and distinguish validation versus pipeline cache; retain cleanup and output contracts. Avoid unrelated export exit-policy changes.",
+        "step": "I3"
+      },
+      {
+        "action": "Correct all graphics/compute/raytracing pipeline capture diagnostic sites and remove generic unsupported-pNext guesses. Preserve Vulkan results/handles and existing recording control flow.",
+        "step": "I4"
+      },
+      {
+        "action": "Commit actual-call-path deterministic injection tests, success controls, portable CTest registration, compatibility fixtures and meaningful regression sensitivity evidence. Document initial-slice/platform limits without editing canonical task requirements.",
+        "step": "I5"
+      },
+      {
+        "action": "Run mandatory available Linux matrix now, preserve exact logs/configuration; native Windows prerequisite remains pending. Do not claim readiness while an unwaived mandatory gate is unavailable.",
+        "step": "I6"
+      }
+    ],
+    "non_goals": [
+      "No common structured schema, result API or new machine-readable output mode; issue explicitly delivers existing-log value before that work.",
+      "No worker crash/timeout classification, native process-controller redesign, retry accounting or final success/exit-status redesign.",
+      "No requested-output persistence propagation/durability redesign, database/library-wide sweep, callback contract redesign, spam-limiting overhaul, hardware cache-warming claim or Steam integration.",
+      "No public API layout/signature changes; no new FOS allocation, issue split or child issue."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n"
+      }
+    ],
+    "platform_decision": {
+      "evidence": [
+        "Linux x86_64 uname observed; g++ and ssh exist; no native Windows/compiler/runtime found in PATH.",
+        "No /home/robin/.ssh configuration; no available Windows execution host declared.",
+        "Historical AppVeyor/Travis CTest scripts found, no .github workflow; not execution evidence.",
+        "CMake/Ninja installed separately by coordinator, pinned submodules populated in implementation checkout."
+      ],
+      "rule": "Do not accept unavailable prerequisites. A human-authorized scope decision requires recorded plan reconciliation before marking native Windows optional; otherwise implementation may proceed but acceptance/publication is incomplete.",
+      "status": "native Windows gate pending mandatory; coordinator has asked user whether Linux-only acceptance with explicit Windows unverified is authorized."
+    },
+    "risks": [
+      "Native Windows execution presently unavailable; absent explicit user-approved scope reconciliation it blocks acceptance/publication.",
+      "Testing device setup/capture dispatch needs realistic fake initialization and safe cleanup; a formatter-only unit would be inadequate.",
+      "Static log spam counters can hide later cases; isolate processes/call sites rather than weakening assertions.",
+      "Cache export currently has signal-handler callers and existing unsafe stdio; this slice must not add broader signal-safety promises or unrelated behavior changes.",
+      "Full CLI dependencies may dominate build time; reuse validated exact-candidate directories, bound parallelism and preserve separate configuration directories."
+    ],
+    "scope": {
+      "expected_behavior": "Preserve immediately observed Vulkan/CRT error facts, phase and known resource identity in existing human diagnostics while preserving underlying Vulkan/application behavior.",
+      "identity_boundary": "Replay has pipeline hash. Capture sites may only know handle/batch index; setup may only know phase and GPU ordinal/properties. Explicit unknown/not-applicable is honest; never synthesize a pipeline hash or reason.",
+      "initial_slice": [
+        "cli/fossilize_replay.cpp: graphics/compute/raytracing creation and compile-required diagnostics; pipeline/validation cache export OS failure diagnostics.",
+        "cli/device.cpp: all failed VkResult operations in init_device, including presently silent checked setup failures.",
+        "layer/dispatch.cpp: graphics/compute/raytracing normal, QA/nonblocking, paranoid and eager recording diagnostic sites."
+      ],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/10",
+      "os_boundary": "Use errno for selected shared CRT fopen/fwrite/fclose export operations and capture it in the immediate failure branch before logging/cleanup. GetLastError is the corresponding rule for actual Win32 failures, but this slice does not change native Windows process APIs. Do not append stale OS errors to wrapper/database bool failures with no originating OS fact.",
+      "problem": "Existing pipeline replay, device setup and capture rejection diagnostics discard raw failure facts or misidentify pipeline type."
+    },
+    "version": 1,
+    "work_units": []
+  },
+  "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/10"
+        ],
+        "digest": "0658f04b9d81c41116190c257eef19e4b979faa87640d797b904e3c7966b5a52",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/10": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n",
+            "children": [],
+            "id": 6079794262,
+            "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
+            "number": 10,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "FOS-000001 \u2014 Preserve precise context in existing diagnostics",
+            "url": "https://github.com/robinwassen/Fossilize/issues/10"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/10"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    }
+  ],
   "publishing": {
     "ci_policy": "local",
     "stage": "none"
@@ -91,7 +406,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 3,
+  "revision": 4,
   "root_issue": {
     "id": 6079794262,
     "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
@@ -101,9 +416,17 @@
   },
   "run_id": "issue10-20261028",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-10",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/10",
   "verification": [],
-  "work_units": []
+  "work_units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/10",
+      "key": "https://github.com/robinwassen/Fossilize/issues/10",
+      "status": "ready"
+    }
+  ]
 }
