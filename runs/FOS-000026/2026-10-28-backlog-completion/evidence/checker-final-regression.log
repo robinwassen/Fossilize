@@ -1,0 +1,41 @@
+test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) ... 
+  test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='implementation') ... FAIL
+  test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='planner') ... FAIL
+  test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='environment') ... FAIL
+
+======================================================================
+FAIL: test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='implementation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/fos26-old-helper-4_tcgicm/test_harness_closeout.py", line 210, in test_C04_rejection_fences_dispatch_until_committed_cleanup
+    case.unchanged_rejection("closeout-cleanup", {"candidate_sha": stale, "observation": "Status removed but evidence remains."}, "stale completion evidence")
+  File "/tmp/fos26-old-helper-4_tcgicm/test_harness_state.py", line 211, in unchanged_rejection
+    with self.assertRaisesRegex(Invalid, pattern or ".*"):
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='planner')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/fos26-old-helper-4_tcgicm/test_harness_closeout.py", line 210, in test_C04_rejection_fences_dispatch_until_committed_cleanup
+    case.unchanged_rejection("closeout-cleanup", {"candidate_sha": stale, "observation": "Status removed but evidence remains."}, "stale completion evidence")
+  File "/tmp/fos26-old-helper-4_tcgicm/test_harness_state.py", line 211, in unchanged_rejection
+    with self.assertRaisesRegex(Invalid, pattern or ".*"):
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='environment')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/fos26-old-helper-4_tcgicm/test_harness_closeout.py", line 210, in test_C04_rejection_fences_dispatch_until_committed_cleanup
+    case.unchanged_rejection("closeout-cleanup", {"candidate_sha": stale, "observation": "Status removed but evidence remains."}, "stale completion evidence")
+  File "/tmp/fos26-old-helper-4_tcgicm/test_harness_state.py", line 211, in unchanged_rejection
+    with self.assertRaisesRegex(Invalid, pattern or ".*"):
+AssertionError: Invalid not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 8.123s
+
+FAILED (failures=3)
+
+PASS: current committed-source regression detects the prior helper cleanup bypass for implementation, planner and environment rejection routes.
