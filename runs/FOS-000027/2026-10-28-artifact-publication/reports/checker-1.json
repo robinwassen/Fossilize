@@ -1,0 +1,356 @@
+{
+  "attempt_id": "checker-1",
+  "base_sha": "fe0e26518e50f27a072c8bfe5f5062e4c81b4273",
+  "candidate_sha": "033cd84971c07e400de4778e19d129e0dce54b8f",
+  "criterion_evidence": {
+    "AC1": "Supported unit mechanics: policy/journal binding, mandatory mutation publication, updated skill/state/roles; P01/P02/P09 variants and metadata pass. Real adoption/publication gate remains later.",
+    "AC2": "Supported unit mechanics: cumulative exact remote bytes, local-vs-confirmed retry envelope, pending forward barriers and terminal ordering; P02/P05/P06/P06b/P11 pass.",
+    "AC3": "Supported current structural/records-only and dirty-view preservation mechanics: P03/P04/P09/P09c pass; complete diff reviewed; canonical input backlog/registry bytes unchanged. Semantic production-history audit remains later coordinator gate.",
+    "AC4": "Supported endpoint-bound explicit non-force exact-SHA push and actual-ref verification mechanics; P01/P09b/P09d/P10 plus independent CLI endpoint probes pass. No production/upstream changes performed.",
+    "AC5": "Failed: FOS27-C1-ALLOCATION-HISTORY; descendant with historically dropped issued reservation is adopted and next reserve reuses permanent key.",
+    "AC6": "Failed permanent reservation retention on resume/adoption through FOS27-C1-ALLOCATION-HISTORY. Other rejection/ambiguity/terminal retry mechanisms pass P06/P07/P11."
+  },
+  "discovered": [
+    "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone",
+    "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes",
+    "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root",
+    "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+    "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending",
+    "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery",
+    "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication",
+    "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+    "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations",
+    "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation",
+    "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation",
+    "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+    "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+    "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+    "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+    "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion",
+    "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+    "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+    "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+    "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+    "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+    "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+    "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record",
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+    "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+    "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+    "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+    "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+    "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan",
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+    "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+    "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+    "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair",
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+    "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+  ],
+  "evidence": [
+    {
+      "actual_discovered": 50,
+      "actual_executed": 50,
+      "attempt_id": "checker-1",
+      "base_sha": "fe0e26518e50f27a072c8bfe5f5062e4c81b4273",
+      "candidate_sha": "033cd84971c07e400de4778e19d129e0dce54b8f",
+      "command": "timeout 600s env PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v",
+      "criteria": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6"
+      ],
+      "cwd": "/home/robin/dev/fossilize-FOS-000027-checker-2",
+      "deadline_seconds": 600,
+      "environment": {
+        "git": "git version 2.43.0",
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3",
+        "runtime": "Python standard library, Git, POSIX flock, disposable local bare remotes"
+      },
+      "exit_code": 0,
+      "gate": "G-artifact-suite",
+      "log": "runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-suite.log",
+      "plan_version": 1,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "fe0e26518e50f27a072c8bfe5f5062e4c81b4273",
+      "candidate_sha": "033cd84971c07e400de4778e19d129e0dce54b8f",
+      "command": "python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/home/robin/dev/fossilize-FOS-000027-checker-2",
+      "environment": {
+        "git": "git version 2.43.0",
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3",
+        "runtime": "Python standard library, Git, POSIX flock, disposable local bare remotes"
+      },
+      "exit_code": 0,
+      "gate": "G-skill-validation",
+      "log": "runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-metadata.log",
+      "plan_version": 1,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "fe0e26518e50f27a072c8bfe5f5062e4c81b4273",
+      "candidate_sha": "033cd84971c07e400de4778e19d129e0dce54b8f",
+      "command": "Independent complete base-to-candidate diff/assertion/guidance review; timeout 60s env PYTHONDONTWRITEBYTECODE=1 python3 /tmp/fos27-checker-1-allocation-probe.py",
+      "criteria": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6"
+      ],
+      "cwd": "/home/robin/dev/fossilize-FOS-000027-checker-2",
+      "environment": {
+        "git": "git version 2.43.0",
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3",
+        "runtime": "Python standard library, Git, POSIX flock, disposable local bare remotes"
+      },
+      "exit_code": 0,
+      "gate": "G-independent-review",
+      "log": "runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-review.log",
+      "note": "Probe command exited zero because it successfully reproduced the counterexample. Semantic review failed AC5/AC6; passing suite does not cover this missing temporal retention assertion.",
+      "plan_version": 1,
+      "result": "failed"
+    }
+  ],
+  "executed": [
+    "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone",
+    "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes",
+    "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root",
+    "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+    "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending",
+    "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery",
+    "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication",
+    "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+    "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations",
+    "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation",
+    "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation",
+    "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+    "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+    "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+    "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+    "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion",
+    "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+    "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+    "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+    "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+    "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+    "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+    "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record",
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+    "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+    "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+    "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+    "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+    "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan",
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+    "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+    "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+    "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair",
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+    "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+  ],
+  "findings": [
+    {
+      "affected_task": "FOS-000027",
+      "criteria": [
+        "AC5",
+        "AC6"
+      ],
+      "evidence": "A genuine second clone appended a reservation FOS-000026/high_water=26, then appended a descendant restoring the original empty issued list/high_water=0. remote_history validates each journal in isolation and compares only the final remote journal to the final local journal, so publish-artifacts returned remote-advance-adopted. After confirmation, reserve issued FOS-000026 again with a different title/location. Both remote commits remain in adopted history, so the permanent key was already issued and has now been reused. Actual exact-candidate probe source and output are committed-report records at runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-allocation-probe.txt and runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-allocation-probe.log.",
+      "id": "FOS27-C1-ALLOCATION-HISTORY",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:403-433",
+      "planned_cases": [
+        "P08",
+        "P09"
+      ],
+      "priority": 1,
+      "required_change": "Validate permanent journal retention across adopted ancestry, rather than only tip-to-local comparison; reject historical removal/rewriting or high-water regression before adoption/publication and preserve competing tips with recovery guidance. Add a real bare-remote regression for an intermediate reservation dropped by a later descendant, asserting rejection and no subsequent key reuse. Recheck original retention guarantees and full suite with fresh checker.",
+      "route": "implementation",
+      "status": "open"
+    }
+  ],
+  "input_revision": 7,
+  "input_sha": "033cd84971c07e400de4778e19d129e0dce54b8f",
+  "limitations": [
+    "Unit check only; no final canonical Done bookkeeping, renewed/final acceptance, production all-history privacy/adoption/source/terminal publication or live GitHub behavior verified.",
+    "No source fixes, canonical state writes or production origin/upstream pushes by checker. No C++/Vulkan/GPU/Steam claims.",
+    "Included implementer log records are retained actual prior executions, not checker executions. implementer-predecessor-full49.log is explicitly superseded predecessor evidence; checker-1-suite.log is the exact-candidate full50 independent result."
+  ],
+  "next_action": "Dispatch a fresh implementer repair for FOS27-C1-ALLOCATION-HISTORY using the retained disposable probe. Keep the same FOS-000027 run/plan/keys; do not perform closeout, real artifact adoption/push or source PR publication before repair and independent acceptance.",
+  "operation": "subtask",
+  "plan_version": 1,
+  "records": {
+    "runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-allocation-probe.log": "remote_history_issued_then_dropped: {\"status\": \"incomplete\", \"outcome\": \"remote-advance-adopted\", \"adopted\": true, \"retained_historical_reservation\": \"FOS-000026\"}\nsubsequent_allocation: {\"key\": \"FOS-000026\", \"location\": \"local-docs/new.md\", \"reserved_at\": 1000, \"title\": \"New local reservation\"}\nCOUNTEREXAMPLE REPRODUCED: adopted history contains an already-issued key that is reused by next reserve\n",
+    "runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-allocation-probe.txt": "import json,sys\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()/'.agents/skills/implement-change-harness/scripts'))\nfrom test_harness_artifacts import ArtifactTests\nfrom harness_state import Store,encoded\ncase=ArtifactTests('test_P08_second_clone_descendant_adoption_then_divergent_allocations'); case.setUp()\ntry:\n case.initialize(); parent=case.tip; writer=case.clone_writer(); original=Store(writer).records(parent)\n rows=dict(original); journal=json.loads(rows['allocations.json']); journal.update(high_water=26,issued=[{'key':'FOS-000026','title':'Permanent remote reservation','location':'local-docs/reserved.md'}]); rows['allocations.json']=encoded(journal)\n issued=case.writer_checkpoint(writer,parent,rows)\n removed=case.writer_checkpoint(writer,issued,original)\n result=case.raw('publish-artifacts')\n print('remote_history_issued_then_dropped:',json.dumps({'status':result['artifact_publication']['status'],'outcome':result['artifact_publication']['outcome'],'adopted':case.tip==removed,'retained_historical_reservation':json.loads(Store(writer).records(issued)['allocations.json'])['issued'][0]['key']}))\n case.raw('publish-artifacts')\n result=case.raw('reserve',{'title':'New local reservation','location':'local-docs/new.md'})\n new=json.loads(Store(case.source).records(case.tip)['allocations.json'])['issued'][-1]\n print('subsequent_allocation:',json.dumps(new))\n assert new['key']=='FOS-000026','counterexample did not reproduce'\n print('COUNTEREXAMPLE REPRODUCED: adopted history contains an already-issued key that is reused by next reserve')\nfinally: case.doCleanups()\n",
+    "runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-metadata.log": "Skill is valid!\n",
+    "runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-probes.log": "cli_rejection_and_exact_retry: passed (exit 3 then exit 0, same local checkpoint)\nmultiple_push_endpoints_fail_closed: passed (no artifact ref movement)\nhosted_repository_mismatch: passed (rejected before transport)\n",
+    "runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-review.log": "Independent unit review: FOS-000027, plan 1, checker-1.\nCandidate 033cd84971c07e400de4778e19d129e0dce54b8f; base fe0e26518e50f27a072c8bfe5f5062e4c81b4273.\nRead AGENTS.md, required index/descriptor/pillars/verification, canonical FOS-000027 original criteria, relevant original harness proposal, plan 1 and factual implementer report. Reviewed complete base-to-candidate diff, all 16 added artifact tests, retained T01-T17/C01-C08 assertions/fixtures and test discovery registration.\nAC1/AC4: journal policy binds origin/repository/ref and SHA-256 of actual single push endpoint; exact non-force explicit refspec; actual ls-remote before retry/after push. New disposable CLI probes additionally verify exit3 on rejection, exact unchanged-tip retry, multiple-endpoint and hosted-repository mismatch rejection.\nAC2/AC3: all mutations checkpoint via existing private-index records Store; orphan ancestry, permitted regular bounded UTF-8 paths and every-ancestor structural checks preserved. Policy adoption changes allocation journal, retaining old state/report/history bytes; dirty inspection/source preservation asserted. Canonical backlog/registry match input cf7a4b7 byte-for-byte; full base diff adds existing FOS-000027 allocation/definition only. Inventory has 27 unique registered canonical definitions and high-water 27; dependency FOS-000025 exists. Unit candidate remains Pending, with no Done bookkeeping claimed.\nAC5/AC6 FINDING FOS27-C1-ALLOCATION-HISTORY: remote_history validates journals individually, then compares only remote final journal to local final journal (harness_state.py:403-408,430-433). It does not enforce permanent retention across remote ancestry. Real second-clone commits issued FOS-000026 then dropped it/reduced high-water to original. Helper adopted the descendant and next reserve issued FOS-000026 again. Probe source/log retained. This violates project-wide permanent-key rules and planned P08/P09 retention assertions. Reject until historical loss/reuse is blocked and a committed regression passes independently.\nRecovery otherwise reviewed: pending checkpoint blocks forward actions but retains safety reports; pre/postpush failure resumes via actual ref; divergent tips retained; terminal state/null-active committed together and published without self-ack commits. P11 simulates one source PR and failed terminal push followed by exact retry. Existing test mappings cover T01-T17/C01-C08.\nNo source edits, canonical state writes, production remote pushes, actual agents/PR calls, C++/Vulkan/GPU/Steam checks. Semantic production-history privacy review, canonical closeout renewal/final checks and real publication remain later coordinator gates.\nReview result: changes_required; independent review gate failed due concrete reservation-reuse counterexample. Metadata validator passed; full50 exact-candidate suite status recorded separately.\n",
+    "runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-suite.log": "test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone (test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone) ... ok\ntest_P02_every_mutation_class_cumulative_remote_bytes (test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes) ... ok\ntest_P03_explicit_existing_history_adoption_schema1_and_empty_root (test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root) ... ok\ntest_P04_stale_dirty_inspection_and_user_checkout_preserved (test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved) ... ok\ntest_P05_idempotent_status_retry_and_ancestor_pending (test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending) ... ok\ntest_P06_rejection_network_failure_barrier_safety_report_and_recovery (test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery) ... ok\ntest_P06b_safety_facts_retained_behind_pending_publication (test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication) ... ok\ntest_P07_interruption_before_push_and_after_success_without_return (test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return) ... ok\ntest_P08_second_clone_descendant_adoption_then_divergent_allocations (test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations) ... ok\ntest_P08b_evolved_remote_worker_budget_state_requires_reconciliation (test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation) ... ok\ntest_P09_invalid_remote_history_destination_and_upstream_preservation (test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation) ... ok\ntest_P09b_pushurl_observation_uses_bound_push_endpoint (test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint) ... ok\ntest_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish (test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish) ... ok\ntest_P09d_concurrent_endpoint_reread_cannot_retarget_publication (test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication) ... ok\ntest_P10_actual_postpush_advance_beats_success_and_caller_sha (test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha) ... ok\ntest_P11_terminal_null_active_failure_restart_and_finite_completion (test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion) ... ok\ntest_C01_C05_intent_record_restart_and_exact_renewal (test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal) ... ok\ntest_C02_split_canonical_children_and_registry_preserved (test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved) ... ok\ntest_C03_bad_required_verification_never_authorizes_done (test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done) ... ok\ntest_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) ... ok\ntest_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault (test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault) ... ok\ntest_C07_one_pr_contains_backlog_after_local_merge (test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge) ... ok\ntest_C08_schema2_pending_adoption_preserves_facts_and_completed_record (test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record) ... ok\ntest_T01_happy_path_real_checkpoint_and_source_preservation (test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation) ... ok\ntest_T02_failure_boundaries_and_real_cas_loser (test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser) ... ok\ntest_T03_invalid_state_paths_schema_and_source_branch_adoption (test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption) ... ok\ntest_T03b_duplicate_durable_finding_identity_is_invalid (test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid) ... ok\ntest_T04_process_worktree_lock_and_single_active_run (test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run) ... ok\ntest_T05_dynamic_registry_reservations_archives_conflicts (test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts) ... ok\ntest_T06_detached_exact_views_dirty_source_and_changed_candidate (test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate) ... ok\ntest_T07_dispatch_ack_loss_live_unknown_and_termination_fence (test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence) ... ok\ntest_T08_each_stale_tuple_field_rejected_ack_revision_supported (test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported) ... ok\ntest_T09_models_fallback_deadline_repair_replan_and_extension (test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension) ... ok\ntest_T09b_repeated_unchanged_rejection_stops_early (test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early) ... ok\ntest_T09c_late_final_report_retained_but_requires_extension (test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension) ... ok\ntest_T09d_expired_command_pauses_live_attempt_and_preserves_late_report (test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report) ... ok\ntest_T10_required_evidence_completeness_and_optional_unavailable (test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable) ... ok\ntest_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers (test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers) ... ok\ntest_T10c_finding_scope_validation_dependency_branch_and_replan (test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan) ... ok\ntest_T11_real_faulty_reproducer_and_weakened_test_finding (test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding) ... ok\ntest_T12_repair_versus_replan_and_no_implementer_acceptance (test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance) ... ok\ntest_T13_sequential_split_dependency_validation_final_regression (test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression) ... ok\ntest_T13b_non_topological_plan_replan_reset_and_dispatch_readiness (test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness) ... ok\ntest_T13c_unsplit_final_rejection_repairs_and_renews_both_checks (test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks) ... ok\ntest_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair (test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair) ... ok\ntest_T14_required_environment_unavailable_cannot_be_waived (test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived) ... ok\ntest_T15_publication_order_wrong_tuple_moving_base_push_conflict (test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict) ... ok\ntest_T15b_deadline_stops_publication_at_every_stage (test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage) ... ok\ntest_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry (test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry) ... ok\ntest_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts (test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts) ... ok\n\n----------------------------------------------------------------------\nRan 50 tests in 375.125s\n\nOK\n",
+    "runs/FOS-000027/2026-10-28-artifact-publication/evidence/implementer-defect.log": "Traceback (most recent call last):\n  File \"/tmp/fos27-baseline-probe/probe.py\", line 8, in <module>\n    assert observed and observed[0].decode()==result[\"tip\"], \"FOS-000027 baseline defect: initialize commits locally but remote artifact ref is absent\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: FOS-000027 baseline defect: initialize commits locally but remote artifact ref is absent\n",
+    "runs/FOS-000027/2026-10-28-artifact-publication/evidence/implementer-focused.log": "test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone (test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone) ... ok\ntest_P09b_pushurl_observation_uses_bound_push_endpoint (test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint) ... ok\ntest_P09d_concurrent_endpoint_reread_cannot_retarget_publication (test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication) ... ok\ntest_P11_terminal_null_active_failure_restart_and_finite_completion (test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 10.289s\n\nOK\n",
+    "runs/FOS-000027/2026-10-28-artifact-publication/evidence/implementer-metadata.log": "Skill is valid!\n",
+    "runs/FOS-000027/2026-10-28-artifact-publication/evidence/implementer-predecessor-full49.log": "test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone (test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone) ... ok\ntest_P02_every_mutation_class_cumulative_remote_bytes (test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes) ... ok\ntest_P03_explicit_existing_history_adoption_schema1_and_empty_root (test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root) ... ok\ntest_P04_stale_dirty_inspection_and_user_checkout_preserved (test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved) ... ok\ntest_P05_idempotent_status_retry_and_ancestor_pending (test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending) ... ok\ntest_P06_rejection_network_failure_barrier_safety_report_and_recovery (test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery) ... ok\ntest_P06b_safety_facts_retained_behind_pending_publication (test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication) ... ok\ntest_P07_interruption_before_push_and_after_success_without_return (test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return) ... ok\ntest_P08_second_clone_descendant_adoption_then_divergent_allocations (test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations) ... ok\ntest_P08b_evolved_remote_worker_budget_state_requires_reconciliation (test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation) ... ok\ntest_P09_invalid_remote_history_destination_and_upstream_preservation (test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation) ... ok\ntest_P09b_pushurl_observation_uses_bound_push_endpoint (test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint) ... ok\ntest_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish (test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish) ... ok\ntest_P10_actual_postpush_advance_beats_success_and_caller_sha (test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha) ... ok\ntest_P11_terminal_null_active_failure_restart_and_finite_completion (test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion) ... ok\ntest_C01_C05_intent_record_restart_and_exact_renewal (test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal) ... ok\ntest_C02_split_canonical_children_and_registry_preserved (test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved) ... ok\ntest_C03_bad_required_verification_never_authorizes_done (test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done) ... ok\ntest_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) ... ok\ntest_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault (test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault) ... ok\ntest_C07_one_pr_contains_backlog_after_local_merge (test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge) ... ok\ntest_C08_schema2_pending_adoption_preserves_facts_and_completed_record (test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record) ... ok\ntest_T01_happy_path_real_checkpoint_and_source_preservation (test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation) ... ok\ntest_T02_failure_boundaries_and_real_cas_loser (test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser) ... ok\ntest_T03_invalid_state_paths_schema_and_source_branch_adoption (test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption) ... ok\ntest_T03b_duplicate_durable_finding_identity_is_invalid (test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid) ... ok\ntest_T04_process_worktree_lock_and_single_active_run (test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run) ... ok\ntest_T05_dynamic_registry_reservations_archives_conflicts (test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts) ... ok\ntest_T06_detached_exact_views_dirty_source_and_changed_candidate (test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate) ... ok\ntest_T07_dispatch_ack_loss_live_unknown_and_termination_fence (test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence) ... ok\ntest_T08_each_stale_tuple_field_rejected_ack_revision_supported (test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported) ... ok\ntest_T09_models_fallback_deadline_repair_replan_and_extension (test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension) ... ok\ntest_T09b_repeated_unchanged_rejection_stops_early (test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early) ... ok\ntest_T09c_late_final_report_retained_but_requires_extension (test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension) ... ok\ntest_T09d_expired_command_pauses_live_attempt_and_preserves_late_report (test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report) ... ok\ntest_T10_required_evidence_completeness_and_optional_unavailable (test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable) ... ok\ntest_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers (test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers) ... ok\ntest_T10c_finding_scope_validation_dependency_branch_and_replan (test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan) ... ok\ntest_T11_real_faulty_reproducer_and_weakened_test_finding (test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding) ... ok\ntest_T12_repair_versus_replan_and_no_implementer_acceptance (test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance) ... ok\ntest_T13_sequential_split_dependency_validation_final_regression (test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression) ... ok\ntest_T13b_non_topological_plan_replan_reset_and_dispatch_readiness (test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness) ... ok\ntest_T13c_unsplit_final_rejection_repairs_and_renews_both_checks (test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks) ... ok\ntest_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair (test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair) ... ok\ntest_T14_required_environment_unavailable_cannot_be_waived (test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived) ... ok\ntest_T15_publication_order_wrong_tuple_moving_base_push_conflict (test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict) ... ok\ntest_T15b_deadline_stops_publication_at_every_stage (test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage) ... ok\ntest_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry (test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry) ... ok\ntest_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts (test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts) ... ok\n\n----------------------------------------------------------------------\nRan 49 tests in 321.935s\n\nOK\n"
+  },
+  "role": "checker",
+  "skipped": [],
+  "summary": "Exact candidate full50 and metadata pass; independent requirements review rejects a reproduced permanent-allocation loss/reuse during remote descendant adoption.",
+  "test_mapping": {
+    "P01": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone"
+      ]
+    },
+    "P02": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes"
+      ]
+    },
+    "P03": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root"
+      ]
+    },
+    "P04": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved"
+      ]
+    },
+    "P05": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending"
+      ]
+    },
+    "P06": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery",
+        "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication"
+      ]
+    },
+    "P07": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return"
+      ]
+    },
+    "P08": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations",
+        "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation"
+      ]
+    },
+    "P09": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation",
+        "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication"
+      ]
+    },
+    "P10": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha"
+      ]
+    },
+    "P11": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+      "tests": [
+        "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion"
+      ]
+    },
+    "P12": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py; .agents/skills/implement-change-harness/scripts/test_harness_closeout.py; .agents/skills/implement-change-harness/SKILL.md; .agents/skills/implement-change-harness/references/state.md; .agents/skills/implement-change-harness/references/roles.md",
+      "tests": [
+        "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+        "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+        "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+        "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+        "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+        "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+        "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record",
+        "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+        "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+        "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+        "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+        "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+        "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+        "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+        "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+        "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+        "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+        "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+        "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+        "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+        "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+        "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+        "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan",
+        "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+        "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+        "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+        "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+        "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+        "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair",
+        "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+        "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+        "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+        "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+        "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+      ]
+    }
+  },
+  "unit": "FOS-000027",
+  "verdict": "changes_required",
+  "worker_id": "/root/checker27_1"
+}

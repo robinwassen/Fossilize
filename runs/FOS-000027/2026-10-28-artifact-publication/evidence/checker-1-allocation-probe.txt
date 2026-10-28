@@ -1,0 +1,20 @@
+import json,sys
+from pathlib import Path
+sys.path.insert(0,str(Path.cwd()/'.agents/skills/implement-change-harness/scripts'))
+from test_harness_artifacts import ArtifactTests
+from harness_state import Store,encoded
+case=ArtifactTests('test_P08_second_clone_descendant_adoption_then_divergent_allocations'); case.setUp()
+try:
+ case.initialize(); parent=case.tip; writer=case.clone_writer(); original=Store(writer).records(parent)
+ rows=dict(original); journal=json.loads(rows['allocations.json']); journal.update(high_water=26,issued=[{'key':'FOS-000026','title':'Permanent remote reservation','location':'local-docs/reserved.md'}]); rows['allocations.json']=encoded(journal)
+ issued=case.writer_checkpoint(writer,parent,rows)
+ removed=case.writer_checkpoint(writer,issued,original)
+ result=case.raw('publish-artifacts')
+ print('remote_history_issued_then_dropped:',json.dumps({'status':result['artifact_publication']['status'],'outcome':result['artifact_publication']['outcome'],'adopted':case.tip==removed,'retained_historical_reservation':json.loads(Store(writer).records(issued)['allocations.json'])['issued'][0]['key']}))
+ case.raw('publish-artifacts')
+ result=case.raw('reserve',{'title':'New local reservation','location':'local-docs/new.md'})
+ new=json.loads(Store(case.source).records(case.tip)['allocations.json'])['issued'][-1]
+ print('subsequent_allocation:',json.dumps(new))
+ assert new['key']=='FOS-000026','counterexample did not reproduce'
+ print('COUNTEREXAMPLE REPRODUCED: adopted history contains an already-issued key that is reused by next reserve')
+finally: case.doCleanups()

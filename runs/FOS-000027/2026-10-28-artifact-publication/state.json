@@ -65,13 +65,15 @@
       "observations": [],
       "operation": "subtask",
       "plan_version": 1,
+      "rejection_signature": "c302394039f6da78bd15f774494f98dc50107674abb60c95c6c8875de87a1162",
+      "report": "runs/FOS-000027/2026-10-28-artifact-publication/reports/checker-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793185355.9309728,
-      "status": "running",
+      "status": "complete",
       "unit": "FOS-000027",
       "worker_id": "/root/checker27_1"
     }
@@ -80,7 +82,26 @@
     "stage": "pending"
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "FOS-000027",
+      "criteria": [
+        "AC5",
+        "AC6"
+      ],
+      "evidence": "A genuine second clone appended a reservation FOS-000026/high_water=26, then appended a descendant restoring the original empty issued list/high_water=0. remote_history validates each journal in isolation and compares only the final remote journal to the final local journal, so publish-artifacts returned remote-advance-adopted. After confirmation, reserve issued FOS-000026 again with a different title/location. Both remote commits remain in adopted history, so the permanent key was already issued and has now been reused. Actual exact-candidate probe source and output are committed-report records at runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-allocation-probe.txt and runs/FOS-000027/2026-10-28-artifact-publication/evidence/checker-1-allocation-probe.log.",
+      "id": "FOS27-C1-ALLOCATION-HISTORY",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:403-433",
+      "planned_cases": [
+        "P08",
+        "P09"
+      ],
+      "priority": 1,
+      "required_change": "Validate permanent journal retention across adopted ancestry, rather than only tip-to-local comparison; reject historical removal/rewriting or high-water regression before adoption/publication and preserve competing tips with recovery guidance. Add a real bare-remote regression for an intermediate reservation dropped by a later descendant, asserting rejection and no subsequent key reuse. Recheck original retention guarantees and full suite with fresh checker.",
+      "route": "implementation",
+      "status": "open"
+    }
+  ],
   "limits": {
     "command_timeout": 600,
     "commands": [],
@@ -94,8 +115,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "subtask",
+  "next_action": "Dispatch a fresh implementer repair for FOS27-C1-ALLOCATION-HISTORY using the retained disposable probe. Keep the same FOS-000027 run/plan/keys; do not perform closeout, real artifact adoption/push or source PR publication before repair and independent acceptance.",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -122,7 +143,7 @@
       "requirement": "Network/authentication/rejection failures and ambiguous push outcomes preserve the local checkpoint and remain recoverable. Resume checks the actual remote ref before retrying, without rerunning accepted implementation work, duplicating a PR or dropping allocation reservations. Define terminal publication ordering so the final state/active-pointer update is also published, without an endless cycle of commits acknowledging their own publication."
     }
   ],
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -345,10 +366,10 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 9,
+  "revision": 10,
   "run_id": "2026-10-28-artifact-publication",
   "schema_version": 2,
-  "status": "running",
+  "status": "ready",
   "task_key": "FOS-000027",
   "task_location": "local-docs/reviews/harness-backlog.md#fos-000027--commit-and-publish-harness-artifacts-to-the-remote-orphan-branch",
   "units": [
