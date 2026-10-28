@@ -88,7 +88,19 @@ class DeliveryTests(LiveFixture, unittest.TestCase):
         self.update(rest_prs={'99': rest}, git_repo=str(self.source), git_bare=str(self.bare))
         self.act('publish-observation', {'event': 'attachment', 'url': self.pr_url, 'success': True})
         self.path = hs.state_path(self.state['task_key'], self.state['run_id']) if self.state else 'runs/issue-8/run-1/state.json'
+        # All reports/acceptance above came through real supported transitions.
+        # Begin this disposable delivery fixture at one prepared checkpoint, so
+        # every fresh fault/retry need not revalidate fifty setup transitions.
+        # W12 independently covers long history and hostile old ancestors; the
+        # existing publication-history regressions are retained unchanged.
+        prepared = self.harness.store.records(self.tip)
+        old_tip = self.tip
+        git(self.source, 'update-ref', '-d', REF, old_tip)
+        self.tip = Store(self.source).checkpoint(prepared, None, 'Prepared independently accepted delivery fixture')
+        git(self.source, 'push', '--force-with-lease=' + REF + ':' + old_tip, 'origin', self.tip + ':' + REF)
+        self.fixture_tip = self.tip
         self.initial_records = self.harness.store.records(self.tip)
+        self.assertEqual(self.initial_records, prepared)  # every record byte survives fixture setup
         self.initial = json.loads(self.initial_records[self.path])
         self.approval = {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': self.pr_url, 'head': candidate,
                          'root_issue': self.root_issue['html_url'], 'run_id': 'run-1', 'accepted_revision': self.initial['revision']}
@@ -145,6 +157,7 @@ class DeliveryTests(LiveFixture, unittest.TestCase):
         self.assertEqual(result['outcome'], 'delivered', result)
         self.assertTrue(result['delivered'])
         records = Store(self.source).records(result['checkpoint_sha'])
+        self.assertIn(self.fixture_tip, git(self.source, 'rev-list', result['checkpoint_sha']).decode().splitlines())
         saved = json.loads(records[self.path])
         self.assertIsNone(json.loads(records['active.json']))
         self.assertEqual(saved['delivery']['stage'], 'delivered')
