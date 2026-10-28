@@ -1,0 +1,212 @@
+{
+  "attempt_id": "checker-1",
+  "base_sha": "796bba75ab32c13e1b50ee01fd7d067f17112cdf",
+  "candidate_sha": "9c74d16ab8da101071322538a93af92620622b3f",
+  "commands": [
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 180s env PYTHONDONTWRITEBYTECODE=1 python3 /tmp/fossilize-39/checker-1-probe.py > /tmp/fossilize-39/checker-1-probe.log 2>&1",
+      "cwd": "/tmp/fossilize-39/checker-current",
+      "environment": "PYTHONDONTWRITEBYTECODE=1; fake gh; real disposable Git/bare remote; fresh helpers on retry",
+      "exit_code": 0,
+      "log": "runs/issue-39/issue39-20261028/evidence/checker-1-probe.log",
+      "result": "confirmed_defect",
+      "timeout": 180
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness > /tmp/fossilize-39/checker-1-validator.log 2>&1",
+      "cwd": "/tmp/fossilize-39/checker-current",
+      "environment": "Installed quick_validate.py and PyYAML",
+      "exit_code": 0,
+      "log": "runs/issue-39/issue39-20261028/evidence/checker-1-validator.log",
+      "result": "passed",
+      "timeout": 600
+    }
+  ],
+  "criterion_evidence": [
+    {
+      "criterion": "AC1",
+      "evidence": "Required recovery/publication obligations fail the four independent probes; full regression requirement incomplete. Static approval handoff and package validation are insufficient to accept the combined criterion.",
+      "result": "not_satisfied"
+    }
+  ],
+  "discovered": [
+    "checker.no_send.merge.before-push",
+    "checker.no_send.merge.after-push",
+    "checker.no_send.ticket-comment-8.before-push",
+    "checker.no_send.ticket-comment-8.after-push",
+    "skill-package.quick_validate"
+  ],
+  "discovery_scope": "Nonzero IDs explicitly enumerated and actually executed by independent bounded probe, plus validator. These are not a fabricated unittest full-suite inventory. Full planned unittest discovery was not independently run.",
+  "evidence": [
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "796bba75ab32c13e1b50ee01fd7d067f17112cdf",
+      "candidate_sha": "9c74d16ab8da101071322538a93af92620622b3f",
+      "command": "timeout --signal=TERM --kill-after=5s 180s env PYTHONDONTWRITEBYTECODE=1 python3 /tmp/fossilize-39/checker-1-probe.py > /tmp/fossilize-39/checker-1-probe.log 2>&1",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-39/checker-current",
+      "environment": "PYTHONDONTWRITEBYTECODE=1; fake gh; real disposable Git/bare remote; fresh helpers on retry",
+      "exit_code": 0,
+      "gate": "independent-no-send-recovery-counterexample",
+      "log": "runs/issue-39/issue39-20261028/evidence/checker-1-probe.log",
+      "note": "Probe exit0 means all four expected defect observations reproduced, not acceptance of recovery.",
+      "plan_version": 1,
+      "result": "confirmed_defect",
+      "timeout": 180
+    },
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "796bba75ab32c13e1b50ee01fd7d067f17112cdf",
+      "candidate_sha": "9c74d16ab8da101071322538a93af92620622b3f",
+      "command": "timeout --signal=TERM --kill-after=5s 600s python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness > /tmp/fossilize-39/checker-1-validator.log 2>&1",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-39/checker-current",
+      "environment": "Installed quick_validate.py and PyYAML",
+      "exit_code": 0,
+      "gate": "skill-package",
+      "log": "runs/issue-39/issue39-20261028/evidence/checker-1-validator.log",
+      "plan_version": 1,
+      "result": "passed",
+      "timeout": 600
+    }
+  ],
+  "executed": [
+    "checker.no_send.merge.before-push",
+    "checker.no_send.merge.after-push",
+    "checker.no_send.ticket-comment-8.before-push",
+    "checker.no_send.ticket-comment-8.after-push",
+    "skill-package.quick_validate"
+  ],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/39",
+      "evidence": "Independent four-case probe confirmed merge and ticket-comment-8 dispatch checkpoint publication failure both before-push and after-push exits before effect(). In all four cases, two fresh retries confirm exact orphan publication but remain incomplete because dispatched=true/status=intent triggers the pending guard. Merge cases retain merge_count0; comment cases retain merge_count1 and delivery_comment_count0. Source persists dispatched before publication returns; no retry path distinguishes this known no-send outcome. This violates same-command recoverability required by AC1 and planned W09-W11. See runs/issue-39/issue39-20261028/evidence/checker-1-probe.log",
+      "id": "CHK39-NO-SEND-PUBLICATION-RECOVERY",
+      "location": ".agents/skills/implement-change-harness/scripts/delivery_wrapup.py:126-132",
+      "required_change": "Preserve durable distinction/reconciliation for known unsent effects when dispatch publication fails, while retaining fail-closed behavior for genuinely uncertain sent effects. Keep and pass every W11 case and add any missing dispatch/publication boundary assertions needed; do not solve by blindly redispatching uncertain writes.",
+      "route": "implementation",
+      "status": "open"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/39",
+      "evidence": "The sole behavioral gate requires full standard-library discovery exit0 within600 seconds. Exact-candidate implementer command was externally timed out with exit124 during W11 after14 passing methods and four failed dispatch-publication subcases; W12 and subsequent retained regression modules did not execute. Reviewed log is embedded as runs/issue-39/issue39-20261028/evidence/checker-1-reviewed-implementer-suite5.log; this checker did not relabel it as independent passing execution. The large exhaustive real-Git publication/recovery matrix plus existing suite needs a feasible bounded gate design.",
+      "id": "CHK39-MANDATORY-GATE-RUNTIME-DESIGN",
+      "location": "plan1 gate delivery-suite; local-docs/verification.md:Change-harness skill checks",
+      "required_change": "Replan a bounded complete verification design, such as shards each under600 seconds whose explicit union covers the identical full discovered test set and every W01-W13 assertion. Preserve all existing safety/history/publication regressions and exact candidate unit/final checks; do not drop assertions or raise the command bound silently. Re-run independently after repair.",
+      "route": "planner",
+      "status": "open"
+    }
+  ],
+  "input_revision": 17,
+  "input_sha": "9c74d16ab8da101071322538a93af92620622b3f",
+  "limits": [
+    "No production mutations or live GitHub merge/protection behavior verified.",
+    "No C++/CTest/GPU/Steam verification applies.",
+    "The aggregate timeout is attributed to supplied recorded execution and inspected log; checker did not repeat it or claim independent suite success.",
+    "The immutable original issue and live body were read, but initial implementer report retrieval preceded live issue retrieval; conclusions were independently derived and reproduced."
+  ],
+  "new_evidence": true,
+  "next_action": "Dispatch the permitted fresh planner replan to preserve all assertions while defining feasible bounded complete gates, then a fresh implementer repair for known no-send dispatch-publication recovery. Require a fresh independent checker on the repaired committed candidate; no acceptance/publication yet.",
+  "not_run": [
+    "delivery-suite mandatory full600-second unittest discovery",
+    "W01-W08/W12 planned methods and full W09-W11 matrix by checker",
+    "Retained issue/migration/stale-worker/final/budget/closeout/artifact regression suite by checker"
+  ],
+  "operation": "work_unit",
+  "plan_version": 1,
+  "records": {
+    "runs/issue-39/issue39-20261028/evidence/checker-1-probe-source.txt": "\"\"\"Independent no-send publication recovery probes; mutations are disposable.\"\"\"\nimport json\nimport sys\nfrom pathlib import Path\nsys.path.insert(0, str(Path.cwd() / '.agents/skills/implement-change-harness/scripts'))\nfrom test_delivery_wrapup import DeliveryTests\nfrom harness_state import Store\n\nfixture = DeliveryTests('test_W11_every_checkpoint_publication_response_loss_and_rejection')\ntry:\n    fixture.setUp()\n    fixture.fast_reads = True\n    observations = []\n    for stage in ('merge', 'ticket-comment-8'):\n        for phase in ('before-push', 'after-push'):\n            fixture.restore()\n            def lose_publication(current, boundary, delivery):\n                if (current, boundary) == (stage, 'before-publication'):\n                    record = delivery.delivery['steps'].get(stage, {})\n                    if record.get('dispatched') and record.get('status') == 'intent':\n                        delivery.h.store.fail = phase\n            first = fixture.run_delivery(fault=lose_publication)\n            rows = []\n            for retry in range(2):\n                result = fixture.run_delivery()\n                service = fixture.service()\n                comments = [c for c in service['issues']['8'].get('comments_data', []) if '<!-- harness-delivery:' in c['body']]\n                state = json.loads(Store(fixture.source).records(Store(fixture.source).tip())[fixture.path])\n                rows.append({'outcome': result['outcome'], 'summary': result['summary'], 'merge_count': service.get('merge_count', 0), 'delivery_comment_count': len(comments), 'step': state['delivery']['steps'][stage], 'same_resume': result['resume_command'] == first['resume_command'], 'exact_artifact_confirmed': result['artifact_publication']['status'] == 'confirmed'})\n            observation = {'id': 'checker.no_send.' + stage + '.' + phase, 'stage': stage, 'publication_failure': phase, 'first_outcome': first['outcome'], 'retry_results': rows}\n            observations.append(observation)\n            print(json.dumps(observation, sort_keys=True), flush=True)\n            assert first['outcome'] == 'incomplete'\n            assert all(row['outcome'] == 'incomplete' and row['same_resume'] and row['exact_artifact_confirmed'] for row in rows)\n            if stage == 'merge':\n                assert all(row['merge_count'] == 0 and row['delivery_comment_count'] == 0 for row in rows)\n            else:\n                assert all(row['merge_count'] == 1 and row['delivery_comment_count'] == 0 for row in rows)\n    print(json.dumps({'probe': 'confirmed defect', 'executed': [row['id'] for row in observations], 'candidate': '9c74d16ab8da101071322538a93af92620622b3f'}), flush=True)\nfinally:\n    fixture.doCleanups()\n",
+    "runs/issue-39/issue39-20261028/evidence/checker-1-probe.log": "{\"first_outcome\": \"incomplete\", \"id\": \"checker.no_send.merge.before-push\", \"publication_failure\": \"before-push\", \"retry_results\": [{\"delivery_comment_count\": 0, \"exact_artifact_confirmed\": true, \"merge_count\": 0, \"outcome\": \"incomplete\", \"same_resume\": true, \"step\": {\"dispatched\": true, \"id\": \"b8051c1edf341e83c41a3bc7:merge\", \"status\": \"intent\"}, \"summary\": \"Dispatched merge is not yet authoritative; reconcile service before retry.\"}, {\"delivery_comment_count\": 0, \"exact_artifact_confirmed\": true, \"merge_count\": 0, \"outcome\": \"incomplete\", \"same_resume\": true, \"step\": {\"dispatched\": true, \"id\": \"b8051c1edf341e83c41a3bc7:merge\", \"status\": \"intent\"}, \"summary\": \"Dispatched merge is not yet authoritative; reconcile service before retry.\"}], \"stage\": \"merge\"}\n{\"first_outcome\": \"incomplete\", \"id\": \"checker.no_send.merge.after-push\", \"publication_failure\": \"after-push\", \"retry_results\": [{\"delivery_comment_count\": 0, \"exact_artifact_confirmed\": true, \"merge_count\": 0, \"outcome\": \"incomplete\", \"same_resume\": true, \"step\": {\"dispatched\": true, \"id\": \"b8051c1edf341e83c41a3bc7:merge\", \"status\": \"intent\"}, \"summary\": \"Dispatched merge is not yet authoritative; reconcile service before retry.\"}, {\"delivery_comment_count\": 0, \"exact_artifact_confirmed\": true, \"merge_count\": 0, \"outcome\": \"incomplete\", \"same_resume\": true, \"step\": {\"dispatched\": true, \"id\": \"b8051c1edf341e83c41a3bc7:merge\", \"status\": \"intent\"}, \"summary\": \"Dispatched merge is not yet authoritative; reconcile service before retry.\"}], \"stage\": \"merge\"}\n{\"first_outcome\": \"incomplete\", \"id\": \"checker.no_send.ticket-comment-8.before-push\", \"publication_failure\": \"before-push\", \"retry_results\": [{\"delivery_comment_count\": 0, \"exact_artifact_confirmed\": true, \"merge_count\": 1, \"outcome\": \"incomplete\", \"same_resume\": true, \"step\": {\"dispatched\": true, \"id\": \"b8051c1edf341e83c41a3bc7:ticket-comment-8\", \"status\": \"intent\"}, \"summary\": \"Dispatched ticket-comment-8 is not yet authoritative; reconcile service before retry.\"}, {\"delivery_comment_count\": 0, \"exact_artifact_confirmed\": true, \"merge_count\": 1, \"outcome\": \"incomplete\", \"same_resume\": true, \"step\": {\"dispatched\": true, \"id\": \"b8051c1edf341e83c41a3bc7:ticket-comment-8\", \"status\": \"intent\"}, \"summary\": \"Dispatched ticket-comment-8 is not yet authoritative; reconcile service before retry.\"}], \"stage\": \"ticket-comment-8\"}\n{\"first_outcome\": \"incomplete\", \"id\": \"checker.no_send.ticket-comment-8.after-push\", \"publication_failure\": \"after-push\", \"retry_results\": [{\"delivery_comment_count\": 0, \"exact_artifact_confirmed\": true, \"merge_count\": 1, \"outcome\": \"incomplete\", \"same_resume\": true, \"step\": {\"dispatched\": true, \"id\": \"b8051c1edf341e83c41a3bc7:ticket-comment-8\", \"status\": \"intent\"}, \"summary\": \"Dispatched ticket-comment-8 is not yet authoritative; reconcile service before retry.\"}, {\"delivery_comment_count\": 0, \"exact_artifact_confirmed\": true, \"merge_count\": 1, \"outcome\": \"incomplete\", \"same_resume\": true, \"step\": {\"dispatched\": true, \"id\": \"b8051c1edf341e83c41a3bc7:ticket-comment-8\", \"status\": \"intent\"}, \"summary\": \"Dispatched ticket-comment-8 is not yet authoritative; reconcile service before retry.\"}], \"stage\": \"ticket-comment-8\"}\n{\"probe\": \"confirmed defect\", \"executed\": [\"checker.no_send.merge.before-push\", \"checker.no_send.merge.after-push\", \"checker.no_send.ticket-comment-8.before-push\", \"checker.no_send.ticket-comment-8.after-push\"], \"candidate\": \"9c74d16ab8da101071322538a93af92620622b3f\"}\n",
+    "runs/issue-39/issue39-20261028/evidence/checker-1-review.txt": "Independent checker at detached candidate 9c74d16ab8da101071322538a93af92620622b3f; base796bba75ab32c13e1b50ee01fd7d067f17112cdf; plan1; checker-1.\nRead AGENTS.md, local-docs README/descriptor/pillars/verification/issue-workflow, tracked implement-change-harness SKILL.md and roles/state references, relevant basic-change-harness design rationale, build target inventory and submodule status. No C++ behavior changes: C++/GPU/Steam checks do not apply; uninitialized C++ dependencies are not prerequisites for Python harness checks.\nLive issue read executed: gh issue view 39 --repo robinwassen/Fossilize --json number,title,body,state,url,labels,comments; exit0, issue OPEN, exact title/body acceptance matches immutable issue snapshot. Explicit repository identity used; no production write. This read was performed after initial report file retrieval, before deriving review expectations and source examination; implementer observations were treated as leads, never independent verification.\nReviewed all10 base-to-candidate changed files, full delivery helper, harness changes, fake service behavior and test assertions/registration. New test module is discoverable by test_*.py. Real disposable squash/tree/topology/ref assertions are substantive. Existing test files are not removed or weakened. Approval guidance presents link/verification then asks once and honors prior bound approval. These static observations do not accept behaviors not independently run.\nThe independent four-case probe uses the retained fixture only for accepted terminal-run setup and real disposable service/Git. It injects publication failure precisely after dispatched=true is durably committed and before effect() can execute, unlike a service response-loss simulation. Each case creates two fresh Harness instances for retry; artifact publication confirms each time, yet no unsent merge/comment is attempted and result remains incomplete. This is a deterministic recovery defect, with no unsafe deletion or fabricated delivery observed.\nMandatory delivery-suite was not rerun by this checker after decisive independent rejection. Reviewed implementer-suite-5.log shows14 completed passing methods and W11 four failed subcases, then externally recorded real600-second timeout exit124. That is historical implementer evidence, not checker-passing evidence. W11 remainder, W12 and subsequent retained regressions are not established by this checker. Required full gate remains incomplete; no acceptance.\nCandidate source stayed clean; no source, canonical state, production GitHub or production refs changed by checker. Only disposable probe files/logs and this report were written outside source.\n",
+    "runs/issue-39/issue39-20261028/evidence/checker-1-reviewed-implementer-suite5.log": "test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition (test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition) ... ok\ntest_W01_W13_guidance_one_approval_handoff_and_supported_recovery (test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery) ... ok\ntest_W02_approval_scope_and_acceptance_fences_zero_effects (test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects) ... ok\ntest_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch (test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch) ... ok\ntest_W03_live_preflight_drift_and_merge_rejection (test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection) ... ok\ntest_W03_zero_total_zero_required_and_failed_lookup_are_distinct (test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct) ... ok\ntest_W04_incompatible_squash_and_already_merged_reconcile (test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile) ... ok\ntest_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved (test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved) ... ok\ntest_W05_conditional_delete_races_preserve_advanced_refs (test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs) ... ok\ntest_W07_auto_closed_completed_cancelled_and_comment_conflicts (test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts) ... ok\ntest_W08_another_active_run_is_preserved (test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved) ... ok\ntest_W09_W10_every_effect_boundary_process_death_and_recovery (test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery) ... ok\ntest_W09_W10_service_response_loss_no_duplicate_merge_or_comment (test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment) ... ok\ntest_W09_observational_and_terminal_boundaries (test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries) ... ok\ntest_W11_every_checkpoint_publication_response_loss_and_rejection (test_delivery_wrapup.DeliveryTests.test_W11_every_checkpoint_publication_response_loss_and_rejection) ... \n  test_W11_every_checkpoint_publication_response_loss_and_rejection (test_delivery_wrapup.DeliveryTests.test_W11_every_checkpoint_publication_response_loss_and_rejection) (stage='merge', event='Approved delivery: merge dispatch', phase='before-push') ... FAIL\n  test_W11_every_checkpoint_publication_response_loss_and_rejection (test_delivery_wrapup.DeliveryTests.test_W11_every_checkpoint_publication_response_loss_and_rejection) (stage='merge', event='Approved delivery: merge dispatch', phase='after-push') ... FAIL\n  test_W11_every_checkpoint_publication_response_loss_and_rejection (test_delivery_wrapup.DeliveryTests.test_W11_every_checkpoint_publication_response_loss_and_rejection) (stage='ticket-comment-8', event='Approved delivery: ticket-comment-8 dispatch', phase='before-push') ... FAIL\n  test_W11_every_checkpoint_publication_response_loss_and_rejection (test_delivery_wrapup.DeliveryTests.test_W11_every_checkpoint_publication_response_loss_and_rejection) (stage='ticket-comment-8', event='Approved delivery: ticket-comment-8 dispatch', phase='after-push') ... FAIL\n",
+    "runs/issue-39/issue39-20261028/evidence/checker-1-validator.log": "Skill is valid!\n"
+  },
+  "role": "checker",
+  "skipped": [],
+  "summary": "Four independent dispatch-publication counterexamples prove no-send merge/comment recovery is stranded; mandatory complete behavior gate is incomplete. Skill package passes.",
+  "test_mapping": {
+    "W01": {
+      "status": "not_run_by_checker; static assertions reviewed",
+      "tests": []
+    },
+    "W02": {
+      "status": "not_run_by_checker; static assertions reviewed",
+      "tests": []
+    },
+    "W03": {
+      "status": "not_run_by_checker; static assertions reviewed",
+      "tests": []
+    },
+    "W04": {
+      "status": "not_run_by_checker; static assertions reviewed",
+      "tests": []
+    },
+    "W05": {
+      "status": "not_run_by_checker; static assertions reviewed",
+      "tests": []
+    },
+    "W06": {
+      "status": "not_run_by_checker; static assertions reviewed",
+      "tests": []
+    },
+    "W07": {
+      "status": "not_run_by_checker; static assertions reviewed",
+      "tests": []
+    },
+    "W08": {
+      "status": "not_run_by_checker; static assertions reviewed",
+      "tests": []
+    },
+    "W09": {
+      "location": "/tmp/fossilize-39/checker-1-probe.py",
+      "note": "Four bounded no-send publication failures and two fresh retries each; does not claim complete planned matrix.",
+      "status": "independent_counterexample_confirmed; planned gate incomplete",
+      "tests": [
+        "checker.no_send.merge.before-push",
+        "checker.no_send.merge.after-push",
+        "checker.no_send.ticket-comment-8.before-push",
+        "checker.no_send.ticket-comment-8.after-push"
+      ]
+    },
+    "W10": {
+      "location": "/tmp/fossilize-39/checker-1-probe.py",
+      "note": "Four bounded no-send publication failures and two fresh retries each; does not claim complete planned matrix.",
+      "status": "independent_counterexample_confirmed; planned gate incomplete",
+      "tests": [
+        "checker.no_send.merge.before-push",
+        "checker.no_send.merge.after-push",
+        "checker.no_send.ticket-comment-8.before-push",
+        "checker.no_send.ticket-comment-8.after-push"
+      ]
+    },
+    "W11": {
+      "location": "/tmp/fossilize-39/checker-1-probe.py",
+      "note": "Four bounded no-send publication failures and two fresh retries each; does not claim complete planned matrix.",
+      "status": "independent_counterexample_confirmed; planned gate incomplete",
+      "tests": [
+        "checker.no_send.merge.before-push",
+        "checker.no_send.merge.after-push",
+        "checker.no_send.ticket-comment-8.before-push",
+        "checker.no_send.ticket-comment-8.after-push"
+      ]
+    },
+    "W12": {
+      "status": "not_run_by_checker; static assertions reviewed",
+      "tests": []
+    },
+    "W13": {
+      "note": "No full-suite pass claimed.",
+      "status": "package passed; full mandatory discovery not rerun and incomplete",
+      "tests": [
+        "skill-package.quick_validate"
+      ]
+    }
+  },
+  "verdict": "changes_required",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/39",
+  "worker_id": "/root/checker39_first"
+}

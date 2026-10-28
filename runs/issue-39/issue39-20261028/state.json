@@ -65,13 +65,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "de8143000357ba7dfe65a4b544f12df18a8bade76aeadb82626c17f4952fb8f0",
+      "report": "runs/issue-39/issue39-20261028/reports/checker-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793208652.8677156,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/39",
       "worker_id": "/root/checker39_first"
     }
@@ -80,7 +82,26 @@
     "stage": "pending"
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/39",
+      "evidence": "Independent four-case probe confirmed merge and ticket-comment-8 dispatch checkpoint publication failure both before-push and after-push exits before effect(). In all four cases, two fresh retries confirm exact orphan publication but remain incomplete because dispatched=true/status=intent triggers the pending guard. Merge cases retain merge_count0; comment cases retain merge_count1 and delivery_comment_count0. Source persists dispatched before publication returns; no retry path distinguishes this known no-send outcome. This violates same-command recoverability required by AC1 and planned W09-W11. See runs/issue-39/issue39-20261028/evidence/checker-1-probe.log",
+      "id": "CHK39-NO-SEND-PUBLICATION-RECOVERY",
+      "location": ".agents/skills/implement-change-harness/scripts/delivery_wrapup.py:126-132",
+      "required_change": "Preserve durable distinction/reconciliation for known unsent effects when dispatch publication fails, while retaining fail-closed behavior for genuinely uncertain sent effects. Keep and pass every W11 case and add any missing dispatch/publication boundary assertions needed; do not solve by blindly redispatching uncertain writes.",
+      "route": "implementation",
+      "status": "open"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/39",
+      "evidence": "The sole behavioral gate requires full standard-library discovery exit0 within600 seconds. Exact-candidate implementer command was externally timed out with exit124 during W11 after14 passing methods and four failed dispatch-publication subcases; W12 and subsequent retained regression modules did not execute. Reviewed log is embedded as runs/issue-39/issue39-20261028/evidence/checker-1-reviewed-implementer-suite5.log; this checker did not relabel it as independent passing execution. The large exhaustive real-Git publication/recovery matrix plus existing suite needs a feasible bounded gate design.",
+      "id": "CHK39-MANDATORY-GATE-RUNTIME-DESIGN",
+      "location": "plan1 gate delivery-suite; local-docs/verification.md:Change-harness skill checks",
+      "required_change": "Replan a bounded complete verification design, such as shards each under600 seconds whose explicit union covers the identical full discovered test set and every W01-W13 assertion. Preserve all existing safety/history/publication regressions and exact candidate unit/final checks; do not drop assertions or raise the command bound silently. Re-run independently after repair.",
+      "route": "planner",
+      "status": "open"
+    }
+  ],
   "issue_snapshot": {
     "deliverables": [
       "https://github.com/robinwassen/Fossilize/issues/39"
@@ -198,15 +219,15 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Dispatch the permitted fresh planner replan to preserve all assertions while defining feasible bounded complete gates, then a fresh implementer repair for known no-send dispatch-publication recovery. Require a fresh independent checker on the repaired committed candidate; no acceptance/publication yet.",
+  "operation": "replan",
   "original": [
     {
       "id": "AC1",
       "requirement": "## Problem\n\nThe approved wrap-up of [PR #38](https://github.com/robinwassen/Fossilize/pull/38) required repeated AI reasoning, individual Git/GitHub calls, temporary Python scripts, and manual post-delivery state updates. Squash merge, branch cleanup, ticket closeout and evidence reconciliation are a mechanical process. Reconstructing that process in each conversation wastes tokens and adds opportunities for mistakes.\n\n## Required outcome\n\nOnce the verified PR is open and attached, the harness prompts the user for approval. After explicit approval, the agent invokes **one supported wrap-up command**. That command performs the complete approved delivery workflow and returns a compact result. AI reasoning is reserved for review, the approval conversation and exceptional decisions.\n\n## Acceptance criteria\n\n- Update the skill to present the PR link and a concise verification summary, then request approval to squash-merge and wrap up. Decline/defer leaves the PR open. Honor approval already given in the conversation without asking again; opening a PR alone is not approval.\n- Bind approval to the repository, PR and accepted head. The script checks eligibility and stops for a meaningful decision if the head, required verification or merge conditions changed. Preserve existing independent-checking gates.\n- After approval, a single repository-owned command performs the squash merge, verifies the resulting commit/tree against the accepted candidate, deletes the intended remote/local source branch safely, confirms eligible tickets are closed as completed, and posts concise delivery evidence. Preserve unrelated worktrees, user edits and unfinished parent issues.\n- Add a supported post-delivery state transition. Record the merge commit separately from the original accepted candidate; preserve acceptance, reports, budgets and history. Update PR/delivery status, keep the active pointer correct, and publish/confirm the exact orphan artifact checkpoint. No ad-hoc scripts or direct coordinator state surgery are needed.\n- The command owns durable intent, returned identities, readback and recovery for its steps. Restarting the same command reconciles partial/uncertain outcomes without duplicate merges/comments, incorrect deletion or fabricated completion. Already-merged PRs, already-deleted branches and already-closed tickets are handled explicitly.\n- Return one compact structured result and human summary: delivered, incomplete with the same resumption command, or a specific decision needed. The agent does not reason through or narrate each successful mechanical step. Avoid repeatedly reading or copying unchanged full history; retain the existing publication and integrity guarantees.\n\n## Verification\n\nUse assertion-bearing fake-gh and real disposable Git/bare-remote tests for the approved happy path, no approval, stale head, merge rejection, dirty/unrelated work preservation, interruption/response loss at each mutation boundary, retry/idempotence, completed-run state updates and artifact publication failure. Verify the normal agent workflow requires one approval interaction and one wrap-up command invocation.\n\n## Scope and context\n\nHarness command, approval handoff, policy/skill guidance and regression tests. Builds on the delivered issue-based harness in [#37](https://github.com/robinwassen/Fossilize/issues/37). No implementation work is requested by filing this issue; no automatic approval, new scheduler, or changes to Fossilize C++ behavior.\n\n<!-- harness-followup:approval-wrapup-command-v1 -->\n"
     }
   ],
-  "phase": "checking",
+  "phase": "planning",
   "plan": {
     "cases": [
       {
@@ -498,7 +519,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 21,
+  "revision": 22,
   "root_issue": {
     "id": 6083245574,
     "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
@@ -508,7 +529,7 @@
   },
   "run_id": "issue39-20261028",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-39",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/39",
   "verification": [],

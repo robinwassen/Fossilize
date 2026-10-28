@@ -1,0 +1,41 @@
+"""Independent no-send publication recovery probes; mutations are disposable."""
+import json
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path.cwd() / '.agents/skills/implement-change-harness/scripts'))
+from test_delivery_wrapup import DeliveryTests
+from harness_state import Store
+
+fixture = DeliveryTests('test_W11_every_checkpoint_publication_response_loss_and_rejection')
+try:
+    fixture.setUp()
+    fixture.fast_reads = True
+    observations = []
+    for stage in ('merge', 'ticket-comment-8'):
+        for phase in ('before-push', 'after-push'):
+            fixture.restore()
+            def lose_publication(current, boundary, delivery):
+                if (current, boundary) == (stage, 'before-publication'):
+                    record = delivery.delivery['steps'].get(stage, {})
+                    if record.get('dispatched') and record.get('status') == 'intent':
+                        delivery.h.store.fail = phase
+            first = fixture.run_delivery(fault=lose_publication)
+            rows = []
+            for retry in range(2):
+                result = fixture.run_delivery()
+                service = fixture.service()
+                comments = [c for c in service['issues']['8'].get('comments_data', []) if '<!-- harness-delivery:' in c['body']]
+                state = json.loads(Store(fixture.source).records(Store(fixture.source).tip())[fixture.path])
+                rows.append({'outcome': result['outcome'], 'summary': result['summary'], 'merge_count': service.get('merge_count', 0), 'delivery_comment_count': len(comments), 'step': state['delivery']['steps'][stage], 'same_resume': result['resume_command'] == first['resume_command'], 'exact_artifact_confirmed': result['artifact_publication']['status'] == 'confirmed'})
+            observation = {'id': 'checker.no_send.' + stage + '.' + phase, 'stage': stage, 'publication_failure': phase, 'first_outcome': first['outcome'], 'retry_results': rows}
+            observations.append(observation)
+            print(json.dumps(observation, sort_keys=True), flush=True)
+            assert first['outcome'] == 'incomplete'
+            assert all(row['outcome'] == 'incomplete' and row['same_resume'] and row['exact_artifact_confirmed'] for row in rows)
+            if stage == 'merge':
+                assert all(row['merge_count'] == 0 and row['delivery_comment_count'] == 0 for row in rows)
+            else:
+                assert all(row['merge_count'] == 1 and row['delivery_comment_count'] == 0 for row in rows)
+    print(json.dumps({'probe': 'confirmed defect', 'executed': [row['id'] for row in observations], 'candidate': '9c74d16ab8da101071322538a93af92620622b3f'}), flush=True)
+finally:
+    fixture.doCleanups()
