@@ -128,6 +128,28 @@
       "worker_id": "/root/checker_26_2"
     }
   ],
+  "closeout": {
+    "acceptances": [
+      {
+        "attempt_id": "checker-2",
+        "base_sha": "cc36967be308feb58ca0963e9ad161cb545b3b7a",
+        "candidate_sha": "040ab780cb535b75245cb457440d492e9d4bc2c9",
+        "plan_version": 1
+      }
+    ],
+    "base_sha": "cc36967be308feb58ca0963e9ad161cb545b3b7a",
+    "from_sha": "040ab780cb535b75245cb457440d492e9d4bc2c9",
+    "plan_version": 1,
+    "stage": "intent",
+    "targets": [
+      {
+        "evidence": "Independent unit checker passed 34/34 Python/Git tests with no skips, skill metadata validation, canonical-preservation review and historical PR #2 provenance checks. No C++/GPU/Steam coverage claimed; separate exact-candidate renewal and final review remain required.",
+        "key": "FOS-000026",
+        "location": "local-docs/reviews/harness-backlog.md",
+        "reference": "https://github.com/robinwassen/Fossilize/compare/master...codex/FOS-000026-backlog-completion"
+      }
+    ]
+  },
   "final_acceptance": null,
   "findings": [
     {
@@ -176,8 +198,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "dispatch separate fresh final checker over combined branch",
-  "operation": "final",
+  "next_action": "commit canonical Done statuses/evidence/reference, then closeout-record",
+  "operation": "closeout",
   "original": [
     {
       "id": "AC1",
@@ -212,7 +234,7 @@
       "requirement": "Apply the resulting completion rule to this item in its implementation PR.   Reconcile the stale FOS-000025 status only against its actual merged PR and   retained verification evidence; do not mark other pending backlog work Done."
     }
   ],
-  "phase": "checking",
+  "phase": "closing",
   "plan": {
     "cases": [
       {
@@ -416,7 +438,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 18,
+  "revision": 19,
   "run_id": "2026-10-28-backlog-completion",
   "schema_version": 2,
   "status": "ready",
