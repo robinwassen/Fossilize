@@ -2,7 +2,8 @@
 
 ## FOS-000026 — Include backlog completion in the implementation PR
 
-**Status:** Pending implementation.
+**Status:** Done (verified proposed branch state; not landed on master).
+**Completion evidence:** Independent unit checker passed 34/34 Python/Git tests with no skips, skill metadata validation, canonical-preservation review and historical PR #2 provenance checks. No C++/GPU/Steam coverage claimed; separate exact-candidate renewal and final review remain required. https://github.com/robinwassen/Fossilize/compare/master...codex/FOS-000026-backlog-completion
 
 **Depends on:** FOS-000025 (implementation merged in [PR #2](https://github.com/robinwassen/Fossilize/pull/2)).
 

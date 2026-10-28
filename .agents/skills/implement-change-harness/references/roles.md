@@ -44,7 +44,11 @@ Commit the candidate and return `result_candidate_sha`, `test_mapping` and
 `commands`, including exact commands/cwd/status, actual discovered/executed test
 IDs, logs and limitations. Explain an omitted planned test as incomplete work.
 Do not edit canonical state, acceptance, allocations or checker reports. Do not
-advance to another unit before independent acceptance. An infeasible plan returns
+advance to another unit before independent acceptance. Canonical Done bookkeeping
+belongs to the coordinator after unit acceptance, in a separate committed
+bookkeeping candidate covered by renewed unit and final checks. An implementer
+must remove invalidated Done markers before repair acceptance; unfinished criteria
+stay open. Preserve original acceptance text, permanent allocations and dependencies. An infeasible plan returns
 to planning through the coordinator.
 
 ## Checker
@@ -79,4 +83,9 @@ finding may remain open while this unit accepts, so its owner can dispatch and
 repair within scope. Every unresolved finding still blocks final acceptance and
 publication. A second check after all unit acceptances uses `operation=final`; it
 independently covers the combined branch and all planned cases. Prior unit
-acceptances alone do not prove integration.
+acceptances alone do not prove integration. Review canonical status/evidence and
+reference bytes in the full final candidate. All required verification must pass;
+failed, unsupported, unavailable, skipped or incomplete checks cannot justify Done.
+Reject stale Done claims, artifact-only canonical subtasks or an unreviewed
+post-check bookkeeping commit. A compare link is an honest pre-publication
+reference; the actual PR is recorded during the existing one-PR publication flow.

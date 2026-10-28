@@ -1,7 +1,8 @@
 # Basic change harness: proposed skill design
 
-Date: 2026-10-27. Status: v1 implementation candidate under FOS-000025;
-independent acceptance and publication remain separate gates.
+Date: 2026-10-27. Status: FOS-000025 v1 implementation merged in
+[PR #2](https://github.com/robinwassen/Fossilize/pull/2). Historical acceptance
+describes that revision; subsequent changes require their own verification.
 
 ## Outcome and boundaries
 
@@ -17,7 +18,7 @@ it does not replace a failed checker with its own judgment.
 
 ## FOS-000025 — Implement the change harness skill
 
-Canonical task definition. Status: in progress. Implement the workflow specified
+Canonical task definition. Status: Done (merged in [PR #2](https://github.com/robinwassen/Fossilize/pull/2)). Implement the workflow specified
 below as a tracked, discoverable skill with a standard-library state/Git helper,
 meaningful automated tests and independently checked evidence. Preserve the
 planner/implementer/checker responsibilities and per-subtask verification gates.
@@ -25,6 +26,14 @@ Acceptance requires tested state transitions, recovery and publication safeguard
 a validated skill package, and one PR to robinwassen/Fossilize master. Use this
 three-role method to implement the harness itself; record the bootstrap run on
 harness-artifacts before dispatching agents. Product C++ changes are out of scope.
+
+Completion evidence (historical FOS-000025 only): the retained independent
+`checker-final` accepted `e01fa9d68ade5384f214ec46a6ddc352b22a03de` against base
+`bbe8ae4acd9ad527658bb58e6b06474924a06284`: 27 discovered/executed tests, no skips,
+and passed skill metadata validation. The completed local run
+`runs/FOS-000025/2026-10-27-bootstrap` records PR #2 and successful attachment.
+GitHub reports merge `35a72926c8e313a11c8de5ce61c1356cbfa4eccd` on 2026-10-27.
+These historical executions do not verify FOS-000026 or later revisions.
 
 AGENTS.md and local-docs are shared in Git.
 
@@ -88,8 +97,11 @@ Register allocations in local-docs/backlog-keys.md before creating definitions.
 Never recycle keys. Reserve interrupted allocations permanently rather than fill gaps.
 
 The existing root backlog remains canonical; state stores its key, location and
-input snapshot. Harness-created subtasks have their canonical definition in the
-artifacts state, with a branch-qualified location in the registry. Other mentions
+input snapshot. Harness-created subtasks have their canonical definition in tracked local-docs
+on the implementation branch, with that location in the registry. Artifacts
+retain execution/acceptance records and reference the canonical source definition.
+FOS-000026 supersedes the former artifact-only subtask definition rule; legacy
+units require explicit location migration before closeout. Other mentions
 are references, not additional definitions. Retire or preserve keys on replanning;
 do not reinterpret an old subtask key as a different task.
 
