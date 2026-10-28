@@ -1,4 +1,4 @@
-# Local state and recovery contract
+# State, artifact publication and recovery contract
 
 ## Authority and invocation
 
@@ -76,8 +76,9 @@ unreachable Git objects may remain until normal Git garbage collection.
 A separate artifact worktree is an inspection view. Ref updates intentionally do
 not rewrite its index/files. Before refreshing it, inspect its status and preserve
 unexpected edits separately; use a new detached view rather than discarding edits.
-Never merge/push artifacts with the source PR. Local-only records cannot recover a
-lost machine; independent clones do not share this lock or allocation authority.
+Never merge/push artifacts with the source PR. Each required records checkpoint
+is published separately as described below. Independent clones do not share this
+repository-local lock or allocation authority.
 
 ## Plans and permanent keys
 
@@ -342,3 +343,107 @@ record the new candidate, renew unit checks and obtain separate final acceptance
 The stable compare link remains valid after PR creation; actual PR URL belongs in
 publication records/description. Publish exactly once under the existing sequence;
 no subsequent closeout invocation or automatic merge occurs.
+
+
+## Artifact publication (FOS-000027)
+
+This policy supersedes the original local-only proposal. Initialization, every
+state transition/report/evidence addition, permanent reservation, interruption or
+reconciliation, closeout, source-publication observation and terminal commit are
+required artifact checkpoints. The helper commits records locally first, then
+makes one bounded non-force push of `CHECKPOINT_SHA:refs/heads/harness-artifacts`.
+It independently reads the actual remote ref before retry and after push. Its
+transport attempt has a 60-second total deadline and at most 20 seconds per network
+command, with terminal prompting disabled. Network errors are sanitized.
+
+`allocations.json.artifact_publication` binds policy version, `origin`, declared
+owner/repository, exact artifact ref, SHA-256 of the actual single push endpoint,
+and sanitized semantic privacy review identity/summary. This journal-level policy
+survives clearing the active pointer. Fetch, push and confirmation all use the
+bound push endpoint, including when origin has a different fetch URL. Hosted URL
+repository paths must match the declared repository; local file transports bind
+the explicitly configured endpoint. Multiple push URLs, changed endpoints, wrong
+repositories/refs or upstream destinations fail closed. No credential or raw URL
+is copied into publication records. Historical repository identity is retained.
+
+Every result includes `artifact_publication.status` (`confirmed` or `incomplete`),
+checkpoint SHA, destination, independently observed remote SHA, outcome and exact
+retry API envelope. CLI exits 3 for an incomplete mutation/publication (JSON is
+still returned); malformed/stale requests exit 2. `show` exits zero for inspection
+and reports incompleteness explicitly. Only `workflow_complete=true` certifies
+both terminal local records and confirmation of the exact current artifact tip.
+A complete historical state by itself describes its old workflow, not evidence
+that the new policy was applied retrospectively.
+
+Forward mutations require reconciliation of the previous checkpoint. During an
+outage the helper can still retain report/acknowledgement/liveness/budget facts
+locally, but cannot dispatch work, allocate keys, authorize source publication or
+finish while the prior tip is pending. Restore transport/authentication or remove
+the rejecting remote hook, inspect `show`, then retry only the recorded operation:
+
+```sh
+python3 -B .agents/skills/implement-change-harness/scripts/harness_state.py --repo /absolute/implementation publish-artifacts --payload /tmp/empty.json --expected-tip FULL_CURRENT_TIP --expected-revision CURRENT_REVISION
+```
+
+Here `/tmp/empty.json` contains `{}`. The corresponding API is
+`Harness(repo).apply("publish-artifacts", {}, tip, revision)`. When active.json is
+null, use revision 0. This retry creates no acknowledgement commit, attempt, PR or
+allocation. Already confirmed tips are idempotent. An ancestor on the remote means
+only ancestor coverage: the current checkpoint remains incomplete until exact-tip
+confirmation. Command success, caller-provided SHA and an intervening remote
+advance cannot certify the requested current tip.
+
+For an observed remote descendant, the helper fetches into
+`refs/harness/observed/<observed-sha>`, validates all ancestors (including permitted
+legacy schema-1 records and an empty orphan bootstrap root), JSON/run/pointer and
+allocation identities, publication policy, retained local records and append-only
+evidence. Automatic adoption is deliberately conservative: existing run-state
+bytes must be identical, additions may retain evidence and extend allocation
+reservations/high-water. Any evolved run state requires explicit reconciliation
+between writers; the helper does not decide whether changed budgets, worker facts,
+acceptances or PR state are compatible. A safe descendant advances the local ref
+under CAS, returns incomplete with `remote-advance-adopted`, and requires `show`
+and a fresh invocation at that tip/revision. `show` never adopts an artifact tip.
+Divergence, malformed history, dropped reservations or altered records retains both
+tips and a fetch/compare/coordinate action. Never force push, silently discard a
+writer's records, or automatically merge distributed state. Cross-machine key
+allocation remains separately coordinated; local flock is not a distributed lock.
+
+### Existing-history adoption and privacy
+
+After implementation acceptance, invoke the helper from the candidate worktree,
+in the same run. Before the first production push, inspect **all unique historical
+record blobs**, including reports and representative log payloads, for small,
+sanitized allowed harness records. Combine structural all-ancestor validation,
+credential-pattern audit and semantic review. Pattern absence alone is not privacy
+proof. Do not print secrets into review output. If disallowed content is found,
+retain history locally and report its exact blocked scope for a decision; never
+silently redact/rewrite, force push or publish that history.
+
+Record a short sanitized review summary, then use:
+
+```json
+{"reviewed_tip":"FULL_REVIEWED_ARTIFACT_TIP","review_summary":"All unique historical records reviewed semantically; describe allowed contents and audit scope concisely."}
+```
+
+Call `apply("adopt-artifacts", payload, tip, active_revision)` or CLI action
+`adopt-artifacts` with the usual payload/CAS flags. For null-active history, use
+revision 0 and include `repository` containing `target_remote=origin` and the
+actual `target_repository`. The adoption commit changes only the allocation
+journal policy; original requirements, completed states, current worker/PR facts,
+reports, budgets and ancestry remain intact. No old publication is fabricated and
+no deadline is extended. Schema-1 bootstrap import additionally requires the same
+`reviewed_tip`/`review_summary` when it binds publication in its import transaction.
+A pending policy-less tip blocks normal forward operations until explicit adoption.
+
+### Finite terminal ordering
+
+Source PR lookup/create-once/attachment and any required CI follow their existing
+sequence. The last local artifact transaction already contains terminal run state
+and `active.json=null` atomically; the helper then publishes and verifies that
+exact commit. Failure returns `workflow_complete=false`, even though the local
+historical state says complete or the PR is attached. Restart discovers the global
+journal policy and pending tip despite the null pointer. A following initialize
+cannot conceal it. `publish-artifacts` reconciles that same terminal checkpoint
+without rerunning accepted work or duplicating a PR. Read-only status and retry
+produce no self-acknowledgement commit, so publication terminates finitely.

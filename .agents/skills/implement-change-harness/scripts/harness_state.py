@@ -11,6 +11,7 @@ import re
 import subprocess
 import tempfile
 import time
+from urllib.parse import urlsplit
 
 SCHEMA = 2
 KEY = re.compile(r"FOS-\d{6,}\Z")
@@ -329,11 +330,209 @@ def initial_state(repo, payload, now):
             "final_acceptance": None, "provenance": []}
 
 
+POLICY = "artifact_publication"
+
+
+def artifact_destination(repo, repository):
+    """Bind a single actual push endpoint without persisting credentials/config."""
+    require(repository["target_remote"] == "origin", "artifact destination must be origin")
+    urls = git(repo, "remote", "get-url", "--push", "--all", "origin").decode().splitlines()
+    require(len(urls) == 1, "artifact origin must have exactly one push endpoint")
+    endpoint = urls[0]
+    # For hosted endpoints check the declared owner/repository too. Local file
+    # transports are useful for offline repositories and real bare-remote tests.
+    if "://" in endpoint and not endpoint.startswith("file://"):
+        parsed = urlsplit(endpoint)
+        require(parsed.scheme in ("https", "ssh"), "unsupported artifact transport")
+        identity = parsed.path.strip("/").removesuffix(".git")
+        require(identity == repository["target_repository"], "artifact repository endpoint mismatch")
+    elif re.match(r"[^/]+@[^:]+:", endpoint):
+        require(endpoint.split(":", 1)[1].strip("/").removesuffix(".git") == repository["target_repository"],
+                "artifact repository endpoint mismatch")
+    else:
+        require(endpoint.startswith(("/", "./", "../", "file://")), "unsupported artifact endpoint")
+    return {"version": 1, "remote": "origin", "repository": repository["target_repository"],
+            "ref": REF, "endpoint_sha256": hashlib.sha256(endpoint.encode()).hexdigest()}
+
+
 class Harness:
     def __init__(self, repo, clock=time.time, fail=None):
         self.repo = Path(repo).resolve()
         self.store = Store(repo, fail)
         self.clock = clock
+        self.validated_artifact_history = set()
+
+    def artifact_policy(self, records):
+        return json.loads(records.get("allocations.json", b"{}" )).get(POLICY)
+
+    def validate_artifact_policy(self, policy):
+        require(isinstance(policy, dict) and policy.get("version") == 1 and policy.get("ref") == REF
+                and policy.get("remote") == "origin", "invalid artifact publication policy")
+        require(policy.get("review_summary") and (policy.get("reviewed_tip") is None
+                or SHA.fullmatch(policy["reviewed_tip"])), "invalid artifact privacy review identity")
+        for path, content in self.store.records(self.store.tip()).items():
+            if path.endswith("/state.json"):
+                repository = json.loads(content).get("repository", {})
+                require(repository.get("target_remote") == "origin" and repository.get("target_repository") == policy["repository"],
+                        "artifact repository identity differs from retained run")
+        actual = artifact_destination(self.repo, {"target_remote": "origin", "target_repository": policy["repository"]})
+        require(all(policy.get(k) == v for k, v in actual.items()), "artifact endpoint changed; restore recorded destination and retry")
+        return git(self.repo, "remote", "get-url", "--push", "origin").decode().strip()
+
+    def remote_history(self, tip, local_records, policy, preserve=True, bound=True):
+        """Validate every adopted ancestor, then ensure no local durable fact is lost."""
+        remote_records = self.store.records(tip)
+        policy_identity = hashlib.sha256(encoded(policy)).hexdigest()
+        for commit in git(self.repo, "rev-list", tip).decode().splitlines():
+            cache_key = (commit, policy_identity)
+            if cache_key in self.validated_artifact_history:
+                continue
+            if not git(self.repo, "ls-tree", "-r", "--name-only", commit).strip():
+                require(len(git(self.repo, "rev-list", "--parents", "-n", "1", commit).split()) == 1,
+                        "empty non-root artifact ancestor")
+                self.validated_artifact_history.add(cache_key)
+                continue  # Historical orphan bootstrap root accepted by Store.
+            rows = self.store.records(commit)
+            active = json.loads(rows["active.json"])
+            require(active is None or (isinstance(active, dict) and active.get("state") in rows),
+                    "remote active pointer lacks a state record")
+            self.validate_run_records(rows, active)
+            journal = json.loads(rows["allocations.json"])
+            require(isinstance(journal.get("high_water"), int) and journal["high_water"] >= 0
+                    and isinstance(journal.get("issued"), list), "malformed remote allocation identity")
+            keys = [r["key"] for r in journal["issued"]]
+            require(all(KEY.fullmatch(k) for k in keys) and len(keys) == len(set(keys))
+                    and all(int(k[4:]) <= journal["high_water"] for k in keys), "invalid remote allocation identity")
+            for path, content in rows.items():
+                if path.endswith(".json"):
+                    json.loads(content)
+                if path.endswith("/state.json"):
+                    state = json.loads(content)
+                    require(state.get("schema_version") in (1, 2), "invalid remote state schema")
+                    repository = state.get("repository", {})
+                    require(repository.get("target_remote") == "origin" and repository.get("target_repository") == policy["repository"],
+                            "remote run repository differs from bound artifact destination")
+                    if state.get("schema_version") == 2:
+                        validate_state(state, self.repo)
+                    if active and active["state"] == path:
+                        self.validate_pointer(active, state)
+            old_policy = journal.get(POLICY)
+            if old_policy:
+                require(old_policy == policy, "remote artifact policy identity conflict")
+            self.validated_artifact_history.add(cache_key)
+        if bound:
+            require(self.artifact_policy(remote_records) == policy, "remote publication policy missing/changed")
+        if not preserve:
+            return remote_records
+        old_journal = json.loads(local_records["allocations.json"])
+        new_journal = json.loads(remote_records["allocations.json"])
+        require(new_journal["issued"][:len(old_journal["issued"])] == old_journal["issued"]
+                and new_journal["high_water"] >= old_journal["high_water"], "remote drops issued allocations")
+        for path, content in local_records.items():
+            if path in ("active.json", "allocations.json"):
+                continue
+            require(path in remote_records, "remote drops local record")
+            if path.endswith("/state.json"):
+                old, new = json.loads(content), json.loads(remote_records[path])
+                for key in ("task_key", "run_id", "original", "task_location"):
+                    require(new.get(key) == old.get(key), "remote changes immutable run identity")
+                require(new["revision"] >= old["revision"], "remote state revision regressed")
+                require(content == remote_records[path],
+                        "remote run state changed; preserve both tips and coordinate explicit reconciliation before adoption")
+                if old.get("phase") == "complete":
+                    require(content == remote_records[path], "remote rewrites completed run")
+            else:
+                require(content == remote_records[path], "remote rewrites append-only record")
+        return remote_records
+
+    def artifact_sync(self, tip, records, push=False, adopt=False):
+        """One bounded exact-ref attempt; no committed acknowledgements or force."""
+        policy = self.artifact_policy(records)
+        result = {"status": "incomplete", "checkpoint_sha": tip, "remote_sha": None,
+                  "destination": policy, "next_action": "adopt-artifacts with reviewed_tip and semantic review summary"}
+        if not policy:
+            result["outcome"] = "policy-adoption-required"
+            return result
+        result["next_action"] = "publish-artifacts with current expected tip/revision; inspect show first"
+        deadline = time.monotonic() + 60
+        def transport(*args):
+            try:
+                completed = subprocess.run(["git", "-C", str(self.repo), *args], capture_output=True,
+                                           timeout=max(0.001, min(20, deadline - time.monotonic())),
+                                           env=dict(os.environ, GIT_TERMINAL_PROMPT="0"))
+            except subprocess.TimeoutExpired as error:
+                raise Invalid("artifact transport deadline exceeded") from error
+            require(completed.returncode == 0, "artifact transport failed (" + args[0] + "); restore network/authentication or inspect remote rejection")
+            return completed.stdout
+        def observe():
+            lines = transport("ls-remote", "--refs", endpoint, REF).decode().splitlines()
+            require(len(lines) <= 1, "ambiguous remote artifact ref")
+            if not lines:
+                return None
+            fields = lines[0].split()
+            require(len(fields) == 2 and fields[1] == REF and SHA.fullmatch(fields[0]), "malformed remote artifact ref")
+            return fields[0]
+        try:
+            endpoint = self.validate_artifact_policy(policy)
+            self.remote_history(tip, records, policy, preserve=False)
+            remote = observe()
+            result["remote_sha"] = remote
+            if remote and remote != tip:
+                # Dedicated fetch ref preserves the observed competing tip for inspection.
+                fetched = "refs/harness/observed/" + remote
+                transport("fetch", "--no-tags", "--no-write-fetch-head", endpoint, REF + ":" + fetched)
+                require(git(self.repo, "rev-parse", fetched).decode().strip() == remote, "remote advanced during fetch; retry observation")
+                ancestors = git(self.repo, "rev-list", remote).decode().splitlines()
+                if tip in ancestors:
+                    self.remote_history(remote, records, policy)
+                    if not adopt:
+                        result.update(outcome="remote-advance-pending", next_action="publish-artifacts to validate and adopt remote advance")
+                        return result
+                    git(self.repo, "update-ref", REF, remote, tip)
+                    result.update(outcome="remote-advance-adopted", adopted_sha=remote,
+                                  next_action="show, then retry intended action at adopted tip/revision")
+                    return result
+                if remote not in git(self.repo, "rev-list", tip).decode().splitlines():
+                    self.remote_history(remote, records, policy, preserve=False)
+                    raise Invalid("divergent artifact history; preserve both tips, inspect refs/harness/observed/" + remote
+                        + " and local checkpoint; coordinate writers and explicitly reconcile before retry")
+            if remote == tip:
+                result.update(status="confirmed", outcome="already-published", next_action="continue saved operation")
+                return result
+            if not push:
+                result["outcome"] = "local-checkpoint-pending"
+                return result
+            if self.store.fail == "before-push":
+                raise Invalid("injected interruption before artifact push")
+            transport("push", "--porcelain", endpoint, tip + ":" + REF)
+            if self.store.fail == "after-push":
+                raise Invalid("injected interruption after artifact push; confirmation unknown")
+            actual = observe()
+            result["remote_sha"] = actual
+            require(actual == tip, "remote artifact tip changed after push; reconcile actual remote before continuing")
+            result.update(status="confirmed", outcome="published", next_action="continue saved operation")
+        except (Invalid, OSError, ValueError, KeyError, TypeError) as error:
+            result.update(outcome="publication-incomplete", detail=str(error))
+        return result
+
+    def artifact_result(self, tip, records, state, push=True, **extra):
+        publication = self.artifact_sync(tip, records, push=push, adopt=push)
+        return self.publication_result(tip, records, state, publication, **extra)
+
+    def publication_result(self, tip, records, state, publication, **extra):
+        actual_tip = self.store.tip()
+        if actual_tip != tip:
+            records = self.store.records(actual_tip)
+            active = json.loads(records["active.json"])
+            state = json.loads(records[active["state"]]) if active else None
+        publication["retry"] = {"action": "publish-artifacts", "expected_tip": actual_tip,
+                                "expected_revision": state["revision"] if state and json.loads(records["active.json"]) else 0, "payload": {}}
+        if publication.get("outcome") == "policy-adoption-required":
+            publication["retry"].update(action="adopt-artifacts", payload={"reviewed_tip": actual_tip},
+                                        required_payload=["review_summary", "repository if active pointer is null"])
+        terminal = bool(records) and json.loads(records["active.json"]) is None
+        return dict(tip=actual_tip, state=state, artifact_publication=publication,
+                    workflow_complete=terminal and publication["status"] == "confirmed", **extra)
 
     def show(self):
         tip = self.store.tip()
@@ -345,7 +544,7 @@ class Harness:
             self.normalize_closeout(state)
             validate_state(state, self.repo)
             self.validate_pointer(active, state)
-        return {"tip": tip, "active": active, "state": state}
+        return dict(self.artifact_result(tip, records, state, push=False), active=active) if tip else {"tip": tip, "active": active, "state": state}
 
     @staticmethod
     def validate_run_records(records, active):
@@ -370,6 +569,30 @@ class Harness:
             active = json.loads(records.get("active.json", b"null"))
             journal = json.loads(records.get("allocations.json", b'{"high_water":0,"issued":[]}'))
             state = json.loads(records[active["state"]]) if active else None
+            if action in ("publish-artifacts", "adopt-artifacts"):
+                require((state["revision"] if state else 0) == expected_revision, "wrong expected revision")
+                if action == "adopt-artifacts":
+                    require(not journal.get(POLICY), "artifact policy already bound")
+                    require(payload.get("reviewed_tip") == tip and payload.get("review_summary"),
+                            "explicit all-history semantic privacy review required at exact tip")
+                    repository = payload.get("repository") or (state or {}).get("repository")
+                    require(repository is not None, "explicit repository identity required")
+                    policy = artifact_destination(self.repo, repository)
+                    policy.update(reviewed_tip=tip, review_summary=payload["review_summary"])
+                    self.remote_history(tip, records, policy, preserve=False, bound=False)
+                    journal[POLICY] = policy
+                    records["allocations.json"] = encoded(journal)
+                    tip = self.store.checkpoint(records, tip, "Adopt reviewed artifact publication policy")
+                return self.artifact_result(tip, records, state)
+            if tip and journal.get(POLICY):
+                publication = self.artifact_sync(tip, records, adopt=True)
+                # Liveness/late report facts may be retained during an outage, but
+                # no dispatch, allocation, source publication or completion advances.
+                safety = action in ("report", "acknowledge", "reconcile", "budget-extension")
+                if publication["status"] != "confirmed" and (not safety or publication.get("adopted_sha")):
+                    return self.publication_result(tip, records, state, publication)
+            elif tip and action != "import-bootstrap":
+                return self.artifact_result(tip, records, state, push=False)
             if action == "import-bootstrap":
                 require(state is not None and state.get("schema_version") == 1 and state.get("bootstrap"), "not an explicit bootstrap")
                 require(state["revision"] == expected_revision, "wrong expected revision")
@@ -383,11 +606,15 @@ class Harness:
                 if state:
                     require((state["task_key"], state["run_id"]) == (payload["task_key"], payload["run_id"]), "another run is active")
                     require(state["revision"] == expected_revision, "wrong expected revision")
-                    return {"tip": tip, "state": state, "resumed": True}
+                    return self.artifact_result(tip, records, state, resumed=True)
                 require(expected_revision == 0, "initial revision must be zero")
                 path = state_path(payload["task_key"], payload["run_id"])
                 require(path not in records, "run identity already used")
                 state = initial_state(self.repo, payload, self.clock())
+                if not journal.get(POLICY):
+                    journal[POLICY] = artifact_destination(self.repo, state["repository"])
+                    journal[POLICY].update(reviewed_tip=None, review_summary="New orphan records; no prior history")
+                require(journal[POLICY]["repository"] == state["repository"]["target_repository"], "wrong artifact repository identity")
                 registry, definitions, _ = canonical_inventory(self.repo, journal)
                 require(state["task_key"] in registry and state["task_key"] in definitions and
                         "retired" not in registry[state["task_key"]]["status"], "root must have an active canonical registration")
@@ -405,7 +632,7 @@ class Harness:
             records["active.json"] = encoded(None if state["phase"] == "complete" else
                                              {"task_key": state["task_key"], "run_id": state["run_id"], "state": path})
             new_tip = self.store.checkpoint(records, tip, f"{state['task_key']} {action} revision {state['revision']}")
-            return {"tip": new_tip, "state": state}
+            return self.artifact_result(new_tip, records, state)
 
     def import_bootstrap(self, old, payload, records, journal, tip):
         require(old["task_key"] == payload["task_key"] and old["run_id"] == payload["run_id"], "bootstrap identity conflict")
@@ -463,10 +690,14 @@ class Harness:
         state["next_action"] = "reconcile every legacy worker; import its report as a fact, then dispatch fresh fenced attempts"
         state["limits"]["exhausted"] = self.clock() >= state["limits"]["deadline"]
         validate_state(state, self.repo)
+        if not journal.get(POLICY):
+            require(payload.get("reviewed_tip") == tip and payload.get("review_summary"), "explicit bootstrap history privacy review required")
+            journal[POLICY] = artifact_destination(self.repo, state["repository"])
+            journal[POLICY].update(reviewed_tip=tip, review_summary=payload["review_summary"])
         records[path] = encoded(state)
         records["allocations.json"] = encoded(journal)
         new_tip = self.store.checkpoint(records, tip, f"{old['task_key']} explicit bootstrap import")
-        return {"tip": new_tip, "state": state}
+        return self.artifact_result(new_tip, records, state)
 
     @staticmethod
     def units(state):
@@ -993,7 +1224,7 @@ def main():
     worktree = sub.add_parser("detached-worktree")
     worktree.add_argument("path")
     worktree.add_argument("sha")
-    for action in ("initialize", "import-bootstrap", "reserve", "dispatch", "acknowledge", "reconcile", "report", "resolve-finding", "budget-extension", "resume", "command-intent", "observe-source", "publish-intent", "publish-observation", "closeout-intent", "closeout-record", "closeout-cleanup"):
+    for action in ("publish-artifacts", "adopt-artifacts", "initialize", "import-bootstrap", "reserve", "dispatch", "acknowledge", "reconcile", "report", "resolve-finding", "budget-extension", "resume", "command-intent", "observe-source", "publish-intent", "publish-observation", "closeout-intent", "closeout-record", "closeout-cleanup"):
         command = sub.add_parser(action)
         command.add_argument("--payload", required=True, help="JSON file; use - for stdin")
         command.add_argument("--expected-tip", required=True, help="full artifact commit or none")
@@ -1010,6 +1241,8 @@ def main():
             payload = json.load(sys.stdin) if args.payload == "-" else json.loads(Path(args.payload).read_text())
             result = Harness(args.repo).apply(args.action, payload, None if args.expected_tip == "none" else args.expected_tip, args.expected_revision)
         print(encoded(result).decode(), end="")
+        if result.get("artifact_publication", {}).get("status") == "incomplete" and args.action != "show":
+            parser.exit(3)
     except (Invalid, KeyError, TypeError, json.JSONDecodeError, OSError) as error:
         parser.exit(2, f"harness: {error}\n")
 

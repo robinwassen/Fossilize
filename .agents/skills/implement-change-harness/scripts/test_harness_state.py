@@ -1101,7 +1101,7 @@ class HarnessTests(unittest.TestCase):
         legacy_tip = self.tip
         with self.assertRaisesRegex(Invalid, "import-bootstrap"):
             self.harness.show()
-        payload = dict(self.payload, plan=self.plan(), implementation_report="runs/FOS-000025/run-1/reports/old.json")
+        payload = dict(self.payload, reviewed_tip=legacy_tip, review_summary="Reviewed synthetic legacy fixture records", plan=self.plan(), implementation_report="runs/FOS-000025/run-1/reports/old.json")
         self.unchanged_import_rejection(dict(payload, run_id="conflict"))
         self.unchanged_import_rejection(dict(payload, original=[{"id": "AC1", "requirement": "weakened"}]))
         self.unchanged_import_rejection(dict(payload, repository=dict(payload["repository"], base_sha="bad")))

@@ -43,6 +43,10 @@ implementation worktree. Run required checks with recorded command deadlines.
 Commit the candidate and return `result_candidate_sha`, `test_mapping` and
 `commands`, including exact commands/cwd/status, actual discovered/executed test
 IDs, logs and limitations. Explain an omitted planned test as incomplete work.
+Artifact publication tests use disposable bare remotes; do not push production
+records or write canonical state from the implementer/checker roles. Publication
+success requires actual exact-ref confirmation; preserve incomplete results and
+review the terminal/null-active retry barrier independently of source PR success.
 Do not edit canonical state, acceptance, allocations or checker reports. Do not
 advance to another unit before independent acceptance. Canonical Done bookkeeping
 belongs to the coordinator after unit acceptance, in a separate committed
