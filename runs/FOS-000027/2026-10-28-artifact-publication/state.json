@@ -301,7 +301,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -539,6 +539,10 @@
   "provenance": [],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793189155.6286452,
+      "event": "create-dispatched"
+    },
     "intent": {
       "base_sha": "fe0e26518e50f27a072c8bfe5f5062e4c81b4273",
       "branch": "codex/FOS-000027-artifact-publication",
@@ -558,10 +562,13 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "event": "create-dispatched"
       }
     ],
     "remote_sha": "d287a490f3b58e49a29a5cb782f05c31ef43b9ed",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "fe0e26518e50f27a072c8bfe5f5062e4c81b4273",
@@ -574,7 +581,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 35,
+  "revision": 36,
   "run_id": "2026-10-28-artifact-publication",
   "schema_version": 2,
   "status": "ready",
