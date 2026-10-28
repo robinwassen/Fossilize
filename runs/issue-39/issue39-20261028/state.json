@@ -173,12 +173,17 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/39",
+      "attempt_id": "checker-2",
       "evidence": "The sole behavioral gate requires full standard-library discovery exit0 within600 seconds. Exact-candidate implementer command was externally timed out with exit124 during W11 after14 passing methods and four failed dispatch-publication subcases; W12 and subsequent retained regression modules did not execute. Reviewed log is embedded as runs/issue-39/issue39-20261028/evidence/checker-1-reviewed-implementer-suite5.log; this checker did not relabel it as independent passing execution. The large exhaustive real-Git publication/recovery matrix plus existing suite needs a feasible bounded gate design.",
       "id": "CHK39-MANDATORY-GATE-RUNTIME-DESIGN",
       "location": "plan1 gate delivery-suite; local-docs/verification.md:Change-harness skill checks",
+      "recheck": {
+        "evidence": "Fresh checker-2 independently ran all19 plan2 gates exit0, longest325.31s<600. Fresh union proves130 discovered=130 unique disjoint executed IDs,103 exact scenarios,113 original direct-method mapping and16groups; no failures/skips. Inventory digest51de238fc02b0c9e31f4fa9e49baca0dc7ae63f9d24acf2555da46426d306f56. Published checker-2-resolution-union.json and command-results.json bind actual commands/candidate.",
+        "finding_id": "CHK39-MANDATORY-GATE-RUNTIME-DESIGN"
+      },
       "required_change": "Replan a bounded complete verification design, such as shards each under600 seconds whose explicit union covers the identical full discovered test set and every W01-W13 assertion. Preserve all existing safety/history/publication regressions and exact candidate unit/final checks; do not drop assertions or raise the command bound silently. Re-run independently after repair.",
       "route": "planner",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -1298,7 +1303,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 70,
+  "revision": 71,
   "root_issue": {
     "id": 6083245574,
     "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
