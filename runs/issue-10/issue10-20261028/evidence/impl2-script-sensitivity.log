@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""Disposable original-defect controls; production checkout is read-only."""
+import json, os, pathlib, re, shutil, subprocess, tarfile, time
+root = pathlib.Path('/home/robin/dev/fossilize-issue-10')
+build = pathlib.Path('/tmp/fossilize-10/build-debug-off')
+area = pathlib.Path('/tmp/fossilize-10/impl2-sensitivity')
+area.mkdir(exist_ok=False)
+started = time.monotonic()
+records = []
+def command(name, args, cwd=None, expected=0, contains=()):
+    log = area / (name + '.log')
+    before = time.monotonic()
+    with log.open('w') as f:
+        p = subprocess.run([str(a) for a in args], cwd=cwd or area, stdout=f, stderr=subprocess.STDOUT, timeout=max(1, min(180, 570 - (before-started))))
+    content = log.read_text()
+    row = dict(id=name, command=[str(a) for a in args], cwd=str(cwd or area), exit_code=p.returncode, expected=expected, log=str(log), seconds=time.monotonic()-before)
+    records.append(row)
+    (area/'results.json').write_text(json.dumps(records,indent=2))
+    if (expected == 'nonzero' and p.returncode == 0) or (expected != 'nonzero' and p.returncode != expected):
+        raise RuntimeError(f'{name}: unexpected exit {p.returncode}: {content[-2000:]}')
+    for assertion in contains:
+        if assertion not in content: raise RuntimeError(f'{name}: missing assertion {assertion}')
+    print(name, p.returncode, flush=True)
+
+baseline = area / 'baseline'
+baseline.mkdir()
+archive = area / 'baseline.tar'
+with archive.open('wb') as f:
+    subprocess.run(['git','archive','b42b22c2e73bcfed731ee17752c244e2be7e737f'],cwd=root,stdout=f,check=True,timeout=60)
+with tarfile.open(archive) as t: t.extractall(baseline,filter='data')
+# Submodule inputs are the exact pinned dependencies already inventoried in the build.
+for dep in ['rapidjson','cli/volk']:
+    target=baseline/dep
+    if target.exists(): shutil.rmtree(target)
+    target.symlink_to(root/dep, target_is_directory=True)
+flags=['g++','-std=c++14','-g','-fno-exceptions','-fvisibility=hidden','-pthread']
+def includes(source):
+    return [f'-I{source}',f'-I{source}/khronos',f'-I{source}/rapidjson/include',f'-I{source}/cli',f'-I{source}/cli/volk',f'-I{root}/test']
+libs=[build/'libfossilize.a',build/'cli/libcli-utils.a',build/'libfossilize.a',build/'libminiz.a',build/'cli/libvolk.a','-ldl','-lrt']
+command('baseline-caller-build', flags+includes(baseline)+[root/'test/capture_diagnostic_test.cpp','-ldl','-o',area/'prebuilt-layer-caller'])
+command('old-source-build', flags+includes(baseline)+[root/'test/diagnostic_compatibility_test.cpp']+libs+['-o',area/'old-source-caller'])
+def layer(name, source):
+    command(name+'-build', flags+includes(baseline)+['-fPIC','-shared','-DFOSSILIZE_LAYER_CAPTURE_SIGSEGV',baseline/'layer/device.cpp',baseline/'layer/instance.cpp',baseline/'layer/dispatch_helper.cpp',source,build/'libfossilize.a',build/'libminiz.a','-lrt','-o',area/(name+'.so')])
+layer('baseline-layer', baseline/'layer/dispatch.cpp')
+cmake='/tmp/fossilize-10/tools/cmake/data/bin/cmake'
+command('old-source-and-cli', [cmake,f'-DCALLER={area}/old-source-caller',f'-DREPLAY={build}/cli/fossilize-replay',f'-DWORK={area}','-P',root/'test/diagnostic_compatibility.cmake'])
+caller=area/'prebuilt-layer-caller'
+for kind in ['graphics','compute','raytracing']:
+    for label,library in [('baseline',area/'baseline-layer.so'),('candidate',build/'layer/libVkLayer_fossilize.so')]:
+        work=area/(label+'-'+kind);work.mkdir()
+        command(label+'-prebuilt-'+kind,[caller,library,'normal',kind,'success'],cwd=work)
+    work=area/('original-reject-'+kind);work.mkdir()
+    command('original-reject-'+kind,[caller,area/'baseline-layer.so','normal',kind,'reject'],cwd=work,expected='nonzero',contains=['FAIL correct-resource-phase','FAIL no-unsupported-speculation'])
+# Build the real replay test TU using copied production source and shared candidate libraries.
+mutant=area/'mutant';(mutant/'test').mkdir(parents=True);(mutant/'cli').mkdir()
+shutil.copy(root/'test/replay_diagnostic_test.cpp',mutant/'test/replay_diagnostic_test.cpp')
+replay_source=(root/'cli/fossilize_replay.cpp').read_text()
+for defect in ['missing-result','errno-after-cleanup']:
+    source=replay_source
+    if defect=='missing-result':
+        for kind in ['graphics','compute','raytracing']:
+            pattern=r'LOGE\("Replay/create '+kind+r' pipeline failed: hash=0x%016" PRIx64 ", VkResult=%d\.\\n",\s*work_item.hash, int\(result\)\);'
+            source,n=re.subn(pattern,lambda m:'LOGE("Failed to create '+kind+' pipeline for hash 0x%016" PRIx64 ".\\n", work_item.hash);',source)
+            if n!=1: raise RuntimeError('missing mutation target '+kind)
+    else:
+        # The wrong ordering loses fwrite's errno when fclose deliberately changes it.
+        source=source.replace('int write_error = written ? 0 : errno;', 'int write_error = 0;')
+        source=source.replace('int close_error = close_result == 0 ? 0 : errno;', 'int close_error = close_result == 0 ? 0 : errno;\n\t\twrite_error = written ? 0 : errno;')
+    (mutant/'cli/fossilize_replay.cpp').write_text(source)
+    command(defect+'-build',flags+includes(root)+[mutant/'test/replay_diagnostic_test.cpp']+libs+['-o',area/defect])
+    command(defect+'-control',[area/defect],expected='nonzero',contains=['/raw-result' if defect=='missing-result' else '/originating-errno'])
+for defect in ['wrong-kind','unsupported-guess']:
+    source=(root/'layer/dispatch.cpp').read_text()
+    if defect=='wrong-kind': source=source.replace('Capture/record compute pipeline failed','Capture/record graphics pipeline failed').replace('Capture/record raytracing pipeline failed','Capture/record compute pipeline failed')
+    else: source=source.replace('reason=unknown.', 'reason=usually caused by unsupported pNext.')
+    (baseline/'layer/mutant_dispatch.cpp').write_text(source)
+    layer(defect,baseline/'layer/mutant_dispatch.cpp')
+    work=area/defect;work.mkdir()
+    command(defect+'-control',[caller,area/(defect+'.so'),'normal','compute','reject'],cwd=work,expected='nonzero',contains=['FAIL correct-resource-phase' if defect=='wrong-kind' else 'FAIL no-unsupported-speculation'])
+command('candidate-replay-after-controls',[build/'test/replay-diagnostic-test'])
+command('candidate-device-after-controls',[build/'test/device-diagnostic-test'])
+for kind in ['graphics','compute','raytracing']:
+    work=area/('candidate-reject-'+kind);work.mkdir()
+    command('candidate-reject-'+kind,[caller,build/'layer/libVkLayer_fossilize.so','normal',kind,'reject'],cwd=work)
+print('Compatibility and regression-sensitivity controls complete',flush=True)
+
+for kind in ['compute','raytracing']:
+    for label,library in [('baseline',area/'baseline-layer.so'),('candidate',build/'layer/libVkLayer_fossilize.so')]:
+        work=area/(label+'-qa-'+kind); work.mkdir()
+        command(label+'-qa-'+kind,[caller,library,'qa',kind,'reject'],cwd=work,expected='nonzero' if label=='baseline' else 0,contains=['FAIL correct-resource-phase','Recording graphics pipeline failed'] if label=='baseline' else [])

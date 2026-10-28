@@ -1,0 +1,335 @@
+[
+  {
+    "id": "baseline-caller-build",
+    "command": [
+      "g++",
+      "-std=c++14",
+      "-g",
+      "-fno-exceptions",
+      "-fvisibility=hidden",
+      "-pthread",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/khronos",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/rapidjson/include",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/cli",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/cli/volk",
+      "-I/home/robin/dev/fossilize-issue-10/test",
+      "/home/robin/dev/fossilize-issue-10/test/capture_diagnostic_test.cpp",
+      "-ldl",
+      "-o",
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/baseline-caller-build.log",
+    "seconds": 0.6155293449992314
+  },
+  {
+    "id": "old-source-build",
+    "command": [
+      "g++",
+      "-std=c++14",
+      "-g",
+      "-fno-exceptions",
+      "-fvisibility=hidden",
+      "-pthread",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/khronos",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/rapidjson/include",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/cli",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/cli/volk",
+      "-I/home/robin/dev/fossilize-issue-10/test",
+      "/home/robin/dev/fossilize-issue-10/test/diagnostic_compatibility_test.cpp",
+      "/tmp/fossilize-10/build-debug-off/libfossilize.a",
+      "/tmp/fossilize-10/build-debug-off/cli/libcli-utils.a",
+      "/tmp/fossilize-10/build-debug-off/libfossilize.a",
+      "/tmp/fossilize-10/build-debug-off/libminiz.a",
+      "/tmp/fossilize-10/build-debug-off/cli/libvolk.a",
+      "-ldl",
+      "-lrt",
+      "-o",
+      "/tmp/fossilize-10/impl2-sensitivity/old-source-caller"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/old-source-build.log",
+    "seconds": 0.8666624940233305
+  },
+  {
+    "id": "baseline-layer-build",
+    "command": [
+      "g++",
+      "-std=c++14",
+      "-g",
+      "-fno-exceptions",
+      "-fvisibility=hidden",
+      "-pthread",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/khronos",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/rapidjson/include",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/cli",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/cli/volk",
+      "-I/home/robin/dev/fossilize-issue-10/test",
+      "-fPIC",
+      "-shared",
+      "-DFOSSILIZE_LAYER_CAPTURE_SIGSEGV",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline/layer/device.cpp",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline/layer/instance.cpp",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline/layer/dispatch_helper.cpp",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline/layer/dispatch.cpp",
+      "/tmp/fossilize-10/build-debug-off/libfossilize.a",
+      "/tmp/fossilize-10/build-debug-off/libminiz.a",
+      "-lrt",
+      "-o",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline-layer.so"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/baseline-layer-build.log",
+    "seconds": 3.6720734880072996
+  },
+  {
+    "id": "old-source-and-cli",
+    "command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+      "-DCALLER=/tmp/fossilize-10/impl2-sensitivity/old-source-caller",
+      "-DREPLAY=/tmp/fossilize-10/build-debug-off/cli/fossilize-replay",
+      "-DWORK=/tmp/fossilize-10/impl2-sensitivity",
+      "-P",
+      "/home/robin/dev/fossilize-issue-10/test/diagnostic_compatibility.cmake"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/old-source-and-cli.log",
+    "seconds": 0.032497109030373394
+  },
+  {
+    "id": "baseline-prebuilt-graphics",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline-layer.so",
+      "normal",
+      "graphics",
+      "success"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/baseline-graphics",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/baseline-prebuilt-graphics.log",
+    "seconds": 0.007944123004563153
+  },
+  {
+    "id": "candidate-prebuilt-graphics",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/build-debug-off/layer/libVkLayer_fossilize.so",
+      "normal",
+      "graphics",
+      "success"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/candidate-graphics",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/candidate-prebuilt-graphics.log",
+  
+[bounded excerpt; full local log sha256=11610da119314f4fff188b71c5ad99b81acd33e040a0a1cfd526ce223c925086]
+ted": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/wrong-kind-build.log",
+    "seconds": 3.6723492270102724
+  },
+  {
+    "id": "wrong-kind-control",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/impl2-sensitivity/wrong-kind.so",
+      "normal",
+      "compute",
+      "reject"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/wrong-kind",
+    "exit_code": 1,
+    "expected": "nonzero",
+    "log": "/tmp/fossilize-10/impl2-sensitivity/wrong-kind-control.log",
+    "seconds": 0.0037905630306340754
+  },
+  {
+    "id": "unsupported-guess-build",
+    "command": [
+      "g++",
+      "-std=c++14",
+      "-g",
+      "-fno-exceptions",
+      "-fvisibility=hidden",
+      "-pthread",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/khronos",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/rapidjson/include",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/cli",
+      "-I/tmp/fossilize-10/impl2-sensitivity/baseline/cli/volk",
+      "-I/home/robin/dev/fossilize-issue-10/test",
+      "-fPIC",
+      "-shared",
+      "-DFOSSILIZE_LAYER_CAPTURE_SIGSEGV",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline/layer/device.cpp",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline/layer/instance.cpp",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline/layer/dispatch_helper.cpp",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline/layer/mutant_dispatch.cpp",
+      "/tmp/fossilize-10/build-debug-off/libfossilize.a",
+      "/tmp/fossilize-10/build-debug-off/libminiz.a",
+      "-lrt",
+      "-o",
+      "/tmp/fossilize-10/impl2-sensitivity/unsupported-guess.so"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/unsupported-guess-build.log",
+    "seconds": 3.87203591899015
+  },
+  {
+    "id": "unsupported-guess-control",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/impl2-sensitivity/unsupported-guess.so",
+      "normal",
+      "compute",
+      "reject"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/unsupported-guess",
+    "exit_code": 1,
+    "expected": "nonzero",
+    "log": "/tmp/fossilize-10/impl2-sensitivity/unsupported-guess-control.log",
+    "seconds": 0.003749328025151044
+  },
+  {
+    "id": "candidate-replay-after-controls",
+    "command": [
+      "/tmp/fossilize-10/build-debug-off/test/replay-diagnostic-test"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/candidate-replay-after-controls.log",
+    "seconds": 0.0077885090140625834
+  },
+  {
+    "id": "candidate-device-after-controls",
+    "command": [
+      "/tmp/fossilize-10/build-debug-off/test/device-diagnostic-test"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/candidate-device-after-controls.log",
+    "seconds": 0.007789864961523563
+  },
+  {
+    "id": "candidate-reject-graphics",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/build-debug-off/layer/libVkLayer_fossilize.so",
+      "normal",
+      "graphics",
+      "reject"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/candidate-reject-graphics",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/candidate-reject-graphics.log",
+    "seconds": 0.003734420984983444
+  },
+  {
+    "id": "candidate-reject-compute",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/build-debug-off/layer/libVkLayer_fossilize.so",
+      "normal",
+      "compute",
+      "reject"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/candidate-reject-compute",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/candidate-reject-compute.log",
+    "seconds": 0.00368152599548921
+  },
+  {
+    "id": "candidate-reject-raytracing",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/build-debug-off/layer/libVkLayer_fossilize.so",
+      "normal",
+      "raytracing",
+      "reject"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/candidate-reject-raytracing",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/candidate-reject-raytracing.log",
+    "seconds": 0.0036841530236415565
+  },
+  {
+    "id": "baseline-qa-compute",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline-layer.so",
+      "qa",
+      "compute",
+      "reject"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/baseline-qa-compute",
+    "exit_code": 1,
+    "expected": "nonzero",
+    "log": "/tmp/fossilize-10/impl2-sensitivity/baseline-qa-compute.log",
+    "seconds": 0.003619743976742029
+  },
+  {
+    "id": "candidate-qa-compute",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/build-debug-off/layer/libVkLayer_fossilize.so",
+      "qa",
+      "compute",
+      "reject"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/candidate-qa-compute",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/candidate-qa-compute.log",
+    "seconds": 0.0036441359552554786
+  },
+  {
+    "id": "baseline-qa-raytracing",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/impl2-sensitivity/baseline-layer.so",
+      "qa",
+      "raytracing",
+      "reject"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/baseline-qa-raytracing",
+    "exit_code": 1,
+    "expected": "nonzero",
+    "log": "/tmp/fossilize-10/impl2-sensitivity/baseline-qa-raytracing.log",
+    "seconds": 0.003631098021287471
+  },
+  {
+    "id": "candidate-qa-raytracing",
+    "command": [
+      "/tmp/fossilize-10/impl2-sensitivity/prebuilt-layer-caller",
+      "/tmp/fossilize-10/build-debug-off/layer/libVkLayer_fossilize.so",
+      "qa",
+      "raytracing",
+      "reject"
+    ],
+    "cwd": "/tmp/fossilize-10/impl2-sensitivity/candidate-qa-raytracing",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "/tmp/fossilize-10/impl2-sensitivity/candidate-qa-raytracing.log",
+    "seconds": 0.003672239021398127
+  }
+]
