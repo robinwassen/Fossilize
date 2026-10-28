@@ -165,6 +165,7 @@
     {
       "actual": "Renewed readiness cannot be recorded; old comments make the exact-count readback permanently fail unless history is deleted or an otherwise unnecessary tuple change is invented.",
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/37",
+      "attempt_id": "checker-unit-2",
       "counterexample_command": "timeout 600s env PYTHONDONTWRITEBYTECODE=1 python3 /tmp/fos28-cu1-marker-probe.py",
       "criteria": [
         "AC7"
@@ -177,9 +178,16 @@
         "D01"
       ],
       "priority": 1,
+      "recheck": {
+        "evidence": "Independent checker-unit-2 at 7f821f6b91fa32333a9330c027dc4f85b7f33b01 reran the same-tuple marker probe: renewed markers differ, exactly one current match, closeout-record succeeds. Its independently passing registered live regression covers restart/exact intent and comment replay, changed evidence, rejected conflicting intent and byte-preserved old/superseding/human comments; final accepted tuple leaves issue open. Durable probe log: runs/FOS-000028/2026-10-28-github-issues/evidence/resolution-cu1-02.log",
+        "finding_id": "CU1-02",
+        "records": {
+          "runs/FOS-000028/2026-10-28-github-issues/evidence/resolution-cu1-02.log": ".\n----------------------------------------------------------------------\nRan 1 test in 6.378s\n\nOK\nImported helper: /home/robin/dev/fossilize-FOS-000028-checker-2/.agents/skills/implement-change-harness/scripts/harness_state.py\n{\"candidate\": \"129c1b67804359f323fcfbca67ecbe2d537b0a29\", \"oldmarker\": \"<!-- harness-ready:run-1:e224a71745efbd7d21ed4f3be9b2858b3221eddeb053745377fefe111435d4e5 -->\", \"newmarker\": \"<!-- harness-ready:run-1:21090ece82ed7169874313249a15c87b9b91ee7a2008d105db21587f115822ec -->\", \"marker_matches\": 1}\n"
+        }
+      },
       "required_change": "Use a durable readiness generation/attempt identity or equivalent unambiguous current-generation selection in marker, journal operation and readback. Add registered live-schema same-candidate rejection/cleanup/reacceptance tests, including restart and changed evidence text.",
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Give renewed readiness an identity distinct from superseded evidence"
     }
   ],
@@ -1407,7 +1415,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 17,
+  "revision": 18,
   "root_issue": {
     "id": 6079927386,
     "node_id": "I_kwDOVZpjbc8AAAABamRUWg",
