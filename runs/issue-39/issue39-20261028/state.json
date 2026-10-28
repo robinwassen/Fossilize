@@ -159,12 +159,17 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/39",
+      "attempt_id": "checker-2",
       "evidence": "Independent four-case probe confirmed merge and ticket-comment-8 dispatch checkpoint publication failure both before-push and after-push exits before effect(). In all four cases, two fresh retries confirm exact orphan publication but remain incomplete because dispatched=true/status=intent triggers the pending guard. Merge cases retain merge_count0; comment cases retain merge_count1 and delivery_comment_count0. Source persists dispatched before publication returns; no retry path distinguishes this known no-send outcome. This violates same-command recoverability required by AC1 and planned W09-W11. See runs/issue-39/issue39-20261028/evidence/checker-1-probe.log",
       "id": "CHK39-NO-SEND-PUBLICATION-RECOVERY",
       "location": ".agents/skills/implement-change-harness/scripts/delivery_wrapup.py:126-132",
+      "recheck": {
+        "evidence": "Fresh checker-2 at 48ac3bdd418d3473689f978ecfc8ab298704d753: independent six-case probe exit0 in36.48s. Four merge/comment before/after-push initial dispatch failures retain not_sent=true/dispatched=false and zero unsent effects, then two fresh same-command retries deliver exactly once with exact confirmed artifacts. Two genuine published dispatch deaths remain incomplete with no resend. All60 W11 scenarios also passed. Published checker-2-resolution-independent-recovery-probe.log and union evidence.",
+        "finding_id": "CHK39-NO-SEND-PUBLICATION-RECOVERY"
+      },
       "required_change": "Preserve durable distinction/reconciliation for known unsent effects when dispatch publication fails, while retaining fail-closed behavior for genuinely uncertain sent effects. Keep and pass every W11 case and add any missing dispatch/publication boundary assertions needed; do not solve by blindly redispatching uncertain writes.",
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/39",
@@ -1293,7 +1298,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 69,
+  "revision": 70,
   "root_issue": {
     "id": 6083245574,
     "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
