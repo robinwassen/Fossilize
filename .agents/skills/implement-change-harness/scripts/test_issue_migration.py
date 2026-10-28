@@ -13,6 +13,7 @@ from issue_migration import Migration, Journal, inventory, check_cycles, MARKER
 
 class RecordingJournal:
     def __init__(self):self.entries={};self.fail=False
+    def get(self,name):return self.entries.get(name)
     def append(self,name,value):
         if self.fail:raise IssueError('publication incomplete')
         if name in self.entries:
@@ -78,6 +79,15 @@ class IssueMigrationTests(ServiceFixture,unittest.TestCase):
         migration.definition('returned','Task','Original')
         self.assertEqual(len(self.service()['issues']),3)
         self.assertEqual(len([call for call in self.service()['calls'] if 'POST' in call]),3)
+
+    def test_M02_durable_returned_identity_prevents_recreation_after_deletion(self):
+        row=self.migration.definition('created','Task','Original obligation')
+        returned=[value for name,value in self.journal.entries.items() if name.endswith('-returned')]
+        self.assertEqual(returned[0]['returned_identity']['id'],row['id'])
+        state=self.service();state['issues']={};self.service_file.write_text(json.dumps(state))
+        with self.assertRaisesRegex(IssueError,'previous returned identity'):
+            self.migration.definition('created','Task','Original obligation')
+        self.assertEqual(self.service()['issues'],{})
 
     def test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit(self):
         tasks={}

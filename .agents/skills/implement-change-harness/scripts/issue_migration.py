@@ -163,6 +163,11 @@ class Journal:
         state = json.loads(records[active['state']])
         return tip,records,state
 
+    def get(self, name):
+        tip,records,state=self.records()
+        path=f"runs/{state['task_key']}/{state['run_id']}/evidence/{name}.json"
+        return json.loads(records[path]) if path in records else None
+
     def authorize(self):
         tip,records,state=self.records()
         need(not state['limits']['exhausted'] and time.time()<state['limits']['deadline'], 'run budget exhausted; retain facts and ask coordinator for authorized extension')
@@ -196,15 +201,37 @@ class Migration:
                   'expected':expected,'marker':MARKER+key+' -->','next_action':'read complete authoritative service state, reconcile marker/identity, then dispatch only if absent'}
         self.journal.append('io-'+op+'-intent',intent)
         observed = reconcile()
+        previous = self.journal.get('io-'+op+'-returned') if hasattr(self.journal,'get') else None
+        if observed is None and previous is not None:
+            for delay in (.25,.5,1,2):
+                time.sleep(delay)
+                observed=reconcile()
+                if observed is not None:break
+            need(observed is not None, 'previous returned identity is no longer visible; reconcile deletion/conflict before any mutation retry')
         if observed is None:
             if hasattr(self.journal,'authorize'):self.journal.authorize()
-            try: action()
+            try:
+                returned = action()
             except IssueError:
                 # A failed write may already have happened. Always reconcile;
                 # incomplete/failed reads raise and never permit blind retries.
                 observed = reconcile()
                 if observed is None: raise
+            else:
+                def identities(value):
+                    if isinstance(value,dict):
+                        return {name:value[name] for name in ('id','node_id','number','html_url','state','state_reason') if name in value}
+                    if isinstance(value,list):return [identities(item) for item in value]
+                    return None
+                self.journal.append('io-'+op+'-returned',{'operation':op,'returned_identity':identities(returned),'response_digest':digest(returned)})
             observed = reconcile()
+            # GitHub's list indexes can lag a successful create. Retry reads only;
+            # response loss, authentication failure or ambiguity never retries a
+            # mutation. Each response identity is already durably published.
+            for delay in (.25,.5,1,2):
+                if observed is not None:break
+                time.sleep(delay)
+                observed = reconcile()
         need(observed is not None,'uncertain external effect; re-run same operation to reconcile')
         self.journal.append('io-'+op+'-observed',{'operation':op,'observation':observed})
         return observed
