@@ -1,0 +1,34 @@
+{
+  "attempt_id": "checker-scope",
+  "base_sha": "b42b22c2e73bcfed731ee17752c244e2be7e737f",
+  "candidate_sha": "a24e8afd8b584a3ad95d049885c3445ba3f1fa9c",
+  "discovered": [],
+  "evidence": [],
+  "executed": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/10",
+      "evidence": "Plan v1 native-windows-matrix has kind=both and its expected assertions block acceptance absent explicit user waiver/reconciled plan. plan.platform_decision.rule expressly requires recorded plan reconciliation before marking native Windows optional. The artifact record read at checkpoint 0880f32fb65245dfb9b36522a94bfba9f60a04a3 records the human authorization \"Ok, skip windows for now. Should be ok!\", bound to candidate a24e8afd8b584a3ad95d049885c3445ba3f1fa9c, with original acceptance retained verbatim and native Windows explicitly unverified. /tmp/fossilize-10/latest.json records that decision while the current plan remains version 1. Live issue10 and parent issue8 were read through gh with explicit robinwassen/Fossilize identity; their original behavioral criteria remain required.",
+      "id": "CHK10-SCOPE-PLAN-001",
+      "location": "/tmp/fossilize-10/planner-report.json: plan.version, plan.gates[native-windows-matrix], plan.platform_decision.rule; runs/issue-10/issue10-20261028/evidence/windows-scope-decision.json",
+      "required_action": "Fresh planner must produce plan v2 retaining exact original acceptance, all behavioral cases and required Linux/compatibility/sensitivity checks. Apply the recorded human exception only to the native Windows execution gate and its Windows compatibility portion for this run; describe them as waived/unverified, never passed. Reconcile platform_decision and dependent final/publication gates, then require renewed independent checking under v2.",
+      "route": "planner",
+      "status": "open"
+    }
+  ],
+  "input_revision": 25,
+  "input_sha": "a24e8afd8b584a3ad95d049885c3445ba3f1fa9c",
+  "limitations": [
+    "Read-only plan-design review only; no behavioral gate executed or accepted in this attempt. Prior Linux passing evidence remains historical evidence for its recorded candidate/plan/attempt. Native Windows remains unverified; the prior environment finding is not resolved by this report."
+  ],
+  "next_action": "Route CHK10-SCOPE-PLAN-001 to a fresh planner for formal plan v2 using the recorded Windows waiver; preserve candidate, original acceptance, all behavioral criteria, prior evidence and existing finding provenance. After v2 is recorded, dispatch a fresh checker to execute required applicable gates and assess findings.",
+  "operation": "work_unit",
+  "plan_version": 1,
+  "role": "checker",
+  "skipped": [],
+  "summary": "The explicit human Windows waiver is new evidence, but plan v1 still requires formal versioned reconciliation before Linux-only acceptance. This scope review does not accept implementation or claim Windows passed.",
+  "test_mapping": {},
+  "verdict": "changes_required",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/10",
+  "worker_id": "/root/scopecheck10"
+}
