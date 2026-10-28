@@ -81,7 +81,14 @@
   },
   "limits": {
     "command_timeout": 600,
-    "commands": [],
+    "commands": [
+      {
+        "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v",
+        "cwd": "/home/robin/.codex/worktrees/issue-39-delivery-wrapup/fossilize",
+        "started": 1793206353.6296802,
+        "timeout": 600
+      }
+    ],
     "deadline": 1793220172.1969004,
     "exhausted": false,
     "extensions": [],
@@ -392,7 +399,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 6,
+  "revision": 7,
   "root_issue": {
     "id": 6083245574,
     "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
