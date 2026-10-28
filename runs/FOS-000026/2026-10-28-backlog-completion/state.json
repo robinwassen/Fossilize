@@ -261,7 +261,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -488,6 +488,10 @@
   "provenance": [],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793168240.5589223,
+      "event": "create-dispatched"
+    },
     "intent": {
       "base_sha": "cc36967be308feb58ca0963e9ad161cb545b3b7a",
       "branch": "codex/FOS-000026-backlog-completion",
@@ -507,10 +511,13 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "event": "create-dispatched"
       }
     ],
     "remote_sha": "9a977292ee563c6069516efb83e9b0100433f0ee",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "cc36967be308feb58ca0963e9ad161cb545b3b7a",
@@ -523,7 +530,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 30,
+  "revision": 31,
   "run_id": "2026-10-28-backlog-completion",
   "schema_version": 2,
   "status": "ready",
