@@ -80,6 +80,6 @@ fresh final checker covers the combined branch, all planned cases and exact
 candidate/base/plan/current issue inputs. Review eligible closing references and
 open issue state; incomplete epics cannot close. Source/plan/base/task changes or
 rejection invalidate stale readiness and require superseding evidence/new checks.
-The helper never merges; accepted units, completed runs, ready PRs and merged task
-delivery remain distinct. Checkers are read-only on production records/services;
+Only explicitly approved, bound wrap-up may merge. Accepted units, completed
+runs, ready PRs and merged task delivery remain distinct. Checkers are read-only on production records/services;
 use isolated fixtures for mutations and counterexamples.

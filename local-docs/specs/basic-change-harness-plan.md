@@ -11,7 +11,7 @@ Task definitions and delivery evidence are maintained on GitHub, rather than her
 One explicitly selected issue moves through planning, implementation, independent
 checking and one ready-for-review PR to this fork's `master`. The workflow stops
 after publication and attachment. It does not discover another task, schedule
-itself or merge a PR. Product changes remain bounded by the selected requirement.
+itself or merge a PR without explicit bound human approval. Product changes remain bounded by the selected requirement.
 
 The coordinator owns canonical run state and publication. Fresh planner,
 implementer and checker contexts separate implementation from judgment; a

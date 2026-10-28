@@ -84,7 +84,9 @@ actual verification and limitations, plus an honest source compare reference
 before a PR exists. After creation, read back the actual implementation PR URL on
 each issue. Use explicit `Closes <full issue URL>` references in the PR for exactly
 the fully satisfied root/deliverables. Do not close an incomplete epic. Delivery
-completion follows the user's merge into `master`; the harness never merges.
+completion follows the user's merge into `master`, or the supported harness
+wrap-up command after explicit human approval bound to repository, PR and accepted
+head. PR publication alone never grants merge approval.
 Historical completed work requires real merged-PR identity and retained independent
 evidence, rather than copying stale proposed-branch status text.
 

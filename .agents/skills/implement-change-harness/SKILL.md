@@ -6,8 +6,8 @@ description: Implement one identified GitHub issue with fresh planner, implement
 # Implement change harness
 
 Take one explicitly selected issue through planning, implementation, independent
-checking and one ready-for-review PR. Stop after recording and attaching the PR;
-do not merge it or start another task. Preserve original acceptance.
+checking and one ready-for-review PR, followed by delivery only with explicit
+human approval. Do not start another task. Preserve original acceptance.
 
 Read applicable AGENTS.md, its required project documentation and the verification
 guide. Read the selected repository's `local-docs/issue-workflow.md`; its published
@@ -60,8 +60,17 @@ while a policy change is under review. Detailed mechanics are in
    or uncertainty look up again; never blindly recreate. Actual gh PR head/base,
    open/draft state and closing issues must match the accepted candidate/targets.
    Journal actual-PR evidence on each target, record issue-evidence readback, call
-   attach_artifact and record attachment. Stop after exact terminal artifact
-   publication; the user owns merge and issue delivery completion.
+   attach_artifact and record attachment. Confirm exact terminal artifact
+   publication. Present the actual attached PR link and a concise verification
+   summary with limits, then request approval to squash-merge and wrap up. Honor
+   approval already given in this conversation for this repository, PR and accepted head;
+   opening or attaching a PR alone grants no approval. Decline or defer leaves the
+   PR open. After approval invoke one supported command, `harness_state.py wrap-up`,
+   with the exact bound repository/PR/head/root/run/accepted revision described in
+   state.md. The command owns merge, verification, safe cleanup, ticket evidence and
+   exact artifact publication. Report its compact result; do not narrate successful
+   mechanical steps. Resume the same command on incomplete delivery; a changed head,
+   verification or merge condition requires the specific decision it reports.
 
 The coordinator is the sole canonical state writer. A worker may use only an
 explicitly granted records-only evidence interface for external-operation intent,

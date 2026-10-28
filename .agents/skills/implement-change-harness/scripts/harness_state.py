@@ -36,8 +36,11 @@ def encoded(value):
 
 
 def git(repo, *args, data=None, env=None):
-    result = subprocess.run(["git", "-C", str(repo), *args], input=data,
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+    try:
+        result = subprocess.run(["git", "-C", str(repo), *args], input=data,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, timeout=60)
+    except subprocess.TimeoutExpired as error:
+        raise Invalid("git " + args[0] + ": deadline exceeded; reconcile before retry") from error
     if result.returncode:
         raise Invalid("git " + args[0] + ": " + result.stderr.decode(errors="replace").strip())
     return result.stdout
@@ -92,10 +95,11 @@ class Store:
         self.validated_commits = set()
         self.record_cache = {}
         self.blob_cache = {}
+        self.json_cache = set()
 
     def tip(self):
         result = subprocess.run(["git", "-C", str(self.repo), "rev-parse", "--verify", REF],
-                                capture_output=True, text=True)
+                                capture_output=True, text=True, timeout=60)
         return result.stdout.strip() if result.returncode == 0 else None
 
     def records(self, tip):
@@ -137,6 +141,10 @@ class Store:
                 self.blob_cache[expected] = content
                 offset = end + size + 2
         for commit, rows in listings.items():
+            for path, blob in rows:
+                if path.endswith('.json') and blob not in self.json_cache:
+                    json.loads(self.blob_cache[blob])
+                    self.json_cache.add(blob)
             records = {path:self.blob_cache[blob] for path,blob in rows}
             if records:
                 require('active.json' in records and 'allocations.json' in records, 'existing artifact ref lacks identity records')
@@ -156,9 +164,12 @@ class Store:
         require(self.tip() == expected_tip, "artifact tip changed")
         for path, content in records.items():
             record_path(path)
-            self.validate_content(content)
-            if path.endswith(".json"):
+            identity = hashlib.sha1(b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest()
+            if identity not in self.blob_cache:
+                self.validate_content(content)
+            if path.endswith(".json") and identity not in self.json_cache:
                 json.loads(content)
+                self.json_cache.add(identity)
         def fault(stage):
             if self.fail == stage:
                 raise Invalid("injected " + stage + " failure")
@@ -416,6 +427,11 @@ class Harness:
 
     def artifact_policy(self, records):
         return json.loads(records.get("allocations.json", b"{}" )).get(POLICY)
+
+    def wrap_up(self, approval, fault=None):
+        """Supported approved terminal-run transition; owns lock, journal and recovery."""
+        from delivery_wrapup import Delivery
+        return Delivery(self, approval, fault=fault).run()
 
     def validate_artifact_policy(self, policy):
         require(isinstance(policy, dict) and policy.get("version") == 1 and policy.get("ref") == REF
@@ -1366,12 +1382,16 @@ class Harness:
                     publishing["stage"] = "ci_pending"
                     state.update(status="awaiting_decision", next_action="record required hosted CI result")
                 else:
+                    from delivery_wrapup import required_checks
+                    publishing['required_checks'] = required_checks(GitHub(), publishing['pr']['url'], state['repository']['candidate_sha'])
                     publishing["stage"] = "done"
                     state.update(phase="complete", operation="complete", status="complete", next_action="PR opened and attached; no merge")
             else:
                 state["next_action"] = "retry attachment only"
         elif event == "ci":
             require(stage == "ci_pending" and p.get("result") == "passed" and p.get("evidence"), "required CI not passed")
+            from delivery_wrapup import required_checks
+            publishing['required_checks'] = required_checks(GitHub(), publishing['pr']['url'], state['repository']['candidate_sha'])
             publishing.update(stage="done", ci=p)
             state.update(phase="complete", operation="complete", status="complete", next_action="PR opened, attached and required CI passed; no merge")
         else:
@@ -1392,6 +1412,11 @@ def main():
     parser.add_argument("--repo", default=".")
     sub = parser.add_subparsers(dest="action", required=True)
     sub.add_parser("show")
+    delivery = sub.add_parser("wrap-up", help="resume one explicitly approved squash delivery")
+    delivery.add_argument("--approve", action="store_true", help="assert real human approval; never infer from PR creation")
+    for name in ("root-issue", "run-id", "approved-repository", "approved-pr", "approved-head"):
+        delivery.add_argument("--" + name, required=True)
+    delivery.add_argument("--accepted-revision", type=int, required=True)
     worktree = sub.add_parser("detached-worktree")
     worktree.add_argument("path")
     worktree.add_argument("sha")
@@ -1404,6 +1429,11 @@ def main():
     try:
         if args.action == "show":
             result = Harness(args.repo).show()
+        elif args.action == "wrap-up":
+            approval = {"approved": args.approve, "root_issue": args.root_issue, "run_id": args.run_id,
+                        "repository": args.approved_repository, "pr": args.approved_pr,
+                        "head": args.approved_head, "accepted_revision": args.accepted_revision}
+            result = Harness(args.repo).wrap_up(approval)
         elif args.action == "detached-worktree":
             with repository_lock(args.repo):
                 result = {"sha": detached_worktree(args.repo, args.path, args.sha)}
@@ -1411,7 +1441,12 @@ def main():
             import sys
             payload = json.load(sys.stdin) if args.payload == "-" else json.loads(Path(args.payload).read_text())
             result = Harness(args.repo).apply(args.action, payload, None if args.expected_tip == "none" else args.expected_tip, args.expected_revision)
-        print(encoded(result).decode(), end="")
+        if args.action == "wrap-up":
+            print(json.dumps(result, sort_keys=True, separators=(",", ":")))
+            if result["outcome"] != "delivered":
+                parser.exit(3 if result["outcome"] == "incomplete" else 2)
+        else:
+            print(encoded(result).decode(), end="")
         if result.get("artifact_publication", {}).get("status") == "incomplete" and args.action != "show":
             parser.exit(3)
     except (Invalid, IssueError, KeyError, TypeError, json.JSONDecodeError, OSError) as error:
@@ -1419,4 +1454,6 @@ def main():
 
 
 if __name__ == "__main__":
+    import sys
+    sys.modules.setdefault('harness_state', sys.modules[__name__])
     main()
