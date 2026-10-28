@@ -148,6 +148,12 @@ def task_body(inv, key, parent):
     return f"Legacy identity: `{key}`. Original source: [immutable historical definition]({source}).\n\nShared requirements and grouping: {parent}. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n"+task['original']+supporting
 
 
+def mapping_context(inv, mapping):
+    mapping_text='## Legacy identity mapping\n\n'+ '\n'.join(f'- `{key}` → {url}' for key,url in sorted(mapping.items()))
+    mapping_text+='\n\nDependencies are native blocked-by edges. Every declared edge is required, including complete-propagation prerequisites. Numeric source order is sequencing advice; parent membership adds no blocking edge. A cancelled/not-planned prerequisite does not satisfy its obligation.\n\nCritical paths: '+ ' → '.join(mapping[f'FOS-{i:06}'] for i in (5,9))+' → ('+mapping['FOS-000010']+' and '+mapping['FOS-000011']+') → '+' → '.join(mapping[f'FOS-{i:06}'] for i in (12,13,14))+ '; persistence/capture: '+' → '.join(mapping[f'FOS-{i:06}'] for i in (3,16,17,19))+'.\n\n## Dependency reasons (verbatim metadata)\n\n'+'\n'.join(f"- `{key}`: "+' '.join(task['dependency_reasons']) for key,task in inv['tasks'].items() if task['dependencies'])
+    return mapping_text
+
+
 class Journal:
     """Only records-only evidence API is granted to the migration worker."""
     def __init__(self, repo, expected_run=None):
@@ -212,7 +218,7 @@ class Migration:
                   'expected':expected,'marker':MARKER+key+' -->','next_action':'read complete authoritative service state, reconcile marker/identity, then dispatch only if absent'}
         self.journal.append('io-'+op+'-intent',intent)
         observed = reconcile()
-        previous = self.journal.get('io-'+op+'-returned') if hasattr(self.journal,'get') else None
+        previous = (self.journal.get('io-'+op+'-returned') or self.journal.get('io-'+op+'-observed')) if hasattr(self.journal,'get') else None
         if observed is None and previous is not None:
             for delay in (.25,.5,1,2):
                 time.sleep(delay)
@@ -307,8 +313,7 @@ class Migration:
                     return {'dependent':row['html_url'],'blocked_by':blocker['html_url']} if any(item['id']==blocker['id'] for item in edges) else None
                 self.operation('blocked-'+key+'-'+dependency,{'dependent':row['html_url'],'blocked_by':blocker['html_url']},'edge absent or present; preserve unrelated edges',
                     lambda row=row,blocker=blocker:self.gh.api(f"issues/{row['number']}/dependencies/blocked_by",'POST',{'issue_id':blocker['id']}),edge_reconcile)
-        mapping_text='## Legacy identity mapping\n\n'+ '\n'.join(f'- `{key}` → {url}' for key,url in sorted(self.mapping.items()))
-        mapping_text+='\n\nDependencies are native blocked-by edges. Every declared edge is required, including complete-propagation prerequisites. Numeric source order is sequencing advice; parent membership adds no blocking edge. A cancelled/not-planned prerequisite does not satisfy its obligation.\n\nCritical paths: '+ ' → '.join(self.mapping[f'FOS-{i:06}'] for i in (5,9))+' → ('+self.mapping['FOS-000010']+' and '+self.mapping['FOS-000011']+') → '+' → '.join(self.mapping[f'FOS-{i:06}'] for i in (12,13,14))+ '; persistence/capture: '+' → '.join(self.mapping[f'FOS-{i:06}'] for i in (3,16,17,19))+'.\n\n## Dependency reasons (verbatim metadata)\n\n'+'\n'.join(f"- `{key}`: "+' '.join(task['dependency_reasons']) for key,task in inv['tasks'].items() if task['dependencies'])
+        mapping_text=mapping_context(inv,self.mapping)
         self.comment('identity-map',obs['number'],mapping_text)
         self.comment('identity-map-harness',harness['number'],mapping_text)
         for key,pr in [('FOS-000025',2),('FOS-000026',5),('FOS-000027',6)]:
@@ -344,6 +349,11 @@ def audit(gh,inv):
             need(row['body'].endswith(marker+'\n'),'definition marker changed')
         need(row['state']==('closed' if key in ('FOS-000025','FOS-000026','FOS-000027') else 'open'),'dishonest delivery/epic status '+key)
         if row['state']=='closed':need(row.get('state_reason')=='completed','cancelled legacy task')
+    for group,key in (('observability','identity-map'),('harness','identity-map-harness')):
+        marker=MARKER+key+' -->'
+        matches=[comment for comment in gh.comments(details[group]['number']) if marker in (comment.get('body') or '')]
+        expected=mapping_context(inv,mapping).rstrip()+'\n\n'+marker+'\n'
+        need(len(matches)==1 and matches[0]['body']==expected, 'complete mapping context/reasons/critical paths changed or missing')
     merged_delivery = {}
     for key,number in (('FOS-000025',2),('FOS-000026',5),('FOS-000027',6)):
         merged=gh.call(['pr','view',str(number),'--repo','robinwassen/Fossilize','--json','number,url,state,mergedAt,mergeCommit,title,headRefOid,baseRefName'])

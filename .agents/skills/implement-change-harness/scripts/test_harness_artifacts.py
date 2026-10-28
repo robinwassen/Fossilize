@@ -1,4 +1,4 @@
-"""P01–P11: exact artifact publication against actual disposable bare remotes."""
+"""Historical P01–P11 fixtures; live-schema assertion bodies execute in issue_artifacts."""
 import copy
 import json
 import os
@@ -8,8 +8,9 @@ import unittest
 from unittest.mock import patch
 
 import legacy_state as hs
-from legacy_state import Harness, Invalid, Store, REF, POLICY, encoded, git, state_path
+from legacy_state import Invalid, Store, REF, POLICY, encoded, git, state_path
 import test_harness_state as fixtures
+from test_harness_state import Harness
 
 
 class ArtifactTests(unittest.TestCase):

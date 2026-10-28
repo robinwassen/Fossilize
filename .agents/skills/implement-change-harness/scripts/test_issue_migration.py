@@ -8,7 +8,7 @@ import test_harness_state as legacy_fixtures
 from test_issue_source import ServiceFixture
 from github_issues import IssueError, digest
 from harness_state import Harness, Invalid, git, repository_lock
-from issue_migration import Migration, Journal, inventory, check_cycles, MARKER
+from issue_migration import Migration, Journal, inventory, check_cycles, MARKER, audit
 
 
 class RecordingJournal:
@@ -44,6 +44,13 @@ class IssueMigrationTests(ServiceFixture,unittest.TestCase):
         self.update(auth_failure=True)
         with self.assertRaises(IssueError):self.migration.definition('another','Title','Body')
         self.assertEqual(len(self.service()['issues']),1)
+
+    def test_M02_uncertain_create_followed_by_auth_error_never_means_absent(self):
+        self.update(auth_after_create=True)
+        with self.assertRaises(IssueError):self.migration.definition('uncertain-auth','Task','Original')
+        self.migration.definition('uncertain-auth','Task','Original')
+        self.assertEqual(len(self.service()['issues']),1)
+        self.assertEqual(len([call for call in self.service()['calls'] if 'POST' in call]),1)
 
     def test_M03_unrelated_body_and_comment_edits_preserved(self):
         row=self.migration.definition('FOS-000001','Title','Original')
@@ -89,6 +96,14 @@ class IssueMigrationTests(ServiceFixture,unittest.TestCase):
             self.migration.definition('created','Task','Original obligation')
         self.assertEqual(self.service()['issues'],{})
 
+    def test_M02_verified_identity_without_response_record_still_prevents_recreation(self):
+        self.migration.definition('old-observed','Task','Original')
+        self.journal.entries={name:value for name,value in self.journal.entries.items() if not name.endswith('-returned')}
+        self.update(issues={})
+        with self.assertRaisesRegex(IssueError,'previous returned identity'):
+            self.migration.definition('old-observed','Task','Original')
+        self.assertEqual(self.service()['issues'],{})
+
     def test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit(self):
         tasks={}
         for number in range(1,29):
@@ -99,6 +114,7 @@ class IssueMigrationTests(ServiceFixture,unittest.TestCase):
                 'group':'observability' if number<=24 else 'harness'}
         inv={'source_sha':'a'*40,'repository':'robinwassen/Fossilize','tasks':tasks,'shared_observability_requirements':'All synthetic compatibility and verification gates remain mandatory.',
              'unkeyed':[{'original':'Historic fixture report','disposition':'Overlaps existing tasks; external Steam scope remains external.'}],'research_disposition':'Historical supporting evidence.', 'legacy_delivery_evidence':{f'FOS-{number:06}':{'pr':f'https://github.com/robinwassen/Fossilize/pull/{pr}','accepted':{'candidate_sha':'b'*40,'attempt_id':'historical-checker'},'executed':['historical.test'],'skipped':[]} for number,pr in ((25,2),(26,5),(27,6))}}
+        self.update(lose_edge_response=True,lose_close_response=True)
         result=Migration('.',inv,self.gh,self.journal).run()
         self.assertEqual(result['tasks'],28);self.assertEqual(result['epics'],2)
         self.assertEqual(len(result['mapping']),30);self.assertEqual(result['edges'],26)
@@ -107,10 +123,17 @@ class IssueMigrationTests(ServiceFixture,unittest.TestCase):
         relations=[index for index,call in enumerate(calls) if 'POST' in call and any('/sub_issues' in arg or '/blocked_by' in arg for arg in call)]
         self.assertLess(max(creates),min(relations))
         self.assertEqual(len(creates),30)
+        self.assertEqual(len(relations),54)
+        self.assertEqual(len([call for call in calls if 'PATCH' in call]),3)
         for key in ('FOS-000025','FOS-000026','FOS-000027'):
             self.assertEqual(result['snapshots'][key]['state_reason'],'completed')
         self.assertEqual(result['snapshots']['harness']['state'],'open')
         self.assertEqual(result['snapshots']['FOS-000028']['state'],'open')
+        state=self.service();parent=state['issues'][str(self.gh.number(result['mapping']['observability']))]
+        managed=next(comment for comment in parent['comments_data'] if MARKER+'identity-map -->' in comment['body'])
+        managed['body']=managed['body'].replace('- `FOS-000001` → '+result['mapping']['FOS-000001'],'Missing identity')
+        self.service_file.write_text(json.dumps(state))
+        with self.assertRaisesRegex(IssueError,'mapping context'):audit(self.gh,inv)
 
 
 class RestrictedJournalTests(unittest.TestCase):

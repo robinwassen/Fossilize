@@ -19,7 +19,7 @@ class IssueCloseoutTests(LiveFixture,unittest.TestCase):
         self.act('closeout-intent',{'targets':[target]})
         marker=self.state['closeout']['marker']
         migration=Migration(self.source,{'source_sha':self.base},self.gh,RecordingJournal())
-        migration.comment('ready-'+candidate,self.root_issue['number'],target['evidence']+'\n'+target['reference']+'\nVerified PR readiness; issue remains open until default-branch merge.\n'+marker)
+        migration.comment('ready-'+candidate,self.root_issue['number'],target['evidence']+'\n'+target['reference']+'\n'+self.state['closeout']['binding']+'\nVerified PR readiness; issue remains open until default-branch merge.\n'+marker)
         self.act('closeout-record',{'candidate_sha':candidate})
         return candidate,target
 
@@ -71,6 +71,35 @@ class IssueCloseoutTests(LiveFixture,unittest.TestCase):
         result=self.harness.apply('publish-artifacts',{},terminal,0)
         self.assertTrue(result['workflow_complete']);self.assertEqual(result['tip'],terminal)
         self.assertEqual(self.gh.issue(self.root_issue['number'])['state'],'open')
+
+    def test_D01_readback_requires_exact_base_plan_input_binding(self):
+        self.planned();candidate=self.implemented();self.accepted()
+        target={'issue':self.root_issue['html_url'],'evidence':'Required independent test passed','reference':'https://github.com/robinwassen/Fossilize/compare/master...codex/test'}
+        self.act('closeout-intent',{'targets':[target]})
+        self.gh.api(f"issues/{self.root_issue['number']}/comments",'POST',{'body':target['evidence']+' '+target['reference']+' '+self.state['closeout']['marker']})
+        with self.assertRaisesRegex(Invalid,'binding'):self.act('closeout-record',{'candidate_sha':candidate})
+        self.assertIsNone(self.state['final_acceptance'])
+
+    def test_D01_split_units_renew_at_combined_candidate_without_new_implementation(self):
+        a=self.create('A');b=self.create('B')
+        for row in (a,b):self.gh.api(f"issues/{self.root_issue['number']}/sub_issues",'POST',{'sub_issue_id':row['id']})
+        self.gh.api(f"issues/{b['number']}/dependencies/blocked_by",'POST',{'issue_id':a['id']})
+        self.act('initialize',self.payload);self.launch('planner');plan=self.plan()
+        plan['work_units']=[{'key':row['html_url'],'issue':row['html_url'],'title':row['title'],'definition':row['body'],'dependencies':[] if row==a else [a['html_url']],'criteria':['AC1']} for row in (a,b)]
+        self.act('report',dict(self.report(),plan=plan))
+        self.implemented();self.accepted();candidate=self.implemented();self.accepted()
+        counts=dict(self.state['limits']['implementation_counts'])
+        targets=[{'issue':url,'evidence':'Independent fixture gate passed','reference':'https://github.com/robinwassen/Fossilize/compare/master...codex/test'} for url in (self.root_issue['html_url'],a['html_url'],b['html_url'])]
+        self.act('closeout-intent',{'targets':targets})
+        self.assertEqual(self.state['operation'],'work_unit');self.assertEqual(self.state['phase'],'checking')
+        self.accepted();self.assertEqual(self.state['phase'],'checking');self.accepted()
+        self.assertEqual(self.state['limits']['implementation_counts'],counts)
+        self.assertTrue(all(unit['accepted']['candidate_sha']==candidate for unit in self.state['work_units']))
+        self.act('closeout-intent',{'targets':targets})
+        for target in targets:self.gh.api(f"issues/{self.gh.number(target['issue'])}/comments",'POST',{'body':target['evidence']+' '+target['reference']+' '+self.state['closeout']['binding']+' '+self.state['closeout']['marker']})
+        self.act('closeout-record',{'candidate_sha':candidate});self.accepted()
+        self.assertEqual(self.state['final_acceptance']['candidate_sha'],candidate)
+        self.assertEqual(set(self.state['closeout']['closing_references']),{'Closes '+target['issue'] for target in targets})
 
     def test_D02_real_remote_one_pr_response_loss_open_until_user_merge(self):
         candidate,target=self.prepare();self.accepted()

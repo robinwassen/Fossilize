@@ -1,4 +1,4 @@
-"""Assertion-bearing local Git/recovery tests. T identifiers map to planner cases."""
+"""Historical schema2 compatibility T01–T17 fixtures; live issue equivalents are separate."""
 import copy
 import json
 import multiprocessing
@@ -10,8 +10,14 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from legacy_state import (Harness, Invalid, REF, Store, canonical_inventory, common_dir,
+from legacy_state import (Harness as HistoricalHarness, Invalid, REF, Store, canonical_inventory, common_dir,
                            detached_worktree, encoded, git, repository_lock, state_path, validate_state)
+
+
+class Harness(HistoricalHarness):
+    """Only disposable compatibility fixtures opt into the historical API."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, fixture_only=True)
 
 
 def lock_contender(repo, ready, proceed, output):

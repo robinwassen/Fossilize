@@ -36,6 +36,8 @@ if resource=='issues':
  row={'id':1000+n,'node_id':'I_'+str(n),'number':n,'title':payload['title'],'body':payload['body'],
       'html_url':f'https://github.com/robinwassen/Fossilize/issues/{n}','state':'open','state_reason':None,'children':[],'blocked':[]}
  issues[str(n)]=row
+ if state.pop('auth_after_create',False):
+  state['auth_failure']=True;fail('lost response and next read unavailable')
  if state.pop('malformed_create',False):
   save();print('invalid response');sys.exit(0)
  if state.pop('timeout_create',False):

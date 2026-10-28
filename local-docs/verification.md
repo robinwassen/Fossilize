@@ -9,7 +9,7 @@ Inventory checked against first-party source and the local Steam installation on
 - Inspect `CMakeLists.txt`, `cli/CMakeLists.txt`, `layer/CMakeLists.txt`, `test/CMakeLists.txt` and `CMakePresets.json`. Check `git submodule status --recursive`; initialize required dependencies with `git submodule update --init --recursive` when setting up a build. Full CLI builds require populated SPIR-V dependencies and compatible Python/build tools.
 - Use separate build directories for compiler, architecture, Debug/Release, sanitizer and feature configurations. Use isolated working/output directories: several tests create/delete fixed-name files. Preserve original captures/caches and never run conflicting harness instances in the same directory.
 - Record revision/local changes, compiler/build options, exact commands, process status and artifacts. GPU/Steam evidence also records device/driver/loader, input identity, relevant compilation environment, deadlines, cache state, AppID and Steam/Proton/runtime versions. Avoid collecting unrelated secrets.
-- Report passed, failed, unsupported, skipped/unavailable and incomplete separately. Zero exit/progress 100% currently does not establish complete replay or persistence; assert relevant output and coverage facts. Future guarantees in the keyed backlog are not current implementation guarantees.
+- Report passed, failed, unsupported, skipped/unavailable and incomplete separately. Zero exit/progress 100% currently does not establish complete replay or persistence; assert relevant output and coverage facts. Future guarantees in the issues are not current implementation guarantees.
 - At this inventory check, `g++`, `vulkaninfo` and Steam were present; CMake/CTest/Ninja were not on PATH. Earlier direct-build probes and `fossilize-test` passed their recorded executions, not a full current CMake/CTest matrix. Documented commands below are procedures, not claims they have all been run here.
 
 ## Change-harness skill checks
@@ -22,28 +22,35 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .agents/skills/impleme
 python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness
 ```
 
-The validator path is this host's installed skill-creator tool; resolve its path
-on another host. PyYAML belongs to that validation tool, not the helper runtime.
-The suite requires Python 3, Git, POSIX locking and temporary storage. It exercises
-real disposable repositories/worktrees, ref transactions, local bare-remote effects
-and assertion-bearing test commands, with deterministic worker/PR observations.
-It never mutates the real artifact ref, launches actual agents or creates test PRs.
-Record nonzero discovered/executed IDs, statuses and the T01–T17 method mapping;
-`test_harness_closeout.py` additionally covers C01–C08 canonical completion,
-actual tracked Markdown commits, renewal/cleanup, pending schema-2 adoption and
-a one-PR local-remote publication/merge simulation. The test explicitly performs
-the simulated user merge; the helper never merges. `test_harness_artifacts.py`
-covers P01–P11 against real disposable bare remotes: exact non-force checkpoints,
-existing-history adoption, dirty-view preservation, bounded recovery/barriers,
-second-clone advance/divergence, hostile record rejection, push-endpoint binding,
-post-push races and terminal/null-active publication. P12 additionally maps the
-retained T01–T17/C01–C08 suite and independent guidance/diff review. Use a real
-600-second process deadline for the complete Python suite; record discovered and
-executed test IDs and actual outcomes. Passing this suite does not
-prove actual role conduct or live GitHub behavior.
-Independent checker review and the real publication gates remain separate.
-Disable bytecode as shown so verification does not dirty the candidate worktree.
-No product C++/Vulkan build, driver or Steam claim follows from this Python suite.
+The validator path is this host's installed skill-creator tool; resolve it on
+another host. PyYAML belongs to that validator, not the helper runtime. Use a real
+600-second process deadline for the complete suite. Record nonzero discovered and
+executed IDs, statuses and case mappings; a passing Python suite does not prove
+actual role conduct, live GitHub behavior or C++/Vulkan/Steam behavior.
+
+`test_issue_source.py` and `test_issue_migration.py` use a subprocess fake gh service
+for identities, paginated reads, complete requirement/graph migration, uncertainty,
+authentication, edit conflicts and durable external-operation records.
+`test_harness_migration.py` exercises schema3 issue runs, split work units, material
+input drift, old-state migration, the exact active-attempt bridge and source-free
+fresh-clone resumption. `test_harness_issue_closeout.py` distinguishes open PR
+readiness from simulated user-merged delivery; `test_harness_issue_artifacts.py`
+executes live-schema artifact publication counterexamples.
+
+The retained T01–T17/C01–C08/P01–P12 assertions are explicit historical compatibility
+fixtures in `test_harness_state.py`, `test_harness_closeout.py` and
+`test_harness_artifacts.py`. Their private fixture-only legacy engine has no CLI
+or normal task authority. Current equivalents preserve stale-worker/report fences,
+required evidence, scoped findings, budgets, separate final checking, actual PR
+identity, non-force exact publication, dirty views, divergent writers and terminal
+null-pointer retry. Legacy Markdown/allocator examples exist only as compatibility
+fixtures; current operations never require them.
+
+Live read-only migration audits additionally compare complete original requirements,
+shared acceptance, honest merge evidence, native hierarchy and all dependency edges
+with the immutable historical input and published evidence. Independent checker
+review and actual source-PR/artifact publication remain separate gates. Keep small
+sanitized outputs outside source; do not maintain a generated task mirror.
 
 ## Canonical builds and CTest
 
@@ -99,7 +106,7 @@ Relevant configuration matrix: GCC/Clang; Debug/Release; `FOSSILIZE_ENABLE_EXCEP
 - **Coverage:** separate GCC `--coverage` or Clang/LLVM instrumentation build, including linking, followed by tests and matching coverage tooling. No top-level coverage target/threshold is currently registered. Line/branch coverage complements behavioral assertions.
 - **Deterministic negative tests:** rejecting database mocks, controlled Vulkan dispatch, short-write/flush/close injection, incompatible/malformed/truncated/checksum-invalid input, lost IPC/full rings, worker death, cancellation and stale/duplicate/reordered attempts. Use fake clocks/barriers and process watchdogs, not timing races. `/dev/full` is a Linux integration case; retain portable injected equivalents. Assert host survival and correct errors in Debug/Release.
 - **Fuzz/property testing:** isolated parser/database/varint/message harnesses with bounded sizes/runtime/memory, fixed seeds/corpora and sanitizers. There is no registered first-party fuzz target today. Preserve discoveries as deterministic fixtures and register new harnesses with the test runner/CI.
-- **Existing research runner:** `python3 local-docs/reviews/observability-sweep-evidence/reproduce.py --repo /absolute/repo --out /tmp/fresh-fossilize-probes`. Requires a new output directory, Linux/g++ and populated dependencies; directly compiles probes without CMake. It records historical defects E1–E9, including false-success exits, and runs the existing system test. It is an observation runner, **not** a passing observability conformance suite; follow the keyed backlog's assertion-bearing acceptance requirements.
+- **Existing research runner:** `python3 local-docs/reviews/observability-sweep-evidence/reproduce.py --repo /absolute/repo --out /tmp/fresh-fossilize-probes`. Requires a new output directory, Linux/g++ and populated dependencies; directly compiles probes without CMake. It records historical defects E1–E9, including false-success exits, and runs the existing system test. It is an observation runner, **not** a passing observability conformance suite; follow the issues' assertion-bearing acceptance requirements.
 - **Exploratory unstable-driver stress:** the disabled `SIMULATE_UNSTABLE_DRIVER` macro in `cli/fossilize_replay.cpp` injects random crashes/deadlocks during creation/teardown. No CMake switch exists. Use a disposable diagnostic build; nondeterministic stress is not a regression oracle or an ordinary Steam deployment build.
 
 ## GPU-independent CLI, database and embedding checks

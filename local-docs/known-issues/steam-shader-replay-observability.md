@@ -1,5 +1,7 @@
 # Repeated shader processing with unclear failure and cache-reuse outcomes
 
+Historical report from 26–27 October 2026. Fossilize requirements and delivery are tracked in the [Observability outcome](https://github.com/robinwassen/Fossilize/issues/8); this report supplies context rather than a separate task. Steam-owned integration concerns remain with the upstream issue below.
+
 The Sims 4 repeatedly delayed startup with “Processing Vulkan shaders,” despite previous processing having finished.
 
 Steam launched Fossilize’s replayer before Proton, with a **10-second limit without pipeline completion**. Controlled tests showed workers timing out and compilation being interrupted. Allowing 60 seconds let the tested workload finish; its resulting cache was reusable.

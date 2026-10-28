@@ -622,6 +622,11 @@ class Harness:
         snapshot = GitHub().snapshot(mapping[old['task_key']], [mapping[unit['key']] for unit in old['units']])
         require(snapshot == payload['snapshot'], 'live migration snapshot differs')
         require(GitHub.ready(snapshot), 'migration root prerequisites incomplete')
+        if old['operation'] == 'bootstrap-reconciliation':
+            imported = next(entry for entry in old['provenance'] if entry.get('legacy_schema') == 1)
+            workers = {attempt['worker_id'] for attempt in imported['legacy_state'].get('attempts', []) if attempt.get('worker_id')}
+            require(payload.get('observation') and set(payload.get('terminated_workers', [])) >= workers,
+                    'concrete termination evidence for every schema1 worker required before issue migration')
         active = [a for a in old['attempts'] if a['status'] not in ('complete','terminated')]
         bridge = None
         if active:
@@ -653,6 +658,8 @@ class Harness:
             'registry_union':registry, 'definitions':definitions, 'legacy_high_water':high,
             'mapping':mapping, 'normalization':'schema2 task/run identity retained; live work units reference issues'})
         state['legacy_report_bridge'] = {'envelope':bridge, 'consumed':False} if bridge else None
+        if old['operation']=='bootstrap-reconciliation':
+            state['provenance'][-1]['bootstrap_reconciliation']={'observation':payload['observation'],'terminated_workers':payload['terminated_workers']}
         if not active:
             state.update(phase='implementing' if state['plan'] else 'planning', operation='implement' if state['plan'] else 'plan', status='ready')
         validate_state(state, self.repo)
@@ -709,7 +716,10 @@ class Harness:
             # Explicit historical schema1 -> schema2 import is isolated; it never
             # serves normal task reads. Follow immediately with migrate-state.
             import legacy_state
-            return legacy_state.Harness(self.repo, clock=self.clock).apply(action,payload,expected_tip,expected_revision)
+            try:
+                return legacy_state.Harness(self.repo, clock=self.clock).apply(action,payload,expected_tip,expected_revision)
+            except legacy_state.Invalid as error:
+                raise Invalid(str(error)) from error
         with repository_lock(self.repo):
             tip = self.store.tip()
             require(tip == expected_tip, "artifact tip changed")
@@ -790,8 +800,20 @@ class Harness:
                 if state:
                     require((root_identity(state), state["run_id"]) == (payload["task_location"], payload["run_id"]), "another run is active")
                     require(state["revision"] == expected_revision, "wrong expected revision")
+                    GitHub().unchanged(state["issue_snapshot"])
                     return self.artifact_result(tip, records, state, resumed=True)
                 require(expected_revision == 0, "initial revision must be zero")
+                historical_runs=[json.loads(content) for location,content in records.items() if location.endswith('/state.json')]
+                legacy_identities={}
+                for historical in historical_runs:
+                    for entry in historical.get('provenance',[]):
+                        for key,url in entry.get('mapping',{}).items():
+                            if KEY.fullmatch(key):
+                                require(key not in legacy_identities or legacy_identities[key]==url, 'conflicting historical task identity')
+                                legacy_identities[key]=url
+                for historical in historical_runs:
+                    identity=historical.get('root_issue',{}).get('url') or legacy_identities.get(historical['task_key'])
+                    require((identity,historical['run_id']) != (payload['task_location'],payload['run_id']), 'root/run identity already used across storage migration')
                 path = state_path(payload["task_key"], payload["run_id"])
                 require(path not in records, "run identity already used")
                 snapshot = GitHub().snapshot(payload['root_issue'])
@@ -925,6 +947,12 @@ class Harness:
         if action == 'closeout-intent':
             require(c['stage'] == 'pending' and state['work_units'] and all(unit['status']=='accepted' for unit in state['work_units']), 'accepted work units required')
             require(not any(f['status']!='resolved' for f in state['findings']), 'unresolved closeout findings')
+            accepted_tuple={'candidate_sha':r['candidate_sha'],'base_sha':r['base_sha'],'plan_version':state['plan']['version']}
+            if any(not unit['accepted'] or any(unit['accepted'].get(key)!=value for key,value in accepted_tuple.items()) for unit in state['work_units']):
+                for unit in state['work_units']:unit.update(status='ready',accepted=None)
+                state['renewing_work_units']=True
+                state.update(phase='checking',operation='work_unit',active_work_unit=self.ready_unit(state)['key'],next_action='checker-only renewal of every work unit at combined candidate; then closeout-intent')
+                return
             keys = {root_identity(state)} | {unit['issue'] for unit in state['work_units']}
             targets = p.get('targets', [])
             require(len(targets)==len(keys) and {target['issue'] for target in targets}==keys, 'exact root/work-unit evidence targets required')
@@ -936,7 +964,7 @@ class Harness:
                 required = set(issue['children']) - keys
                 require(all((lambda child: child['state']=='closed' and child['state_reason']=='completed')(GitHub().issue(url)) for url in required), 'incomplete child prevents root completion')
             state['closeout'] = {'stage':'intent','candidate_sha':r['candidate_sha'],'base_sha':r['base_sha'],
-                'plan_version':state['plan']['version'],'targets':targets,'closing_references':['Closes '+target['issue'] for target in targets],'marker':'<!-- harness-ready:'+state['run_id']+':'+r['candidate_sha']+' -->'}
+                'plan_version':state['plan']['version'],'targets':targets,'closing_references':['Closes '+target['issue'] for target in targets], 'binding':'Candidate: `'+r['candidate_sha']+'`; base: `'+r['base_sha']+'`; plan: `'+str(state['plan']['version'])+'`; issue input: `'+state['issue_snapshot']['digest']+'`.', 'marker':'<!-- harness-ready:'+state['run_id']+':'+digest({'candidate':r['candidate_sha'],'base':r['base_sha'],'plan':state['plan']['version'],'input':state['issue_snapshot']['digest']})+' -->'}
             state.update(phase='closing',operation='closeout',next_action='journal concise readiness comments on exact issue targets; keep issues open; then closeout-record')
         elif action == 'closeout-record':
             require(c['stage']=='intent' and p.get('candidate_sha')==c['candidate_sha'], 'exact prepared candidate required')
@@ -944,7 +972,7 @@ class Harness:
             for target in c['targets']:
                 comments = GitHub().comments(target['issue'])
                 matches = [comment for comment in comments if marker in (comment.get('body') or '')]
-                require(len(matches)==1 and target['evidence'] in matches[0]['body'] and target['reference'] in matches[0]['body'], 'read back exact managed readiness evidence')
+                require(len(matches)==1 and target['evidence'] in matches[0]['body'] and target['reference'] in matches[0]['body'] and c['binding'] in matches[0]['body'], 'read back exact managed readiness evidence and candidate/base/plan/input binding')
             c['stage']='prepared'
             state.update(phase='checking',operation='final',next_action='dispatch separate fresh final checker at unchanged candidate')
         else:
@@ -978,7 +1006,7 @@ class Harness:
             state['final_acceptance'] = None
             self.invalidate_closeout(state, 'requirements or relationships changed')
             for unit in state['work_units']:unit.update(status='ready',accepted=None)
-            state.update(phase='implementing',operation='repair',status='ready',next_action='renew implementation and independent checks against reconciled input')
+            state.update(phase='implementing' if state['plan'] else 'planning',operation='repair' if state['plan'] else 'plan',status='ready',next_action='renew plan/implementation and independent checks against reconciled input')
         elif action in ("closeout-intent", "closeout-record", "closeout-cleanup"):
             self.closeout_action(state, action, p, journal)
         elif action == "reserve":
@@ -1084,6 +1112,7 @@ class Harness:
         require(TOKEN.fullmatch(p["attempt_id"]) and not any(a["attempt_id"] == p["attempt_id"] for a in state["attempts"]), "attempt ID reused")
         role = p["role"]
         require(role in ("planner", "implementer", "checker"), "invalid role")
+        GitHub().unchanged(state["issue_snapshot"])
         expected_role = {"planning": "planner", "implementing": "implementer", "checking": "checker"}.get(state["phase"])
         require(role == expected_role, "role does not match phase")
         requested = p["requested"]
@@ -1114,7 +1143,6 @@ class Harness:
             limits["replan_count"] += 1
         repository = state["repository"]
         if role == "checker":
-            GitHub().unchanged(state["issue_snapshot"])
             require(state["operation"] in ("work_unit", "final"), "checker requires explicit work_unit/final operation")
             self.source(state)
         attempt = {"attempt_id": p["attempt_id"], "role": role, "worker_id": None,
@@ -1165,6 +1193,15 @@ class Harness:
             state["work_units"] = self.units(state)
             snapshot = GitHub().snapshot(root_identity(state), [unit['issue'] for unit in state['work_units']])
             require(GitHub.ready(snapshot), 'external work-unit prerequisites incomplete/cancelled')
+            planned_urls={unit['issue'] for unit in state['work_units']}
+            for url, prior in state['issue_snapshot']['nodes'].items():
+                if url not in snapshot['nodes']:continue
+                current=snapshot['nodes'][url]
+                prior=copy.deepcopy(prior)
+                if url==root_identity(state):
+                    require(set(prior['children']) <= set(current['children']) and set(current['children'])-set(prior['children']) <= planned_urls, 'unplanned hierarchy drift requires input reconciliation')
+                    prior['children']=current['children']
+                require(current==prior, 'material requirement/prerequisite change requires explicit input reconciliation')
             state['provenance'].append({'prior_issue_snapshot':state['issue_snapshot'], 'snapshot_reason':'validated plan deliverables and native relationships'})
             state['issue_snapshot'] = snapshot
             state["active_work_unit"] = self.ready_unit(state)["key"]
@@ -1206,11 +1243,12 @@ class Harness:
                     remaining = [u for u in state["work_units"] if u["status"] != "accepted"]
                     if remaining:
                         ready = self.ready_unit(state)
-                        state.update(active_work_unit=ready["key"], phase="checking" if state.get("closeout", {}).get("stage") == "prepared" else "implementing", operation="work_unit" if state.get("closeout", {}).get("stage") == "prepared" else "implement", status="ready", next_action="dispatch next dependency-ready role")
+                        state.update(active_work_unit=ready["key"], phase="checking" if (state.get("closeout", {}).get("stage") == "prepared" or state.get("renewing_work_units")) else "implementing", operation="work_unit" if (state.get("closeout", {}).get("stage") == "prepared" or state.get("renewing_work_units")) else "implement", status="ready", next_action="dispatch next dependency-ready role")
                     else:
                         if state.get("closeout", {}).get("stage") == "prepared":
                             state.update(operation="final", status="ready", next_action="dispatch separate fresh final checker over combined branch")
                         else:
+                            state.pop("renewing_work_units", None)
                             state.update(phase="closing", operation="closeout", status="ready", next_action="persist closeout-intent before journaled issue evidence")
             else:
                 require(p.get("findings") and p.get("next_action"), "rejection requires findings and next action")
@@ -1344,7 +1382,7 @@ def main():
     worktree = sub.add_parser("detached-worktree")
     worktree.add_argument("path")
     worktree.add_argument("sha")
-    for action in ("records-only", "migrate-state", "rebind-execution", "reconcile-input", "publish-artifacts", "adopt-artifacts", "initialize", "import-bootstrap", "reserve", "dispatch", "acknowledge", "reconcile", "report", "resolve-finding", "budget-extension", "resume", "command-intent", "observe-source", "publish-intent", "publish-observation", "closeout-intent", "closeout-record", "closeout-cleanup"):
+    for action in ("records-only", "migrate-state", "rebind-execution", "reconcile-input", "publish-artifacts", "adopt-artifacts", "initialize", "import-bootstrap", "dispatch", "acknowledge", "reconcile", "report", "resolve-finding", "budget-extension", "resume", "command-intent", "observe-source", "publish-intent", "publish-observation", "closeout-intent", "closeout-record", "closeout-cleanup"):
         command = sub.add_parser(action)
         command.add_argument("--payload", required=True, help="JSON file; use - for stdin")
         command.add_argument("--expected-tip", required=True, help="full artifact commit or none")

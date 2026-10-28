@@ -6,8 +6,9 @@ import subprocess
 import sys
 import unittest
 from pathlib import Path
-from legacy_state import Harness, Invalid, Store, encoded, git
+from legacy_state import Invalid, Store, encoded, git
 import test_harness_state as fixtures
+from test_harness_state import Harness
 
 
 class CloseoutTests(unittest.TestCase):

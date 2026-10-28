@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local change-harness records. No agent runtime, command runner, or GitHub client."""
+"""Private historical schema1 import/fixture engine; never current task authority."""
 import argparse
 import copy
 from contextlib import contextmanager
@@ -382,7 +382,8 @@ def artifact_destination(repo, repository):
 
 
 class Harness:
-    def __init__(self, repo, clock=time.time, fail=None):
+    def __init__(self, repo, clock=time.time, fail=None, fixture_only=False):
+        self.fixture_only = fixture_only
         self.repo = Path(repo).resolve()
         self.store = Store(repo, fail)
         self.clock = clock
@@ -624,6 +625,7 @@ class Harness:
         require(state["phase"] != "complete", "completed run retains active pointer")
 
     def apply(self, action, payload, expected_tip, expected_revision):
+        require(self.fixture_only or action == "import-bootstrap", "historical task mutation API disabled; use issue-based harness")
         with repository_lock(self.repo):
             tip = self.store.tip()
             require(tip == expected_tip, "artifact tip changed")

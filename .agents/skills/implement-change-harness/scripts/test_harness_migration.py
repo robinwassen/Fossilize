@@ -1,6 +1,8 @@
 """V01–V03 schema migration and S02/R01 live issue workflow checks."""
 import copy
 import json
+import os
+import sys
 from pathlib import Path
 import subprocess
 import unittest
@@ -38,9 +40,13 @@ class LiveFixture(ServiceFixture):
         self.act('report',dict(self.report(),result_candidate_sha=candidate,test_mapping={'C1':'test_behavior.Behavior.test_value'},commands=[{'command':'python unittest','exit_code':0}]))
         return candidate
     def accepted(self,operation=None):
-        self.launch('checker');envelope=self.report();path=f"runs/{self.state['task_key']}/{self.state['run_id']}/evidence/check-{self.counter}.log"
+        self.launch('checker');envelope=self.report()
+        executed=subprocess.run([sys.executable,'-m','unittest','-v','test_behavior'],cwd=self.source,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'),capture_output=True,text=True,timeout=60)
+        self.assertEqual(executed.returncode,0,executed.stderr)
+        self.assertIn('test_behavior.Behavior.test_value',executed.stderr)
+        path=f"runs/{self.state['task_key']}/{self.state['run_id']}/evidence/check-{self.counter}.log"
         item={'gate':'test','result':'passed','exit_code':0,'command':'python -m unittest -v test_behavior','cwd':str(self.source),'environment':'disposable Python/Git fixture','log':path,'criteria':['AC1'],**{key:envelope[key] for key in ('candidate_sha','base_sha','plan_version','attempt_id')}}
-        self.act('report',dict(envelope,verdict='accepted',findings=[],discovered=['test_behavior.Behavior.test_value'],executed=['test_behavior.Behavior.test_value'],skipped=[],test_mapping={'C1':{'location':'test_behavior.py','tests':['test_behavior.Behavior.test_value']}},evidence=[item],records={path:'One assertion test passed in isolated fixture.'}))
+        self.act('report',dict(envelope,verdict='accepted',findings=[],discovered=['test_behavior.Behavior.test_value'],executed=['test_behavior.Behavior.test_value'],skipped=[],test_mapping={'C1':{'location':'test_behavior.py','tests':['test_behavior.Behavior.test_value']}},evidence=[item],records={path:executed.stdout+executed.stderr}))
 
 
 class LiveHarnessTests(LiveFixture,unittest.TestCase):
@@ -53,6 +59,26 @@ class LiveHarnessTests(LiveFixture,unittest.TestCase):
         self.assertNotIn('units',self.state);self.assertNotIn('subtasks',self.state['plan'])
         journal=json.loads(self.harness.store.records(self.tip)['allocations.json']);self.assertEqual(journal['issued'],[])
         with self.assertRaises(Invalid):self.act('reserve',{'title':'Never allocate','location':'ignored'})
+
+    def test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable(self):
+        self.act('initialize',self.payload);tip=self.tip
+        self.update(auth_failure=True)
+        with self.assertRaises(IssueError):self.act('initialize',self.payload)
+        self.assertEqual(self.harness.store.tip(),tip)
+        self.update(auth_failure=True)
+        with self.assertRaises(IssueError):self.launch('planner')
+        self.assertEqual(self.harness.store.tip(),tip);self.assertEqual(self.state['attempts'],[])
+        self.assertTrue(self.act('initialize',self.payload)['resumed'])
+
+    def test_S03_planner_cannot_silently_adopt_requirement_changes(self):
+        self.act('initialize',self.payload);self.launch('planner');tip=self.tip
+        self.gh.api(f"issues/{self.root_issue['number']}",'PATCH',{'body':'Changed mandatory requirement'})
+        with self.assertRaisesRegex(Invalid,'reconciliation'):self.act('report',dict(self.report(),plan=self.plan()))
+        self.assertEqual(self.harness.store.tip(),tip)
+        self.act('reconcile',{'attempt_id':self.state['attempts'][-1]['attempt_id'],'liveness':'terminated','observation':'Planner returned; old-input report fenced','next_action':'reconcile changed task then fresh planner'})
+        self.act('reconcile-input',{'snapshot':self.gh.snapshot(self.root_issue['number']),'observation':'Explicit task input change; original acceptance remains preserved'})
+        self.assertEqual(self.state['phase'],'planning');self.assertEqual(self.state['operation'],'plan')
+        self.assertEqual(self.state['original'],self.original)
 
     def test_S02_split_requires_native_parent_and_complete_criteria(self):
         child=self.create('Child');self.act('initialize',self.payload);self.launch('planner')
@@ -95,8 +121,9 @@ class LiveHarnessTests(LiveFixture,unittest.TestCase):
         self.implemented();self.accepted()
         self.assertEqual(self.state['active_work_unit'],b['html_url']);self.assertEqual(self.state['findings'][0]['status'],'open')
         self.gh.api(f"issues/{b['number']}",'PATCH',{'body':'Changed B requirements'})
-        self.launch('implementer');candidate=self.commit_candidate();self.act('report',dict(self.report(),result_candidate_sha=candidate,test_mapping={'C1':'test_behavior.Behavior.test_value'},commands=[{'command':'python unittest','exit_code':0}]))
-        with self.assertRaises(IssueError):self.launch('checker')
+        previous_tip=self.tip
+        with self.assertRaises(IssueError):self.launch('implementer')
+        self.assertEqual(self.harness.store.tip(),previous_tip)
         self.assertIsNone(self.state['final_acceptance'])
 
 
@@ -134,6 +161,22 @@ class StateMigrationTests(LiveFixture,unittest.TestCase):
         self.assertEqual(result['artifact_publication']['status'],'confirmed')
         self.assertEqual(self.state['plan']['version'],1)
 
+    def test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token(self):
+        self.migrate()
+        # Build a completed historical-record fixture; this tests identity reuse,
+        # not acceptance/publication conduct (covered by issue closeout tests).
+        records=self.harness.store.records(self.tip);completed=copy.deepcopy(self.state)
+        completed.update(phase='complete',status='complete',operation='complete')
+        records[state_path(self.root_key,'run-1')]=encoded(completed);records['active.json']=encoded(None)
+        self.tip=self.harness.store.checkpoint(records,self.tip,'completed migrated identity fixture')
+        publication=self.harness.artifact_sync(self.tip,records,push=True,adopt=True)
+        self.assertEqual(publication['status'],'confirmed',publication)
+        payload=dict(self.payload,root_issue=self.root_issue['html_url'])
+        payload.pop('task_key');payload.pop('task_location');before=self.tip
+        with self.assertRaisesRegex(Invalid,'root/run identity already used'):
+            self.harness.apply('initialize',payload,self.tip,0)
+        self.assertEqual(self.harness.store.tip(),before)
+
     def test_V02_active_exact_bridge_once_original_report_bytes(self):
         old,before,payload,result=self.migrate(active=True)
         candidate=self.commit_candidate()
@@ -170,3 +213,42 @@ class StateMigrationTests(LiveFixture,unittest.TestCase):
         payload={'legacy_root':self.root_key,'run_id':self.state['run_id'],'original':[{'id':'AC1','requirement':'weakened'}],'mapping':{self.root_key:self.root_issue['html_url']},'snapshot':snapshot,'bridge':envelope}
         with self.assertRaises(Invalid):self.act('migrate-state',payload)
         self.assertEqual(self.harness.store.tip(),oldtip)
+
+
+class BootstrapIssueMigrationTests(LiveFixture,unittest.TestCase):
+    def setUp(self):self.setup_live()
+
+    def test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state(self):
+        legacy_payload=dict(self.payload,task_key=self.root_key,task_location='local-docs/task.md')
+        legacy_payload.pop('root_issue')
+        old={'schema_version':1,'revision':4,'task_key':self.root_key,'run_id':'run-1','task_location':'local-docs/task.md',
+             'phase':'implementing','operation':'implementer_dispatch','status':'running',
+             'repository':dict(legacy_payload['repository'],input_sha=self.base[:8]),'subtasks':[],
+             'plan':{'acceptance_criteria':self.original,'plan_version':1},
+             'attempts':[{'attempt_id':'old','role':'implementer','input_sha':self.base[:8],'worker_id':'old/worker','status':'running'}],
+             'verification':[],'findings':[],'limits':{'repair_rounds_per_subtask':3,'replans':1,'run_timeout_hours':4},
+             'publishing':{'pr_url':None},'bootstrap':{'reason':'historical fixture'}}
+        path=state_path(self.root_key,'run-1')
+        report_path=f'runs/{self.root_key}/run-1/reports/old.json'
+        rows={'active.json':encoded({'task_key':self.root_key,'run_id':'run-1','state':path}),
+              'allocations.json':encoded({'high_water':25,'issued':[{'key':self.root_key,'location':'local-docs/backlog-keys.md'}]}),path:encoded(old),
+              report_path:encoded({'report_type':'implementer','attempt_id':'old','plan_version':1,'candidate_sha':self.base,'input_sha':self.base,'fact':'historical completed worker report'})}
+        self.tip=self.harness.store.checkpoint(rows,None,'schema1 fixture ancestor');self.state=old
+        original_tip=self.tip
+        payload=dict(legacy_payload,reviewed_tip=self.tip,review_summary='Reviewed synthetic schema1 records',plan=legacy_fixtures.HarnessTests.plan(self),implementation_report=report_path)
+        self.act('import-bootstrap',payload)
+        deadline=self.state['limits']['deadline'];self.assertEqual(self.state['schema_version'],2)
+        request={'legacy_root':self.root_key,'run_id':'run-1','original':self.original,'mapping':{self.root_key:self.root_issue['html_url']},'snapshot':self.gh.snapshot(self.root_issue['number'])}
+        with self.assertRaisesRegex(Invalid,'termination'):self.act('migrate-state',request)
+        self.act('migrate-state',dict(request,terminated_workers=['old/worker'],observation='Runtime fixture confirms old worker terminated'))
+        self.assertEqual(self.state['schema_version'],3);self.assertEqual(self.state['limits']['deadline'],deadline)
+        self.assertEqual(self.state['provenance'][-1]['bootstrap_reconciliation']['terminated_workers'],['old/worker'])
+        self.assertEqual(self.harness.store.records(self.tip)[report_path],rows[report_path])
+        git(self.source,'merge-base','--is-ancestor',original_tip,self.tip)
+        git(self.source,'rm','-r','local-docs');git(self.source,'commit','-m','remove fixture task definitions')
+        self.assertEqual(Harness(self.source).show()['state']['original'],self.original)
+
+    def test_V01_legacy_mutation_api_is_fixture_only(self):
+        import legacy_state
+        with self.assertRaisesRegex(legacy_state.Invalid,'historical task mutation API disabled'):
+            legacy_state.Harness(self.source).apply('initialize',{},None,0)
