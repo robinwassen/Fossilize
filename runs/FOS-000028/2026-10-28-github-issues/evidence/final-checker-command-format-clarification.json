@@ -1,0 +1,22 @@
+{
+  "changes": [
+    {
+      "committed_command_description": "G01 executes all registered V01..V03 cases; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-source-free.py; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-production-proof.py",
+      "finalized_command_description": "timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-source-free.py; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-production-proof.py",
+      "gate": "G03"
+    },
+    {
+      "committed_command_description": "timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness; timeout 600 git diff --check 73f891d6c0cf498ac92e804d7d0f0cd344a083f5 HEAD; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-source-audit.py; git diff 73f891d6c0cf498ac92e804d7d0f0cd344a083f5 HEAD; rg authority/link review",
+      "finalized_command_description": "timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness; timeout 600 git diff --check 73f891d6c0cf498ac92e804d7d0f0cd344a083f5 HEAD; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-source-audit.py; git diff 73f891d6c0cf498ac92e804d7d0f0cd344a083f5 HEAD",
+      "gate": "G04"
+    },
+    {
+      "committed_command_description": "timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-production-proof.py; independent original/full-diff/planned-assertion review and G01..G04 rerun; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-routing-probe.py Probe.runTest; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-marker-probe.py; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-environment-probe.py",
+      "finalized_command_description": "timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-production-proof.py; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-routing-probe.py Probe.runTest; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-marker-probe.py; timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fos28-cf1-environment-probe.py",
+      "gate": "G05"
+    }
+  ],
+  "committed_report_sha256": "46284de323c05b4f3ffab6cc019fb2a814a784f243199f89fae34e8db892d9b8",
+  "finalized_file_sha256": "95fa11f6d2c442c327db2e66191da9b385eca364fe1430a04b080ad915282f05",
+  "observation": "The checker finalized command-description formatting after the coordinator loaded its accepted report. Verdict, binding, outcomes, logs, test IDs/mappings and findings are unchanged. Keep canonical accepted report immutable; retain this finalized presentation separately. No source/plan/base change or acceptance override."
+}
