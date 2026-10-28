@@ -147,13 +147,18 @@
     },
     {
       "affected_task": "FOS-000026",
+      "attempt_id": "checker-2",
       "evidence": "C02 calls split_plan(), which writes canonical children containing only a heading and Status (test_harness_state.py:682). Their original definition/criteria/dependency exist only in plan objects (:689-690), so C02 byte comparison does not exercise preservation of canonical source acceptance/dependencies as promised. C08 calls planned() (:261), removes closeout from that merely planned record, clones it as a nominal completed historical record, then only calls implemented() (:275). No current acceptance provenance exists and no accepted old operation=final -> intent -> source commit -> record -> renewed unit -> separate final transition is tested. Those are explicit version-1 C02/C08 assertions, so mapping these passing IDs is insufficient. My extra real old-accepted-state adoption probe passes, which narrows this finding to missing committed regression coverage, not an observed adoption failure.",
       "id": "F26-C2",
       "location": ".agents/skills/implement-change-harness/scripts/test_harness_closeout.py:68 and :252; test_harness_state.py:682",
       "priority": 2,
+      "recheck": {
+        "evidence": "Independently inspected and reran exact-candidate G01: C02 and C08 pass. C02 writes tracked original requirement, explicit AC1 and Second->First dependency; actually executes failing second assertion 3 != 2, retains all canonical definitions Pending and blocks root closeout, repairs to passing, then checks exact original source modulo only status/evidence and unchanged registry bytes through real commits/renewal/final. C08 completes a real preceding published fixture with unit/final acceptance/reports/logs/PR attachment, retains completed state without closeout, builds genuinely unit-accepted active legacy operation=final, preserves immutable state/old report/history/budget bytes during pending adoption, commits Done, rejects stale report, renews exact bookkeeping SHA and separately accepts final without cycling. Current source lines 68-169 and 300-375; log /tmp/fos26-run/checker-2-G01.log.",
+        "finding_id": "F26-C2"
+      },
       "recheck_expectation": "Give split canonical source definitions real original requirement/criteria and dependency text and assert they/registry survive status/evidence edits; include meaningful incomplete/failed child assertions. Extend C08 with a realistic accepted legacy schema-2 state and real retained completed publication/acceptance records; assert immutable identity/reports/history/budget/current acceptance are preserved, closeout starts pending, old acceptance cannot certify the bookkeeping SHA, and explicit closeout plus renewed exact-candidate unit and separate final checking terminates.",
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Implement the planned nonvacuous C02 and accepted-state C08 regressions"
     }
   ],
@@ -410,7 +415,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 16,
+  "revision": 17,
   "run_id": "2026-10-28-backlog-completion",
   "schema_version": 2,
   "status": "running",
