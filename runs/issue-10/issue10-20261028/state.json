@@ -65,13 +65,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "72c6d698526d12697be8bfbe77b7db78d471846771407969d8230759bbaa931a",
+      "report": "runs/issue-10/issue10-20261028/reports/checker-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793217736.9104147,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/10",
       "worker_id": "/root/checker10"
     }
@@ -80,7 +82,17 @@
     "stage": "pending"
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/10",
+      "evidence": "Plan v1 native-windows-matrix is mandatory for work-unit/final acceptance. Current host is Linuxx86_64; native compiler/Windows execution host unavailable, no explicit waiver/reconciled plan. No Windows build/CTest/LoadLibrary fixture was executed. See runs/issue-10/issue10-20261028/evidence/check-native-environment.log and check-review.log.",
+      "id": "CHK10-WINDOWS-001",
+      "location": "plan.gates[native-windows-matrix]; shared https://github.com/robinwassen/Fossilize/issues/8 remaining verification",
+      "required_action": "Supply native Windows Debug/Release execution evidence, or obtain an explicit human platform decision and reconcile plan without claiming Windows verified.",
+      "route": "environment",
+      "status": "open"
+    }
+  ],
   "issue_snapshot": {
     "deliverables": [
       "https://github.com/robinwassen/Fossilize/issues/10"
@@ -203,7 +215,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
+  "next_action": "Obtain native Windows execution environment/evidence, or explicit human authorization to reconcile platform scope; preserve current candidate and Linux evidence.",
   "operation": "work_unit",
   "original": [
     {
@@ -543,7 +555,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 23,
+  "revision": 24,
   "root_issue": {
     "id": 6079794262,
     "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
@@ -553,7 +565,7 @@
   },
   "run_id": "issue10-20261028",
   "schema_version": 3,
-  "status": "running",
+  "status": "awaiting_decision",
   "task_key": "issue-10",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/10",
   "verification": [],
