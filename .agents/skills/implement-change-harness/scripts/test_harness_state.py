@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from harness_state import (Harness, Invalid, REF, Store, canonical_inventory, common_dir,
+from legacy_state import (Harness, Invalid, REF, Store, canonical_inventory, common_dir,
                            detached_worktree, encoded, git, repository_lock, state_path, validate_state)
 
 
@@ -385,7 +385,7 @@ class HarnessTests(unittest.TestCase):
             if args[0] == "update-ref":
                 original_git(repo, "update-ref", REF, winner, old)
             return original_git(repo, *args, **kwargs)
-        with patch("harness_state.git", side_effect=race):
+        with patch("legacy_state.git", side_effect=race):
             with self.assertRaisesRegex(Invalid, "update-ref"):
                 Store(self.source).checkpoint(records, old, "CAS loser")
         self.tip = winner

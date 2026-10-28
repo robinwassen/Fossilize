@@ -7,8 +7,8 @@ import subprocess
 import unittest
 from unittest.mock import patch
 
-import harness_state as hs
-from harness_state import Harness, Invalid, Store, REF, POLICY, encoded, git, state_path
+import legacy_state as hs
+from legacy_state import Harness, Invalid, Store, REF, POLICY, encoded, git, state_path
 import test_harness_state as fixtures
 
 

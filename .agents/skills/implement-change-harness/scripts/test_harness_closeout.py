@@ -6,7 +6,7 @@ import subprocess
 import sys
 import unittest
 from pathlib import Path
-from harness_state import Harness, Invalid, Store, encoded, git
+from legacy_state import Harness, Invalid, Store, encoded, git
 import test_harness_state as fixtures
 
 

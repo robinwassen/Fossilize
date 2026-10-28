@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local change-harness records. No agent runtime, command runner, or GitHub client."""
+"""Issue-based change-harness records with exact Git publication and bounded gh task reads."""
 import argparse
 import copy
 from contextlib import contextmanager
@@ -12,8 +12,9 @@ import subprocess
 import tempfile
 import time
 from urllib.parse import urlsplit
+from github_issues import GitHub, IssueError, digest
 
-SCHEMA = 2
+SCHEMA = 3
 KEY = re.compile(r"FOS-\d{6,}\Z")
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\Z")
@@ -65,7 +66,7 @@ def repository_lock(repo):
 
 
 def state_path(key, run):
-    require(KEY.fullmatch(key) and TOKEN.fullmatch(run), "invalid root/run identity")
+    require(TOKEN.fullmatch(key) and TOKEN.fullmatch(run), "invalid root/run identity")
     return f"runs/{key}/{run}/state.json"
 
 
@@ -75,7 +76,7 @@ def record_path(path):
             "unsafe artifact path")
     if path in ("active.json", "allocations.json"):
         return
-    require(len(parts) >= 4 and parts[0] == "runs" and KEY.fullmatch(parts[1])
+    require(len(parts) >= 4 and parts[0] == "runs" and TOKEN.fullmatch(parts[1])
             and TOKEN.fullmatch(parts[2]), "artifact tree must contain records only")
     require((len(parts) == 4 and parts[3] == "state.json") or
             (len(parts) == 5 and parts[3] in ("reports", "evidence") and
@@ -89,6 +90,8 @@ class Store:
         self.repo = Path(repo).resolve()
         self.fail = fail  # deterministic fault seam for tests, never a CLI option
         self.validated_commits = set()
+        self.record_cache = {}
+        self.blob_cache = {}
 
     def tip(self):
         result = subprocess.run(["git", "-C", str(self.repo), "rev-parse", "--verify", REF],
@@ -98,29 +101,48 @@ class Store:
     def records(self, tip):
         if tip is None:
             return {}
-        # Every ancestor must be an orphan records tree; never adopt source ancestry.
+        if tip in self.record_cache:
+            return dict(self.record_cache[tip])
+        listings = {}
+        blobs = set()
         for commit in git(self.repo, "rev-list", tip).decode().splitlines():
             if commit in self.validated_commits:
-                continue  # Git objects are immutable; refs and active blobs are reread.
-            listing = git(self.repo, "ls-tree", "-rz", commit)
-            for entry in listing.split(b"\0"):
+                continue
+            rows = []
+            for entry in git(self.repo, "ls-tree", "-rz", commit).split(b"\0"):
                 if not entry:
                     continue
                 meta, raw_path = entry.split(b"\t", 1)
                 mode, kind, blob = meta.decode().split()
-                record_path(raw_path.decode())
+                path = raw_path.decode()
+                record_path(path)
                 require(mode == "100644" and kind == "blob", "non-regular artifact record")
-                content = git(self.repo, "cat-file", "blob", blob)
+                rows.append((path, blob))
+                if blob not in self.blob_cache:
+                    blobs.add(blob)
+            listings[commit] = rows
+        if blobs:
+            # One batch preserves per-blob validation while avoiding a process for
+            # every historical path. Git object IDs and cached bytes are immutable.
+            stream = git(self.repo, "cat-file", "--batch", data=("\n".join(sorted(blobs)) + "\n").encode())
+            offset = 0
+            for expected in sorted(blobs):
+                end = stream.index(b"\n", offset)
+                identity, kind, size = stream[offset:end].decode().split()
+                require(identity == expected and kind == 'blob', 'invalid artifact blob response')
+                size = int(size)
+                content = stream[end+1:end+1+size]
                 self.validate_content(content)
+                require(len(content) == size and stream[end+1+size:end+2+size] == b"\n", 'truncated artifact blob')
+                self.blob_cache[expected] = content
+                offset = end + size + 2
+        for commit, rows in listings.items():
+            records = {path:self.blob_cache[blob] for path,blob in rows}
+            if records:
+                require('active.json' in records and 'allocations.json' in records, 'existing artifact ref lacks identity records')
+            self.record_cache[commit] = records
             self.validated_commits.add(commit)
-        records = {}
-        for entry in git(self.repo, "ls-tree", "-rz", tip).split(b"\0"):
-            if entry:
-                meta, path = entry.split(b"\t", 1)
-                records[path.decode()] = git(self.repo, "cat-file", "blob", meta.decode().split()[2])
-        require("active.json" in records and "allocations.json" in records,
-                "existing artifact ref lacks identity records")
-        return records
+        return dict(self.record_cache[tip])
 
     @staticmethod
     def validate_content(content):
@@ -144,10 +166,15 @@ class Store:
             env = os.environ.copy()
             env["GIT_INDEX_FILE"] = str(Path(temporary) / "index")
             git(self.repo, "read-tree", "--empty", env=env)
+            entries = []
             for path, content in sorted(records.items()):
                 fault("write")
-                blob = git(self.repo, "hash-object", "-w", "--stdin", data=content).decode().strip()
-                git(self.repo, "update-index", "--add", "--cacheinfo", "100644", blob, path, env=env)
+                identity = hashlib.sha1(b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest()
+                if identity not in self.blob_cache:
+                    identity = git(self.repo, "hash-object", "-w", "--stdin", data=content).decode().strip()
+                    self.blob_cache[identity] = content
+                entries.append(("100644 " + identity + "\t" + path).encode() + b"\0")
+            git(self.repo, "update-index", "-z", "--index-info", data=b"".join(entries), env=env)
             fault("tree")
             tree = git(self.repo, "write-tree", env=env).decode().strip()
             fault("commit")
@@ -160,7 +187,8 @@ class Store:
         return commit
 
 
-def canonical_inventory(repo, journal, revision="HEAD"):
+def historical_inventory(repo, journal, revision):
+    require(SHA.fullmatch(revision), "historical inventory requires immutable source SHA")
     """Project Markdown grammar: ledger rows and keyed headings/bold list items."""
     registry = {}
     definitions = {}
@@ -219,7 +247,7 @@ def validate_plan(plan, original, root, registry, journal):
     criteria = {row["id"] for row in original}
     covered = set()
     for gate in plan["gates"]:
-        require(gate["kind"] in ("subtask", "final", "both", "publication", "optional"), "invalid gate kind")
+        require(gate["kind"] in ("work_unit", "final", "both", "publication", "optional"), "invalid gate kind")
         require(all(gate.get(field) for field in ("criteria", "method", "cwd", "prerequisites", "expected")),
                 "incomplete gate design")
         require(set(gate["criteria"]) <= criteria, "unknown gate criterion")
@@ -229,17 +257,14 @@ def validate_plan(plan, original, root, registry, journal):
     case_ids = [case["id"] for case in plan["cases"]]
     require(len(case_ids) == len(set(case_ids)) and all(case.get("assertions") and case.get("location")
                                                      for case in plan["cases"]), "incomplete test design")
-    tasks = plan.get("subtasks", [])
+    tasks = plan.get("work_units", [])
     keys = [task["key"] for task in tasks]
-    require(root not in keys and len(keys) == len(set(keys)), "duplicate root/subtask definition")
-    allocations = {row["key"]: row for row in journal["issued"]}
+    require(root not in keys and len(keys) == len(set(keys)), "duplicate root/work_unit definition")
     for task in tasks:
-        require(task["key"] in registry and "retired" not in registry[task["key"]]["status"],
-                "subtask absent or retired registration")
-        require(task["key"] in allocations and allocations[task["key"]].get("title") == task["title"],
-                "subtask must match durable reservation")
-        require(task.get("criteria") and task.get("definition") and set(task["dependencies"]) <= set(keys),
-                "invalid dependency or definition")
+        require(task["key"] in registry and task.get("issue") == task["key"], "work unit must reference a known issue")
+        require(task.get("criteria") and task.get("definition") and set(task["dependencies"]) <= set(keys), "invalid dependency or definition")
+    if tasks:
+        require(set().union(*(set(task["criteria"]) for task in tasks)) == criteria, "split work units must cover every root criterion")
     done = set()
     while len(done) < len(keys):
         ready = {task["key"] for task in tasks if set(task["dependencies"]) <= done} - done
@@ -255,11 +280,11 @@ def validate_finding_scope(finding, root, keys):
 
 
 def finding_applies(state, finding, operation, unit):
-    affected = finding.get("affected_task", state["task_key"])
-    units = {item["key"]: item for item in state["units"]}
+    affected = finding.get("affected_task", root_identity(state))
+    units = {item["key"]: item for item in state["work_units"]}
     # Final/publication are global. An orphaned attribution after a replan also
     # remains global rather than silently disappearing with its former unit.
-    if operation != "subtask" or affected == state["task_key"] or affected not in units:
+    if operation != "work_unit" or affected == root_identity(state) or affected not in units:
         return True
     require(unit in units, "unknown finding scope check unit")
     relevant, pending = set(), [unit]
@@ -272,10 +297,10 @@ def finding_applies(state, finding, operation, unit):
     return affected in relevant
 
 
-def validate_state(state, repo):
-    require(state.get("schema_version") == SCHEMA, "unsupported/incomplete schema; use explicit import-bootstrap")
+def validate_state(state, repo, execution=True):
+    require(state.get("schema_version") == SCHEMA, "unsupported schema; use explicit migrate-state/import-bootstrap")
     required = ("revision", "task_key", "run_id", "task_location", "original", "repository", "phase",
-                "operation", "status", "next_action", "plan", "units", "active_unit", "attempts", "verification",
+                "operation", "status", "next_action", "plan", "work_units", "active_work_unit", "attempts", "verification",
                 "findings", "limits", "publishing", "final_acceptance", "provenance")
     require(all(field in state for field in required), "missing state fields")
     if "closeout" in state:
@@ -289,13 +314,22 @@ def validate_state(state, repo):
     require(state["status"] in ("ready", "running", "interrupted", "awaiting_decision", "failed", "complete"), "invalid status")
     finding_ids = [finding["id"] for finding in state["findings"]]
     require(len(finding_ids) == len(set(finding_ids)), "duplicate finding in durable state")
-    known_units = {unit["key"] for unit in (state["plan"] or {}).get("subtasks", [])}
+    known_units = {unit["key"] for unit in (state["plan"] or {}).get("work_units", [])}
     for entry in state["provenance"]:
-        known_units.update(unit["key"] for unit in entry.get("superseded_plan", {}).get("subtasks", []))
+        known_units.update(unit["key"] for unit in entry.get("superseded_plan", {}).get("work_units", []))
     for finding in state["findings"]:
-        validate_finding_scope(finding, state["task_key"], known_units)
+        validate_finding_scope(finding, root_identity(state), known_units)
+    issue = state.get('root_issue', {})
+    require(issue.get('repository')=='robinwassen/Fossilize' and issue.get('id') and issue.get('node_id'), 'missing canonical issue identity')
+    require(GitHub().number(issue.get('url')) == issue.get('number'), 'root issue identity mismatch')
+    snapshot = state.get('issue_snapshot', {})
+    require(snapshot.get('root')==issue['url'], 'wrong immutable issue snapshot')
+    require(snapshot.get('digest')==digest({key:value for key,value in snapshot.items() if key!='digest'}), 'issue snapshot digest mismatch')
+    units = state['work_units']
+    keys = {unit['key'] for unit in units}
+    require(len(keys)==len(units) and all(unit.get('issue')==unit['key'] and set(unit['dependencies'])<=keys for unit in units), 'invalid work unit to issue mapping')
     repository = state["repository"]
-    require(repository["common_dir"] == str(common_dir(repo)), "wrong repository identity")
+    require(not execution or repository["common_dir"] == str(common_dir(repo)), "wrong repository identity")
     for field in ("input_sha", "base_sha"):
         require(SHA.fullmatch(repository[field]), "invalid repository SHA")
     require(repository.get("candidate_sha") is None or SHA.fullmatch(repository["candidate_sha"]), "invalid candidate SHA")
@@ -325,7 +359,7 @@ def initial_state(repo, payload, now):
     return {"schema_version": SCHEMA, "revision": 1, "task_key": payload["task_key"], "run_id": payload["run_id"],
             "task_location": payload["task_location"], "original": payload["original"], "repository": repository,
             "phase": "planning", "operation": "plan", "status": "ready", "next_action": "dispatch fresh planner",
-            "plan": None, "units": [], "active_unit": payload["task_key"], "attempts": [], "verification": [],
+            "plan": None, "work_units": [], "active_work_unit": payload["task_key"], "attempts": [], "verification": [],
             "findings": [], "limits": limits, "publishing": {"stage": "none", "ci_policy": payload.get("ci_policy", "local")},
             "final_acceptance": None, "provenance": []}
 
@@ -353,6 +387,24 @@ def artifact_destination(repo, repository):
         require(endpoint.startswith(("/", "./", "../", "file://")), "unsupported artifact endpoint")
     return {"version": 1, "remote": "origin", "repository": repository["target_repository"],
             "ref": REF, "endpoint_sha256": hashlib.sha256(endpoint.encode()).hexdigest()}
+
+
+def root_identity(state):
+    return state["root_issue"]["url"]
+
+
+def normalize_live(value, mapping):
+    """Explicit schema-2 codec. Immutable source/report/provenance records are not rewritten."""
+    if isinstance(value, list):
+        return [normalize_live(item, mapping) for item in value]
+    if isinstance(value, dict):
+        names = {'subtasks':'work_units', 'units':'work_units', 'active_unit':'active_work_unit', 'unit':'work_unit'}
+        return {names.get(key,key): (item if key in ('original','provenance') else normalize_live(item,mapping)) for key,item in value.items()}
+    if isinstance(value, str):
+        if value == 'subtask':
+            return 'work_unit'
+        return mapping.get(value, value)
+    return value
 
 
 class Harness:
@@ -412,12 +464,17 @@ class Harness:
                     json.loads(content)
                 if path.endswith("/state.json"):
                     state = json.loads(content)
-                    require(state.get("schema_version") in (1, 2), "invalid remote state schema")
+                    require(state.get("schema_version") in (1, 2, 3), "invalid remote state schema")
                     repository = state.get("repository", {})
                     require(repository.get("target_remote") == "origin" and repository.get("target_repository") == policy["repository"],
                             "remote run repository differs from bound artifact destination")
-                    if state.get("schema_version") == 2:
-                        validate_state(state, self.repo)
+                    if state.get("schema_version") == 3:
+                        validate_state(state, self.repo, execution=False)
+                    elif state.get("schema_version") == 2:
+                        import legacy_state
+                        historical = copy.deepcopy(state)
+                        historical['repository']['common_dir'] = str(common_dir(self.repo))
+                        legacy_state.validate_state(historical, self.repo)
                     if active and active["state"] == path:
                         self.validate_pointer(active, state)
             # Permanent reservations survive every ancestry edge, including each
@@ -444,7 +501,7 @@ class Harness:
                         if old_state.get("schema_version") != 1 or state.get("schema_version") != 2 or not imports:
                             continue
                         revision = state["repository"].get("candidate_sha") or state["repository"]["input_sha"]
-                        registry, _, _ = canonical_inventory(self.repo, parent_journal, revision)
+                        registry, _, _ = historical_inventory(self.repo, parent_journal, revision)
                         for row in expected:
                             registered = registry.get(row["key"])
                             if (registered and row.get("location") == "local-docs/backlog-keys.md"
@@ -551,6 +608,56 @@ class Harness:
             result.update(outcome="publication-incomplete", detail=str(error))
         return result
 
+    def issue_registry(self, state):
+        urls = {root_identity(state)} | {unit['key'] for unit in (state.get('plan') or {}).get('work_units', [])}
+        return {url: GitHub().issue(url) for url in urls}
+
+    def migrate_state(self, old, payload, tip, journal):
+        require(old.get('schema_version') == 2, 'migrate-state requires explicit schema2 input; schema1 uses import-bootstrap first')
+        require(payload.get('legacy_root') == old['task_key'] and payload.get('run_id') == old['run_id'], 'migration identity mismatch')
+        require(payload.get('original') == old['original'], 'migration must preserve exact original acceptance')
+        mapping = payload['mapping']
+        require(len(set(mapping.values())) == len(mapping), 'duplicate issue mapping')
+        require(old['task_key'] in mapping, 'missing root issue mapping')
+        snapshot = GitHub().snapshot(mapping[old['task_key']], [mapping[unit['key']] for unit in old['units']])
+        require(snapshot == payload['snapshot'], 'live migration snapshot differs')
+        require(GitHub.ready(snapshot), 'migration root prerequisites incomplete')
+        active = [a for a in old['attempts'] if a['status'] not in ('complete','terminated')]
+        bridge = None
+        if active:
+            require(len(active) == 1 and active[0]['role'] == 'implementer' and active[0]['status'] == 'running', 'only acknowledged implementer may bridge migration')
+            import legacy_state
+            bridge = legacy_state.Harness.tuple_fields(active[0])
+            require(payload.get('bridge') == bridge, 'exact acknowledged dispatch envelope required')
+        registry, definitions, high = historical_inventory(self.repo, journal, old['repository']['input_sha'])
+        required = {old['task_key']} | {unit['key'] for unit in old['units']}
+        require(required <= set(mapping), 'missing live unit mapping')
+        for key in required:
+            GitHub().number(mapping[key])
+        state = normalize_live(copy.deepcopy(old), mapping)
+        state['schema_version'] = 3
+        # The original storage/run token and all artifact paths are immutable.
+        state['task_key'] = old['task_key']
+        state['run_id'] = old['run_id']
+        state['revision'] += 1
+        root = snapshot['nodes'][snapshot['root']]
+        state['root_issue'] = {k:root[k] for k in ('url','id','node_id','repository','number')}
+        state['task_location'] = root['url']
+        state['issue_snapshot'] = snapshot
+        for unit in state['work_units']:
+            unit.update(issue=unit['key'], status='ready', accepted=None)
+        state['limits']['implementation_counts'] = {mapping.get(key,key):value for key,value in old['limits']['implementation_counts'].items()}
+        state['final_acceptance'] = None
+        state['closeout'] = {'stage':'pending'}
+        state['provenance'].append({'migration_from_tip':tip, 'legacy_schema':2, 'legacy_state':old,
+            'registry_union':registry, 'definitions':definitions, 'legacy_high_water':high,
+            'mapping':mapping, 'normalization':'schema2 task/run identity retained; live work units reference issues'})
+        state['legacy_report_bridge'] = {'envelope':bridge, 'consumed':False} if bridge else None
+        if not active:
+            state.update(phase='implementing' if state['plan'] else 'planning', operation='implement' if state['plan'] else 'plan', status='ready')
+        validate_state(state, self.repo)
+        return state
+
     def artifact_result(self, tip, records, state, push=True, **extra):
         publication = self.artifact_sync(tip, records, push=push, adopt=push)
         return self.publication_result(tip, records, state, publication, **extra)
@@ -598,6 +705,11 @@ class Harness:
         require(state["phase"] != "complete", "completed run retains active pointer")
 
     def apply(self, action, payload, expected_tip, expected_revision):
+        if action == "import-bootstrap":
+            # Explicit historical schema1 -> schema2 import is isolated; it never
+            # serves normal task reads. Follow immediately with migrate-state.
+            import legacy_state
+            return legacy_state.Harness(self.repo, clock=self.clock).apply(action,payload,expected_tip,expected_revision)
         with repository_lock(self.repo):
             tip = self.store.tip()
             require(tip == expected_tip, "artifact tip changed")
@@ -605,6 +717,41 @@ class Harness:
             active = json.loads(records.get("active.json", b"null"))
             journal = json.loads(records.get("allocations.json", b'{"high_water":0,"issued":[]}'))
             state = json.loads(records[active["state"]]) if active else None
+            if action == "records-only":
+                require(state is not None and state["revision"] == expected_revision, "wrong expected revision/no active run")
+                publication = self.artifact_sync(tip, records, adopt=True)
+                if publication["status"] != "confirmed":
+                    return self.publication_result(tip, records, state, publication)
+                additions = payload.get("records", {})
+                require(additions and set(payload) == {"records"}, "records-only accepts bounded evidence only")
+                prefix = f"runs/{state['task_key']}/{state['run_id']}/evidence/"
+                for path, value in additions.items():
+                    record_path(path)
+                    require(path.startswith(prefix) and path not in records, "append-only active-run evidence required")
+                    records[path] = value.encode() if isinstance(value, str) else encoded(value)
+                tip = self.store.checkpoint(records, tip, "Append external-operation evidence; canonical state unchanged")
+                return self.artifact_result(tip, records, state)
+            if action == "migrate-state":
+                require(state is not None and state["revision"] == expected_revision, "wrong migration revision")
+                publication = self.artifact_sync(tip, records, adopt=True)
+                require(publication["status"] == "confirmed", "publish current artifact checkpoint before migration")
+                state = self.migrate_state(state, payload, tip, journal)
+                records[active["state"]] = encoded(state)
+                tip = self.store.checkpoint(records, tip, "Explicit issue/work-unit schema migration")
+                return self.artifact_result(tip, records, state)
+            if action == "rebind-execution":
+                require(state is not None and state.get("schema_version") == 3 and state["revision"] == expected_revision, "wrong rebind identity")
+                require(payload.get("root_issue") == state["root_issue"]["url"] and payload.get("run_id") == state["run_id"] and payload.get("old_common_dir") == state["repository"]["common_dir"], "explicit prior execution identity required")
+                require(artifact_destination(self.repo, state["repository"]) == {k:v for k,v in journal[POLICY].items() if k in ('version','remote','repository','ref','endpoint_sha256')}, "rebind destination changed")
+                old = copy.deepcopy(state["repository"])
+                state["repository"]["common_dir"] = str(common_dir(self.repo))
+                state["repository"]["implementation_worktree"] = str(self.repo)
+                self.source(state, payload["candidate_sha"])
+                state["provenance"].append({"execution_rebind": old})
+                state["revision"] += 1
+                records[active["state"]] = encoded(state)
+                tip = self.store.checkpoint(records, tip, "Explicit execution-location rebind")
+                return self.artifact_result(tip, records, state)
             if action in ("publish-artifacts", "adopt-artifacts"):
                 require((state["revision"] if state else 0) == expected_revision, "wrong expected revision")
                 if action == "adopt-artifacts":
@@ -629,32 +776,38 @@ class Harness:
                     return self.publication_result(tip, records, state, publication)
             elif tip and action != "import-bootstrap":
                 return self.artifact_result(tip, records, state, push=False)
-            if action == "import-bootstrap":
-                require(state is not None and state.get("schema_version") == 1 and state.get("bootstrap"), "not an explicit bootstrap")
-                require(state["revision"] == expected_revision, "wrong expected revision")
-                return self.import_bootstrap(state, payload, records, journal, tip)
             if state:
                 self.normalize_closeout(state)
                 validate_state(state, self.repo)
                 self.validate_pointer(active, state)
             self.validate_run_records(records, active)
             if action == "initialize":
+                payload = copy.deepcopy(payload)
+                require(payload['repository']['target_repository']=='robinwassen/Fossilize', 'explicit fork publication destination required')
+                number = GitHub().number(payload["root_issue"])
+                payload["task_key"] = "issue-" + str(number)
+                payload["task_location"] = f"https://github.com/robinwassen/Fossilize/issues/{number}"
                 if state:
-                    require((state["task_key"], state["run_id"]) == (payload["task_key"], payload["run_id"]), "another run is active")
+                    require((root_identity(state), state["run_id"]) == (payload["task_location"], payload["run_id"]), "another run is active")
                     require(state["revision"] == expected_revision, "wrong expected revision")
                     return self.artifact_result(tip, records, state, resumed=True)
                 require(expected_revision == 0, "initial revision must be zero")
                 path = state_path(payload["task_key"], payload["run_id"])
                 require(path not in records, "run identity already used")
+                snapshot = GitHub().snapshot(payload['root_issue'])
+                require(GitHub.ready(snapshot), 'root prerequisites are incomplete/cancelled')
+                root = snapshot['nodes'][snapshot['root']]
+                require(root['state']=='open', 'reopen completed/cancelled root before a new implementation run')
+                derived = [{'id':'AC1','requirement':root['body']}]
+                require('original' not in payload or payload['original'] == derived, 'new run original must be exact issue body snapshot')
+                payload['original'] = derived
                 state = initial_state(self.repo, payload, self.clock())
                 if not journal.get(POLICY):
                     journal[POLICY] = artifact_destination(self.repo, state["repository"])
                     journal[POLICY].update(reviewed_tip=None, review_summary="New orphan records; no prior history")
                 require(journal[POLICY]["repository"] == state["repository"]["target_repository"], "wrong artifact repository identity")
-                registry, definitions, _ = canonical_inventory(self.repo, journal)
-                require(state["task_key"] in registry and state["task_key"] in definitions and
-                        "retired" not in registry[state["task_key"]]["status"], "root must have an active canonical registration")
-                require(state["task_location"].split("#")[0] == definitions[state["task_key"]]["location"], "wrong root canonical location")
+                state.update(root_issue={k: root[k] for k in ('url','id','node_id','repository','number')},
+                             issue_snapshot=snapshot, task_location=root['url'], active_work_unit=root['url'])
             else:
                 require(state is not None, "no active run")
                 require(state["revision"] == expected_revision, "wrong expected revision")
@@ -670,80 +823,15 @@ class Harness:
             new_tip = self.store.checkpoint(records, tip, f"{state['task_key']} {action} revision {state['revision']}")
             return self.artifact_result(new_tip, records, state)
 
-    def import_bootstrap(self, old, payload, records, journal, tip):
-        require(old["task_key"] == payload["task_key"] and old["run_id"] == payload["run_id"], "bootstrap identity conflict")
-        require(old["repository"]["branch"] == payload["repository"]["branch"], "bootstrap branch conflict")
-        require(old["task_location"] == payload["task_location"], "bootstrap task location conflict")
-        require(old.get("plan", {}).get("acceptance_criteria") == payload["original"], "bootstrap original acceptance conflict")
-        for field in ("input_sha", "base_sha"):
-            require(normalize_sha(self.repo, old["repository"][field]) == normalize_sha(self.repo, payload["repository"][field]), "bootstrap SHA conflict")
-        # Oldest commit containing this run is the start, never migration time.
-        path = state_path(old["task_key"], old["run_id"])
-        commits = git(self.repo, "log", "--format=%ct", "--reverse", tip, "--", path).decode().splitlines()
-        started = int(commits[0])
-        normalized = copy.deepcopy(payload)
-        normalized.setdefault("limits", {})["deadline"] = started + old["limits"].get("run_timeout_hours", 4) * 3600
-        normalized["limits"]["repairs"] = old["limits"].get("repair_rounds_per_subtask", 3)
-        normalized["limits"]["replans"] = old["limits"].get("replans", 1)
-        # Permit an already elapsed deadline: it must remain exhausted after import.
-        state = initial_state(self.repo, normalized, min(self.clock(), normalized["limits"]["deadline"] - 1))
-        state["revision"] = old["revision"] + 1
-        state["provenance"] = [{"imported_from_tip": tip, "legacy_schema": 1, "legacy_state": old,
-                                "started_at": started, "uncertainty": "legacy attempts are facts only; reconcile before redispatch"}]
-        registry, _, _ = canonical_inventory(self.repo, journal)
-        for row in journal["issued"]:
-            if row["key"] in registry and row.get("location") == "local-docs/backlog-keys.md":
-                row["location"] = registry[row["key"]]["location"]
-                row["title"] = registry[row["key"]]["title"]
-        if payload.get("plan"):
-            require(old.get("plan") is not None, "cannot invent a legacy plan")
-            require(payload["plan"]["version"] == old["plan"]["plan_version"], "bootstrap plan version conflict")
-            state["plan"] = payload["plan"]
-            validate_plan(state["plan"], state["original"], state["task_key"], registry, journal)
-            state["units"] = self.units(state)
-            state["active_unit"] = self.ready_unit(state)["key"]
-        state["phase"] = "implementing" if state["plan"] else "planning"
-        # Completed legacy implementation may be imported as an unverified fact.
-        # It is never rewritten into a fabricated fenced attempt or acceptance.
-        report_path = payload.get("implementation_report")
-        if report_path:
-            require(state["plan"] is not None and report_path in records, "missing legacy implementation report/plan")
-            record_path(report_path)
-            require(report_path.startswith(path.removesuffix("state.json") + "reports/"), "wrong legacy report run")
-            report = json.loads(records[report_path])
-            require(report.get("report_type") == "implementer" and report.get("plan_version") == state["plan"]["version"], "legacy implementation report identity conflict")
-            known = [a for a in old.get("attempts", []) if a.get("attempt_id") == report.get("attempt_id") and a.get("role") == "implementer"]
-            require(len(known) == 1 and normalize_sha(self.repo, known[0]["input_sha"]) == normalize_sha(self.repo, report["input_sha"]), "unknown legacy implementation attempt")
-            candidate = normalize_sha(self.repo, report["candidate_sha"])
-            self.source(state, candidate)
-            state["repository"]["candidate_sha"] = candidate
-            state["phase"] = "checking"
-            state["provenance"].append({"legacy_implementation_report": report_path, "candidate_sha": candidate,
-                                        "acceptance": "unverified; fresh independent checks required"})
-            state["limits"]["implementation_counts"][state["active_unit"]] = len([a for a in old["attempts"] if a.get("role") == "implementer"])
-        state["status"] = "awaiting_decision"
-        state["operation"] = "bootstrap-reconciliation"
-        state["next_action"] = "reconcile every legacy worker; import its report as a fact, then dispatch fresh fenced attempts"
-        state["limits"]["exhausted"] = self.clock() >= state["limits"]["deadline"]
-        validate_state(state, self.repo)
-        if not journal.get(POLICY):
-            require(payload.get("reviewed_tip") == tip and payload.get("review_summary"), "explicit bootstrap history privacy review required")
-            journal[POLICY] = artifact_destination(self.repo, state["repository"])
-            journal[POLICY].update(reviewed_tip=tip, review_summary=payload["review_summary"])
-        records[path] = encoded(state)
-        records["allocations.json"] = encoded(journal)
-        new_tip = self.store.checkpoint(records, tip, f"{old['task_key']} explicit bootstrap import")
-        return self.artifact_result(new_tip, records, state)
-
     @staticmethod
     def units(state):
-        tasks = state["plan"].get("subtasks") or [{"key": state["task_key"], "dependencies": []}]
+        tasks = state["plan"].get("work_units") or [{"key": root_identity(state), "issue": root_identity(state), "dependencies": []}]
         return [dict(task, status="ready", accepted=None) for task in tasks]
 
     @staticmethod
     def ready_unit(state):
-        done = {unit["key"] for unit in state["units"] if unit["status"] == "accepted"}
-        ready = next((unit for unit in state["units"] if unit["status"] != "accepted"
+        done = {unit["key"] for unit in state["work_units"] if unit["status"] == "accepted"}
+        ready = next((unit for unit in state["work_units"] if unit["status"] != "accepted"
                       and set(unit["dependencies"]) <= done), None)
         require(ready is not None, "no dependency-ready unit")
         return ready
@@ -783,7 +871,7 @@ class Harness:
 
     @staticmethod
     def tuple_fields(attempt):
-        return {field: attempt[field] for field in ("role", "attempt_id", "worker_id", "input_revision", "input_sha", "candidate_sha", "base_sha", "plan_version", "operation", "unit")}
+        return {field: attempt[field] for field in ("role", "attempt_id", "worker_id", "input_revision", "input_sha", "candidate_sha", "base_sha", "plan_version", "operation", "work_unit")}
 
     def evidence(self, state, report, records):
         operation = report["operation"]
@@ -793,7 +881,7 @@ class Harness:
         require(set(gates) <= set(provided), "missing mandatory gate")
         require(not any(finding.get("status") != "resolved" for finding in report.get("findings", [])), "unresolved finding")
         require(not any(finding.get("status") != "resolved" and
-                        finding_applies(state, finding, operation, report["unit"])
+                        finding_applies(state, finding, operation, report["work_unit"])
                         for finding in state["findings"]), "unresolved prior finding")
         for gate_id in gates:
             entry = provided[gate_id]
@@ -808,7 +896,7 @@ class Harness:
         require(discovered and executed and len(set(executed)) == len(executed) and set(executed) <= set(discovered), "zero/invalid discovered or executed tests")
         mapping = report.get("test_mapping", {})
         for case in plan["cases"]:
-            if operation == "subtask" and case.get("units") and report["unit"] not in case["units"]:
+            if operation == "work_unit" and case.get("work_units") and report["work_unit"] not in case["work_units"]:
                 continue
             item = mapping.get(case["id"], {})
             require(item.get("location") and item.get("tests") and set(item["tests"]) <= set(executed), "missing/skipped planned test mapping")
@@ -826,93 +914,48 @@ class Harness:
         if closeout["stage"] in ("intent", "prepared", "cleanup"):
             state["closeout"] = dict(closeout, stage="cleanup", reason=reason, resume_phase=state["phase"])
             state["final_acceptance"] = None
-            state["next_action"] = "remove/reconcile stale Done markers, commit, then closeout-cleanup"
-
-    def closeout_sections(self, state, journal, revision, targets):
-        registry, definitions, _ = canonical_inventory(self.repo, journal, revision)
-        sections = {}
-        for target in targets:
-            key, location = target["key"], target["location"]
-            require(key in definitions and definitions[key]["location"] == location,
-                    "closeout requires tracked canonical definitions; migrate artifact-only units explicitly")
-            require(registry[key]["location"].split("#")[0] == location, "wrong canonical closeout location")
-            text = git(self.repo, "show", revision + ":" + location).decode()
-            lines = text.splitlines(keepends=True)
-            start = next(i for i, line in enumerate(lines) if re.match(r"(?:#{1,6}\s+|\d+\.\s+\*\*)" + re.escape(key) + r"\s+[—–-]", line))
-            end = next((i for i in range(start + 1, len(lines)) if re.match(r"(?:#{1,6}\s+|\d+\.\s+\*\*)FOS-\d{6,}\s+[—–-]", lines[i])), len(lines))
-            section = "".join(lines[start:end])
-            sections[key] = section
-        return sections
+            state["next_action"] = "journal superseding issue evidence, then closeout-cleanup"
 
     def closeout_action(self, state, action, p, journal):
-        self.normalize_closeout(state)
-        c = state["closeout"]
-        r = state["repository"]
-        require(state["status"] == "ready", "closeout requires idle ready run")
-        if action == "closeout-intent":
-            require(state["phase"] in ("closing", "checking") and state["units"] and c["stage"] == "pending" and all(u["status"] == "accepted" for u in state["units"]), "accepted units required before closeout")
-            require(not any(f["status"] != "resolved" for f in state["findings"]), "unresolved closeout findings")
-            self.source(state)
-            targets = p.get("targets", [])
-            keys = {state["task_key"]} | {u["key"] for u in state["units"]}
-            require(len(targets) == len(keys) and {t["key"] for t in targets} == keys, "closeout requires root and every required unit")
-            for unit in state["units"]:
-                require(unit["accepted"] and all(unit["accepted"][k] == v for k, v in {"base_sha": r["base_sha"], "plan_version": state["plan"]["version"]}.items()), "stale unit acceptance")
+        require(state['status'] == 'ready', 'closeout requires idle ready state')
+        self.source(state)
+        GitHub().unchanged(state['issue_snapshot'])
+        c = state.get('closeout', {'stage':'pending'})
+        r = state['repository']
+        if action == 'closeout-intent':
+            require(c['stage'] == 'pending' and state['work_units'] and all(unit['status']=='accepted' for unit in state['work_units']), 'accepted work units required')
+            require(not any(f['status']!='resolved' for f in state['findings']), 'unresolved closeout findings')
+            keys = {root_identity(state)} | {unit['issue'] for unit in state['work_units']}
+            targets = p.get('targets', [])
+            require(len(targets)==len(keys) and {target['issue'] for target in targets}==keys, 'exact root/work-unit evidence targets required')
             for target in targets:
-                require(target.get("evidence") and "\n" not in target["evidence"] and target.get("reference") == "https://github.com/" + r["target_repository"] + "/compare/" + r["target_branch"] + "..." + r["branch"], "passing evidence and honest compare reference required")
-            sections = self.closeout_sections(state, journal, r["candidate_sha"], targets)
-            require(all(len(re.findall(r"^\*\*Status:\*\* .+$", value, re.M)) == 1 for value in sections.values()), "closeout requires one explicit supported Status line per definition")
-            require(all(not re.search(r"^\*\*Status:\*\* Done\b", v, re.M) for v in sections.values()), "unverified Done claim must be reconciled first")
-            state["closeout"] = {"stage": "intent", "from_sha": r["candidate_sha"], "base_sha": r["base_sha"], "plan_version": state["plan"]["version"], "targets": targets,
-                                  "acceptances": [u["accepted"] for u in state["units"]]}
-            state.update(phase="closing", operation="closeout", next_action="commit canonical Done statuses/evidence/reference, then closeout-record")
-            return
-        require(c["stage"] == ("intent" if action == "closeout-record" else "cleanup"), "wrong closeout stage")
-        candidate = normalize_sha(self.repo, p["candidate_sha"])
-        self.source(state, candidate)
-        old = self.closeout_sections(state, journal, c["from_sha"], c["targets"])
-        new = self.closeout_sections(state, journal, candidate, c["targets"])
-        if action == "closeout-record":
-            require(git(self.repo, "rev-list", "--parents", "-n", "1", candidate).decode().split()[1:] == [c["from_sha"]], "closeout must be one direct bookkeeping commit")
-            changed = set(git(self.repo, "diff", "--name-only", c["from_sha"], candidate).decode().splitlines())
-            require(changed and changed <= {t["location"] for t in c["targets"]}, "unrelated closeout source changes")
-            # Remove only the defined metadata lines; all criteria/dependencies and
-            # unrelated file bytes must survive unchanged.
-            def projection(text):
-                return "".join(line for line in text.splitlines(keepends=True) if not line.startswith(("**Status:**", "**Completion evidence:**")))
-            for key in old:
-                require(projection(old[key]) == projection(new[key]), "closeout changed original source/criteria")
-            for location in changed:
-                before = git(self.repo, "show", c["from_sha"] + ":" + location).decode()
-                after = git(self.repo, "show", candidate + ":" + location).decode()
-                for target in c["targets"]:
-                    if target["location"] == location:
-                        before = before.replace(old[target["key"]], "<canonical:" + target["key"] + ">")
-                        after = after.replace(new[target["key"]], "<canonical:" + target["key"] + ">")
-                require(before == after, "closeout changed unrelated canonical source")
-            for target in c["targets"]:
-                section = new[target["key"]]
-                require(len(re.findall(r"^\*\*Status:\*\* Done\b", section, re.M)) == 1 and "proposed" in section, "missing proposed Done status")
-                expected = "**Completion evidence:** " + target["evidence"] + " " + target["reference"]
-                require(expected in section.splitlines(), "missing exact closeout evidence/reference")
-            c.update(stage="prepared", candidate_sha=candidate)
+                require(target.get('evidence') and target.get('reference') == 'https://github.com/'+r['target_repository']+'/compare/'+r['target_branch']+'...'+r['branch'], 'passing evidence and honest source compare required')
+                issue = GitHub().issue(target['issue'])
+                require(issue['state']=='open', 'PR readiness requires open task')
+                # Uncovered required children prohibit epic closing references.
+                required = set(issue['children']) - keys
+                require(all((lambda child: child['state']=='closed' and child['state_reason']=='completed')(GitHub().issue(url)) for url in required), 'incomplete child prevents root completion')
+            state['closeout'] = {'stage':'intent','candidate_sha':r['candidate_sha'],'base_sha':r['base_sha'],
+                'plan_version':state['plan']['version'],'targets':targets,'closing_references':['Closes '+target['issue'] for target in targets],'marker':'<!-- harness-ready:'+state['run_id']+':'+r['candidate_sha']+' -->'}
+            state.update(phase='closing',operation='closeout',next_action='journal concise readiness comments on exact issue targets; keep issues open; then closeout-record')
+        elif action == 'closeout-record':
+            require(c['stage']=='intent' and p.get('candidate_sha')==c['candidate_sha'], 'exact prepared candidate required')
+            marker = c['marker']
+            for target in c['targets']:
+                comments = GitHub().comments(target['issue'])
+                matches = [comment for comment in comments if marker in (comment.get('body') or '')]
+                require(len(matches)==1 and target['evidence'] in matches[0]['body'] and target['reference'] in matches[0]['body'], 'read back exact managed readiness evidence')
+            c['stage']='prepared'
+            state.update(phase='checking',operation='final',next_action='dispatch separate fresh final checker at unchanged candidate')
         else:
-            require(p.get("observation"), "cleanup requires concrete source observation")
-            origin = c.get("candidate_sha", c["from_sha"])
-            require(candidate != origin, "cleanup requires a new committed candidate")
-            git(self.repo, "merge-base", "--is-ancestor", origin, candidate)
-            require(all(not re.search(r"^\*\*Status:\*\* Done\b", value, re.M) for value in new.values()), "stale Done remains; cleanup incomplete")
-            require(all(not re.search(r"^\*\*Completion evidence:\*\*", value, re.M) for value in new.values()), "stale completion evidence remains; cleanup incomplete")
-            state["provenance"].append({"invalidated_closeout": c, "cleanup_sha": candidate, "observation": p.get("observation")})
-            state["closeout"] = {"stage": "pending"}
-        r["candidate_sha"] = candidate
-        state["final_acceptance"] = None
-        for unit in state["units"]:
-            unit.update(status="ready", accepted=None)
-        state.update(phase="checking", operation="subtask", active_unit=self.ready_unit(state)["key"], status="ready", next_action="dispatch fresh checker-only renewal; resolve findings before acceptance")
-        if action == "closeout-cleanup":
-            phase = "planning" if c.get("resume_phase") == "planning" else "implementing"
-            state.update(phase=phase, operation="replan" if phase == "planning" else "repair", next_action="dispatch fresh role after committed cleanup")
+            require(c['stage']=='cleanup' and p.get('observation'), 'stale issue evidence requires explicit invalidation observation')
+            marker = c['marker']
+            for target in c['targets']:
+                comments = GitHub().comments(target['issue'])
+                require(any(marker in (comment.get('body') or '') and 'superseded' in comment['body'].lower() for comment in comments), 'journal a marked superseding comment before cleanup')
+            state['provenance'].append({'invalidated_closeout':c,'observation':p['observation']})
+            state['closeout']={'stage':'pending'}
+            state.update(phase='implementing',operation='repair',next_action='fresh implementation/checks after invalidating stale readiness')
 
     def reduce(self, state, action, p, journal, records):
         repository = state["repository"]
@@ -925,16 +968,21 @@ class Harness:
                 return
         if action in ("report", "acknowledge", "reconcile", "resolve-finding") and state["operation"] == "budget":
             self.restore_budget_step(state)
-        if action in ("closeout-intent", "closeout-record", "closeout-cleanup"):
+        if action == "reconcile-input":
+            require(state['status'] != 'running', 'reconcile live worker before issue input change')
+            snapshot = GitHub().snapshot(root_identity(state), [unit['issue'] for unit in state['work_units']])
+            require(p.get('observation') and p.get('snapshot') == snapshot, 'exact live snapshot and reconciliation observation required')
+            require(GitHub.ready(snapshot), 'incomplete/cancelled prerequisite remains blocking')
+            state['provenance'].append({'prior_issue_snapshot':state['issue_snapshot'],'reconciliation':p['observation']})
+            state['issue_snapshot'] = snapshot
+            state['final_acceptance'] = None
+            self.invalidate_closeout(state, 'requirements or relationships changed')
+            for unit in state['work_units']:unit.update(status='ready',accepted=None)
+            state.update(phase='implementing',operation='repair',status='ready',next_action='renew implementation and independent checks against reconciled input')
+        elif action in ("closeout-intent", "closeout-record", "closeout-cleanup"):
             self.closeout_action(state, action, p, journal)
         elif action == "reserve":
-            require(state["status"] != "running", "cannot allocate during worker execution")
-            registry, _, high = canonical_inventory(self.repo, journal)
-            key = "FOS-" + str(high + 1).zfill(6)
-            require(p.get("title") and p.get("location"), "reservation needs title/location")
-            journal["issued"].append(dict(p, key=key, reserved_at=self.clock()))
-            journal["high_water"] = high + 1
-            state["next_action"] = f"register reserved {key} before defining it"
+            raise Invalid('FOS allocation retired; create persistent GitHub sub-issue using journaled external operations')
         elif action == "dispatch":
             self.dispatch(state, p)
         elif action == "acknowledge":
@@ -947,7 +995,7 @@ class Harness:
                 legacy = state["provenance"][0]["legacy_state"].get("attempts", [])
                 require(set(p.get("terminated_workers", [])) >= {a["worker_id"] for a in legacy if a.get("worker_id")}, "all legacy workers must be definitively terminated")
                 state["provenance"].append({"reconciliation": p})
-                operation = "subtask" if state["phase"] == "checking" else ("implement" if state["plan"] else "plan")
+                operation = "work_unit" if state["phase"] == "checking" else ("implement" if state["plan"] else "plan")
                 state.update(status="ready", operation=operation, next_action=p["next_action"])
             else:
                 attempt = self.current_attempt(state)
@@ -968,8 +1016,8 @@ class Harness:
             self.current_attempt(state)
             finding = next((f for f in state["findings"] if f["id"] == p["finding_id"]), None)
             require(finding is not None, "unknown finding")
-            require(p.get("affected_task", finding.get("affected_task", state["task_key"])) ==
-                    finding.get("affected_task", state["task_key"]), "cannot change finding scope")
+            require(p.get("affected_task", finding.get("affected_task", root_identity(state))) ==
+                    finding.get("affected_task", root_identity(state)), "cannot change finding scope")
             finding.update(status="resolved", recheck=p, attempt_id=state["attempts"][-1]["attempt_id"])
         elif action == "budget-extension":
             require(p.get("authorization") and p.get("reason"), "explicit user authorization required")
@@ -1004,9 +1052,9 @@ class Harness:
             state["final_acceptance"] = None
             previous = state["publishing"]
             state["publishing"] = {"stage": "none", "ci_policy": previous["ci_policy"], "prior": previous}
-            for unit in state["units"]:
+            for unit in state["work_units"]:
                 unit.update(status="ready", accepted=None)
-            state.update(phase="implementing", status="ready", operation="repair", active_unit=self.ready_unit(state)["key"], next_action="implement integrated candidate, then fresh subtask and final checks")
+            state.update(phase="implementing", status="ready", operation="repair", active_work_unit=self.ready_unit(state)["key"], next_action="implement integrated candidate, then fresh work_unit and final checks")
         elif action == "publish-intent":
             require(state["phase"] == "publishing" and state["final_acceptance"], "final acceptance required")
             self.publication_guard(state, p)
@@ -1018,7 +1066,7 @@ class Harness:
         else:
             raise Invalid("unknown transition: " + action)
         if state.get("closeout", {}).get("stage") == "cleanup":
-            state["next_action"] = "remove/reconcile stale Done markers, commit, then closeout-cleanup"
+            state["next_action"] = "journal superseding issue evidence, then closeout-cleanup"
         if action != "budget-extension" and (expired or state["limits"]["exhausted"]):
             self.pause_budget(state, "run deadline exhausted")
         # Coordinator supplies bounded text records with each action; never paths on disk.
@@ -1048,11 +1096,11 @@ class Harness:
         if limits["exhausted"] or self.clock() >= limits["deadline"]:
             reason = "run deadline exhausted"
         if role == "implementer":
-            unit = next((u for u in state["units"] if u["key"] == state["active_unit"]), None)
-            done = {u["key"] for u in state["units"] if u["status"] == "accepted"}
+            unit = next((u for u in state["work_units"] if u["key"] == state["active_work_unit"]), None)
+            done = {u["key"] for u in state["work_units"] if u["status"] == "accepted"}
             require(unit is not None and unit["status"] != "accepted" and set(unit["dependencies"]) <= done,
                     "implementer unit dependencies are not accepted")
-            count = limits["implementation_counts"].get(state["active_unit"], 0)
+            count = limits["implementation_counts"].get(state["active_work_unit"], 0)
             if count >= 1 + limits["repairs"]:
                 reason = "implementation repair budget exhausted"
         if role == "planner" and state["plan"] and limits["replan_count"] >= limits["replans"]:
@@ -1061,24 +1109,33 @@ class Harness:
             self.pause_budget(state, reason)
             return
         if role == "implementer":
-            limits["implementation_counts"][state["active_unit"]] = count + 1
+            limits["implementation_counts"][state["active_work_unit"]] = count + 1
         if role == "planner" and state["plan"]:
             limits["replan_count"] += 1
         repository = state["repository"]
         if role == "checker":
-            require(state["operation"] in ("subtask", "final"), "checker requires explicit subtask/final operation")
+            GitHub().unchanged(state["issue_snapshot"])
+            require(state["operation"] in ("work_unit", "final"), "checker requires explicit work_unit/final operation")
             self.source(state)
         attempt = {"attempt_id": p["attempt_id"], "role": role, "worker_id": None,
                    "input_revision": state["revision"] - 1, "input_sha": repository["input_sha"] if role == "planner" else (repository["candidate_sha"] or repository["input_sha"]),
                    "candidate_sha": repository["candidate_sha"], "base_sha": repository["base_sha"],
                    "plan_version": state["plan"]["version"] if state["plan"] else 0,
-                   "operation": state["operation"], "unit": state["active_unit"], "requested": requested,
+                   "operation": state["operation"], "work_unit": state["active_work_unit"], "requested": requested,
                    "actual": actual, "fallback_reason": p.get("fallback_reason"), "started": self.clock(),
                    "status": "intent", "observations": []}
         state["attempts"].append(attempt)
         state.update(status="running", next_action="launch once, then acknowledge worker identity; reconcile if response is lost")
 
     def report(self, state, p, records, journal):
+        original_report = copy.deepcopy(p)
+        bridge = state.get('legacy_report_bridge')
+        bridged = False
+        if 'unit' in p:
+            require(bridge and not bridge['consumed'] and all(p.get(key)==value for key,value in bridge['envelope'].items()), 'old report requires exact unconsumed migration bridge')
+            migration = next(entry for entry in reversed(state['provenance']) if 'migration_from_tip' in entry)
+            p = normalize_live(p, migration['mapping'])
+            bridged = True
         attempt = self.current_attempt(state)
         require(attempt["status"] == "running", "report requires acknowledged live attempt")
         require(all(p.get(k) == value for k, value in self.tuple_fields(attempt).items()), "stale report identity tuple")
@@ -1089,19 +1146,28 @@ class Harness:
             record_path(path)
             combined[path] = value.encode() if isinstance(value, str) else encoded(value)
         if role == "planner":
-            registry, _, _ = canonical_inventory(self.repo, journal)
             plan = p["plan"]
+            urls = {root_identity(state)} | {work["key"] for work in plan.get("work_units", [])}
+            registry = {url:GitHub().issue(url) for url in urls}
             require(plan["version"] == (state["plan"]["version"] + 1 if state["plan"] else 1), "plan version not monotonic")
-            validate_plan(plan, state["original"], state["task_key"], registry, journal)
+            validate_plan(plan, state["original"], root_identity(state), registry, journal)
+            for work in plan.get('work_units', []):
+                require(registry[work['key']]['parent'] == root_identity(state), 'split work unit requires native root parent')
+                require(set(work['criteria']) <= {row['id'] for row in state['original']}, 'unknown split criterion')
+                require(set(work['dependencies']) == set(registry[work['key']]['blocked_by']) & urls, 'work-unit dependencies must match native deliverable prerequisites')
             if state["plan"]:
                 # Preserve validated permanent attributions even if the new plan
                 # removes their units. Full prior plans remain in role reports.
                 state["provenance"].append({"superseded_plan": {
-                    "version": state["plan"]["version"], "subtasks": state["plan"].get("subtasks", [])}})
+                    "version": state["plan"]["version"], "work_units": state["plan"].get("work_units", [])}})
             self.invalidate_closeout(state, "plan changed")
             state["plan"] = plan
-            state["units"] = self.units(state)
-            state["active_unit"] = self.ready_unit(state)["key"]
+            state["work_units"] = self.units(state)
+            snapshot = GitHub().snapshot(root_identity(state), [unit['issue'] for unit in state['work_units']])
+            require(GitHub.ready(snapshot), 'external work-unit prerequisites incomplete/cancelled')
+            state['provenance'].append({'prior_issue_snapshot':state['issue_snapshot'], 'snapshot_reason':'validated plan deliverables and native relationships'})
+            state['issue_snapshot'] = snapshot
+            state["active_work_unit"] = self.ready_unit(state)["key"]
             state["final_acceptance"] = None
             state.update(phase="implementing", operation="implement", status="ready", next_action="dispatch fresh implementer for first ready unit")
         elif role == "implementer":
@@ -1111,46 +1177,46 @@ class Harness:
             repository = state["repository"]
             repository["candidate_sha"] = candidate
             state["final_acceptance"] = None
-            state.update(phase="checking", operation="subtask", status="ready", next_action="dispatch fresh independent checker at candidate")
+            state.update(phase="checking", operation="work_unit", status="ready", next_action="dispatch fresh independent checker at candidate")
         else:
             require(p["verdict"] in ("accepted", "changes_required", "unable_to_verify"), "unknown checker verdict")
             self.source(state)
             finding_ids = [finding.get("id") for finding in p.get("findings", [])]
             require(len(finding_ids) == len(set(finding_ids)), "duplicate finding in report")
-            planned_keys = {unit["key"] for unit in state["plan"].get("subtasks", [])}
+            planned_keys = {unit["key"] for unit in state["plan"].get("work_units", [])}
             if p.get("findings"):
-                registry, _, _ = canonical_inventory(self.repo, journal)
+                registry = self.issue_registry(state)
             for finding in p.get("findings", []):
                 require(finding.get("id") and finding.get("evidence") and finding.get("route") in ("implementation", "planner", "environment"), "incomplete finding")
                 require(not any(f["id"] == finding["id"] for f in state["findings"]), "duplicate finding")
-                affected = validate_finding_scope(finding, state["task_key"], planned_keys)
-                require(affected in registry and "retired" not in registry[affected]["status"], "unregistered finding scope")
+                affected = validate_finding_scope(finding, root_identity(state), planned_keys)
+                require(affected in registry and registry[affected]["state_reason"] != "not_planned", "unknown issue finding scope")
             if p["verdict"] == "accepted":
                 self.evidence(state, p, combined)
                 state["verification"].append(p)
                 accepted = {"candidate_sha": p["candidate_sha"], "base_sha": p["base_sha"], "plan_version": p["plan_version"], "attempt_id": p["attempt_id"]}
                 if state["operation"] == "final":
-                    require(all(unit["status"] == "accepted" for unit in state["units"]), "unaccepted unit")
+                    require(all(unit["status"] == "accepted" for unit in state["work_units"]), "unaccepted unit")
                     require(state.get("closeout", {}).get("stage") == "prepared" and state["closeout"].get("candidate_sha") == p["candidate_sha"], "prepared closeout required")
                     state["final_acceptance"] = accepted
                     state.update(phase="publishing", operation="publish", status="ready", next_action="fetch target base, verify clean tuple, persist publication intent")
                 else:
-                    unit = next(unit for unit in state["units"] if unit["key"] == state["active_unit"])
+                    unit = next(unit for unit in state["work_units"] if unit["key"] == state["active_work_unit"])
                     unit.update(status="accepted", accepted=accepted)
-                    remaining = [u for u in state["units"] if u["status"] != "accepted"]
+                    remaining = [u for u in state["work_units"] if u["status"] != "accepted"]
                     if remaining:
                         ready = self.ready_unit(state)
-                        state.update(active_unit=ready["key"], phase="checking" if state.get("closeout", {}).get("stage") == "prepared" else "implementing", operation="subtask" if state.get("closeout", {}).get("stage") == "prepared" else "implement", status="ready", next_action="dispatch next dependency-ready role")
+                        state.update(active_work_unit=ready["key"], phase="checking" if state.get("closeout", {}).get("stage") == "prepared" else "implementing", operation="work_unit" if state.get("closeout", {}).get("stage") == "prepared" else "implement", status="ready", next_action="dispatch next dependency-ready role")
                     else:
                         if state.get("closeout", {}).get("stage") == "prepared":
                             state.update(operation="final", status="ready", next_action="dispatch separate fresh final checker over combined branch")
                         else:
-                            state.update(phase="closing", operation="closeout", status="ready", next_action="persist closeout-intent before editing canonical backlog")
+                            state.update(phase="closing", operation="closeout", status="ready", next_action="persist closeout-intent before journaled issue evidence")
             else:
                 require(p.get("findings") and p.get("next_action"), "rejection requires findings and next action")
                 state["findings"].extend(p["findings"])
                 signatures = [a.get("rejection_signature") for a in state["attempts"] if a.get("rejection_signature")]
-                signature = hashlib.sha256(encoded({"verdict": p["verdict"], "unit": p["unit"],
+                signature = hashlib.sha256(encoded({"verdict": p["verdict"], "work_unit": p["work_unit"],
                     "findings": [{"route": f["route"], "evidence": f["evidence"]} for f in p["findings"]]})).hexdigest()
                 repeated = signature in signatures and not p.get("new_evidence")
                 attempt["rejection_signature"] = signature
@@ -1163,26 +1229,29 @@ class Harness:
                 elif attempt["operation"] == "final" and phase == "implementing":
                     # Integration findings can affect any unit. Recheck the whole
                     # dependency chain rather than retaining stale unit approvals.
-                    for unit in state["units"]:
+                    for unit in state["work_units"]:
                         unit.update(status="ready", accepted=None)
                     state["final_acceptance"] = None
-                    state["active_unit"] = self.ready_unit(state)["key"]
+                    state["active_work_unit"] = self.ready_unit(state)["key"]
                 self.invalidate_closeout(state, "checker rejected proposed completion")
                 if repeated:
                     self.pause_budget(state, "repeated unchanged rejection")
         attempt["status"] = "complete"
         attempt["report"] = f"runs/{state['task_key']}/{state['run_id']}/reports/{attempt['attempt_id']}.json"
         require(attempt["report"] not in records, "report already exists")
-        records[attempt["report"]] = encoded(p)
+        records[attempt["report"]] = encoded(original_report)
+        if bridged:
+            bridge['consumed'] = True
 
     def publication_guard(self, state, p):
+        GitHub().unchanged(state["issue_snapshot"])
         require(not state["limits"]["exhausted"] and self.clock() < state["limits"]["deadline"], "publication budget exhausted")
         self.source(state)
         require(state.get("closeout", {}).get("stage") == "prepared" and state["closeout"].get("candidate_sha") == state["repository"]["candidate_sha"], "prepared closeout required")
         r = state["repository"]
         accepted = state["final_acceptance"]
         require(accepted and all(accepted[k] == v for k, v in {"candidate_sha": r["candidate_sha"], "base_sha": r["base_sha"], "plan_version": state["plan"]["version"]}.items()), "final acceptance tuple changed")
-        require(all(u["status"] == "accepted" for u in state["units"]) and not any(f["status"] != "resolved" for f in state["findings"]), "unaccepted work/findings")
+        require(all(u["status"] == "accepted" for u in state["work_units"]) and not any(f["status"] != "resolved" for f in state["findings"]), "unaccepted work/findings")
         for field in ("target_remote", "target_repository", "target_branch", "branch"):
             require(p.get(field) == r[field], "wrong publication destination/head/base")
         remote_base = git(self.repo, "ls-remote", r["target_remote"], "refs/heads/" + r["target_branch"]).decode().split()
@@ -1204,7 +1273,7 @@ class Harness:
             require(remote and remote[0] == r["candidate_sha"] and p["remote_sha"] == remote[0], "remote push conflict or wrong SHA; never force push")
             publishing.update(stage="lookup", remote_sha=remote[0])
         elif event == "lookup":
-            require(stage in ("lookup", "create", "attach"), "lookup not expected")
+            require(stage in ("lookup", "create", "issue-evidence", "attach"), "lookup not expected")
             require(p.get("all_states") is True and p.get("unambiguous") is True, "ambiguous PR lookup; lookup again")
             matches = p["matches"]
             require(len(matches) <= 1, "multiple matching PRs need decision")
@@ -1213,9 +1282,16 @@ class Harness:
                 for field in ("target_repository", "target_branch", "branch"):
                     require(pr.get(field) == publishing["intent"][field], "PR destination/head/base mismatch")
                 require(pr.get("state") == "open" and pr.get("draft") is False and pr.get("url"), "closed/merged/draft PR requires decision")
-                publishing.update(stage="attach", pr=pr)
+                actual = GitHub().call(['pr','view',pr['url'],'--repo','robinwassen/Fossilize','--json','url,state,isDraft,baseRefName,headRefName,headRefOid,body,closingIssuesReferences'])
+                r = state['repository']
+                require(actual['url']==pr['url'] and actual['state']=='OPEN' and actual['isDraft'] is False and actual['baseRefName']==r['target_branch'] and actual['headRefName']==r['branch'] and actual['headRefOid']==r['candidate_sha'], 'actual PR identity/head/base differs from accepted candidate')
+                closing = {issue['url'] for issue in actual['closingIssuesReferences']}
+                expected = {target['issue'] for target in state['closeout']['targets']}
+                require(closing == expected and all(line in actual['body'] for line in state['closeout']['closing_references']), 'implementation PR must close exactly fully verified task targets')
+                publishing.update(stage="issue-evidence", pr=pr)
+                state['next_action']='journal actual implementation PR URL on each closeout issue, then publish-observation event=issue-evidence'
             else:
-                require(stage != "attach", "recorded PR disappeared")
+                require(stage not in ("issue-evidence", "attach"), "recorded PR disappeared")
                 publishing["stage"] = "create"
         elif event == "create-dispatched":
             require(stage == "create", "creation requires exact empty lookup")
@@ -1223,6 +1299,14 @@ class Harness:
             publishing["stage"] = "lookup"
             publishing["creation_intent"] = dict(p, at=self.clock())
             state["next_action"] = "create once; always exact all-state lookup to reconcile response or failure"
+        elif event == 'issue-evidence':
+            require(stage == 'issue-evidence', 'record matching PR before issue evidence')
+            marker = '<!-- harness-pr:'+state['run_id']+':'+state['repository']['candidate_sha']+' -->'
+            for target in state['closeout']['targets']:
+                comments = GitHub().comments(target['issue'])
+                matches = [comment for comment in comments if marker in (comment.get('body') or '')]
+                require(len(matches)==1 and publishing['pr']['url'] in matches[0]['body'] and state['repository']['candidate_sha'] in matches[0]['body'], 'read back one managed actual-PR evidence comment per task')
+            publishing.update(stage='attach',issue_evidence={'marker':marker,'pr':publishing['pr']['url']})
         elif event == "attachment":
             require(stage == "attach" and p.get("url") == publishing["pr"]["url"], "attachment requires recorded matching PR")
             publishing["attachment"] = p
@@ -1260,7 +1344,7 @@ def main():
     worktree = sub.add_parser("detached-worktree")
     worktree.add_argument("path")
     worktree.add_argument("sha")
-    for action in ("publish-artifacts", "adopt-artifacts", "initialize", "import-bootstrap", "reserve", "dispatch", "acknowledge", "reconcile", "report", "resolve-finding", "budget-extension", "resume", "command-intent", "observe-source", "publish-intent", "publish-observation", "closeout-intent", "closeout-record", "closeout-cleanup"):
+    for action in ("records-only", "migrate-state", "rebind-execution", "reconcile-input", "publish-artifacts", "adopt-artifacts", "initialize", "import-bootstrap", "reserve", "dispatch", "acknowledge", "reconcile", "report", "resolve-finding", "budget-extension", "resume", "command-intent", "observe-source", "publish-intent", "publish-observation", "closeout-intent", "closeout-record", "closeout-cleanup"):
         command = sub.add_parser(action)
         command.add_argument("--payload", required=True, help="JSON file; use - for stdin")
         command.add_argument("--expected-tip", required=True, help="full artifact commit or none")
@@ -1279,7 +1363,7 @@ def main():
         print(encoded(result).decode(), end="")
         if result.get("artifact_publication", {}).get("status") == "incomplete" and args.action != "show":
             parser.exit(3)
-    except (Invalid, KeyError, TypeError, json.JSONDecodeError, OSError) as error:
+    except (Invalid, IssueError, KeyError, TypeError, json.JSONDecodeError, OSError) as error:
         parser.exit(2, f"harness: {error}\n")
 
 
