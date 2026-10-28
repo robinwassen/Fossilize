@@ -134,6 +134,7 @@
   "findings": [
     {
       "affected_task": "FOS-000027",
+      "attempt_id": "checker-2",
       "criteria": [
         "AC5",
         "AC6"
@@ -146,9 +147,13 @@
         "P09"
       ],
       "priority": 1,
+      "recheck": {
+        "evidence": "Fresh checker-2 independently reproduced original issue-to-drop sequence at 93f5cb675d46443973f131f72b5d4695b06e7229: rejects before adoption, preserves local/remote tips and blocks reserve; committed P08c fails on rejected 033cd84 and passes on repaired candidate. Additional provenance/identity/high-water negative probes reject and valid registry-backed migration passes; 112-commit actual history passes read-only validation. Concrete outputs /tmp/fos27-checker-2-probes.log and /tmp/fos27-checker-2-regression.log; checker-2 will retain these in its report.",
+        "finding_id": "FOS27-C1-ALLOCATION-HISTORY"
+      },
       "required_change": "Validate permanent journal retention across adopted ancestry, rather than only tip-to-local comparison; reject historical removal/rewriting or high-water regression before adoption/publication and preserve competing tips with recovery guidance. Add a real bare-remote regression for an intermediate reservation dropped by a later descendant, asserting rejection and no subsequent key reuse. Recheck original retention guarantees and full suite with fresh checker.",
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "limits": {
@@ -415,7 +420,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 15,
+  "revision": 16,
   "run_id": "2026-10-28-artifact-publication",
   "schema_version": 2,
   "status": "running",
