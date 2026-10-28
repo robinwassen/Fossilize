@@ -132,6 +132,29 @@ class RestrictedJournalTests(unittest.TestCase):
         with self.assertRaises(Invalid):helper.apply('records-only',{'records':{'active.json':{}}},result['tip'],self.state['revision'])
         with self.assertRaises(Invalid):helper.apply('records-only',{'records':{path+'x':{}}},self.tip,self.state['revision'])
 
+    def test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch(self):
+        self.act('initialize',self.payload)
+        journal=Journal(self.source)
+        journal.append('existing',{'fact':'already committed'})
+        tip,records,state=journal.records()
+        journal.harness.store.fail='before-push'
+        path=f"runs/{self.root_key}/run-1/evidence/pending.json"
+        result=journal.harness.apply('records-only',{'records':{path:{'pending':'intent'}}},tip,state['revision'])
+        self.assertEqual(result['artifact_publication']['status'],'incomplete')
+        pending=journal.harness.store.tip()
+        with patch.object(journal.harness,'artifact_sync',side_effect=AssertionError('inspection must not publish')):
+            journal.append('existing',{'fact':'already committed'})
+        self.assertEqual(journal.harness.store.tip(),pending)
+        with patch('issue_migration.time.time',return_value=1000):
+            with self.assertRaises(IssueError):journal.authorize()
+            journal.harness.store.fail=None
+            current,rows,_=journal.records()
+            publication=journal.harness.artifact_sync(current,rows,push=True,adopt=True)
+            self.assertEqual(publication['status'],'confirmed',publication)
+            journal.authorize()
+        self.assertEqual(journal.harness.store.tip(),pending)
+        self.assertEqual(git(self.source,'ls-remote','origin','refs/heads/harness-artifacts').decode().split()[0],pending)
+
     def test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union(self):
         self.act('initialize',self.payload)
         (self.source/'local-docs/known-issues').mkdir()

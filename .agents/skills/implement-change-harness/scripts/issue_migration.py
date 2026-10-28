@@ -178,12 +178,12 @@ class Journal:
         path = f"runs/{state['task_key']}/{state['run_id']}/evidence/{name}.json"
         if path in records:
             need(json.loads(records[path]) == value,'journal record conflicts')
-            publication = self.harness.artifact_sync(tip,records,adopt=True)
-            need(publication['status']=='confirmed','publish-artifacts at current tip before external mutation')
+            # Replaying an identical record is inspection only. New appends and
+            # authorize() retain the exact-publication barrier before any effect.
             return
         before = {path:content for path,content in records.items() if path.endswith('/state.json') or path in ('active.json','allocations.json')}
         result = self.harness.apply('records-only',{'records':{path:value}},tip,state['revision'])
-        need(result['artifact_publication']['status']=='confirmed','intent/observation publication incomplete; retry publish-artifacts before dispatch')
+        need(result['artifact_publication']['status']=='confirmed','intent/observation publication incomplete; exact retry: '+json.dumps(result['artifact_publication']['retry'],sort_keys=True))
         after = self.harness.store.records(result['tip'])
         need(all(after[path]==content for path,content in before.items()),'restricted journal changed canonical bytes')
 
