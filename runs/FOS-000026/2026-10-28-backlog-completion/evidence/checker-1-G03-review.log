@@ -1,0 +1,26 @@
+Independent full eight-file diff/requirements/contracts/assertion review at 242cd40f931d9fff8de2c10533fd029308c97c11 against cc36967be308feb58ca0963e9ad161cb545b3b7a.
+Actual diff --check exits 0. Preservation audit exits 0. Semantic G03 result FAILED: F26-C1 cleanup evidence counterexample and F26-C2 committed planned regression gaps.
+[
+  {
+    "id": "F26-C1",
+    "status": "open",
+    "priority": 2,
+    "route": "implementation",
+    "affected_task": "FOS-000026",
+    "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:637",
+    "title": "Keep cleanup pending while invalidated completion evidence remains",
+    "evidence": "Independent disposable real-Git probe /tmp/fos26-run/checker-1-probe.py accepted closeout-cleanup after replacing only the Done status with Pending and committing, while the rejected **Completion evidence:** line remained. State moved to closeout={stage:pending} and implementation could resume. The implementation checks only absence of a Done status (line 637). state.md step 4 explicitly requires removing stale Done metadata AND completion evidence. Retaining unqualified completion evidence leaves invalidated source bookkeeping behind and permits it to survive into a later closeout alongside fresh evidence. Exact output is /tmp/fos26-run/checker-1-probes.log.",
+    "recheck_expectation": "Add a real source-commit negative regression: after independent rejection, a cleanup candidate that removes Done but retains invalidated completion evidence must not clear the cleanup obligation/checkpoint. Then remove both, commit, show cleanup/recovery succeeds, and ensure a later accepted closeout carries only applicable completion evidence."
+  },
+  {
+    "id": "F26-C2",
+    "status": "open",
+    "priority": 2,
+    "route": "implementation",
+    "affected_task": "FOS-000026",
+    "location": ".agents/skills/implement-change-harness/scripts/test_harness_closeout.py:68 and :252; test_harness_state.py:682",
+    "title": "Implement the planned nonvacuous C02 and accepted-state C08 regressions",
+    "evidence": "C02 calls split_plan(), which writes canonical children containing only a heading and Status (test_harness_state.py:682). Their original definition/criteria/dependency exist only in plan objects (:689-690), so C02 byte comparison does not exercise preservation of canonical source acceptance/dependencies as promised. C08 calls planned() (:261), removes closeout from that merely planned record, clones it as a nominal completed historical record, then only calls implemented() (:275). No current acceptance provenance exists and no accepted old operation=final -> intent -> source commit -> record -> renewed unit -> separate final transition is tested. Those are explicit version-1 C02/C08 assertions, so mapping these passing IDs is insufficient. My extra real old-accepted-state adoption probe passes, which narrows this finding to missing committed regression coverage, not an observed adoption failure.",
+    "recheck_expectation": "Give split canonical source definitions real original requirement/criteria and dependency text and assert they/registry survive status/evidence edits; include meaningful incomplete/failed child assertions. Extend C08 with a realistic accepted legacy schema-2 state and real retained completed publication/acceptance records; assert immutable identity/reports/history/budget/current acceptance are preserved, closeout starts pending, old acceptance cannot certify the bookkeeping SHA, and explicit closeout plus renewed exact-candidate unit and separate final checking terminates."
+  }
+]
