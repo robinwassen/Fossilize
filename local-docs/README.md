@@ -7,6 +7,7 @@
 - [Observability standard (proposed)](specs/observability-standard.md)
 - [Observability applicability review and worker evidence](specs/observability-validation.md)
 - [Observability adversarial review](specs/observability-adversarial-review.md)
+- [Worker lifecycle audit and checked evidence](reviews/worker-lifecycle-audit.md)
 - [Issue workflow](issue-workflow.md)
 - [Canonical tasks](https://github.com/robinwassen/Fossilize/issues)
 - [Historical observability sweep](reviews/observability-sweep.md)

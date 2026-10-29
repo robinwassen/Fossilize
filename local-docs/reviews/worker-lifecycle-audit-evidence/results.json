@@ -1,0 +1,151 @@
+[
+  {
+    "case": "external wait-interrupt",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/external",
+      "wait-interrupt"
+    ],
+    "exit": 1,
+    "expected_exit": 1,
+    "stdout": "wait_status=0 child_alive=1 handle=-1\n",
+    "stderr": "Fossilize INFO: Setting autogroup scheduling.\nFossilize ERROR: Failed to wait for child process to end.\nFossilize WARN: waitpid loop timed out.\n",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "external thread",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/external",
+      "thread"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "host_alive=1 child_signaled=1 signal=9\n",
+    "stderr": "Fossilize INFO: Setting autogroup scheduling.\n",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "external status",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/external",
+      "status"
+    ],
+    "exit": 1,
+    "expected_exit": 1,
+    "stdout": "done=1 status=-10 expected=37\n",
+    "stderr": "Fossilize INFO: Setting autogroup scheduling.\n",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "external wait-steals-child",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/external",
+      "wait-steals-child"
+    ],
+    "exit": 1,
+    "expected_exit": 1,
+    "stdout": "wait_status=42 expected_replay=37 unrelated_waitpid=-1 unrelated_errno=10 expected_unrelated=42\n",
+    "stderr": "Fossilize INFO: Setting autogroup scheduling.\n",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "external pipe-failure",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/external",
+      "pipe-failure"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "start=0 fd_before=4 fd_after=6 leaked=2\n",
+    "stderr": "",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "external inherited-control",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/external",
+      "inherited-control"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "after_A_destroyed_A_alive=1 after_B_killed_A_exited=1\n",
+    "stderr": "Fossilize INFO: Setting autogroup scheduling.\nFossilize INFO: Setting autogroup scheduling.\n",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "owner-lock",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/owner-lock"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "child_exit_observed_before_poll=1 poll_returned=0 subject_alive=1 wait_channel=futex_do_wait\n",
+    "stderr": "Fossilize INFO: Setting autogroup scheduling.\n",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "cancel-actual",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/cancel-actual"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "production_shutdown_called=1 child_already_exited=2 expect_kill=1 replacement_requested=1\n",
+    "stderr": "Fossilize ERROR: Process index 0 (PID: 4165272) crashed, but will retry.\nFossilize ERROR:   New graphics range (2, 20)\nFossilize ERROR:   New compute range (0, 0)\nFossilize ERROR:   New raytracing range (0, 0)\n",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "blacklist_pipe",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/blacklist_pipe"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "returned_before_SIGTERM=0 returned_after_SIGTERM=0 controller_exited=0\n",
+    "stderr": "",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "stale_pipe",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/stale_pipe"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "stale_event_dispatch_returned=0 (0 means blocked on replacement pipe)\n",
+    "stderr": "",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "cancel_control",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/cancel_control"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "cancelled=1 actual_exit=2 restart_requested=1 active_after_reap=0\n",
+    "stderr": "Process index 0 (PID: 4165567) crashed, but will retry.\n  New graphics range (5, 10)\n  New compute range (0, 0)\n  New raytracing range (0, 0)\n",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "cancel_live_control",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/cancel_live_control"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "cancelled=1 actual_exit=-9 restart_requested=0 active_after_reap=0\n",
+    "stderr": "Parent process is shutting down. Expected SIGKILL.\n",
+    "matched_expected_observation": true
+  },
+  {
+    "case": "blacklist_control",
+    "argv": [
+      "/tmp/fossilize-lifecycle-final-evidence/blacklist_control"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "returned_before_SIGTERM=1 returned_after_SIGTERM=1 controller_exited=0\n",
+    "stderr": "",
+    "matched_expected_observation": true
+  }
+]
