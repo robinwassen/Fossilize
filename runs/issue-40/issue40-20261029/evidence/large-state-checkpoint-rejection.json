@@ -1,0 +1,12 @@
+{
+  "attempt": "reviewed B2 inventory prelaunch command intent",
+  "error": "oversize/binary artifact",
+  "next_action": "implement compact versioned transaction read/before hash expectations; retain all old bytes and record limit; no B2 job launched",
+  "record_limit_bytes": 1048576,
+  "retained_tip": "698ba8737e7ab8d823720d8cf50b85a1219bf124",
+  "revision": 11,
+  "source_candidate": "cd57f01822d7e16a9ec2582043c889eb00b8f7fe",
+  "state_bytes": 380458,
+  "status": "failed-before-checkpoint",
+  "trace": "Traceback (most recent call last):\n  File \"/tmp/fossilize-issue40-coordinator/schema4a2/server.py\", line 19, in <module>\n    else:result=h.apply(p['action'],p.get('payload',{}),p['expected_tip'],p['expected_revision'])\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/fossilize-issue40-coordinator/candidate-a2/.agents/skills/implement-change-harness/scripts/harness_parallel.py\", line 458, in apply\n    tip, records = self.commit_transaction(before, records, tip, expected_revision, action)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/fossilize-issue40-coordinator/candidate-a2/.agents/skills/implement-change-harness/scripts/harness_parallel.py\", line 347, in commit_transaction\n    new_tip = self.store.checkpoint(after, tip, self.selector() + ' ' + action + ' transaction ' + tx['id'])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/fossilize-issue40-coordinator/candidate-a2/.agents/skills/implement-change-harness/scripts/harness_core.py\", line 171, in checkpoint\n    self.validate_content(content)\n  File \"/tmp/fossilize-issue40-coordinator/candidate-a2/.agents/skills/implement-change-harness/scripts/harness_core.py\", line 159, in validate_content\n    require(len(content) <= MAX_RECORD and b\"\\0\" not in content, \"oversize/binary artifact\")\n  File \"/tmp/fossilize-issue40-coordinator/candidate-a2/.agents/skills/implement-change-harness/scripts/harness_core.py\", line 31, in require\n    raise Invalid(message)\nharness_core.Invalid: oversize/binary artifact\n"
+}
