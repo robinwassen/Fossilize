@@ -282,15 +282,15 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "journal actual implementation PR URL on each closeout issue, then publish-observation event=issue-evidence",
-  "operation": "publish",
+  "next_action": "PR opened and attached; no merge",
+  "operation": "complete",
   "original": [
     {
       "id": "AC1",
       "requirement": "Legacy identity: `FOS-000002`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n2. **FOS-000002 \u2014 Make utility parse failure affect the command result.** **S per tool; no dependencies; \u00a72\u2013\u00a73.** Start with [list:266](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_list.cpp#L266), then [rehash:226](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_rehash.cpp#L226) and [prune:1003](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_prune.cpp#L1003), one small change each. Each logs a failed parse and proceeds toward success (E8). Retain partial output if useful, but return nonzero and identify incomplete scope; never print an ordinary empty connectivity row as a verified empty dependency set. **Check:** version rejection and invalid JSON; valid empty databases still succeed. Later apply the same rule to opt/disasm. Keep fallback optimization policy explicit rather than making an error-level message alone decide failure.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **CLI subprocess regression tests, per migrated tool:** E8 version rejection and invalid JSON return nonzero and identify incomplete scope; valid populated and valid empty inputs return zero. List connectivity does not emit a rejected item as an ordinary verified empty dependency row.\n   - **Partial-output and policy tests:** A valid item followed by an invalid item preserves any promised partial output but never returns success. An explicitly permitted optimizer fallback returns the declared outcome and remains distinguishable from an unhandled parse failure when that tool is migrated.\n\n<!-- fossilize-migration-v1:FOS-000002 -->\n"
     }
   ],
-  "phase": "publishing",
+  "phase": "complete",
   "plan": {
     "cases": [
       {
@@ -790,6 +790,12 @@
     }
   ],
   "publishing": {
+    "attachment": {
+      "event": "attachment",
+      "observation": "Codex attach_artifact returned matching pull_request URL with isError=false.",
+      "success": true,
+      "url": "https://github.com/robinwassen/Fossilize/pull/44"
+    },
     "ci_policy": "local",
     "creation_intent": {
       "at": 1793257849.9885037,
@@ -847,6 +853,12 @@
       },
       {
         "event": "issue-evidence"
+      },
+      {
+        "event": "attachment",
+        "observation": "Codex attach_artifact returned matching pull_request URL with isError=false.",
+        "success": true,
+        "url": "https://github.com/robinwassen/Fossilize/pull/44"
       }
     ],
     "pr": {
@@ -859,7 +871,8 @@
       "url": "https://github.com/robinwassen/Fossilize/pull/44"
     },
     "remote_sha": "feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd",
-    "stage": "attach"
+    "required_checks": [],
+    "stage": "done"
   },
   "repository": {
     "base_sha": "36b78637e847463c4f58758a907b33ce5bf07ce5",
@@ -872,7 +885,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 36,
+  "revision": 37,
   "root_issue": {
     "id": 6079799745,
     "node_id": "I_kwDOVZpjbc8AAAABamJhwQ",
@@ -882,7 +895,7 @@
   },
   "run_id": "issue-11-20261029-parse-results",
   "schema_version": 3,
-  "status": "ready",
+  "status": "complete",
   "task_key": "issue-11",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/11",
   "verification": [
