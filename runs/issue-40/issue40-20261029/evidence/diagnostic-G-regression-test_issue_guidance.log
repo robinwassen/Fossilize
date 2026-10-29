@@ -1,0 +1,19 @@
+test_G01_source_has_policy_without_task_registry_or_mirror (test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror) ... ERROR
+
+======================================================================
+ERROR: test_G01_source_has_policy_without_task_registry_or_mirror (test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_issue_guidance.py", line 10, in test_G01_source_has_policy_without_task_registry_or_mirror
+    repo=Path(git(Path.cwd(),'rev-parse','--show-toplevel').decode().strip())
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/harness_core.py", line 45, in git
+    raise Invalid("git " + args[0] + ": " + result.stderr.decode(errors="replace").strip())
+harness_core.Invalid: git rev-parse: fatal: not a git repository (or any parent up to mount point /work)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (errors=1)
+group did not pass

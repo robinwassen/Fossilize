@@ -1,0 +1,25 @@
+test_PAR11_every_new_and_original_test_has_exact_owner_and_mapping (test_harness_concurrent_inventory.ConcurrentInventoryTests.test_PAR11_every_new_and_original_test_has_exact_owner_and_mapping) ... ok
+test_PAR11_guidance_documents_enforcement_and_selectors (test_harness_concurrent_inventory.ConcurrentInventoryTests.test_PAR11_guidance_documents_enforcement_and_selectors) ... ok
+test_PAR11_current_CLI_examples_execute_and_missing_selectors_fail (test_harness_concurrent_inventory.GuidanceExamplesTests.test_PAR11_current_CLI_examples_execute_and_missing_selectors_fail) ... 
+  test_PAR11_current_CLI_examples_execute_and_missing_selectors_fail (test_harness_concurrent_inventory.GuidanceExamplesTests.test_PAR11_current_CLI_examples_execute_and_missing_selectors_fail) (path='/work/source/.agents/skills/implement-change-harness/references/state.md', argv=['--repo', '/absolute/implementation', '--root-issue', 'FULL_URL', '--run-id', 'TOKEN', 'show']) ... ERROR
+test_PAR11_current_Python_examples_and_schema_match_runtime (test_harness_concurrent_inventory.GuidanceExamplesTests.test_PAR11_current_Python_examples_and_schema_match_runtime) ... ok
+
+======================================================================
+ERROR: test_PAR11_current_CLI_examples_execute_and_missing_selectors_fail (test_harness_concurrent_inventory.GuidanceExamplesTests.test_PAR11_current_CLI_examples_execute_and_missing_selectors_fail) (path='/work/source/.agents/skills/implement-change-harness/references/state.md', argv=['--repo', '/absolute/implementation', '--root-issue', 'FULL_URL', '--run-id', 'TOKEN', 'show'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_inventory.py", line 130, in test_PAR11_current_CLI_examples_execute_and_missing_selectors_fail
+    code, out, err = self.cli(argv)
+                     ^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_inventory.py", line 76, in cli
+    harness_core.main()
+  File "/work/source/.agents/skills/implement-change-harness/scripts/harness_core.py", line 1480, in main
+    if result.get("artifact_publication", {}).get("status") == "incomplete" and args.action != "show":
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.743s
+
+FAILED (errors=1)
+group did not pass

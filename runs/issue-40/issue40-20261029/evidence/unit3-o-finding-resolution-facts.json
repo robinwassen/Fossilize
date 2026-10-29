@@ -1,0 +1,1042 @@
+{
+  "attempt_id": "checker-unit-3",
+  "candidate_sha": "5760048862543db7044e5ef6f53865a3197b3815",
+  "findings": [
+    {
+      "cleanup_verified": true,
+      "execution_seconds": 158.56523156166077,
+      "facts": "All9 registered PAR01 methods passed. Four repaired methods execute7 separate-clone first-push barrier/NFF races: same issue/root-child/hidden descendant in both winner orders plus cancellation. Both speculative initializations reach the barrier before either normal push; loser must show actual non-fast-forward followed by observer publication. Assertions require exactly one owner and durable automatic watch_claim outcome or saved-waiter admission, no duplicate PR. Distinct ready issue full lifecycles and actual serial comparison also passed.",
+      "id": "I40-U1-F1",
+      "independent_recheck": "coverage gap repaired and freshly executed",
+      "job": "b68f39b541c8473d8303ab07e3190dcd",
+      "log_record": "runs/issue-40/issue40-20261029/evidence/unit3-o-11.log",
+      "log_sha256": "a3858b179b4dd9a4773a9fd1ef62e8d43aafd43944fd9c6ac410b18dc0d418e9"
+    },
+    {
+      "actual_trace": {
+        "CPU_barriers_while_shared_held": [
+          {
+            "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7d572b951f2b4e5dab20eb3d9297acbc.service",
+            "invocation": "019a00ad5ec84669b5f6d23a2be121c5",
+            "mount": "mnt:[4026533635]",
+            "parent": 3479232,
+            "pid": 3479237
+          },
+          {
+            "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e41572e3387842c99d19413324287db1.service",
+            "invocation": "9a36d301aa4141078fdca8d3f4f732b7",
+            "mount": "mnt:[4026533816]",
+            "parent": 3479271,
+            "pid": 3479283
+          }
+        ],
+        "CPU_sources": [
+          "/tmp/harness-resource-cu5lz7y0/authority/sources/1b463ad2d92ef03b0ea4416dfe032f7f53a56735",
+          "/tmp/harness-resource-cu5lz7y0/authority/sources/27159b031d4a47fc48f6c927ec3565a6a27fa238"
+        ],
+        "concurrent_semantics": {
+          "1100b9de8b044dbb8e4d214e18d13009": {
+            "candidate_sha": "214d982dd6ab14e756ebab2d34c17237fb06053f",
+            "cleanup_verified": true,
+            "environment": {
+              "HARNESS_TEST_BACKEND": "1100b9de8b044dbb8e4d214e18d13009",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "exports": {
+              "descendant.json": {
+                "child_finished": true,
+                "identity": "1100b9de8b044dbb8e4d214e18d13009"
+              },
+              "result.json": {
+                "identity": "1100b9de8b044dbb8e4d214e18d13009",
+                "leader_finished": true
+              }
+            },
+            "profile": "fixture-steam",
+            "resources": [
+              {
+                "capacity": 1,
+                "id": "shared",
+                "kind": "steam",
+                "scope": "fixture"
+              },
+              {
+                "id": "shared",
+                "kind": "gpu",
+                "scope": "fixture"
+              },
+              {
+                "id": "shared",
+                "kind": "cache",
+                "scope": "fixture"
+              }
+            ],
+            "status": "passed"
+          },
+          "35fd7362548c4d8e89fdbe45044915fa": {
+            "candidate_sha": "ac5720b620e73e7c209383877c4e502aa95a0786",
+            "cleanup_verified": true,
+            "environment": {
+              "HARNESS_TEST_BACKEND": "35fd7362548c4d8e89fdbe45044915fa",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "exports": {
+              "descendant.json": {
+                "child_finished": true,
+                "identity": "35fd7362548c4d8e89fdbe45044915fa"
+              },
+              "result.json": {
+                "identity": "35fd7362548c4d8e89fdbe45044915fa",
+                "leader_finished": true
+              }
+            },
+            "profile": "fixture-steam",
+            "resources": [
+              {
+                "capacity": 1,
+                "id": "shared",
+                "kind": "steam",
+                "scope": "fixture"
+              },
+              {
+                "id": "shared",
+                "kind": "gpu",
+                "scope": "fixture"
+              },
+              {
+                "id": "shared",
+                "kind": "cache",
+                "scope": "fixture"
+              }
+            ],
+            "status": "passed"
+          },
+          "82febbdeec364d6fa1284ac3c247e755": {
+            "candidate_sha": "1b463ad2d92ef03b0ea4416dfe032f7f53a56735",
+            "cleanup_verified": true,
+            "environment": {
+              "HARNESS_TEST_BACKEND": "82febbdeec364d6fa1284ac3c247e755",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "exports": {
+              "result.json": {
+                "identity": "82febbdeec364d6fa1284ac3c247e755",
+                "paths": [
+                  "/work/build/identity",
+                  "/tmp/identity",
+                  "/work/evidence/identity",
+                  "/work/home/identity",
+                  "/work/cache/identity"
+                ]
+              }
+            },
+            "profile": "cpu-private",
+            "resources": [
+              {
+                "capacity": 1,
+                "id": "82febbdeec364d6fa1284ac3c247e755",
+                "kind": "cpu",
+                "scope": "fixture"
+              }
+            ],
+            "status": "passed"
+          },
+          "e6a740f5295c4284842896d833cd16f2": {
+            "candidate_sha": "27159b031d4a47fc48f6c927ec3565a6a27fa238",
+            "cleanup_verified": true,
+            "environment": {
+              "HARNESS_TEST_BACKEND": "e6a740f5295c4284842896d833cd16f2",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "exports": {
+              "result.json": {
+                "identity": "e6a740f5295c4284842896d833cd16f2",
+                "paths": [
+                  "/work/build/identity",
+                  "/tmp/identity",
+                  "/work/evidence/identity",
+                  "/work/home/identity",
+                  "/work/cache/identity"
+                ]
+              }
+            },
+            "profile": "cpu-private",
+            "resources": [
+              {
+                "capacity": 1,
+                "id": "e6a740f5295c4284842896d833cd16f2",
+                "kind": "cpu",
+                "scope": "fixture"
+              }
+            ],
+            "status": "passed"
+          }
+        },
+        "first_barrier": [
+          {
+            "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7a6b0a85c4364d7faa36ea6175c8a846.service",
+            "invocation": "059be716b78947ebbe8e1b658a94cd82",
+            "mount": "mnt:[4026533754]",
+            "parent": 3479261,
+            "pid": 3479262
+          },
+          {
+            "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7a6b0a85c4364d7faa36ea6175c8a846.service",
+            "invocation": "059be716b78947ebbe8e1b658a94cd82",
+            "mount": "mnt:[4026533754]",
+            "parent": 3479262,
+            "pid": 3479265
+          }
+        ],
+        "first_launch": {
+          "argv": [
+            "systemd-run",
+            "--user",
+            "--quiet",
+            "--unit",
+            "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7a6b0a85c4364d7faa36ea6175c8a846.service",
+            "--property",
+            "CPUQuota=25%",
+            "--property",
+            "MemoryMax=100663296",
+            "--property",
+            "MemorySwapMax=0",
+            "--property",
+            "TasksMax=24",
+            "--property",
+            "RuntimeMaxSec=60",
+            "--property",
+            "TimeoutStopSec=5",
+            "--property",
+            "RemainAfterExit=yes",
+            "--property",
+            "KillMode=control-group",
+            "--property",
+            "SendSIGKILL=yes",
+            "--property",
+            "Restart=no",
+            "--",
+            "/usr/bin/python3",
+            "-B",
+            "/home/robin/.local/state/fossilize-harness/host-v1/sources/5760048862543db7044e5ef6f53865a3197b3815/.agents/skills/implement-change-harness/scripts/harness_runner.py",
+            "exec-job",
+            "--output",
+            "/tmp/harness-resource-cu5lz7y0/authority/job-fb9c3fbcb5f44fa7bb3708b69d752e47"
+          ],
+          "at": 513888693650693,
+          "event": "launched",
+          "job": "fb9c3fbcb5f44fa7bb3708b69d752e47",
+          "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7a6b0a85c4364d7faa36ea6175c8a846.service"
+        },
+        "second_barrier": [
+          {
+            "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e6b6f05298b2485aa563926f7e6ab454.service",
+            "invocation": "5084db526592433999551031a6311770",
+            "mount": "mnt:[4026533635]",
+            "parent": 3479330,
+            "pid": 3479335
+          },
+          {
+            "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e6b6f05298b2485aa563926f7e6ab454.service",
+            "invocation": "5084db526592433999551031a6311770",
+            "mount": "mnt:[4026533635]",
+            "parent": 3479335,
+            "pid": 3479343
+          }
+        ],
+        "serial_semantics": {
+          "1100b9de8b044dbb8e4d214e18d13009": {
+            "candidate_sha": "214d982dd6ab14e756ebab2d34c17237fb06053f",
+            "cleanup_verified": true,
+            "environment": {
+              "HARNESS_TEST_BACKEND": "1100b9de8b044dbb8e4d214e18d13009",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "exports": {
+              "descendant.json": {
+                "child_finished": true,
+                "identity": "1100b9de8b044dbb8e4d214e18d13009"
+              },
+              "result.json": {
+                "identity": "1100b9de8b044dbb8e4d214e18d13009",
+                "leader_finished": true
+              }
+            },
+            "profile": "fixture-steam",
+            "resources": [
+              {
+                "capacity": 1,
+                "id": "shared",
+                "kind": "steam",
+                "scope": "fixture"
+              },
+              {
+                "id": "shared",
+                "kind": "gpu",
+                "scope": "fixture"
+              },
+              {
+                "id": "shared",
+                "kind": "cache",
+                "scope": "fixture"
+              }
+            ],
+            "status": "passed"
+          },
+          "35fd7362548c4d8e89fdbe45044915fa": {
+            "candidate_sha": "ac5720b620e73e7c209383877c4e502aa95a0786",
+            "cleanup_verified": true,
+            "environment": {
+              "HARNESS_TEST_BACKEND": "35fd7362548c4d8e89fdbe45044915fa",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "exports": {
+              "descendant.json": {
+                "child_finished": true,
+                "identity": "35fd7362548c4d8e89fdbe45044915fa"
+              },
+              "result.json": {
+                "identity": "35fd7362548c4d8e89fdbe45044915fa",
+                "leader_finished": true
+              }
+            },
+            "profile": "fixture-steam",
+            "resources": [
+              {
+                "capacity": 1,
+                "id": "shared",
+                "kind": "steam",
+                "scope": "fixture"
+              },
+              {
+                "id": "shared",
+                "kind": "gpu",
+                "scope": "fixture"
+              },
+              {
+                "id": "shared",
+                "kind": "cache",
+                "scope": "fixture"
+              }
+            ],
+            "status": "passed"
+          },
+          "82febbdeec364d6fa1284ac3c247e755": {
+            "candidate_sha": "1b463ad2d92ef03b0ea4416dfe032f7f53a56735",
+            "cleanup_verified": true,
+            "environment": {
+              "HARNESS_TEST_BACKEND": "82febbdeec364d6fa1284ac3c247e755",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "exports": {
+              "result.json": {
+                "identity": "82febbdeec364d6fa1284ac3c247e755",
+                "paths": [
+                  "/work/build/identity",
+                  "/tmp/identity",
+                  "/work/evidence/identity",
+                  "/work/home/identity",
+                  "/work/cache/identity"
+                ]
+              }
+            },
+            "profile": "cpu-private",
+            "resources": [
+              {
+                "capacity": 1,
+                "id": "82febbdeec364d6fa1284ac3c247e755",
+                "kind": "cpu",
+                "scope": "fixture"
+              }
+            ],
+            "status": "passed"
+          },
+          "e6a740f5295c4284842896d833cd16f2": {
+            "candidate_sha": "27159b031d4a47fc48f6c927ec3565a6a27fa238",
+            "cleanup_verified": true,
+            "environment": {
+              "HARNESS_TEST_BACKEND": "e6a740f5295c4284842896d833cd16f2",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "exports": {
+              "result.json": {
+                "identity": "e6a740f5295c4284842896d833cd16f2",
+                "paths": [
+                  "/work/build/identity",
+                  "/tmp/identity",
+                  "/work/evidence/identity",
+                  "/work/home/identity",
+                  "/work/cache/identity"
+                ]
+              }
+            },
+            "profile": "cpu-private",
+            "resources": [
+              {
+                "capacity": 1,
+                "id": "e6a740f5295c4284842896d833cd16f2",
+                "kind": "cpu",
+                "scope": "fixture"
+              }
+            ],
+            "status": "passed"
+          }
+        },
+        "serial_trace": [
+          {
+            "argv": [
+              "systemd-run",
+              "--user",
+              "--quiet",
+              "--unit",
+              "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-8794cffe25954f37b7808045824c5b40.service",
+              "--property",
+              "CPUQuota=25%",
+              "--property",
+              "MemoryMax=100663296",
+              "--property",
+              "MemorySwapMax=0",
+              "--property",
+              "TasksMax=24",
+              "--property",
+              "RuntimeMaxSec=60",
+              "--property",
+              "TimeoutStopSec=5",
+              "--property",
+              "RemainAfterExit=yes",
+              "--property",
+              "KillMode=control-group",
+              "--property",
+              "SendSIGKILL=yes",
+              "--property",
+              "Restart=no",
+              "--",
+              "/usr/bin/python3",
+              "-B",
+              "/home/robin/.local/state/fossilize-harness/host-v1/sources/5760048862543db7044e5ef6f53865a3197b3815/.agents/skills/implement-change-harness/scripts/harness_runner.py",
+              "exec-job",
+              "--output",
+              "/tmp/harness-resource-cu5lz7y0/authority/job-4d058790909a4a2f95035fb08ea79a2b"
+            ],
+            "at": 513891852035968,
+            "event": "launched",
+            "job": "4d058790909a4a2f95035fb08ea79a2b",
+            "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-8794cffe25954f37b7808045824c5b40.service"
+          },
+          {
+            "at": 513892408593532,
+            "event": "cleaned",
+            "execution": {
+              "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-8794cffe25954f37b7808045824c5b40.service",
+              "contaminated": false,
+              "exit_code": 0,
+              "invocation": "5a0a1085f73348d09961d553f9a7fa17",
+              "log": "HARNESS_TEST_READY\n",
+              "membership": {
+                "boot": "53971fd2-d562-4836-ad2b-c0da4cff447f",
+                "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-8794cffe25954f37b7808045824c5b40.service",
+                "cpu_max": "25000 100000",
+                "invocation": "5a0a1085f73348d09961d553f9a7fa17",
+                "job": "4d058790909a4a2f95035fb08ea79a2b",
+                "memory_max": "100663296",
+                "pid": 3479354,
+                "pids_max": "24"
+              },
+              "properties": {
+                "ActiveState": "active",
+                "CPUQuotaPerSecUSec": "250ms",
+                "ControlGroup": "",
+                "ExecMainStatus": "0",
+                "Id": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-8794cffe25954f37b7808045824c5b40.service",
+                "InvocationID": "5a0a1085f73348d09961d553f9a7fa17",
+                "KillMode": "control-group",
+                "MainPID": "0",
+                "MemoryMax": "100663296",
+                "Result": "success",
+                "RuntimeMaxUSec": "1min",
+                "SubState": "exited",
+                "TasksMax": "24"
+              },
+              "result": "success",
+              "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-8794cffe25954f37b7808045824c5b40.service"
+            },
+            "job": "4d058790909a4a2f95035fb08ea79a2b",
+            "status": "passed"
+          },
+          {
+            "argv": [
+              "systemd-run",
+              "--user",
+              "--quiet",
+              "--unit",
+              "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-fe1bbcd5958c425a8a859a980a796ed1.service",
+              "--property",
+              "CPUQuota=25%",
+              "--property",
+              "MemoryMax=100663296",
+              "--property",
+              "MemorySwapMax=0",
+              "--property",
+              "TasksMax=24",
+              "--property",
+              "RuntimeMaxSec=60",
+              "--property",
+              "TimeoutStopSec=5",
+              "--property",
+              "RemainAfterExit=yes",
+              "--property",
+              "KillMode=control-group",
+              "--property",
+              "SendSIGKILL=yes",
+              "--property",
+              "Restart=no",
+              "--",
+              "/usr/bin/python3",
+              "-B",
+              "/home/robin/.local/state/fossilize-harness/host-v1/sources/5760048862543db7044e5ef6f53865a3197b3815/.agents/skills/implement-change-harness/scripts/harness_runner.py",
+              "exec-job",
+              "--output",
+              "/tmp/harness-resource-cu5lz7y0/authority/job-a6f18aee9fe9454da92cb2f03a8a463b"
+            ],
+            "at": 513893080103859,
+            "event": "launched",
+            "job": "a6f18aee9fe9454da92cb2f03a8a463b",
+            "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-fe1bbcd5958c425a8a859a980a796ed1.service"
+          },
+          {
+            "at": 513893544754048,
+            "event": "cleaned",
+            "execution": {
+              "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-fe1bbcd5958c425a8a859a980a796ed1.service",
+              "contaminated": false,
+              "exit_code": 0,
+              "invocation": "56c80e41c73d421b9027a60755381833",
+              "log": "HARNESS_TEST_READY\n",
+              "membership": {
+                "boot": "53971fd2-d562-4836-ad2b-c0da4cff447f",
+                "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-fe1bbcd5958c425a8a859a980a796ed1.service",
+                "cpu_max": "25000 100000",
+                "invocation": "56c80e41c73d421b9027a60755381833",
+                "job": "a6f18aee9fe9454da92cb2f03a8a463b",
+                "memory_max": "100663296",
+                "pid": 3479388,
+                "pids_max": "24"
+              },
+              "properties": {
+                "ActiveState": "active",
+                "CPUQuotaPerSecUSec": "250ms",
+                "ControlGroup": "",
+                "ExecMainStatus": "0",
+                "Id": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-fe1bbcd5958c425a8a859a980a796ed1.service",
+                "InvocationID": "56c80e41c73d421b9027a60755381833",
+                "KillMode": "control-group",
+                "MainPID": "0",
+                "MemoryMax": "100663296",
+                "Result": "success",
+                "RuntimeMaxUSec": "1min",
+                "SubState": "exited",
+                "TasksMax": "24"
+              },
+              "result": "success",
+              "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-fe1bbcd5958c425a8a859a980a796ed1.service"
+            },
+            "job": "a6f18aee9fe9454da92cb2f03a8a463b",
+            "status": "passed"
+          },
+          {
+            "argv": [
+              "systemd-run",
+              "--user",
+              "--quiet",
+              "--unit",
+              "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-6c1c240f87234068af880b14d3103b72.service",
+              "--property",
+              "CPUQuota=25%",
+              "--property",
+              "MemoryMax=100663296",
+              "--property",
+              "MemorySwapMax=0",
+              "--property",
+              "TasksMax=24",
+              "--property",
+              "RuntimeMaxSec=60",
+              "--property",
+              "TimeoutStopSec=5",
+              "--property",
+              "RemainAfterExit=yes",
+              "--property",
+              "KillMode=control-group",
+              "--property",
+              "SendSIGKILL=yes",
+              "--property",
+              "Restart=no",
+              "--",
+              "/usr/bin/python3",
+              "-B",
+              "/home/robin/.local/state/fossilize-harness/host-v1/sources/5760048862543db7044e5ef6f53865a3197b3815/.agents/skills/implement-change-harness/scripts/harness_runner.py",
+              "exec-job",
+              "--output",
+              "/tmp/harness-resource-cu5lz7y0/authority/job-1e85e4cbe4984d5db5165d46594a7588"
+            ],
+            "at": 513894282774087,
+            "event": "launched",
+            "job": "1e85e4cbe4984d5db5165d46594a7588",
+            "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-6c1c240f87234068af880b14d3103b72.service"
+          },
+          {
+            "at": 513894829601250,
+            "event": "cleaned",
+            "execution": {
+              "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-6c1c240f87234068af880b14d3103b72.service",
+              "contaminated": false,
+              "exit_code": 0,
+              "invocation": "5152fe9a8c0643cdaba12077c67e1daa",
+              "log": "HARNESS_TEST_READY\n",
+              "membership": {
+                "boot": "53971fd2-d562-4836-ad2b-c0da4cff447f",
+                "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-6c1c240f87234068af880b14d3103b72.service",
+                "cpu_max": "25000 100000",
+                "invocation": "5152fe9a8c0643cdaba12077c67e1daa",
+                "job": "1e85e4cbe4984d5db5165d46594a7588",
+                "memory_max": "100663296",
+                "pid": 3479421,
+                "pids_max": "24"
+              },
+              "properties": {
+                "ActiveState": "active",
+                "CPUQuotaPerSecUSec": "250ms",
+                "ControlGroup": "",
+                "ExecMainStatus": "0",
+                "Id": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-6c1c240f87234068af880b14d3103b72.service",
+                "InvocationID": "5152fe9a8c0643cdaba12077c67e1daa",
+                "KillMode": "control-group",
+                "MainPID": "0",
+                "MemoryMax": "100663296",
+                "Result": "success",
+                "RuntimeMaxUSec": "1min",
+                "SubState": "exited",
+                "TasksMax": "24"
+              },
+              "result": "success",
+              "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-6c1c240f87234068af880b14d3103b72.service"
+            },
+            "job": "1e85e4cbe4984d5db5165d46594a7588",
+            "status": "passed"
+          },
+          {
+            "argv": [
+              "systemd-run",
+              "--user",
+              "--quiet",
+              "--unit",
+              "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-030ed689c74b43be829a38a9116a399e.service",
+              "--property",
+              "CPUQuota=25%",
+              "--property",
+              "MemoryMax=100663296",
+              "--property",
+              "MemorySwapMax=0",
+              "--property",
+              "TasksMax=24",
+              "--property",
+              "RuntimeMaxSec=60",
+              "--property",
+              "TimeoutStopSec=5",
+              "--property",
+              "RemainAfterExit=yes",
+              "--property",
+              "KillMode=control-group",
+              "--property",
+              "SendSIGKILL=yes",
+              "--property",
+              "Restart=no",
+              "--",
+              "/usr/bin/python3",
+              "-B",
+              "/home/robin/.local/state/fossilize-harness/host-v1/sources/5760048862543db7044e5ef6f53865a3197b3815/.agents/skills/implement-change-harness/scripts/harness_runner.py",
+              "exec-job",
+              "--output",
+              "/tmp/harness-resource-cu5lz7y0/authority/job-43e4cb43ad854318af09c80b7f67b423"
+            ],
+            "at": 513895493459609,
+            "event": "launched",
+            "job": "43e4cb43ad854318af09c80b7f67b423",
+            "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-030ed689c74b43be829a38a9116a399e.service"
+          },
+          {
+            "at": 513896031995242,
+            "event": "cleaned",
+            "execution": {
+              "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-030ed689c74b43be829a38a9116a399e.service",
+              "contaminated": false,
+              "exit_code": 0,
+              "invocation": "dc309efb9cdd47b3b5309373afd0228f",
+              "log": "HARNESS_TEST_READY\n",
+              "membership": {
+                "boot": "53971fd2-d562-4836-ad2b-c0da4cff447f",
+                "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-030ed689c74b43be829a38a9116a399e.service",
+                "cpu_max": "25000 100000",
+                "invocation": "dc309efb9cdd47b3b5309373afd0228f",
+                "job": "43e4cb43ad854318af09c80b7f67b423",
+                "memory_max": "100663296",
+                "pid": 3479459,
+                "pids_max": "24"
+              },
+              "properties": {
+                "ActiveState": "active",
+                "CPUQuotaPerSecUSec": "250ms",
+                "ControlGroup": "",
+                "ExecMainStatus": "0",
+                "Id": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-030ed689c74b43be829a38a9116a399e.service",
+                "InvocationID": "dc309efb9cdd47b3b5309373afd0228f",
+                "KillMode": "control-group",
+                "MainPID": "0",
+                "MemoryMax": "100663296",
+                "Result": "success",
+                "RuntimeMaxUSec": "1min",
+                "SubState": "exited",
+                "TasksMax": "24"
+              },
+              "result": "success",
+              "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-030ed689c74b43be829a38a9116a399e.service"
+            },
+            "job": "43e4cb43ad854318af09c80b7f67b423",
+            "status": "passed"
+          }
+        ],
+        "trace": [
+          {
+            "argv": [
+              "systemd-run",
+              "--user",
+              "--quiet",
+              "--unit",
+              "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7d572b951f2b4e5dab20eb3d9297acbc.service",
+              "--property",
+              "CPUQuota=25%",
+              "--property",
+              "MemoryMax=100663296",
+              "--property",
+              "MemorySwapMax=0",
+              "--property",
+              "TasksMax=24",
+              "--property",
+              "RuntimeMaxSec=60",
+              "--property",
+              "TimeoutStopSec=5",
+              "--property",
+              "RemainAfterExit=yes",
+              "--property",
+              "KillMode=control-group",
+              "--property",
+              "SendSIGKILL=yes",
+              "--property",
+              "Restart=no",
+              "--",
+              "/usr/bin/python3",
+              "-B",
+              "/home/robin/.local/state/fossilize-harness/host-v1/sources/5760048862543db7044e5ef6f53865a3197b3815/.agents/skills/implement-change-harness/scripts/harness_runner.py",
+              "exec-job",
+              "--output",
+              "/tmp/harness-resource-cu5lz7y0/authority/job-b2da08336eb24640885668725c7ea937"
+            ],
+            "at": 513888137955093,
+            "event": "launched",
+            "job": "b2da08336eb24640885668725c7ea937",
+            "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7d572b951f2b4e5dab20eb3d9297acbc.service"
+          },
+          {
+            "argv": [
+              "systemd-run",
+              "--user",
+              "--quiet",
+              "--unit",
+              "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7a6b0a85c4364d7faa36ea6175c8a846.service",
+              "--property",
+              "CPUQuota=25%",
+              "--property",
+              "MemoryMax=100663296",
+              "--property",
+              "MemorySwapMax=0",
+              "--property",
+              "TasksMax=24",
+              "--property",
+              "RuntimeMaxSec=60",
+              "--property",
+              "TimeoutStopSec=5",
+              "--property",
+              "RemainAfterExit=yes",
+              "--property",
+              "KillMode=control-group",
+              "--property",
+              "SendSIGKILL=yes",
+              "--property",
+              "Restart=no",
+              "--",
+              "/usr/bin/python3",
+              "-B",
+              "/home/robin/.local/state/fossilize-harness/host-v1/sources/5760048862543db7044e5ef6f53865a3197b3815/.agents/skills/implement-change-harness/scripts/harness_runner.py",
+              "exec-job",
+              "--output",
+              "/tmp/harness-resource-cu5lz7y0/authority/job-fb9c3fbcb5f44fa7bb3708b69d752e47"
+            ],
+            "at": 513888693650693,
+            "event": "launched",
+            "job": "fb9c3fbcb5f44fa7bb3708b69d752e47",
+            "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7a6b0a85c4364d7faa36ea6175c8a846.service"
+          },
+          {
+            "argv": [
+              "systemd-run",
+              "--user",
+              "--quiet",
+              "--unit",
+              "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e41572e3387842c99d19413324287db1.service",
+              "--property",
+              "CPUQuota=25%",
+              "--property",
+              "MemoryMax=100663296",
+              "--property",
+              "MemorySwapMax=0",
+              "--property",
+              "TasksMax=24",
+              "--property",
+              "RuntimeMaxSec=60",
+              "--property",
+              "TimeoutStopSec=5",
+              "--property",
+              "RemainAfterExit=yes",
+              "--property",
+              "KillMode=control-group",
+              "--property",
+              "SendSIGKILL=yes",
+              "--property",
+              "Restart=no",
+              "--",
+              "/usr/bin/python3",
+              "-B",
+              "/home/robin/.local/state/fossilize-harness/host-v1/sources/5760048862543db7044e5ef6f53865a3197b3815/.agents/skills/implement-change-harness/scripts/harness_runner.py",
+              "exec-job",
+              "--output",
+              "/tmp/harness-resource-cu5lz7y0/authority/job-b2de963180704e5a94f9ca4616524c5d"
+            ],
+            "at": 513889265951276,
+            "event": "launched",
+            "job": "b2de963180704e5a94f9ca4616524c5d",
+            "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e41572e3387842c99d19413324287db1.service"
+          },
+          {
+            "at": 513889781246046,
+            "event": "cleaned",
+            "execution": {
+              "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7d572b951f2b4e5dab20eb3d9297acbc.service",
+              "contaminated": false,
+              "exit_code": 0,
+              "invocation": "019a00ad5ec84669b5f6d23a2be121c5",
+              "log": "HARNESS_TEST_READY\n",
+              "membership": {
+                "boot": "53971fd2-d562-4836-ad2b-c0da4cff447f",
+                "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7d572b951f2b4e5dab20eb3d9297acbc.service",
+                "cpu_max": "25000 100000",
+                "invocation": "019a00ad5ec84669b5f6d23a2be121c5",
+                "job": "b2da08336eb24640885668725c7ea937",
+                "memory_max": "100663296",
+                "pid": 3479225,
+                "pids_max": "24"
+              },
+              "properties": {
+                "ActiveState": "active",
+                "CPUQuotaPerSecUSec": "250ms",
+                "ControlGroup": "",
+                "ExecMainStatus": "0",
+                "Id": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7d572b951f2b4e5dab20eb3d9297acbc.service",
+                "InvocationID": "019a00ad5ec84669b5f6d23a2be121c5",
+                "KillMode": "control-group",
+                "MainPID": "0",
+                "MemoryMax": "100663296",
+                "Result": "success",
+                "RuntimeMaxUSec": "1min",
+                "SubState": "exited",
+                "TasksMax": "24"
+              },
+              "result": "success",
+              "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7d572b951f2b4e5dab20eb3d9297acbc.service"
+            },
+            "job": "b2da08336eb24640885668725c7ea937",
+            "status": "passed"
+          },
+          {
+            "at": 513889873555616,
+            "event": "cleaned",
+            "execution": {
+              "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e41572e3387842c99d19413324287db1.service",
+              "contaminated": false,
+              "exit_code": 0,
+              "invocation": "9a36d301aa4141078fdca8d3f4f732b7",
+              "log": "HARNESS_TEST_READY\n",
+              "membership": {
+                "boot": "53971fd2-d562-4836-ad2b-c0da4cff447f",
+                "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e41572e3387842c99d19413324287db1.service",
+                "cpu_max": "25000 100000",
+                "invocation": "9a36d301aa4141078fdca8d3f4f732b7",
+                "job": "b2de963180704e5a94f9ca4616524c5d",
+                "memory_max": "100663296",
+                "pid": 3479260,
+                "pids_max": "24"
+              },
+              "properties": {
+                "ActiveState": "active",
+                "CPUQuotaPerSecUSec": "250ms",
+                "ControlGroup": "",
+                "ExecMainStatus": "0",
+                "Id": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e41572e3387842c99d19413324287db1.service",
+                "InvocationID": "9a36d301aa4141078fdca8d3f4f732b7",
+                "KillMode": "control-group",
+                "MainPID": "0",
+                "MemoryMax": "100663296",
+                "Result": "success",
+                "RuntimeMaxUSec": "1min",
+                "SubState": "exited",
+                "TasksMax": "24"
+              },
+              "result": "success",
+              "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e41572e3387842c99d19413324287db1.service"
+            },
+            "job": "b2de963180704e5a94f9ca4616524c5d",
+            "status": "passed"
+          },
+          {
+            "at": 513890025703470,
+            "event": "cleaned",
+            "execution": {
+              "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7a6b0a85c4364d7faa36ea6175c8a846.service",
+              "contaminated": false,
+              "exit_code": 0,
+              "invocation": "059be716b78947ebbe8e1b658a94cd82",
+              "log": "HARNESS_TEST_READY\n",
+              "membership": {
+                "boot": "53971fd2-d562-4836-ad2b-c0da4cff447f",
+                "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7a6b0a85c4364d7faa36ea6175c8a846.service",
+                "cpu_max": "25000 100000",
+                "invocation": "059be716b78947ebbe8e1b658a94cd82",
+                "job": "fb9c3fbcb5f44fa7bb3708b69d752e47",
+                "memory_max": "100663296",
+                "pid": 3479236,
+                "pids_max": "24"
+              },
+              "properties": {
+                "ActiveState": "active",
+                "CPUQuotaPerSecUSec": "250ms",
+                "ControlGroup": "",
+                "ExecMainStatus": "0",
+                "Id": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7a6b0a85c4364d7faa36ea6175c8a846.service",
+                "InvocationID": "059be716b78947ebbe8e1b658a94cd82",
+                "KillMode": "control-group",
+                "MainPID": "0",
+                "MemoryMax": "100663296",
+                "Result": "success",
+                "RuntimeMaxUSec": "1min",
+                "SubState": "exited",
+                "TasksMax": "24"
+              },
+              "result": "success",
+              "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-7a6b0a85c4364d7faa36ea6175c8a846.service"
+            },
+            "job": "fb9c3fbcb5f44fa7bb3708b69d752e47",
+            "status": "passed"
+          },
+          {
+            "argv": [
+              "systemd-run",
+              "--user",
+              "--quiet",
+              "--unit",
+              "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e6b6f05298b2485aa563926f7e6ab454.service",
+              "--property",
+              "CPUQuota=25%",
+              "--property",
+              "MemoryMax=100663296",
+              "--property",
+              "MemorySwapMax=0",
+              "--property",
+              "TasksMax=24",
+              "--property",
+              "RuntimeMaxSec=60",
+              "--property",
+              "TimeoutStopSec=5",
+              "--property",
+              "RemainAfterExit=yes",
+              "--property",
+              "KillMode=control-group",
+              "--property",
+              "SendSIGKILL=yes",
+              "--property",
+              "Restart=no",
+              "--",
+              "/usr/bin/python3",
+              "-B",
+              "/home/robin/.local/state/fossilize-harness/host-v1/sources/5760048862543db7044e5ef6f53865a3197b3815/.agents/skills/implement-change-harness/scripts/harness_runner.py",
+              "exec-job",
+              "--output",
+              "/tmp/harness-resource-cu5lz7y0/authority/job-040ee2a44de44b58a5366f1b2c6d556d"
+            ],
+            "at": 513890684216073,
+            "event": "launched",
+            "job": "040ee2a44de44b58a5366f1b2c6d556d",
+            "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e6b6f05298b2485aa563926f7e6ab454.service"
+          },
+          {
+            "at": 513891240384907,
+            "event": "cleaned",
+            "execution": {
+              "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e6b6f05298b2485aa563926f7e6ab454.service",
+              "contaminated": false,
+              "exit_code": 0,
+              "invocation": "5084db526592433999551031a6311770",
+              "log": "HARNESS_TEST_READY\n",
+              "membership": {
+                "boot": "53971fd2-d562-4836-ad2b-c0da4cff447f",
+                "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e6b6f05298b2485aa563926f7e6ab454.service",
+                "cpu_max": "25000 100000",
+                "invocation": "5084db526592433999551031a6311770",
+                "job": "040ee2a44de44b58a5366f1b2c6d556d",
+                "memory_max": "100663296",
+                "pid": 3479320,
+                "pids_max": "24"
+              },
+              "properties": {
+                "ActiveState": "active",
+                "CPUQuotaPerSecUSec": "250ms",
+                "ControlGroup": "",
+                "ExecMainStatus": "0",
+                "Id": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e6b6f05298b2485aa563926f7e6ab454.service",
+                "InvocationID": "5084db526592433999551031a6311770",
+                "KillMode": "control-group",
+                "MainPID": "0",
+                "MemoryMax": "100663296",
+                "Result": "success",
+                "RuntimeMaxUSec": "1min",
+                "SubState": "exited",
+                "TasksMax": "24"
+              },
+              "result": "success",
+              "unit": "fossilize-native-job-246524b4480e4c9b86d9b963c967d57b-e6b6f05298b2485aa563926f7e6ab454.service"
+            },
+            "job": "040ee2a44de44b58a5366f1b2c6d556d",
+            "status": "passed"
+          }
+        ]
+      },
+      "cleanup_verified": true,
+      "execution_seconds": 41.1662540435791,
+      "facts": "All12 native methods passed, including2 real PAR06 payload regressions. Actual systemd/exec-job/bwrap shared leader/descendant stay held while2 private CPU payloads reach simultaneous live kernel barriers and finish. Same-resource successor remains unlaunched after leader exit while descendant lives, then automatic actual Supervisor.finish cgroup cleanup precedes successor launch. Identical4 payload contracts really run serially; semantic exports/source candidate/environment/resources/status/cleanup compare equal, excluding only incidental payload PID. These are fixture resource labels with actual native CPU execution, no physical Steam/GPU proof.",
+      "id": "I40-U2-F1",
+      "independent_recheck": "execution/combined shared-held CPU/serial-reference gap repaired and freshly executed",
+      "job": "246524b4480e4c9b86d9b963c967d57b",
+      "log_record": "runs/issue-40/issue40-20261029/evidence/unit3-o-07.log",
+      "log_sha256": "fa1dd8c880e5cef1481c4fd2a7eded193ec42d6b229e6dc628d1ab34bcd019c0"
+    }
+  ],
+  "scope": "Fresh independent narrow resolution evidence for existing coverage findings; coordinator alone records canonical status. New I40-U3-F1 still blocks current UNIT.",
+  "worker_id": "/root/checker_unit3"
+}

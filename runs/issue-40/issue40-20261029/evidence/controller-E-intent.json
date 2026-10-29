@@ -1,0 +1,61 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    ".agents/skills/implement-change-harness/scripts/harness_runner.py",
+    "controller-update",
+    "--repo",
+    "/home/robin/.codex/worktrees/4997/fossilize",
+    "--root-issue",
+    "https://github.com/robinwassen/Fossilize/issues/40",
+    "--run-id",
+    "issue40-20261029",
+    "--expected-controller",
+    "ae4b32fc0683cb7acff87b8fcf61b2230bd7d89bbf22515b893d0b5903d769e5"
+  ],
+  "command_sha256": "81cd81f76fcb3ec6d17bc9820227394bcb3455ecea65492ce0d418c1685afc03",
+  "cwd": "/home/robin/.codex/worktrees/4997/fossilize",
+  "effect": "admission-locked scoped controller stop/rebind after proving old controller cgroup empty; no unrelated user units/sessions affected",
+  "expected": {
+    "all_jobs_terminal": true,
+    "jobs": [
+      {
+        "id": "2e38adf1248c4832947676777a75ef14",
+        "status": "passed"
+      },
+      {
+        "id": "b426e9f11de14e0fb0c9cf9ccf4874cd",
+        "status": "passed"
+      },
+      {
+        "id": "115479cd99df48868a7858e99c522913",
+        "status": "failed"
+      },
+      {
+        "id": "995d45e403ae48ce851c4fdecf8c2cdb",
+        "status": "failed"
+      }
+    ],
+    "new_controller": "59621aff7ecf9481f85be141cc8c2af104c15ba64c1ae6136ffdefb4d0c0c072",
+    "old_controller": "ae4b32fc0683cb7acff87b8fcf61b2230bd7d89bbf22515b893d0b5903d769e5",
+    "service": "fossilize-harness-supervisor-1000.service",
+    "unit": {
+      "ActiveState": "active",
+      "CPUQuotaPerSecUSec": "infinity",
+      "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/fossilize-harness-supervisor-1000.service",
+      "ExecMainStatus": "0",
+      "Id": "fossilize-harness-supervisor-1000.service",
+      "InvocationID": "bb0926489d9d40e9bb674b1ffbbce8de",
+      "MainPID": "1099389",
+      "MemoryMax": "infinity",
+      "Result": "success",
+      "RuntimeMaxUSec": "infinity",
+      "SubState": "running",
+      "TasksMax": "33938"
+    }
+  },
+  "next_action": "dispatch once; record returned status and independently read actual service package/PID/invocation; reconcile uncertainty before retry",
+  "operation": "issue40-controller-C-to-E",
+  "status": "intent",
+  "timeout": 600
+}
