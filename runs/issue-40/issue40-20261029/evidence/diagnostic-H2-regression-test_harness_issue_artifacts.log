@@ -1,0 +1,57 @@
+test_P01_P05_live_initial_publication_and_idempotent_retry (test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry) ... ok
+test_P04_stale_dirty_inspection_and_user_checkout_preserved (test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved) ... ok
+test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state (test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state) ... ok
+test_P07_interruption_before_push_and_after_success_without_return (test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return) ... ok
+test_P08_live_evidence_descendant_adoption_and_divergence (test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence) ... FAIL
+test_P09b_pushurl_observation_uses_bound_push_endpoint (test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint) ... ok
+test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish (test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish) ... ERROR
+test_P09d_concurrent_endpoint_reread_cannot_retarget_publication (test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication) ... ok
+test_P10_actual_postpush_advance_beats_success_and_caller_sha (test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha) ... FAIL
+
+======================================================================
+ERROR: test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish (test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_issue_artifacts.py", line 24, in bound
+    return types.FunctionType(original.__code__,current,name,original.__defaults__,original.__closure__)(self,*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_artifacts.py", line 584, in test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish
+    result = Harness(self.source, clock=lambda: self.now).apply("publish-artifacts", {}, local_bad, self.state["revision"])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/harness_parallel.py", line 653, in apply
+    require(state is not None and state.get('schema_version') == 4, 'explicit migrate-concurrency required')
+  File "/work/source/.agents/skills/implement-change-harness/scripts/harness_core.py", line 31, in require
+    raise Invalid(message)
+harness_core.Invalid: explicit migrate-concurrency required
+
+======================================================================
+FAIL: test_P08_live_evidence_descendant_adoption_and_divergence (test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_issue_artifacts.py", line 71, in test_P08_live_evidence_descendant_adoption_and_divergence
+    result=self.raw('publish-artifacts');self.assertEqual(result['artifact_publication']['outcome'],'remote-advance-adopted')
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'published' != 'remote-advance-adopted'
+- published
++ remote-advance-adopted
+
+
+======================================================================
+FAIL: test_P10_actual_postpush_advance_beats_success_and_caller_sha (test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_issue_artifacts.py", line 24, in bound
+    return types.FunctionType(original.__code__,current,name,original.__defaults__,original.__closure__)(self,*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_artifacts.py", line 473, in test_P10_actual_postpush_advance_beats_success_and_caller_sha
+    self.assertEqual(result["artifact_publication"]["outcome"], "remote-advance-adopted")
+AssertionError: 'published' != 'remote-advance-adopted'
+- published
++ remote-advance-adopted
+
+
+----------------------------------------------------------------------
+Ran 9 tests in 5.393s
+
+FAILED (failures=2, errors=1)
+group did not pass

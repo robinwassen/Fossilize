@@ -1,0 +1,24 @@
+test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route (test_harness_issue_closeout.IssueCloseoutTests.test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route) ... ok
+test_D01_incomplete_epic_child_prevents_closing_reference (test_harness_issue_closeout.IssueCloseoutTests.test_D01_incomplete_epic_child_prevents_closing_reference) ... ok
+test_D01_readback_requires_exact_base_plan_input_binding (test_harness_issue_closeout.IssueCloseoutTests.test_D01_readback_requires_exact_base_plan_input_binding) ... ok
+test_D01_readiness_without_source_edit_then_separate_final_acceptance (test_harness_issue_closeout.IssueCloseoutTests.test_D01_readiness_without_source_edit_then_separate_final_acceptance) ... ok
+test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments (test_harness_issue_closeout.IssueCloseoutTests.test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments) ... ok
+test_D01_split_units_renew_at_combined_candidate_without_new_implementation (test_harness_issue_closeout.IssueCloseoutTests.test_D01_split_units_renew_at_combined_candidate_without_new_implementation) ... ok
+test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession (test_harness_issue_closeout.IssueCloseoutTests.test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession) ... ok
+test_D02_real_remote_one_pr_response_loss_open_until_user_merge (test_harness_issue_closeout.IssueCloseoutTests.test_D02_real_remote_one_pr_response_loss_open_until_user_merge) ... ok
+test_P11_live_terminal_null_active_failure_restart_and_retry (test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry) ... ERROR
+
+======================================================================
+ERROR: test_P11_live_terminal_null_active_failure_restart_and_retry (test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_issue_closeout.py", line 145, in test_P11_live_terminal_null_active_failure_restart_and_retry
+    observed=self.harness.show();self.assertIsNone(json.loads(self.harness.store.records(terminal)['active.json']));self.assertTrue(observed['active']['terminal']);self.assertEqual(observed['state'],self.state)
+                                                   ^^^^
+NameError: name 'json' is not defined. Did you forget to import 'json'
+
+----------------------------------------------------------------------
+Ran 9 tests in 74.215s
+
+FAILED (errors=1)
+group did not pass
