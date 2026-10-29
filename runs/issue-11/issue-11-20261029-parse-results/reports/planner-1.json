@@ -1,0 +1,495 @@
+{
+  "attempt_id": "planner-1",
+  "base_sha": "36b78637e847463c4f58758a907b33ce5bf07ce5",
+  "candidate_sha": null,
+  "input_revision": 1,
+  "input_sha": "36b78637e847463c4f58758a907b33ce5bf07ce5",
+  "observations": {
+    "live_issue_11_matches_snapshot": true,
+    "notes": "No source, canonical harness state or external service mutations performed. Planner has no acceptance authority.",
+    "read_only_investigation": true,
+    "shared_issue": "https://github.com/robinwassen/Fossilize/issues/8",
+    "source_head": "36b78637e847463c4f58758a907b33ce5bf07ce5",
+    "tests_executed_by_planner": [],
+    "tools": {
+      "cmake": "4.4.4",
+      "cpu_count": 8,
+      "ninja": "1.13.2.git.kitware.jobserver-pipe-1"
+    }
+  },
+  "operation": "plan",
+  "plan": {
+    "cases": [
+      {
+        "assertions": [
+          "Invoke actual fossilize-list subprocess on a valid outer FOZ containing one compute resource with {\"version\":999}.",
+          "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+          "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+        ],
+        "id": "utility-parse-list-version",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Invoke actual fossilize-list subprocess on a valid outer FOZ containing one compute resource with syntactically invalid JSON such as {.",
+          "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+          "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+        ],
+        "id": "utility-parse-list-invalid-json",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Actual existing CLI invocation on a valid prepared empty FOZ exits zero, no parse/incomplete diagnostic; list connectivity stdout is empty.",
+          "For rehash/prune reopen emitted output through DatabaseInterface and verify every relevant resource count is zero."
+        ],
+        "id": "utility-parse-list-empty",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Actual existing CLI invocation on dependency-complete fixture with known shader, layout and compute objects exits zero and has no incomplete diagnostic.",
+          "List connectivity has the exact expected compute row and layout/module dependency hashes.",
+          "For rehash verify one valid object per expected resource type, reparse emitted resources and verify reference closure/creation values under recalculated hashes; for prune verify original expected tag/hash set and payload semantics. No raytracing fixture in rehash, which does not migrate that support boundary."
+        ],
+        "id": "utility-parse-list-populated",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Two selected compute entries ordered by ascending hash: valid first, rejected second (repeat with invalid JSON and incompatible version).",
+          "Exit nonzero, affected second entry and incomplete scope diagnostic present; stdout has no ordinary rows at all because list resolves all connectivity before printing.",
+          "No partial connectivity payload is promised when any create-info fill fails."
+        ],
+        "id": "utility-parse-list-mixed",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Invoke actual fossilize-rehash subprocess on a valid outer FOZ containing one compute resource with {\"version\":999}.",
+          "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+          "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+        ],
+        "id": "utility-parse-rehash-version",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Invoke actual fossilize-rehash subprocess on a valid outer FOZ containing one compute resource with syntactically invalid JSON such as {.",
+          "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+          "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+        ],
+        "id": "utility-parse-rehash-invalid-json",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Actual existing CLI invocation on a valid prepared empty FOZ exits zero, no parse/incomplete diagnostic; list connectivity stdout is empty.",
+          "For rehash/prune reopen emitted output through DatabaseInterface and verify every relevant resource count is zero."
+        ],
+        "id": "utility-parse-rehash-empty",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Actual existing CLI invocation on dependency-complete fixture with known shader, layout and compute objects exits zero and has no incomplete diagnostic.",
+          "List connectivity has the exact expected compute row and layout/module dependency hashes.",
+          "For rehash verify one valid object per expected resource type, reparse emitted resources and verify reference closure/creation values under recalculated hashes; for prune verify original expected tag/hash set and payload semantics. No raytracing fixture in rehash, which does not migrate that support boundary."
+        ],
+        "id": "utility-parse-rehash-populated",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Two sampler entries ordered by ascending hash: valid first, rejected second (repeat invalid JSON/version), with valid application context as needed.",
+          "Exit nonzero and incomplete scope reported; after recorder teardown output reopens and contains the known valid first sampler with correct create values, excluding the early-rejected second entry.",
+          "Output is an incomplete prefix, not an atomic transaction; no promise to roll back callbacks already accepted from a later failing multi-object blob."
+        ],
+        "id": "utility-parse-rehash-mixed",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Invoke actual fossilize-prune subprocess on a valid outer FOZ containing one compute resource with {\"version\":999}.",
+          "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+          "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+        ],
+        "id": "utility-parse-prune-version",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Invoke actual fossilize-prune subprocess on a valid outer FOZ containing one compute resource with syntactically invalid JSON such as {.",
+          "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+          "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+        ],
+        "id": "utility-parse-prune-invalid-json",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Actual existing CLI invocation on a valid prepared empty FOZ exits zero, no parse/incomplete diagnostic; list connectivity stdout is empty.",
+          "For rehash/prune reopen emitted output through DatabaseInterface and verify every relevant resource count is zero."
+        ],
+        "id": "utility-parse-prune-empty",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Actual existing CLI invocation on dependency-complete fixture with known shader, layout and compute objects exits zero and has no incomplete diagnostic.",
+          "List connectivity has the exact expected compute row and layout/module dependency hashes.",
+          "For rehash verify one valid object per expected resource type, reparse emitted resources and verify reference closure/creation values under recalculated hashes; for prune verify original expected tag/hash set and payload semantics. No raytracing fixture in rehash, which does not migrate that support boundary."
+        ],
+        "id": "utility-parse-prune-populated",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Two applicationInfo entries ordered by ascending hash: valid first, rejected second (repeat invalid JSON/version).",
+          "Exit nonzero and incomplete scope reported; output reopens and contains the first accepted applicationInfo payload/hash, and never contains the rejected second raw metadata entry.",
+          "Prune stops before access_pipelines/copy_accessed_types after failure, so it does not promise any pipeline output prefix or complete dependency closure."
+        ],
+        "id": "utility-parse-prune-mixed",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "A valid selected compute entry with rejected nonselected layout or shader dependency (version and invalid JSON variants) exits nonzero, identifies failing dependency tag/hash and incomplete scope, with no ordinary compute row.",
+          "This exercises replayer_create_info_fill nonselected-tag propagation separately from rejected selected-tag entries."
+        ],
+        "id": "utility-parse-list-dependency-failure",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "A valid empty pipeline layout is parsed successfully and produces its ordinary empty dependency row with exit zero. This contrasts actual verified emptiness with rejection."
+        ],
+        "id": "utility-parse-list-empty-dependencies",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Preserve ordinary list and --size behavior on valid populated/empty fixtures; check exact known hash lines or sizes/totals and zero exit.",
+          "Ordinary hash listing does not validate resource JSON; it remains outside the new parse-failure contract. On rejected JSON, plain list still lists discovered hash successfully; --connectivity is the validating mode."
+        ],
+        "id": "utility-parse-list-legacy-invocations",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "A lone applicationInfo entry with version rejection or invalid JSON exits nonzero before the raw application-info copy branch; reopen output and assert rejected hash absent.",
+          "If a deterministic parser-false fixture after application callbacks is feasible using supported valid fields plus a gracefully rejected dependency/pNext, include it and assert no rejected raw metadata or pipeline closure is copied; do not use assertion-crashing malformed schemas."
+        ],
+        "id": "utility-parse-prune-rejected-application",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      },
+      {
+        "assertions": [
+          "Run new assertion-bearing CTest/CMake cases unchanged against the committed base utility executables while using candidate fixture helper.",
+          "All six single-resource failure cases (three tools x version/invalid JSON) expose original false-zero exits. List cases additionally show the original ordinary empty dependency row.",
+          "Valid populated/empty controls pass against baseline. Record actual statuses/assertions and output; a failed test process caused by setup/build error is not defect-detection evidence."
+        ],
+        "id": "utility-parse-regression-controls",
+        "location": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/11"
+        ]
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-11",
+        "expected": [
+          "Configure and complete build exit zero, CTest discovery is nonempty and contains every planned utility-parse case plus existing applicable tests.",
+          "All discovered mandatory CPU CTests execute and pass with no failed/skipped/unexecuted tests. Original normal Linux suite contains 54 tests before new cases; report actual new count and IDs.",
+          "Cases assert subprocess exit, stderr completeness/scope, stdout rows and actual persisted database contents; assertions survive NDEBUG.",
+          "Inspect compile_commands for changed utilities/new helper to confirm requested Debug/Release and exception flags. No physical GPU or Steam is required or claimed."
+        ],
+        "id": "cpp-debug-exceptions-off",
+        "kind": "both",
+        "method": {
+          "build": "/tmp/fossilize-11/build-debug-off",
+          "build_command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-debug-off --parallel 4",
+          "configuration": "Debug",
+          "configure": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-debug-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "discovery": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-off --show-only=json-v1",
+          "exceptions": "OFF",
+          "test": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-off --output-on-failure --parallel 3"
+        },
+        "prerequisites": [
+          "Exact committed candidate/base/plan recorded; all required submodules initialized in this role worktree at gitlink revisions.",
+          "CMake 4.4.4, Ninja 1.13.2, GCC and Python available; direct CMake binaries avoid Python-wrapper import requirement.",
+          "Fresh role builds use role-specific build directories and source path substitutions; commands have actual 600-second deadlines."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-11",
+        "expected": [
+          "Configure and complete build exit zero, CTest discovery is nonempty and contains every planned utility-parse case plus existing applicable tests.",
+          "All discovered mandatory CPU CTests execute and pass with no failed/skipped/unexecuted tests. Original normal Linux suite contains 54 tests before new cases; report actual new count and IDs.",
+          "Cases assert subprocess exit, stderr completeness/scope, stdout rows and actual persisted database contents; assertions survive NDEBUG.",
+          "Inspect compile_commands for changed utilities/new helper to confirm requested Debug/Release and exception flags. No physical GPU or Steam is required or claimed."
+        ],
+        "id": "cpp-debug-exceptions-on",
+        "kind": "both",
+        "method": {
+          "build": "/tmp/fossilize-11/build-debug-on",
+          "build_command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-debug-on --parallel 4",
+          "configuration": "Debug",
+          "configure": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-debug-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "discovery": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-on --show-only=json-v1",
+          "exceptions": "ON",
+          "test": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-on --output-on-failure --parallel 3"
+        },
+        "prerequisites": [
+          "Exact committed candidate/base/plan recorded; all required submodules initialized in this role worktree at gitlink revisions.",
+          "CMake 4.4.4, Ninja 1.13.2, GCC and Python available; direct CMake binaries avoid Python-wrapper import requirement.",
+          "Fresh role builds use role-specific build directories and source path substitutions; commands have actual 600-second deadlines."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-11",
+        "expected": [
+          "Configure and complete build exit zero, CTest discovery is nonempty and contains every planned utility-parse case plus existing applicable tests.",
+          "All discovered mandatory CPU CTests execute and pass with no failed/skipped/unexecuted tests. Original normal Linux suite contains 54 tests before new cases; report actual new count and IDs.",
+          "Cases assert subprocess exit, stderr completeness/scope, stdout rows and actual persisted database contents; assertions survive NDEBUG.",
+          "Inspect compile_commands for changed utilities/new helper to confirm requested Debug/Release and exception flags. No physical GPU or Steam is required or claimed."
+        ],
+        "id": "cpp-release-exceptions-off",
+        "kind": "both",
+        "method": {
+          "build": "/tmp/fossilize-11/build-release-off",
+          "build_command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-release-off --parallel 4",
+          "configuration": "Release",
+          "configure": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-release-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "discovery": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-off --show-only=json-v1",
+          "exceptions": "OFF",
+          "test": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-off --output-on-failure --parallel 3"
+        },
+        "prerequisites": [
+          "Exact committed candidate/base/plan recorded; all required submodules initialized in this role worktree at gitlink revisions.",
+          "CMake 4.4.4, Ninja 1.13.2, GCC and Python available; direct CMake binaries avoid Python-wrapper import requirement.",
+          "Fresh role builds use role-specific build directories and source path substitutions; commands have actual 600-second deadlines."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-11",
+        "expected": [
+          "Configure and complete build exit zero, CTest discovery is nonempty and contains every planned utility-parse case plus existing applicable tests.",
+          "All discovered mandatory CPU CTests execute and pass with no failed/skipped/unexecuted tests. Original normal Linux suite contains 54 tests before new cases; report actual new count and IDs.",
+          "Cases assert subprocess exit, stderr completeness/scope, stdout rows and actual persisted database contents; assertions survive NDEBUG.",
+          "Inspect compile_commands for changed utilities/new helper to confirm requested Debug/Release and exception flags. No physical GPU or Steam is required or claimed."
+        ],
+        "id": "cpp-release-exceptions-on",
+        "kind": "both",
+        "method": {
+          "build": "/tmp/fossilize-11/build-release-on",
+          "build_command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-release-on --parallel 4",
+          "configuration": "Release",
+          "configure": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-release-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "discovery": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-on --show-only=json-v1",
+          "exceptions": "ON",
+          "test": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-on --output-on-failure --parallel 3"
+        },
+        "prerequisites": [
+          "Exact committed candidate/base/plan recorded; all required submodules initialized in this role worktree at gitlink revisions.",
+          "CMake 4.4.4, Ninja 1.13.2, GCC and Python available; direct CMake binaries avoid Python-wrapper import requirement.",
+          "Fresh role builds use role-specific build directories and source path substitutions; commands have actual 600-second deadlines."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-11",
+        "expected": [
+          "Six negative cases fail specifically on baseline false-success exit assertions; populated/empty controls pass. Capture list original misleading row as additional evidence.",
+          "Independent work-unit/final checker reruns decisive baseline counterexamples and current-candidate cases; historical observations or copied implementer logs cannot substitute."
+        ],
+        "id": "original-defect-controls",
+        "kind": "both",
+        "method": {
+          "base_sha": "36b78637e847463c4f58758a907b33ce5bf07ce5",
+          "command_template": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=<candidate-build>/test/utility-parse-test -DTOOL=<base-build>/cli/fossilize-<tool> -DTOOL_NAME=<tool> -DCASE=<case> -DWORK=<new-temp-case-dir> -P <candidate>/test/utility_parse.cmake",
+          "setup": "Prepare separate detached exact-base worktree and initialize dependencies. Configure/build only fossilize-list fossilize-rehash fossilize-prune with the same CMake Debug/OFF options in a separate build; compile/use candidate fixture helper separately. Run committed runner by explicit -DGENERATOR=<candidate helper> -DTOOL=<baseline tool> -DTOOL_NAME=list|rehash|prune -DCASE=version|invalid-json|empty|populated -DWORK=<fresh isolated path> -P <candidate>/test/utility_parse.cmake. Driver option names may be refined once before test implementation, retaining these override capabilities."
+        },
+        "prerequisites": [
+          "Committed runner has independently overrideable utility executable and fixture-helper paths.",
+          "Exact base executables are built from unchanged base source; no fixed source copied into baseline."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-11",
+        "expected": [
+          "Every discovered Python test and explicit scenario belongs to exactly one completed passing result; exact-union verifier and skill validator pass.",
+          "This gate demonstrates harness regression coverage only, not C++ utility behavior or actual external publication."
+        ],
+        "id": "harness-regression",
+        "kind": "both",
+        "method": {
+          "group_command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group <group> --inventory <fresh-evidence>/inventory.json --output <fresh-evidence>/<group>.json",
+          "groups": [
+            "regression-test_harness_artifacts",
+            "regression-test_harness_closeout",
+            "regression-test_harness_issue_artifacts",
+            "regression-test_harness_issue_closeout",
+            "regression-test_harness_migration",
+            "regression-test_harness_state",
+            "regression-test_issue_guidance",
+            "regression-test_issue_migration",
+            "regression-test_issue_source",
+            "delivery-ordinary",
+            "delivery-w09",
+            "delivery-w11-0",
+            "delivery-w11-1",
+            "delivery-w11-2",
+            "delivery-w11-3",
+            "regression-extra"
+          ],
+          "inventory": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --inventory --output <fresh-evidence>/inventory.json",
+          "skill_validate": "timeout --signal=TERM --kill-after=5s 600s python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+          "verify": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --verify-results <fresh-evidence>"
+        },
+        "prerequisites": [
+          "The verification guide makes the full bounded harness suite mandatory separately from CTest; use fresh exact-candidate evidence directory and inventory.",
+          "At most three independent groups concurrently; each invocation has its own 600-second real deadline."
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "change": "In cli/fossilize_list.cpp parse_tag, immediately return false on parser failure with tag/hash and explicit connectivity-incomplete diagnostic. Existing caller propagation aborts before any stdout rows. Do not broaden plain list/--size into parsing.",
+        "step": 1
+      },
+      {
+        "change": "In cli/fossilize_rehash.cpp return EXIT_FAILURE immediately on parse false, with tag/hash and explicit incomplete output/prefix diagnostic. Preserve existing recorder destruction/teardown so previously queued valid prefix is emitted. No continued traversal after rejected mutable callbacks.",
+        "step": 2
+      },
+      {
+        "change": "In cli/fossilize_prune.cpp return EXIT_FAILURE immediately on parse false, before applicationInfo raw copy and before access_pipelines/copy_accessed_types. Diagnostic identifies tag/hash and output scope incomplete. Previously copied accepted applicationInfo prefix may remain; no pipeline prefix or closure promise after failure.",
+        "step": 3
+      },
+      {
+        "change": "Add test/utility_parse_test.cpp GPU-free fixture/verification helper using existing public recorder/database APIs and explicit failure checks (not assert), plus test/utility_parse.cmake subprocess driver. Register utility-parse-<tool>-<case> cases in test/CMakeLists.txt under FOSSILIZE_CLI using target-file generator expressions, isolated per-case work directories, per-child timeout <=30s and CTest timeout <=90s. CMake subprocess facilities avoid new native process implementations and dependencies.",
+        "step": 4
+      },
+      {
+        "change": "Create valid outer FOZ fixtures via DatabaseInterface. Valid populated fixture has dependency-complete app/shader/layout/compute entries, valid empty archive is actually prepared, bad fixtures use syntactic malformed JSON or version 999 without assertion-crashing structural JSON. Mixed fixtures use increasing hashes to guarantee valid item precedes failure. Verify real emitted records and decoded semantics, not merely nonempty file size. Candidate helper/runner must support baseline utility-path override for negative controls.",
+        "step": 5
+      },
+      {
+        "change": "Document intentional false-success exit change, exact fail-fast/partial-output policies, ordinary list enumeration behavior, new CTest coverage, four applicable Linux configurations, portable registration and actual Windows evidence limitation in local-docs/verification.md or suitable CLI documentation. Do not relabel desired standard as verified whole-project behavior.",
+        "step": 6
+      }
+    ],
+    "non_goals": [
+      "No opt/disasm migration or optimizer fallback policy change; preserve explicit future obligation.",
+      "No structured-result API/mode, stable diagnostic schema, parser schema hardening, transactional rollback, aggregate outcome API, persistence finalization redesign, worker/IPC/process implementation changes, GPU/Steam/cache-warming claim.",
+      "No extra issues/sub-issues or split bookkeeping; keep root issue open until user merge and leave epic #8 open."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000002`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n2. **FOS-000002 \u2014 Make utility parse failure affect the command result.** **S per tool; no dependencies; \u00a72\u2013\u00a73.** Start with [list:266](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_list.cpp#L266), then [rehash:226](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_rehash.cpp#L226) and [prune:1003](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_prune.cpp#L1003), one small change each. Each logs a failed parse and proceeds toward success (E8). Retain partial output if useful, but return nonzero and identify incomplete scope; never print an ordinary empty connectivity row as a verified empty dependency set. **Check:** version rejection and invalid JSON; valid empty databases still succeed. Later apply the same rule to opt/disasm. Keep fallback optimization policy explicit rather than making an error-level message alone decide failure.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **CLI subprocess regression tests, per migrated tool:** E8 version rejection and invalid JSON return nonzero and identify incomplete scope; valid populated and valid empty inputs return zero. List connectivity does not emit a rejected item as an ordinary verified empty dependency row.\n   - **Partial-output and policy tests:** A valid item followed by an invalid item preserves any promised partial output but never returns success. An explicitly permitted optimizer fallback returns the declared outcome and remains distinguishable from an unhandled parse failure when that tool is migrated.\n\n<!-- fossilize-migration-v1:FOS-000002 -->\n"
+      }
+    ],
+    "risks_and_limits": [
+      "StateReplayer callbacks can run before eventual parser false. Fail-fast avoids continuing with uncertain state; it does not promise transactional rollback of a rejected multi-object blob in recorder output.",
+      "Prune previously copied invalid applicationInfo after parser false; explicit early-return test is required.",
+      "Rehash recorder is asynchronous: partial-output assertion must reopen output only after process exit/teardown.",
+      "Windows native runtime unavailable on this Linux host. Register tests portably and report exact limitation. If checker/coordinator interprets parent applicability as requiring native Windows for this portable-only slice, route that unmet prerequisite as environment finding/decision rather than silently skip a required gate.",
+      "Changed source paths require role-isolated builds. Do not reuse a different candidate/source build as independent evidence.",
+      "All gates retain the original four-hour run deadline and 600-second per-command maximum; inability to finish required checks is incomplete work, not acceptance."
+    ],
+    "scope": {
+      "boundaries": [
+        "Existing CLI syntax and valid/empty successful outcomes are preserved. Intentional behavior change: any parse false in these migrated paths returns EXIT_FAILURE; no log-severity based outcome policy.",
+        "Public C++ signatures, database schema and binary/protocol interfaces are untouched; no new source/binary ABI or stable prose contract is claimed. Existing CLI compatibility is checked by real subprocess invocations.",
+        "List raw hash/size listing remains enumeration, not JSON validation. Only connectivity currently invokes the parser."
+      ],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/11",
+      "outcome": "Make parser false directly affect utility outcome, identify affected resource and incomplete processing, and define bounded safe partial-output behavior. One coherent unsplit work unit covers all present migrated tools.",
+      "platform_applicability": "Production changes are portable CLI return/control flow, not Linux/Windows worker/process implementations. Register portable CMake execute_process regression cases on every CLI-enabled platform. Linux native runtime matrix is mandatory here; native Windows execution is unavailable and must be disclosed as unverified, never inferred from Linux. Do not claim the parent epic or platform-wide conformance complete.",
+      "problem": "list --connectivity, rehash and prune log StateReplayer::parse failure but continue to success; list fabricates ordinary empty dependency rows and prune can copy rejected application metadata.",
+      "scope_interpretation": "Original text explicitly says Later apply to opt/disasm and optimizer fallback when that tool is migrated. This run migrates list/rehash/prune; conditional future fallback acceptance remains verbatim in original and is not represented as currently implemented/verified."
+    },
+    "version": 1,
+    "work_units": []
+  },
+  "plan_version": 0,
+  "role": "planner",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/11",
+  "worker_id": "/root/issue11_planner"
+}
