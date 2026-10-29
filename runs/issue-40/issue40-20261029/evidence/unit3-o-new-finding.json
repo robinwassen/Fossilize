@@ -1,0 +1,13 @@
+{
+  "affected_task": "https://github.com/robinwassen/Fossilize/issues/40",
+  "evidence": "Full immutable AC1 clause7 requires the operational state/role guidance to document run selection; plan1 PAR11 explicitly requires guidance examples and CLI parser agree on mandatory run selectors. At current5760048862543db7044e5ef6f53865a3197b3815, the unqualified Invocation and ownership examples in state.md12-14 call production harness_state.py show/initialize/dispatch without --root-issue or --run-id, and line18 claims unselected Harness(repo).apply is equivalent. ConcurrentHarness.selector at harness_parallel.py305-307 explicitly rejects either missing selector; show calls selector at328 and apply calls it at620. The schema4 entrypoint aliases Harness to ConcurrentHarness. state.md72 also says Live state uses schema_version=3 without historical framing despite the current schema4 contract later. The registered PAR11 guidance test at test_harness_concurrent_inventory.py19-23 only asserts that seven phrases occur somewhere in concatenated documentation; it passes for this exact inconsistent guidance and cannot detect the invalid operational examples. This is a concrete missing planned assertion plus operational-documentation gap, not a claimed unsafe production execution.",
+  "id": "I40-U3-F1",
+  "issue": "https://github.com/robinwassen/Fossilize/issues/40",
+  "location": ".agents/skills/implement-change-harness/references/state.md:12-18,70-77; scripts/test_harness_concurrent_inventory.py:19-23",
+  "next_action": "Fresh bounded implementer repairs current guidance and its planned PAR11 regression; no assertion/timeout/budget waiver.",
+  "planned_case": "PAR11",
+  "required_change": "Update unqualified production CLI and Python API examples to include exact root/run selectors and frame schema3 material explicitly as historical where appropriate. Audit current operational examples for agreement with the supported CLI. Strengthen registered PAR11 assertions so missing selectors in current examples or contradictory current-schema framing fails, while retaining all existing inventory/original113/scenario assertions. Commit repair and rerun full fresh suite plus fresh unit and separate final checking at the repaired tuple.",
+  "route": "implementation",
+  "status": "open",
+  "title": "Make current operational examples match required schema4 selectors and test that agreement"
+}
