@@ -22,6 +22,9 @@
 
 #include "file.hpp"
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include "file_operations.hpp"
 
 namespace Fossilize
 {
@@ -45,35 +48,82 @@ std::vector<uint8_t> load_buffer_from_file(const char *path)
 	return ret;
 }
 
-bool write_string_to_file(const char *path, const char *text)
+namespace FileInternal
 {
-	FILE *file = fopen(path, "w");
+namespace
+{
+void *stdio_open(void *, const char *path, const char *mode) { return fopen(path, mode); }
+size_t stdio_write(void *, const void *data, size_t size, void *file)
+{
+	return fwrite(data, 1, size, static_cast<FILE *>(file));
+}
+int stdio_flush(void *, void *file) { return fflush(static_cast<FILE *>(file)); }
+int stdio_close(void *, void *file) { return fclose(static_cast<FILE *>(file)); }
+const Operations stdio_ops = { nullptr, stdio_open, stdio_write, stdio_flush, stdio_close };
+
+FileWriteResult write_file(const char *path, const char *mode, const void *data, size_t size,
+                           const Operations &ops)
+{
+	FileWriteResult result = { true, FileWriteOperation::None, 0 };
+	auto failure = [&](FileWriteOperation operation, int error) {
+		if (result.success)
+			result = { false, operation, error };
+	};
+	errno = 0;
+	void *file = ops.open(ops.context, path, mode);
 	if (!file)
-		return false;
+		return { false, FileWriteOperation::Open, errno };
 
-	if (fputs(text, file) == EOF)
+	// No early exit after open: explicit completion owns the only close attempt.
+	// Operations are nonthrowing stdio-style callbacks; this path allocates nothing.
+	if (size)
 	{
-		fclose(file);
-		return false;
+		errno = 0;
+		if (ops.write(ops.context, data, size, file) != size)
+			failure(FileWriteOperation::Write, errno);
 	}
-
-	fclose(file);
-	return true;
+	errno = 0;
+	if (ops.flush(ops.context, file) != 0)
+		failure(FileWriteOperation::Flush, errno);
+	void *closing = file;
+	file = nullptr; // A failed close still consumes the handle; never retry it.
+	errno = 0;
+	if (ops.close(ops.context, closing) != 0)
+		failure(FileWriteOperation::Close, errno);
+	return result;
+}
 }
 
+FileWriteResult write_string(const char *path, const char *text, const Operations &ops)
+{
+	return write_file(path, "w", text, strlen(text), ops);
+}
+FileWriteResult write_buffer(const char *path, const void *data, size_t size, const Operations &ops)
+{
+	return write_file(path, "wb", data, size, ops);
+}
+bool legacy_result(FileWriteResult result)
+{
+	if (!result.success)
+		errno = result.error;
+	return result.success;
+}
+}
+
+FileWriteResult write_string_to_file_result(const char *path, const char *text)
+{
+	return FileInternal::write_string(path, text, FileInternal::stdio_ops);
+}
+FileWriteResult write_buffer_to_file_result(const char *path, const void *data, size_t size)
+{
+	return FileInternal::write_buffer(path, data, size, FileInternal::stdio_ops);
+}
+bool write_string_to_file(const char *path, const char *text)
+{
+	return FileInternal::legacy_result(write_string_to_file_result(path, text));
+}
 bool write_buffer_to_file(const char *path, const void *data, size_t size)
 {
-	FILE *file = fopen(path, "wb");
-	if (!file)
-		return false;
-
-	if (fwrite(data, 1, size, file) != size)
-	{
-		fclose(file);
-		return false;
-	}
-
-	fclose(file);
-	return true;
+	return FileInternal::legacy_result(write_buffer_to_file_result(path, data, size));
 }
 }

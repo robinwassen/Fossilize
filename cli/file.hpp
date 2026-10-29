@@ -29,6 +29,16 @@
 namespace Fossilize
 {
 std::vector<uint8_t> load_buffer_from_file(const char *path);
+// Completion through stdio/OS interfaces, not power-loss durability.
+enum class FileWriteOperation { None, Open, Write, Flush, Close };
+struct FileWriteResult
+{
+	bool success;
+	FileWriteOperation operation;
+	int error; // Raw errno; zero on failure means the operation supplied no error.
+};
+FileWriteResult write_string_to_file_result(const char *path, const char *text);
+FileWriteResult write_buffer_to_file_result(const char *path, const void *data, size_t size);
 bool write_string_to_file(const char *path, const char *text);
 bool write_buffer_to_file(const char *path, const void *data, size_t size);
 }

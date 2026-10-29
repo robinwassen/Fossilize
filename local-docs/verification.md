@@ -346,6 +346,44 @@ Printing `file` output does not enforce compatibility; verify it before executin
 
 **Steam-game capture is separate:** enable the build manifest in the game's environment, account for runtime path visibility/architecture and existing layers, use a private dump path, prove the mapped library and compare application continuity. Game launch options can affect this game-process layer test. Do not replace `libVkLayer_steam_fossilize.so` by filename alone: layer identity, manifest, exported entry points and embedding expectations require independent checks.
 
+## Shared file-helper completion
+
+[Issue #12](https://github.com/robinwassen/Fossilize/issues/12) adds
+`file-helper-<string|buffer>-<open|short-write|flush|close|first-error|success|filesystem>`
+and, on Linux, `file-helper-<string|buffer>-dev-full`. Every scenario has explicit
+checks active in Release, isolated output and a finite CTest deadline. The per-call
+internal adapter tests operation order, raw errors (including unknown zero), first
+failure retention, cleanup errno clobbering and exactly one close per opened
+handle. It uses no global injection hooks. `file-helper-legacy-compatibility`
+uses only the original declarations and exact bool function-pointer types;
+`file-helper-legacy-completion` checks both Linux `/dev/full` failure paths.
+For original-defect controls, compile that same committed compatibility caller
+with the unchanged input `cli/file.hpp` and `cli/file.cpp` in an external directory.
+Its normal invocation must pass; `--dev-full-string` and `--dev-full-buffer` must
+each fail against the original implementation and pass against the candidate.
+Also compile the caller against the unchanged input header and link candidate
+`file.cpp`, so the new header cannot mask a source compatibility regression.
+
+The two original bool signatures and symbols are retained. Additive
+`write_string_to_file_result` and `write_buffer_to_file_result` expose success,
+first failing operation and immediately captured raw errno. Bool failures restore
+that first errno after cleanup. Strings retain `strlen` termination and native
+text newline translation (`w`); buffers retain exact binary bytes (`wb`). Empty
+writes truncate existing files and still flush and close. Explicit completion
+checks write, flush and close even when an earlier stage failed; close consumes
+the handle even if it fails. No allocation or exception is required in this path.
+Callbacks for the internal stdio-style adapter must not throw.
+
+Source compatibility evidence covers the two legacy functions and this preserved
+caller. Exact symbols do not establish a general C++ binary ABI guarantee for
+static cli-utils or a prebuilt-consumer claim. No wire/file format or machine
+output schema changes. Normal writes and initial failures retain their behavior;
+formerly false-success flush/close outcomes intentionally return false. Completion
+means the stdio/OS interface accepted flush and close, **not power-loss durability**,
+atomic replacement or rollback of partial output. No fsync is added. Linux tests
+and portable injected close failures do not establish native Windows execution;
+record native platform evidence or its unavailable/incomplete status separately.
+
 ## Additional platforms, support-data and dependency checks
 
 - **Windows:** native builds/CTest plus real replay/controller/ExternalReplayer/layer tests as applicable. Linux coverage does not test CreateProcess/JobObjects, Windows exceptions, named mappings or cancellation. Use native output paths/loader setup; a Linux Steam ELF replacement is not a Windows procedure.
