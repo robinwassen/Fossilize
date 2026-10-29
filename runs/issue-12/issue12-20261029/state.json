@@ -159,11 +159,20 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/12",
+      "attempt_id": "checker-1",
       "evidence": "Plan v1 gate windows-native-pending-decision remains kind=both and requires native Windows Debug/Release configure/build/CTest, with its prerequisite still stating user scope decision remains pending. Plan scope[2], implementation instructions and independent-final-review retain that pending mandatory platform gate. Published evidence runs/issue-12/issue12-20261029/evidence/user-platform-scope-decision.json records the direct user authorization: Use Linux verification and portable injected tests; explicitly leave native Windows unverified in the PR. The user decision supersedes this pending verification design, but plan v1 has not incorporated it. Native Windows evidence cannot truthfully be marked passed or silently omitted under the current mandatory-gate plan.",
       "id": "ISSUE12-SCOPE-DESIGN-001",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/12",
+        "candidate_sha": "5480319b0dca1b4d33518370d00da1fef46ed1fc",
+        "evidence": "Fresh checker /root/checker_1_12 independently compared canonical v1 with v2 and immutable state: exact original and all 19 cases identical; all six required both-gate objects unchanged. Native Windows optional with explicit not_run/unverified, no native IDs. Durable direct user authorization matches exactly; v2 scope/final/publication disclosures implement it. Live issue12 body unchanged, shared issue8 OPEN, prepared PR body explicitly states native Windows not run/unverified and portable tests executed on Linux. This resolves scope design only; behavioral acceptance remains pending current checker gate execution.",
+        "finding_id": "ISSUE12-SCOPE-DESIGN-001",
+        "plan_version": 2,
+        "worker_id": "/root/checker_1_12"
+      },
       "resolution_required": "Fresh planner must produce plan v2 retaining AC1 byte-for-byte and all Linux, portable injected, compatibility, baseline and complete harness requirements, explicitly apply the authorized verification scope, and require the PR to state native Windows not run/unverified. Reconcile dependent scope/gates/case mappings/final review wording; do not substitute portable Linux execution for native Windows evidence.",
       "route": "planner",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -1453,7 +1462,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 117,
+  "revision": 118,
   "root_issue": {
     "id": 6079804510,
     "node_id": "I_kwDOVZpjbc8AAAABamJ0Xg",
