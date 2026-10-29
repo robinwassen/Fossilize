@@ -1,0 +1,65 @@
+test_C01_C05_intent_record_restart_and_exact_renewal (test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal) ... ok
+test_C02_split_canonical_children_and_registry_preserved (test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved) ... ok
+test_C03_bad_required_verification_never_authorizes_done (test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done) ... ok
+test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) ... 
+  test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='implementation') ... FAIL
+  test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='planner') ... FAIL
+  test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='environment') ... FAIL
+test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault (test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault) ... ok
+test_C07_one_pr_contains_backlog_after_local_merge (test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge) ... ok
+test_C08_schema2_pending_adoption_preserves_facts_and_completed_record (test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record) ... ERROR
+
+======================================================================
+ERROR: test_C08_schema2_pending_adoption_preserves_facts_and_completed_record (test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/test_harness_closeout.py", line 338, in test_C08_schema2_pending_adoption_preserves_facts_and_completed_record
+    self.unchanged_rejection("dispatch", {"role": "checker", "attempt_id": "old-final"})
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 212, in unchanged_rejection
+    self.act(action, payload)
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 66, in act
+    result = self.harness.apply(action, payload or {}, self.tip, self.state["revision"] if self.state else 0)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/harness_state.py", line 400, in apply
+    self.reduce(state, action, payload, journal, records)
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/harness_state.py", line 671, in reduce
+    self.dispatch(state, p)
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/harness_state.py", line 773, in dispatch
+    requested = p["requested"]
+                ~^^^^^^^^^^^^^
+KeyError: 'requested'
+
+======================================================================
+FAIL: test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='implementation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/test_harness_closeout.py", line 203, in test_C04_rejection_fences_dispatch_until_committed_cleanup
+    case.unchanged_rejection("closeout-cleanup", {"candidate_sha": stale, "observation": "Status removed but evidence remains."}, "stale completion evidence")
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 211, in unchanged_rejection
+    with self.assertRaisesRegex(Invalid, pattern or ".*"):
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='planner')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/test_harness_closeout.py", line 203, in test_C04_rejection_fences_dispatch_until_committed_cleanup
+    case.unchanged_rejection("closeout-cleanup", {"candidate_sha": stale, "observation": "Status removed but evidence remains."}, "stale completion evidence")
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 211, in unchanged_rejection
+    with self.assertRaisesRegex(Invalid, pattern or ".*"):
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) (route='environment')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/test_harness_closeout.py", line 203, in test_C04_rejection_fences_dispatch_until_committed_cleanup
+    case.unchanged_rejection("closeout-cleanup", {"candidate_sha": stale, "observation": "Status removed but evidence remains."}, "stale completion evidence")
+  File "/home/robin/dev/fossilize-FOS-000026/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 211, in unchanged_rejection
+    with self.assertRaisesRegex(Invalid, pattern or ".*"):
+AssertionError: Invalid not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 35.632s
+
+FAILED (failures=3, errors=1)

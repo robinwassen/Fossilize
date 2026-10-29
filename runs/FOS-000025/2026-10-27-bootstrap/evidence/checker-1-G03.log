@@ -1,0 +1,84 @@
+Candidate badc75168a2ef83222b67457798bcc2cf367f748
+Base bbe8ae4acd9ad527658bb58e6b06474924a06284
+Artifact tip observed 4e34492e0889b1f7405dc0ee3c063379f5bf8c51
+Artifact roots c0856d9bcb7b7c77f859eedd4da9bbc33b574990
+
+COMMIT c0856d9bcb7b7c77f859eedd4da9bbc33b574990 1793131642 Initialize empty harness artifacts branch
+paths []
+
+COMMIT 3d78abc9536b3d72396a94c7ab014e2af5854468 1793131642 FOS-000025: checkpoint bootstrap planner intent
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": null, "operation": "planner_dispatch", "phase": "planning", "plan_version": null, "revision": 1, "schema_version": 1, "status": "ready"}
+
+COMMIT c434723584d36380ec5aac7d812f1360ebcd24f5 1793131661 FOS-000025: acknowledge isolated planner
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": null, "operation": "planner_dispatch", "phase": "planning", "plan_version": null, "revision": 2, "schema_version": 1, "status": "running"}
+ATTEMPT {"attempt_id": "planner-1", "effort": "high", "input_sha": "643c490", "model": "gpt-6.1-sol", "role": "planner", "status": "running", "worker_id": "/root/fos25_planner"}
+
+COMMIT 4f8b91fb237cbac0073e659a48dc7b870fa51386 1793131905 FOS-000025: persist planner plans and implementation dispatch intent
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": null, "operation": "implementer_dispatch", "phase": "implementing", "plan_version": null, "revision": 3, "schema_version": 1, "status": "ready"}
+ATTEMPT {"attempt_id": "planner-1", "effort": "high", "input_sha": "643c490", "model": "gpt-6.1-sol", "report": "reports/planner-1.json", "role": "planner", "status": "complete", "worker_id": "/root/fos25_planner"}
+ATTEMPT {"attempt_id": "implementer-1", "effort": "high", "effort_reason": "Transactional state and recovery invariants require careful failure handling", "input_sha": "643c490d34347289ab4a7316b3b1d14f770028a5", "model": "gpt-6.1-sol", "role": "implementer", "status": "dispatch_intent", "worker_id": null}
+PLAN version 1
+
+COMMIT b4c353e1d61f54ef4ab32d7245afbd40d1397929 1793131922 FOS-000025: acknowledge isolated implementer
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": null, "operation": "implementer_dispatch", "phase": "implementing", "plan_version": null, "revision": 4, "schema_version": 1, "status": "running"}
+ATTEMPT {"attempt_id": "planner-1", "effort": "high", "input_sha": "643c490", "model": "gpt-6.1-sol", "report": "reports/planner-1.json", "role": "planner", "status": "complete", "worker_id": "/root/fos25_planner"}
+ATTEMPT {"attempt_id": "implementer-1", "effort": "high", "effort_reason": "Transactional state and recovery invariants require careful failure handling", "input_sha": "643c490d34347289ab4a7316b3b1d14f770028a5", "model": "gpt-6.1-sol", "role": "implementer", "status": "running", "worker_id": "/root/fos25_implementer"}
+PLAN version 1
+
+COMMIT afe4877227a8ad4b647a9067eccd4ad0a107f226 1793132889 FOS-000025: preserve completed implementation report for explicit import
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": null, "operation": "implementer_dispatch", "phase": "implementing", "plan_version": null, "revision": 5, "schema_version": 1, "status": "ready"}
+ATTEMPT {"attempt_id": "planner-1", "effort": "high", "input_sha": "643c490", "model": "gpt-6.1-sol", "report": "reports/planner-1.json", "role": "planner", "status": "complete", "worker_id": "/root/fos25_planner"}
+ATTEMPT {"attempt_id": "implementer-1", "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "effort": "high", "effort_reason": "Transactional state and recovery invariants require careful failure handling", "input_sha": "643c490d34347289ab4a7316b3b1d14f770028a5", "model": "gpt-6.1-sol", "report": "reports/implementer-1.json", "role": "implementer", "status": "complete", "worker_id": "/root/fos25_implementer"}
+PLAN version 1
+
+COMMIT f8c4a052697fe033688c45c71970dddd10cfe79b 1793132897 FOS-000025 explicit bootstrap import
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": "FOS-000025", "operation": "bootstrap-reconciliation", "phase": "checking", "plan_version": null, "revision": 6, "schema_version": 2, "status": "awaiting_decision"}
+PLAN version 1
+
+COMMIT f5834c24c37e948d09e896f2449ef2e069319c2c 1793132917 FOS-000025 reconcile revision 7
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": "FOS-000025", "operation": "subtask", "phase": "checking", "plan_version": null, "revision": 7, "schema_version": 2, "status": "ready"}
+PLAN version 1
+
+COMMIT ff1a4daf31ff49348e0b416700cccffcda20f730 1793132918 FOS-000025 dispatch revision 8
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": "FOS-000025", "operation": "subtask", "phase": "checking", "plan_version": null, "revision": 8, "schema_version": 2, "status": "running"}
+ATTEMPT {"actual": {"effort": "high", "model": "gpt-6.1-sol"}, "attempt_id": "checker-1", "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284", "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "fallback_reason": null, "input_revision": 7, "input_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "observations": [], "operation": "subtask", "plan_version": 1, "requested": {"effort": "high", "model": "gpt-6.1-sol"}, "role": "checker", "started": 1793132918.326202, "status": "intent", "unit": "FOS-000025", "worker_id": null}
+PLAN version 1
+
+COMMIT d3bdbd08a51e7114c371d0f563cfff0cbaaaeb0c 1793132938 FOS-000025 acknowledge revision 9
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": "FOS-000025", "operation": "subtask", "phase": "checking", "plan_version": null, "revision": 9, "schema_version": 2, "status": "running"}
+ATTEMPT {"actual": {"effort": "high", "model": "gpt-6.1-sol"}, "attempt_id": "checker-1", "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284", "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "fallback_reason": null, "input_revision": 7, "input_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "observations": [], "operation": "subtask", "plan_version": 1, "requested": {"effort": "high", "model": "gpt-6.1-sol"}, "role": "checker", "started": 1793132918.326202, "status": "running", "unit": "FOS-000025", "worker_id": "/root/fos25_checker_1"}
+PLAN version 1
+
+COMMIT 7e4ad5b6eee267ee58ee10130d7018c4a14dd6a5 1793132949 FOS-000025 command-intent revision 10
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": "FOS-000025", "operation": "subtask", "phase": "checking", "plan_version": null, "revision": 10, "schema_version": 2, "status": "running"}
+ATTEMPT {"actual": {"effort": "high", "model": "gpt-6.1-sol"}, "attempt_id": "checker-1", "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284", "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "fallback_reason": null, "input_revision": 7, "input_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "observations": [], "operation": "subtask", "plan_version": 1, "requested": {"effort": "high", "model": "gpt-6.1-sol"}, "role": "checker", "started": 1793132918.326202, "status": "running", "unit": "FOS-000025", "worker_id": "/root/fos25_checker_1"}
+PLAN version 1
+
+COMMIT 6de6428133839390fa5f2f065efe4e8d77872ccf 1793132950 FOS-000025 command-intent revision 11
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": "FOS-000025", "operation": "subtask", "phase": "checking", "plan_version": null, "revision": 11, "schema_version": 2, "status": "running"}
+ATTEMPT {"actual": {"effort": "high", "model": "gpt-6.1-sol"}, "attempt_id": "checker-1", "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284", "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "fallback_reason": null, "input_revision": 7, "input_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "observations": [], "operation": "subtask", "plan_version": 1, "requested": {"effort": "high", "model": "gpt-6.1-sol"}, "role": "checker", "started": 1793132918.326202, "status": "running", "unit": "FOS-000025", "worker_id": "/root/fos25_checker_1"}
+PLAN version 1
+
+COMMIT 4e34492e0889b1f7405dc0ee3c063379f5bf8c51 1793132950 FOS-000025 command-intent revision 12
+paths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']
+STATE {"active_unit": "FOS-000025", "operation": "subtask", "phase": "checking", "plan_version": null, "revision": 12, "schema_version": 2, "status": "running"}
+ATTEMPT {"actual": {"effort": "high", "model": "gpt-6.1-sol"}, "attempt_id": "checker-1", "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284", "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "fallback_reason": null, "input_revision": 7, "input_sha": "badc75168a2ef83222b67457798bcc2cf367f748", "observations": [], "operation": "subtask", "plan_version": 1, "requested": {"effort": "high", "model": "gpt-6.1-sol"}, "role": "checker", "started": 1793132918.326202, "status": "running", "unit": "FOS-000025", "worker_id": "/root/fos25_checker_1"}
+PLAN version 1
+
+Original checkout current status: 
+Original current HEAD 2325a40846cceb9e053cc5b26aad4c030e07e1a2
+Checker status 
+REVIEW: Read original FOS-000025 requirements, AGENTS required docs and verification guide; full base diff; all six package source/metadata/reference files; all 18 test methods; factual planner and implementer reports; normalized schema and actual bootstrap history above.
+REVIEW: Only skill and local documentation changed. No source C++/Vulkan behavior claims or builds. Runtime imports are Python standard library. quick_validate uses host PyYAML only. Repository directory and metadata match documented discovery.
+REVIEW LIMIT: Actual roles/termination are preserved facts, not cryptographically authenticated by helper. Current original checkout status cannot establish byte-for-byte pre-run preservation without coordinator baseline. Fresh final checking and publication are future gates, not claimed here.

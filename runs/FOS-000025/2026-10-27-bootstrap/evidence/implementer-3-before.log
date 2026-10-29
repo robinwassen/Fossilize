@@ -1,0 +1,42 @@
+test_T13_sequential_split_dependency_validation_final_regression (test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression) ... FAIL
+test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness (test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness) ... ok
+test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks (test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks) ... ERROR
+
+======================================================================
+ERROR: test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks (test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 769, in test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks
+    self.launch("implementer")
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 87, in launch
+    self.act("dispatch", payload)
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 66, in act
+    result = self.harness.apply(action, payload or {}, self.tip, self.state["revision"] if self.state else 0)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py", line 366, in apply
+    self.reduce(state, action, payload, journal, records)
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py", line 534, in reduce
+    self.dispatch(state, p)
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py", line 642, in dispatch
+    require(unit is not None and unit["status"] != "accepted" and set(unit["dependencies"]) <= done,
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py", line 29, in require
+    raise Invalid(message)
+harness_state.Invalid: implementer unit dependencies are not accepted
+
+======================================================================
+FAIL: test_T13_sequential_split_dependency_validation_final_regression (test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py", line 702, in test_T13_sequential_split_dependency_validation_final_regression
+    self.assertEqual(self.state["active_unit"], first)
+AssertionError: 'FOS-000027' != 'FOS-000026'
+- FOS-000027
+?          ^
++ FOS-000026
+?          ^
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 7.610s
+
+FAILED (failures=1, errors=1)

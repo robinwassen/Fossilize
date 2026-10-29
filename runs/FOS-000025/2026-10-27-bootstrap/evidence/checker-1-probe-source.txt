@@ -1,0 +1,65 @@
+import sys, json, copy, traceback
+from pathlib import Path
+sys.path.insert(0, '/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts')
+from test_harness_state import HarnessTests
+from harness_state import git, canonical_inventory
+
+def fixture():
+    t=HarnessTests(); t.setUp(); return t
+
+def run(name, fn):
+    t=fixture()
+    try:
+        print('\nPROBE', name, flush=True)
+        fn(t)
+    except Exception as e:
+        print(type(e).__name__, str(e), flush=True)
+        traceback.print_exc()
+    finally:
+        t.doCleanups()
+
+def reverse_dependency(t):
+    p=t.split_plan(); p['subtasks'].reverse()
+    t.launch('planner'); t.act('report', dict(t.report(), plan=p))
+    unit=next(u for u in t.state['units'] if u['key']==t.state['active_unit'])
+    print('after planner active unit=', unit, flush=True)
+    t.launch('implementer')
+    print('IMPLEMENTER DISPATCHED with unmet dependencies=', unit['dependencies'], 'attempt=', t.state['attempts'][-1], flush=True)
+    assert unit['dependencies'], 'probe setup requires unmet dependencies'
+    assert t.state['attempts'][-1]['status']=='running'
+
+def late_final(t):
+    t.planned(); t.implemented(); t.checked(); t.launch('checker')
+    t.now=t.state['limits']['deadline']+1
+    print('now/deadline=', t.now, t.state['limits']['deadline'])
+    t.act('report', t.check_report())
+    print('LATE FINAL ACCEPTED phase=',t.state['phase'],'exhausted=',t.state['limits']['exhausted'])
+    t.act('publish-intent', t.intent())
+    git(t.source,'push','origin','codex/test')
+    t.act('publish-observation',{'event':'push','remote_sha':t.state['repository']['candidate_sha']})
+    t.act('publish-observation', t.lookup([t.pr()]))
+    t.act('publish-observation',{'event':'attachment','url':t.pr()['url'],'success':True})
+    print('COMPLETED AFTER EXPIRED BUDGET phase=',t.state['phase'],'exhausted=',t.state['limits']['exhausted'],'extensions=',t.state['limits']['extensions'])
+
+def duplicate_findings(t):
+    t.planned(); t.implemented(); t.launch('checker')
+    f={'id':'same','status':'open','route':'implementation','evidence':'concrete failure'}
+    t.act('report',dict(t.report(),verdict='changes_required',findings=[f,copy.deepcopy(f)],next_action='repair'))
+    print('DUPLICATE FINDING IDS COMMITTED=', [f['id'] for f in t.state['findings']])
+    t.implemented(); t.launch('checker')
+    t.act('resolve-finding',{'finding_id':'same','evidence':'independent recheck'})
+    print('after first resolution=',t.state['findings'])
+    t.act('resolve-finding',{'finding_id':'same','evidence':'independent recheck again'})
+    print('after second resolution=',t.state['findings'])
+    try:t.act('report',t.check_report())
+    except Exception as e:print('ACCEPTANCE BLOCKED=',type(e).__name__,str(e))
+
+def meaning_replan(t):
+    p=t.split_plan(); t.launch('planner'); t.act('report',dict(t.report(),plan=p))
+    t.implemented(); t.launch('checker')
+    t.act('report',dict(t.report(),verdict='changes_required',findings=[{'id':'replan','status':'open','route':'planner','evidence':'required plan change'}],next_action='replan'))
+    t.launch('planner'); p['version']=2; p['subtasks'][0]['definition']='An entirely unrelated task replaces first behavior under its existing key'
+    t.act('report',dict(t.report(),plan=p))
+    print('REINTERPRETED SAME PERMANENT KEY=',t.state['units'][0])
+
+for n,f in [('reverse_dependency',reverse_dependency),('late_final',late_final),('duplicate_findings',duplicate_findings),('meaning_replan',meaning_replan)]:run(n,f)

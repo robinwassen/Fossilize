@@ -1,0 +1,180 @@
+Fresh baseline 36b78637e847463c4f58758a907b33ce5bf07ce5; candidate fixture/helper feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd. Every child deadline600s.
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11-base -B /tmp/fossilize-11/final-evidence/build-base -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 0, "elapsed": 2.695}
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/final-evidence/build-base --target fossilize-list fossilize-rehash fossilize-prune --parallel 4", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 0, "elapsed": 15.799}
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /tmp/fossilize-11/checker-final -B /tmp/fossilize-11/final-evidence/build-fixture -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 0, "elapsed": 2.709}
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/final-evidence/build-fixture --target utility-parse-test --parallel 3", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 0, "elapsed": 14.466}
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-list -DTOOL_NAME=list -DCASE=version -DWORK=/tmp/fossilize-11/final-evidence/baseline-list-version -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 1, "elapsed": 0.017}
+CMake Error at test/utility_parse.cmake:52 (message):
+  version-default: expected parse-failure exit 1, got 0
+
+  stdout=0000000000000104 :
+
+
+
+  stderr=Fossilize ERROR: JSON version mismatches.Fossilize ERROR: Failed to
+  parse blob (tag: 7, hash: 0x104).
+
+Call Stack (most recent call first):
+  test/utility_parse.cmake:146 (failure)
+
+
+
+ACTUAL UTILITY STATUS 0
+ACTUAL STDOUT 0000000000000104 : 
+ACTUAL STDERR Fossilize ERROR: JSON version mismatches.Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-list -DTOOL_NAME=list -DCASE=invalid-json -DWORK=/tmp/fossilize-11/final-evidence/baseline-list-invalid-json -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 1, "elapsed": 0.017}
+CMake Error at test/utility_parse.cmake:52 (message):
+  invalid-json-default: expected parse-failure exit 1, got 0
+
+  stdout=0000000000000104 :
+
+
+
+  stderr=Fossilize ERROR: Got parse error: 4
+
+  Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+
+Call Stack (most recent call first):
+  test/utility_parse.cmake:146 (failure)
+
+
+
+ACTUAL UTILITY STATUS 0
+ACTUAL STDOUT 0000000000000104 : 
+ACTUAL STDERR Fossilize ERROR: Got parse error: 4
+Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-list -DTOOL_NAME=list -DCASE=empty -DWORK=/tmp/fossilize-11/final-evidence/baseline-list-empty -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 0, "elapsed": 0.022}
+
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-list -DTOOL_NAME=list -DCASE=populated -DWORK=/tmp/fossilize-11/final-evidence/baseline-list-populated -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 0, "elapsed": 0.023}
+
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=version -DWORK=/tmp/fossilize-11/final-evidence/baseline-rehash-version -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 1, "elapsed": 0.023}
+CMake Error at test/utility_parse.cmake:52 (message):
+  version-default: expected parse-failure exit 1, got 0
+
+  stdout=
+
+  stderr=Fossilize ERROR: JSON version mismatches.Fossilize ERROR: Failed to
+  parse blob (tag: 7, hash: 0x104).
+
+Call Stack (most recent call first):
+  test/utility_parse.cmake:146 (failure)
+
+
+
+ACTUAL UTILITY STATUS 0
+ACTUAL STDOUT ACTUAL STDERR Fossilize ERROR: JSON version mismatches.Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=invalid-json -DWORK=/tmp/fossilize-11/final-evidence/baseline-rehash-invalid-json -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 1, "elapsed": 0.024}
+CMake Error at test/utility_parse.cmake:52 (message):
+  invalid-json-default: expected parse-failure exit 1, got 0
+
+  stdout=
+
+  stderr=Fossilize ERROR: Got parse error: 4
+
+  Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+
+Call Stack (most recent call first):
+  test/utility_parse.cmake:146 (failure)
+
+
+
+ACTUAL UTILITY STATUS 0
+ACTUAL STDOUT ACTUAL STDERR Fossilize ERROR: Got parse error: 4
+Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=empty -DWORK=/tmp/fossilize-11/final-evidence/baseline-rehash-empty -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 0, "elapsed": 0.03}
+
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=populated -DWORK=/tmp/fossilize-11/final-evidence/baseline-rehash-populated -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 0, "elapsed": 0.043}
+
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=version -DWORK=/tmp/fossilize-11/final-evidence/baseline-prune-version -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 1, "elapsed": 0.025}
+CMake Error at test/utility_parse.cmake:52 (message):
+  version-default: expected parse-failure exit 1, got 0
+
+  stdout=
+
+  stderr=Fossilize ERROR: JSON version mismatches.Fossilize ERROR: Failed to
+  parse blob (tag: 7, hash: 0x104).
+
+  Fossilize INFO: Pruned AppInfo entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Application Blob Link entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Shader Module entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Descriptor Set Layout entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Pipeline Layout entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Render Pass entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Graphics Pipeline entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Compute Pipeline entries: 1 -> 0 entries
+
+  Fossilize INFO: Pruned Raytracing Pipeline entries: 0 -> 0 entries
+
+Call Stack (most recent call first):
+  test/utility_parse.cmake:146 (failure)
+
+
+
+ACTUAL UTILITY STATUS 0
+ACTUAL STDOUT ACTUAL STDERR Fossilize ERROR: JSON version mismatches.Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+Fossilize INFO: Pruned AppInfo entries: 0 -> 0 entries
+Fossilize INFO: Pruned Application Blob Link entries: 0 -> 0 entries
+Fossilize INFO: Pruned Shader Module entries: 0 -> 0 entries
+Fossilize INFO: Pruned Descriptor Set Layout entries: 0 -> 0 entries
+Fossilize INFO: Pruned Pipeline Layout entries: 0 -> 0 entries
+Fossilize INFO: Pruned Render Pass entries: 0 -> 0 entries
+Fossilize INFO: Pruned Graphics Pipeline entries: 0 -> 0 entries
+Fossilize INFO: Pruned Compute Pipeline entries: 1 -> 0 entries
+Fossilize INFO: Pruned Raytracing Pipeline entries: 0 -> 0 entries
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=invalid-json -DWORK=/tmp/fossilize-11/final-evidence/baseline-prune-invalid-json -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 1, "elapsed": 0.023}
+CMake Error at test/utility_parse.cmake:52 (message):
+  invalid-json-default: expected parse-failure exit 1, got 0
+
+  stdout=
+
+  stderr=Fossilize ERROR: Got parse error: 4
+
+  Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+
+  Fossilize INFO: Pruned AppInfo entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Application Blob Link entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Shader Module entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Descriptor Set Layout entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Pipeline Layout entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Render Pass entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Graphics Pipeline entries: 0 -> 0 entries
+
+  Fossilize INFO: Pruned Compute Pipeline entries: 1 -> 0 entries
+
+  Fossilize INFO: Pruned Raytracing Pipeline entries: 0 -> 0 entries
+
+Call Stack (most recent call first):
+  test/utility_parse.cmake:146 (failure)
+
+
+
+ACTUAL UTILITY STATUS 0
+ACTUAL STDOUT ACTUAL STDERR Fossilize ERROR: Got parse error: 4
+Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+Fossilize INFO: Pruned AppInfo entries: 0 -> 0 entries
+Fossilize INFO: Pruned Application Blob Link entries: 0 -> 0 entries
+Fossilize INFO: Pruned Shader Module entries: 0 -> 0 entries
+Fossilize INFO: Pruned Descriptor Set Layout entries: 0 -> 0 entries
+Fossilize INFO: Pruned Pipeline Layout entries: 0 -> 0 entries
+Fossilize INFO: Pruned Render Pass entries: 0 -> 0 entries
+Fossilize INFO: Pruned Graphics Pipeline entries: 0 -> 0 entries
+Fossilize INFO: Pruned Compute Pipeline entries: 1 -> 0 entries
+Fossilize INFO: Pruned Raytracing Pipeline entries: 0 -> 0 entries
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=empty -DWORK=/tmp/fossilize-11/final-evidence/baseline-prune-empty -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 0, "elapsed": 0.026}
+
+{"command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/final-evidence/build-fixture/test/utility-parse-test -DTOOL=/tmp/fossilize-11/final-evidence/build-base/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=populated -DWORK=/tmp/fossilize-11/final-evidence/baseline-prune-populated -P /tmp/fossilize-11/checker-final/test/utility_parse.cmake", "cwd": "/tmp/fossilize-11/checker-final", "exit_code": 0, "elapsed": 0.023}
+
+Six expected false-success assertion failures and six successful populated/empty readback controls verified.

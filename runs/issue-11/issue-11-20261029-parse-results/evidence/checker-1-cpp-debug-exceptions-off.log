@@ -1,0 +1,112 @@
+Independent exact-candidate checker. Gate debug-off
+debug-off-configure:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /tmp/fossilize-11/checker-1 -B /tmp/fossilize-11/checker-build-debug-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=1.775
+
+debug-off-build:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/checker-build-debug-off --parallel 4
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=345.464
+
+debug-off-discover:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/checker-build-debug-off --show-only=json-v1
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.013
+
+debug-off-ctest:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/checker-build-debug-off --output-on-failure --parallel 3 --output-junit /tmp/fossilize-11/checker-evidence-1/debug-off-ctest.xml
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=2.334
+
+Compile commands inspected for list/rehash/prune/helper: requested exception flag and Debug/Release options verified.
+{
+  "fossilize_list.cpp": "/usr/bin/c++ -I/tmp/fossilize-11/checker-1 -I/tmp/fossilize-11/checker-1/rapidjson/include -I/tmp/fossilize-11/checker-1/khronos -I/tmp/fossilize-11/checker-1/miniz -I/tmp/fossilize-11/checker-1/cli -I/tmp/fossilize-11/checker-1/cli/volk -I/tmp/fossilize-11/checker-1/cli/../khronos  -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -o cli/CMakeFiles/fossilize-list.dir/fossilize_list.cpp.o -c /tmp/fossilize-11/checker-1/cli/fossilize_list.cpp",
+  "fossilize_rehash.cpp": "/usr/bin/c++ -I/tmp/fossilize-11/checker-1 -I/tmp/fossilize-11/checker-1/rapidjson/include -I/tmp/fossilize-11/checker-1/khronos -I/tmp/fossilize-11/checker-1/miniz -I/tmp/fossilize-11/checker-1/cli -I/tmp/fossilize-11/checker-1/cli/volk -I/tmp/fossilize-11/checker-1/cli/../khronos  -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -o cli/CMakeFiles/fossilize-rehash.dir/fossilize_rehash.cpp.o -c /tmp/fossilize-11/checker-1/cli/fossilize_rehash.cpp",
+  "fossilize_prune.cpp": "/usr/bin/c++ -I/tmp/fossilize-11/checker-1 -I/tmp/fossilize-11/checker-1/rapidjson/include -I/tmp/fossilize-11/checker-1/khronos -I/tmp/fossilize-11/checker-1/miniz -I/tmp/fossilize-11/checker-1/cli -I/tmp/fossilize-11/checker-1/cli/volk -I/tmp/fossilize-11/checker-1/cli/../khronos  -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -o cli/CMakeFiles/fossilize-prune.dir/fossilize_prune.cpp.o -c /tmp/fossilize-11/checker-1/cli/fossilize_prune.cpp",
+  "utility_parse_test.cpp": "/usr/bin/c++ -I/tmp/fossilize-11/checker-1 -I/tmp/fossilize-11/checker-1/rapidjson/include -I/tmp/fossilize-11/checker-1/khronos -I/tmp/fossilize-11/checker-1/miniz  -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -o test/CMakeFiles/utility-parse-test.dir/utility_parse_test.cpp.o -c /tmp/fossilize-11/checker-1/test/utility_parse_test.cpp"
+}
+CTest discovered/executed=73/73, failures=0, skipped=0; JUnit exact executed union verified.
+    Start 73: utility-parse-prune-rejected-application
+71/73 Test #72: utility-parse-prune-mixed .............................   Passed    0.03 sec
+72/73 Test #73: utility-parse-prune-rejected-application ..............   Passed    0.04 sec
+73/73 Test  #2: varint-system-test ....................................   Passed    2.32 sec
+
+100% tests passed out of 73
+
+Total Test time (real) =   2.32 sec
+
+Executed IDs:
+debug-off::fossilize-system-test
+debug-off::varint-system-test
+debug-off::application-info-filter-test
+debug-off::object-cache-test
+debug-off::feature-filter-test
+debug-off::linux-futex-test
+debug-off::replay-diagnostic-test
+debug-off::device-diagnostic-test
+debug-off::capture-diagnostic-normal-graphics-reject
+debug-off::capture-diagnostic-normal-graphics-success
+debug-off::capture-diagnostic-normal-graphics-vulkan-error
+debug-off::capture-diagnostic-normal-compute-reject
+debug-off::capture-diagnostic-normal-compute-success
+debug-off::capture-diagnostic-normal-compute-vulkan-error
+debug-off::capture-diagnostic-normal-raytracing-reject
+debug-off::capture-diagnostic-normal-raytracing-success
+debug-off::capture-diagnostic-normal-raytracing-vulkan-error
+debug-off::capture-diagnostic-qa-graphics-reject
+debug-off::capture-diagnostic-qa-graphics-success
+debug-off::capture-diagnostic-qa-graphics-vulkan-error
+debug-off::capture-diagnostic-qa-compute-reject
+debug-off::capture-diagnostic-qa-compute-success
+debug-off::capture-diagnostic-qa-compute-vulkan-error
+debug-off::capture-diagnostic-qa-raytracing-reject
+debug-off::capture-diagnostic-qa-raytracing-success
+debug-off::capture-diagnostic-qa-raytracing-vulkan-error
+debug-off::capture-diagnostic-paranoid-graphics-reject
+debug-off::capture-diagnostic-paranoid-graphics-success
+debug-off::capture-diagnostic-paranoid-graphics-vulkan-error
+debug-off::capture-diagnostic-paranoid-compute-reject
+debug-off::capture-diagnostic-paranoid-compute-success
+debug-off::capture-diagnostic-paranoid-compute-vulkan-error
+debug-off::capture-diagnostic-paranoid-raytracing-reject
+debug-off::capture-diagnostic-paranoid-raytracing-success
+debug-off::capture-diagnostic-paranoid-raytracing-vulkan-error
+debug-off::capture-diagnostic-eager-graphics-reject
+debug-off::capture-diagnostic-eager-graphics-success
+debug-off::capture-diagnostic-eager-graphics-vulkan-error
+debug-off::capture-diagnostic-eager-compute-reject
+debug-off::capture-diagnostic-eager-compute-success
+debug-off::capture-diagnostic-eager-compute-vulkan-error
+debug-off::capture-diagnostic-eager-raytracing-reject
+debug-off::capture-diagnostic-eager-raytracing-success
+debug-off::capture-diagnostic-eager-raytracing-vulkan-error
+debug-off::capture-diagnostic-binary-graphics-reject
+debug-off::capture-diagnostic-binary-graphics-success
+debug-off::capture-diagnostic-binary-graphics-vulkan-error
+debug-off::capture-diagnostic-binary-compute-reject
+debug-off::capture-diagnostic-binary-compute-success
+debug-off::capture-diagnostic-binary-compute-vulkan-error
+debug-off::capture-diagnostic-binary-raytracing-reject
+debug-off::capture-diagnostic-binary-raytracing-success
+debug-off::capture-diagnostic-binary-raytracing-vulkan-error
+debug-off::diagnostic-compatibility-test
+debug-off::utility-parse-list-version
+debug-off::utility-parse-list-invalid-json
+debug-off::utility-parse-list-empty
+debug-off::utility-parse-list-populated
+debug-off::utility-parse-list-mixed
+debug-off::utility-parse-list-dependency-failure
+debug-off::utility-parse-list-empty-dependencies
+debug-off::utility-parse-list-legacy-invocations
+debug-off::utility-parse-rehash-version
+debug-off::utility-parse-rehash-invalid-json
+debug-off::utility-parse-rehash-empty
+debug-off::utility-parse-rehash-populated
+debug-off::utility-parse-rehash-mixed
+debug-off::utility-parse-prune-version
+debug-off::utility-parse-prune-invalid-json
+debug-off::utility-parse-prune-empty
+debug-off::utility-parse-prune-populated
+debug-off::utility-parse-prune-mixed
+debug-off::utility-parse-prune-rejected-application

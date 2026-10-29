@@ -1,0 +1,35 @@
+CandidateB: f1ad1ef2584d8aff75c5440d7689123e253de05c
+Root: https://github.com/robinwassen/Fossilize/issues/37
+Storage/run: FOS-000028 / 2026-10-28-github-issues
+Use final candidate helper only. Read current tip/revision before every canonical action, and reload after restricted journal writes (tip changes; revision does not).
+
+1. Record the implementer report with its exact original schema2 bridge envelope from /tmp/fos28-implementer-report.json. This consumes that original acknowledged envelope once. Fresh checker tuples use work_unit=https://github.com/robinwassen/Fossilize/issues/37 and operation=work_unit. Run fresh independent unit and separate final checking; this report does not accept itself.
+
+2. After unit acceptance, closeout-intent payload targets only #37:
+{"targets":[{"issue":"https://github.com/robinwassen/Fossilize/issues/37","evidence":"<concise actual passing independent-checker evidence and limits>","reference":"https://github.com/robinwassen/Fossilize/compare/master...codex/FOS-000028-github-issues"}]}
+Copy the returned closeout.binding and closeout.marker exactly into one managed readiness comment with that target evidence/reference and explicit open-awaiting-merge wording. The helper enforces exact candidate/base/plan/input binding. Unsplit acceptance already matches candidateB, so no extra source commit is needed. Split runs with stale earlier unit SHAs schedule checker-only renewal before this action prepares readiness.
+
+Journaled comment API (not a direct unrecorded gh write):
+from issue_migration import Journal, Migration
+from github_issues import digest
+j = Journal(repo, active_pointer)
+m = Migration(repo, {"source_sha": state["repository"]["input_sha"]}, journal=j)
+body = closeout["binding"] + "\n\n" + target["evidence"] + "\n\n" + target["reference"] + "\n\nVerified PR readiness; issue stays open until user merge.\n\n" + closeout["marker"]
+m.comment("ready-" + digest({"marker": closeout["marker"], "issue": target["issue"]}), 37, body)
+Reload tip/revision; closeout-record {"candidate_sha":"f1ad1ef2584d8aff75c5440d7689123e253de05c"} reads back the binding/comment and enables the separate final checker at the same commit.
+
+3. After separate final acceptance, fetch origin/master and require unchanged accepted base. publish-intent uses exact target_remote=origin, target_repository=robinwassen/Fossilize, target_branch=master, branch=codex/FOS-000028-github-issues. Push source normally without force and record verified remote head. Preserve the durable all-state exact lookup/create-dispatched/lookup-again sequence before at most one gh pr create. Actual gh PR head/base/state and closingIssuesReferences are verified by the helper.
+
+PR body must use headings Problem; What changes; Why this matters; Why this approach; Verification and limits; Task references. Its only closing reference is:
+Closes https://github.com/robinwassen/Fossilize/issues/37
+Do not close #8/#9 or already historically delivered #34/#35/#36. Both epics/root stay open before user merge. Historical tasks34/35/36 were closed completed only after PR2/5/6 head/merge and retained independent evidence agreed.
+
+4. Matching PR lookup enters publishing.stage=issue-evidence. Before attach, journal one comment on #37 containing actual PR URL, exact candidate SHA and marker:
+<!-- harness-pr:2026-10-28-github-issues:f1ad1ef2584d8aff75c5440d7689123e253de05c -->
+Use m.comment("pr-"+digest({"run":run_id,"candidate":candidate,"issue":37,"pr":actual_pr_url}),37,body). Include the actual URL and explicit open-awaiting-user-merge wording. Reload tip/revision, then publish-observation {"event":"issue-evidence"}; helper paginates/readbacks those facts and enters attach. Call attach_artifact, then record actual attachment result. CI policy is local; no hosted-CI execution is claimed.
+
+5. Completion requires exact terminal orphan-artifact publication with active.json=null. If publication is incomplete, retry only publish-artifacts {} at exact current tip and revision0 when null; no acknowledgement commit, duplicate worker/issue/PR or merge. The helper never merges.
+
+If later checking/source/input changes invalidate readiness, journal a new marked superseding comment containing the prior closeout.marker and the word "superseded", then closeout-cleanup with concrete observation before renewed work/checks. Preserve unrelated human comments. A body/user-edit conflict or vanished known identity stops for reconciliation.
+
+Evidence: /tmp/fos28-final-suite.log; /tmp/fos28-final-discovery.json; /tmp/fos28-final-candidate-live-audit.json; /tmp/fos28-fresh-checkout-smoke.json; /tmp/fos28-installed-skill-sync.json; /tmp/fos28-final-source-package-check.json; /tmp/fos28-coordinator-transition-check.json. Original source inventory and staged migration payload are already immutable published evidence. The coordinator owns evidence/coordinator-self-migration.json; this worker does not duplicate it.

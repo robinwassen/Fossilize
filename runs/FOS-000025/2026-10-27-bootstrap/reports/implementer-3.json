@@ -1,0 +1,345 @@
+{
+  "attempt_id": "implementer-3",
+  "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+  "candidate_sha": "37467de186ee1d0d670030b365c72e8ca3c278c6",
+  "changes": [
+    "Final implementation rejection invalidates all unit approvals, preserves definitions and plan, and selects the first dependency-ready repair unit. Environment/replan routing, dispatch dependency guard, evidence gate and budget logic remain intact.",
+    "Extended reversed-order split T13 through actual integration failure, corrected implementation, renewed dependency-chain acceptance and separate final acceptance; new T13c exercises the same continuation for the unsplit root.",
+    "Documented conservative final-repair invalidation."
+  ],
+  "commands": [
+    {
+      "command": [
+        "timeout",
+        "600",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".agents/skills/implement-change-harness/scripts",
+        "-p",
+        "test_*.py",
+        "-k",
+        "T13",
+        "-v"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-FOS-000025",
+      "exit_code": 1,
+      "local_log": "/tmp/FOS-000025-implementer-3-before.log",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/implementer-3-before.log",
+      "result": "expected_failed_before_fix",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "timeout",
+        "600",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".agents/skills/implement-change-harness/scripts",
+        "-p",
+        "test_*.py",
+        "-k",
+        "T13",
+        "-v"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-FOS-000025",
+      "exit_code": 0,
+      "local_log": "/tmp/FOS-000025-implementer-3-targeted.log",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/implementer-3-targeted.log",
+      "result": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "timeout",
+        "600",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".agents/skills/implement-change-harness/scripts",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-FOS-000025",
+      "exit_code": 0,
+      "local_log": "/tmp/FOS-000025-implementer-3-G01.log",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/implementer-3-G01.log",
+      "result": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "timeout",
+        "600",
+        "python3",
+        "-B",
+        "/home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+        ".agents/skills/implement-change-harness"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-FOS-000025",
+      "exit_code": 0,
+      "local_log": "/tmp/FOS-000025-implementer-3-G02.log",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/implementer-3-G02.log",
+      "result": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        [
+          "git",
+          "diff",
+          "--check",
+          "bbe8ae4acd9ad527658bb58e6b06474924a06284...7ec4ddcaa019e8d7601aa7dba12d8a642254def8"
+        ],
+        [
+          "git",
+          "diff",
+          "--check",
+          "37467de186ee1d0d670030b365c72e8ca3c278c6...7ec4ddcaa019e8d7601aa7dba12d8a642254def8"
+        ],
+        [
+          "git",
+          "status",
+          "--porcelain=v1"
+        ],
+        [
+          "git",
+          "diff",
+          "--name-status",
+          "37467de186ee1d0d670030b365c72e8ca3c278c6...7ec4ddcaa019e8d7601aa7dba12d8a642254def8"
+        ],
+        [
+          "git",
+          "ls-tree",
+          "-r",
+          "--name-only",
+          "harness-artifacts"
+        ]
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-FOS-000025",
+      "exit_code": 0,
+      "local_log": "/tmp/FOS-000025-implementer-3-G04.log",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/implementer-3-G04.log",
+      "result": "passed",
+      "timeout": 600
+    }
+  ],
+  "counts": {
+    "discovered": 25,
+    "executed": 25,
+    "skipped": 0
+  },
+  "discovered": [
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+    "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+    "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+    "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+    "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+    "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+    "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+    "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+  ],
+  "environment": {
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "executed": [
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+    "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+    "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+    "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+    "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+    "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+    "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+    "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+  ],
+  "finding_resolutions": [
+    {
+      "evidence": "Before fix, T13c fails at actual repair dispatch with Invalid: implementer unit dependencies are not accepted; reversed split T13 retains dependent FOS-000027 instead of prerequisite FOS-000026. After fix, all three T13 methods pass; final full suite executes 25 methods without skips. Both new continuations keep publication blocked until a fresh final checker accepts corrected candidate, and reject renewed acceptance while the final finding is unresolved. Existing T13b dependency readiness and T09/T15 deadline/repair checks also pass in G01.",
+      "finding_id": "FOS-000025-C2-001",
+      "status": "implemented_pending_independent_recheck"
+    }
+  ],
+  "input_revision": 27,
+  "input_sha": "37467de186ee1d0d670030b365c72e8ca3c278c6",
+  "limitations": [
+    "Independent subtask and separate final acceptance remain pending; this implementer does not certify acceptance.",
+    "Disposable tests model worker/PR observations; no live agent/GitHub behavior, C++/Vulkan/GPU/Steam checks or publication performed.",
+    "Conservative final repair renews every unit in dependency order."
+  ],
+  "operation": "repair",
+  "outcome": "implemented_pending_independent_check",
+  "plan_version": 1,
+  "preservation": "Only the three committed skill files changed; worktree clean. No canonical state, registry, global config or nested-agent mutation performed.",
+  "records": {
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/implementer-3-G01.log": "test_T01_happy_path_real_checkpoint_and_source_preservation (test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation) ... ok\ntest_T02_failure_boundaries_and_real_cas_loser (test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser) ... ok\ntest_T03_invalid_state_paths_schema_and_source_branch_adoption (test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption) ... ok\ntest_T03b_duplicate_durable_finding_identity_is_invalid (test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid) ... ok\ntest_T04_process_worktree_lock_and_single_active_run (test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run) ... ok\ntest_T05_dynamic_registry_reservations_archives_conflicts (test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts) ... ok\ntest_T06_detached_exact_views_dirty_source_and_changed_candidate (test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate) ... ok\ntest_T07_dispatch_ack_loss_live_unknown_and_termination_fence (test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence) ... ok\ntest_T08_each_stale_tuple_field_rejected_ack_revision_supported (test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported) ... ok\ntest_T09_models_fallback_deadline_repair_replan_and_extension (test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension) ... ok\ntest_T09b_repeated_unchanged_rejection_stops_early (test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early) ... ok\ntest_T09c_late_final_report_retained_but_requires_extension (test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension) ... ok\ntest_T09d_expired_command_pauses_live_attempt_and_preserves_late_report (test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report) ... ok\ntest_T10_required_evidence_completeness_and_optional_unavailable (test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable) ... ok\ntest_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers (test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers) ... ok\ntest_T11_real_faulty_reproducer_and_weakened_test_finding (test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding) ... ok\ntest_T12_repair_versus_replan_and_no_implementer_acceptance (test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance) ... ok\ntest_T13_sequential_split_dependency_validation_final_regression (test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression) ... ok\ntest_T13b_non_topological_plan_replan_reset_and_dispatch_readiness (test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness) ... ok\ntest_T13c_unsplit_final_rejection_repairs_and_renews_both_checks (test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks) ... ok\ntest_T14_required_environment_unavailable_cannot_be_waived (test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived) ... ok\ntest_T15_publication_order_wrong_tuple_moving_base_push_conflict (test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict) ... ok\ntest_T15b_deadline_stops_publication_at_every_stage (test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage) ... ok\ntest_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry (test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry) ... ok\ntest_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts (test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts) ... ok\n\n----------------------------------------------------------------------\nRan 25 tests in 58.038s\n\nOK\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/implementer-3-G02.log": "Skill is valid!\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/implementer-3-G04.log": "[\"git\", \"diff\", \"--check\", \"bbe8ae4acd9ad527658bb58e6b06474924a06284...7ec4ddcaa019e8d7601aa7dba12d8a642254def8\"] exit=0\n\n[\"git\", \"diff\", \"--check\", \"37467de186ee1d0d670030b365c72e8ca3c278c6...7ec4ddcaa019e8d7601aa7dba12d8a642254def8\"] exit=0\n\n[\"git\", \"status\", \"--porcelain=v1\"] exit=0\n\n[\"git\", \"diff\", \"--name-status\", \"37467de186ee1d0d670030b365c72e8ca3c278c6...7ec4ddcaa019e8d7601aa7dba12d8a642254def8\"] exit=0\nM\t.agents/skills/implement-change-harness/references/state.md\nM\t.agents/skills/implement-change-harness/scripts/harness_state.py\nM\t.agents/skills/implement-change-harness/scripts/test_harness_state.py\n\n[\"git\", \"ls-tree\", \"-r\", \"--name-only\", \"harness-artifacts\"] exit=0\nactive.json\nallocations.json\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G01.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G02.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G03.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G04.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-probe-source.txt\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-probes.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G01.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G02.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G03.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G04.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probe-source.txt\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probes.log\nruns/FOS-000025/2026-10-27-bootstrap/reports/checker-1.json\nruns/FOS-000025/2026-10-27-bootstrap/reports/checker-2.json\nruns/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json\nruns/FOS-000025/2026-10-27-bootstrap/reports/implementer-2.json\nruns/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json\nruns/FOS-000025/2026-10-27-bootstrap/state.json\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/implementer-3-before.log": "test_T13_sequential_split_dependency_validation_final_regression (test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression) ... FAIL\ntest_T13b_non_topological_plan_replan_reset_and_dispatch_readiness (test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness) ... ok\ntest_T13c_unsplit_final_rejection_repairs_and_renews_both_checks (test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks) ... ERROR\n\n======================================================================\nERROR: test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks (test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py\", line 769, in test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks\n    self.launch(\"implementer\")\n  File \"/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py\", line 87, in launch\n    self.act(\"dispatch\", payload)\n  File \"/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py\", line 66, in act\n    result = self.harness.apply(action, payload or {}, self.tip, self.state[\"revision\"] if self.state else 0)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py\", line 366, in apply\n    self.reduce(state, action, payload, journal, records)\n  File \"/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py\", line 534, in reduce\n    self.dispatch(state, p)\n  File \"/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py\", line 642, in dispatch\n    require(unit is not None and unit[\"status\"] != \"accepted\" and set(unit[\"dependencies\"]) <= done,\n  File \"/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/harness_state.py\", line 29, in require\n    raise Invalid(message)\nharness_state.Invalid: implementer unit dependencies are not accepted\n\n======================================================================\nFAIL: test_T13_sequential_split_dependency_validation_final_regression (test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py\", line 702, in test_T13_sequential_split_dependency_validation_final_regression\n    self.assertEqual(self.state[\"active_unit\"], first)\nAssertionError: 'FOS-000027' != 'FOS-000026'\n- FOS-000027\n?          ^\n+ FOS-000026\n?          ^\n\n\n----------------------------------------------------------------------\nRan 3 tests in 7.610s\n\nFAILED (failures=1, errors=1)\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/implementer-3-targeted.log": "test_T13_sequential_split_dependency_validation_final_regression (test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression) ... ok\ntest_T13b_non_topological_plan_replan_reset_and_dispatch_readiness (test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness) ... ok\ntest_T13c_unsplit_final_rejection_repairs_and_renews_both_checks (test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 12.742s\n\nOK\n"
+  },
+  "report_type": "implementer",
+  "result_candidate_sha": "7ec4ddcaa019e8d7601aa7dba12d8a642254def8",
+  "role": "implementer",
+  "skipped": [],
+  "task_key": "FOS-000025",
+  "test_mapping": {
+    "T01": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation"
+      ]
+    },
+    "T02": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser"
+      ]
+    },
+    "T03": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+        "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid"
+      ]
+    },
+    "T04": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run"
+      ]
+    },
+    "T05": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts"
+      ]
+    },
+    "T06": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate"
+      ]
+    },
+    "T07": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence"
+      ]
+    },
+    "T08": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported"
+      ]
+    },
+    "T09": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+        "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+        "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+        "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report"
+      ]
+    },
+    "T10": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+        "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers"
+      ]
+    },
+    "T11": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding"
+      ]
+    },
+    "T12": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance"
+      ]
+    },
+    "T13": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+        "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+        "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks"
+      ]
+    },
+    "T14": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived"
+      ]
+    },
+    "T15": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+        "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage"
+      ]
+    },
+    "T16": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry"
+      ]
+    },
+    "T17": {
+      "location": "/home/robin/dev/fossilize-harness-FOS-000025/.agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+      ]
+    }
+  },
+  "unit": "FOS-000025",
+  "worker_id": "/root/fos25_implementer_3"
+}

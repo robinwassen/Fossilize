@@ -1,0 +1,54 @@
+[
+  {
+    "id": "debug-off-build",
+    "command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+      "--build",
+      "/tmp/fossilize-10/build-debug-off",
+      "--parallel",
+      "3"
+    ],
+    "cwd": "/home/robin/dev/fossilize-issue-10",
+    "environment": {
+      "platform": "Linux",
+      "compiler": "/usr/bin/c++"
+    },
+    "exit_code": 0,
+    "seconds": 0.03209338599117473,
+    "log": "/tmp/fossilize-10/check-evidence/debug-off-build.log"
+  },
+  {
+    "id": "debug-off-discovery",
+    "command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-10/build-debug-off",
+      "-N"
+    ],
+    "cwd": "/home/robin/dev/fossilize-issue-10",
+    "environment": {
+      "platform": "Linux",
+      "compiler": "/usr/bin/c++"
+    },
+    "exit_code": 0,
+    "seconds": 0.016049560974352062,
+    "log": "/tmp/fossilize-10/check-evidence/debug-off-discovery.log"
+  },
+  {
+    "id": "debug-off-ctest",
+    "command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-10/build-debug-off",
+      "--output-on-failure"
+    ],
+    "cwd": "/home/robin/dev/fossilize-issue-10",
+    "environment": {
+      "platform": "Linux",
+      "compiler": "/usr/bin/c++"
+    },
+    "exit_code": 0,
+    "seconds": 2.624273428984452,
+    "log": "/tmp/fossilize-10/check-evidence/debug-off-ctest.log"
+  }
+]

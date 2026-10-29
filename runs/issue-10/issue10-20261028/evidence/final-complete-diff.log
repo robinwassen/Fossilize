@@ -1,0 +1,1213 @@
+diff --git a/cli/device.cpp b/cli/device.cpp
+index 05e6e73..772c94b 100644
+--- a/cli/device.cpp
++++ b/cli/device.cpp
+@@ -273,11 +273,17 @@ bool VulkanDevice::init_device(const Options &opts)
+ 		return true;
+ 	}
+ 
+-	if (volkInitialize() != VK_SUCCESS)
+-	{
+-		LOGE("volkInitialize failed.\n");
++	int gpu_index = -1;
++	const auto checked = [&](VkResult result, const char *operation, const char *resource) {
++		if (result == VK_SUCCESS)
++			return true;
++		LOGE("Device/setup %s failed: resource=%s, gpu_index=%d (-1 unknown), hash=not-applicable, VkResult=%d.\n",
++		     operation, resource, gpu_index, int(result));
++		return false;
++	};
++
++	if (!checked(volkInitialize(), "volkInitialize", "loader"))
+ 		return false;
+-	}
+ 
+ 	uint32_t instance_api_version = major_minor_version(volkGetInstanceVersion());
+ 	if (instance_api_version == 0)
+@@ -297,20 +303,20 @@ bool VulkanDevice::init_device(const Options &opts)
+ 
+ 	// Enable all extensions (FIXME: this is likely a problem).
+ 	uint32_t ext_count = 0;
+-	if (vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, nullptr) != VK_SUCCESS)
++	if (!checked(vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, nullptr), "instance-extension-count", "instance"))
+ 		return false;
+ 	vector<VkExtensionProperties> exts(ext_count);
+-	if (ext_count && vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, exts.data()) != VK_SUCCESS)
++	if (ext_count && !checked(vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, exts.data()), "instance-extension-data", "instance"))
+ 		return false;
+ 
+ 	vector<const char *> active_layers;
+ 	if (opts.enable_validation)
+ 	{
+ 		uint32_t layer_count = 0;
+-		if (vkEnumerateInstanceLayerProperties(&layer_count, nullptr) != VK_SUCCESS)
++		if (!checked(vkEnumerateInstanceLayerProperties(&layer_count, nullptr), "instance-layer-count", "instance"))
+ 			return false;
+ 		vector<VkLayerProperties> layers(layer_count);
+-		if (vkEnumerateInstanceLayerProperties(&layer_count, layers.data()) != VK_SUCCESS)
++		if (!checked(vkEnumerateInstanceLayerProperties(&layer_count, layers.data()), "instance-layer-data", "instance"))
+ 			return false;
+ 
+ 		if (find_layer(layers, "VK_LAYER_KHRONOS_validation"))
+@@ -347,9 +353,8 @@ bool VulkanDevice::init_device(const Options &opts)
+ 	instance_info.enabledExtensionCount = uint32_t(active_exts.size());
+ 	instance_info.ppEnabledExtensionNames = active_exts.empty() ? nullptr : active_exts.data();
+ 
+-	if (vkCreateInstance(&instance_info, nullptr, &instance) != VK_SUCCESS)
++	if (!checked(vkCreateInstance(&instance_info, nullptr, &instance), "vkCreateInstance", "instance"))
+ 	{
+-		LOGE("Failed to create instance.\n");
+ 		return false;
+ 	}
+ 
+@@ -362,12 +367,12 @@ bool VulkanDevice::init_device(const Options &opts)
+ 		cb_info.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT;
+ 		cb_info.pUserData = this;
+ 
+-		if (vkCreateDebugReportCallbackEXT(instance, &cb_info, nullptr, &callback) != VK_SUCCESS)
++		if (!checked(vkCreateDebugReportCallbackEXT(instance, &cb_info, nullptr, &callback), "vkCreateDebugReportCallbackEXT", "debug-callback"))
+ 			return false;
+ 	}
+ 
+ 	uint32_t gpu_count = 0;
+-	if (vkEnumeratePhysicalDevices(instance, &gpu_count, nullptr) != VK_SUCCESS)
++	if (!checked(vkEnumeratePhysicalDevices(instance, &gpu_count, nullptr), "physical-device-count", "physical-device"))
+ 		return false;
+ 	vector<VkPhysicalDevice> gpus(gpu_count);
+ 
+@@ -377,7 +382,7 @@ bool VulkanDevice::init_device(const Options &opts)
+ 		return false;
+ 	}
+ 
+-	if (vkEnumeratePhysicalDevices(instance, &gpu_count, gpus.data()) != VK_SUCCESS)
++	if (!checked(vkEnumeratePhysicalDevices(instance, &gpu_count, gpus.data()), "physical-device-data", "physical-device"))
+ 		return false;
+ 
+ 	for (uint32_t i = 0; i < gpu_count; i++)
+@@ -404,6 +409,7 @@ bool VulkanDevice::init_device(const Options &opts)
+ 	else
+ 		gpu = gpus.front();
+ 
++	gpu_index = opts.device_index >= 0 ? opts.device_index : 0;
+ 	vkGetPhysicalDeviceProperties(gpu, &gpu_props);
+ 	LOGI("Chose GPU:\n");
+ 	LOGI("  name: %s\n", gpu_props.deviceName);
+@@ -428,10 +434,10 @@ bool VulkanDevice::init_device(const Options &opts)
+ 
+ 	vector<const char *> active_device_extensions;
+ 	uint32_t device_ext_count = 0;
+-	if (vkEnumerateDeviceExtensionProperties(gpu, nullptr, &device_ext_count, nullptr) != VK_SUCCESS)
++	if (!checked(vkEnumerateDeviceExtensionProperties(gpu, nullptr, &device_ext_count, nullptr), "device-extension-count", "device"))
+ 		return false;
+ 	vector<VkExtensionProperties> device_ext_props(device_ext_count);
+-	if (device_ext_count && vkEnumerateDeviceExtensionProperties(gpu, nullptr, &device_ext_count, device_ext_props.data()) != VK_SUCCESS)
++	if (device_ext_count && !checked(vkEnumerateDeviceExtensionProperties(gpu, nullptr, &device_ext_count, device_ext_props.data()), "device-extension-data", "device"))
+ 		return false;
+ 
+ 	for (auto &ext : device_ext_props)
+@@ -612,9 +618,8 @@ bool VulkanDevice::init_device(const Options &opts)
+ 		for (uint32_t i = 0; i < device_info.enabledExtensionCount; i++)
+ 			LOGI("Enabling device extension: %s\n", device_info.ppEnabledExtensionNames[i]);
+ 
+-	if (vkCreateDevice(gpu, &device_info, nullptr, &device) != VK_SUCCESS)
++	if (!checked(vkCreateDevice(gpu, &device_info, nullptr, &device), "vkCreateDevice", "device"))
+ 	{
+-		LOGE("Failed to create device.\n");
+ 		return false;
+ 	}
+ 
+@@ -623,7 +628,7 @@ bool VulkanDevice::init_device(const Options &opts)
+ 	if (supports_pipeline_binary)
+ 	{
+ 		VkPipelineBinaryKeyKHR key = { VK_STRUCTURE_TYPE_PIPELINE_BINARY_KEY_KHR };
+-		if (vkGetPipelineKeyKHR(device, nullptr, &key) == VK_SUCCESS)
++		if (checked(vkGetPipelineKeyKHR(device, nullptr, &key), "vkGetPipelineKeyKHR", "pipeline-binary-key"))
+ 		{
+ 			char str[VK_MAX_PIPELINE_BINARY_KEY_SIZE_KHR * 2 + 1];
+ 			pipeline_binary_key_to_str(str, key);
+diff --git a/cli/fossilize_replay.cpp b/cli/fossilize_replay.cpp
+index 07c3ffd..f4e73bc 100644
+--- a/cli/fossilize_replay.cpp
++++ b/cli/fossilize_replay.cpp
+@@ -55,6 +55,7 @@
+ #include <utility>
+ #include <map>
+ #include <assert.h>
++#include <errno.h>
+ 
+ #ifdef FOSSILIZE_REPLAYER_SPIRV_VAL
+ #include "spirv-tools/libspirv.hpp"
+@@ -1523,7 +1524,8 @@ struct ThreadedReplayer : StateCreatorInterface
+ 		if (result == VK_PIPELINE_COMPILE_REQUIRED)
+ 		{
+ 			graphics_pipeline_compile_required_count.fetch_add(1, std::memory_order_relaxed);
+-			LOGE("Recompile required for graphics pipeline hash 0x%016" PRIx64 ".\n", work_item.hash);
++			LOGE("Replay/create graphics pipeline requires compilation: hash=0x%016" PRIx64 ", VkResult=%d.\n",
++			     work_item.hash, int(result));
+ 
+ 			if (!opts.skip_pipelines_on_compile_required)
+ 			{
+@@ -1556,7 +1558,8 @@ struct ThreadedReplayer : StateCreatorInterface
+ 		}
+ 		else
+ 		{
+-			LOGE("Failed to create graphics pipeline for hash 0x%016" PRIx64 ".\n", work_item.hash);
++			LOGE("Replay/create graphics pipeline failed: hash=0x%016" PRIx64 ", VkResult=%d.\n",
++			     work_item.hash, int(result));
+ 		}
+ 	}
+ 
+@@ -1587,7 +1590,8 @@ struct ThreadedReplayer : StateCreatorInterface
+ 		if (result == VK_PIPELINE_COMPILE_REQUIRED)
+ 		{
+ 			compute_pipeline_compile_required_count.fetch_add(1, std::memory_order_relaxed);
+-			LOGE("Recompile required for compute pipeline hash 0x%016" PRIx64 ".\n", work_item.hash);
++			LOGE("Replay/create compute pipeline requires compilation: hash=0x%016" PRIx64 ", VkResult=%d.\n",
++			     work_item.hash, int(result));
+ 
+ 			if (!opts.skip_pipelines_on_compile_required)
+ 			{
+@@ -1620,7 +1624,8 @@ struct ThreadedReplayer : StateCreatorInterface
+ 		}
+ 		else
+ 		{
+-			LOGE("Failed to create compute pipeline for hash 0x%016" PRIx64 ".\n", work_item.hash);
++			LOGE("Replay/create compute pipeline failed: hash=0x%016" PRIx64 ", VkResult=%d.\n",
++			     work_item.hash, int(result));
+ 		}
+ 	}
+ 
+@@ -1651,7 +1656,8 @@ struct ThreadedReplayer : StateCreatorInterface
+ 		if (result == VK_PIPELINE_COMPILE_REQUIRED)
+ 		{
+ 			raytracing_pipeline_compile_required_count.fetch_add(1, std::memory_order_relaxed);
+-			LOGE("Recompile required for raytracing pipeline hash 0x%016" PRIx64 ".\n", work_item.hash);
++			LOGE("Replay/create raytracing pipeline requires compilation: hash=0x%016" PRIx64 ", VkResult=%d.\n",
++			     work_item.hash, int(result));
+ 
+ 			if (!opts.skip_pipelines_on_compile_required)
+ 			{
+@@ -1684,7 +1690,8 @@ struct ThreadedReplayer : StateCreatorInterface
+ 		}
+ 		else
+ 		{
+-			LOGE("Failed to create raytracing pipeline for hash 0x%016" PRIx64 ".\n", work_item.hash);
++			LOGE("Replay/create raytracing pipeline failed: hash=0x%016" PRIx64 ", VkResult=%d.\n",
++			     work_item.hash, int(result));
+ 		}
+ 	}
+ 
+@@ -1832,6 +1839,42 @@ struct ThreadedReplayer : StateCreatorInterface
+ 		total_peak_memory.fetch_add(peak_memory, std::memory_order_relaxed);
+ 	}
+ 
++	// CRT errors belong to the failing operation. Preserve them before close/logging,
++	// which may themselves change errno. A zero errno does not establish a cause.
++	static void log_cache_export_error(const char *kind, const char *operation, int error)
++	{
++		if (error)
++			LOGE("Replay/export %s cache failed: operation=%s, errno=%d, hash=not-applicable.\n",
++			     kind, operation, error);
++		else
++			LOGE("Replay/export %s cache failed: operation=%s, errno=unknown, hash=not-applicable.\n",
++			     kind, operation);
++	}
++
++	static void write_cache_data(const char *path, const char *kind, const void *data, size_t size)
++	{
++		// Existing signal-handler callers already use stdio; this adds no signal-safety guarantee.
++		errno = 0;
++		FILE *file = fopen(path, "wb");
++		if (!file)
++		{
++			int error = errno;
++			log_cache_export_error(kind, "open", error);
++			return;
++		}
++
++		errno = 0;
++		bool written = fwrite(data, 1, size, file) == size;
++		int write_error = written ? 0 : errno;
++		errno = 0;
++		int close_result = fclose(file);
++		int close_error = close_result == 0 ? 0 : errno;
++		if (!written)
++			log_cache_export_error(kind, "write", write_error);
++		if (close_result != 0)
++			log_cache_export_error(kind, "close", close_error);
++	}
++
+ 	void flush_pipeline_cache()
+ 	{
+ 		if (device && disk_pipeline_cache)
+@@ -1844,12 +1887,8 @@ struct ThreadedReplayer : StateCreatorInterface
+ 					vector<uint8_t> pipeline_buffer(pipeline_cache_size);
+ 					if (vkGetPipelineCacheData(device->get_device(), disk_pipeline_cache, &pipeline_cache_size, pipeline_buffer.data()) == VK_SUCCESS)
+ 					{
+-						// This isn't safe to do in a signal handler, but it's unlikely to be a problem in practice.
+-						FILE *file = fopen(opts.on_disk_pipeline_cache_path.c_str(), "wb");
+-						if (!file || fwrite(pipeline_buffer.data(), 1, pipeline_buffer.size(), file) != pipeline_buffer.size())
+-							LOGE("Failed to write pipeline cache data to disk.\n");
+-						if (file)
+-							fclose(file);
++						write_cache_data(opts.on_disk_pipeline_cache_path.c_str(), "pipeline",
++						                 pipeline_buffer.data(), pipeline_buffer.size());
+ 					}
+ 				}
+ 			}
+@@ -1870,12 +1909,8 @@ struct ThreadedReplayer : StateCreatorInterface
+ 					vector<uint8_t> validation_buffer(validation_cache_size);
+ 					if (vkGetValidationCacheDataEXT(device->get_device(), validation_cache, &validation_cache_size, validation_buffer.data()) == VK_SUCCESS)
+ 					{
+-						// This isn't safe to do in a signal handler, but it's unlikely to be a problem in practice.
+-						FILE *file = fopen(opts.on_disk_validation_cache_path.c_str(), "wb");
+-						if (!file || fwrite(validation_buffer.data(), 1, validation_buffer.size(), file) != validation_buffer.size())
+-							LOGE("Failed to write pipeline cache data to disk.\n");
+-						if (file)
+-							fclose(file);
++						write_cache_data(opts.on_disk_validation_cache_path.c_str(), "validation",
++						                 validation_buffer.data(), validation_buffer.size());
+ 					}
+ 				}
+ 			}
+diff --git a/layer/dispatch.cpp b/layer/dispatch.cpp
+index 1ebe8ca..e14af9d 100644
+--- a/layer/dispatch.cpp
++++ b/layer/dispatch.cpp
+@@ -766,7 +766,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateGraphicsPipelinesNormal(Device *laye
+ 					layer->requiresModuleIdentifiers()
+ 					? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 			{
+-				LOGW_LEVEL("Recording graphics pipeline failed, usually caused by unsupported pNext.\n");
++				LOGW_LEVEL("Capture/record graphics pipeline failed: mode=qa, batch_index=%u, hash=unknown, reason=unknown.\n", index);
+ 			}
+ 		};
+ 
+@@ -802,7 +802,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateGraphicsPipelinesNormal(Device *laye
+ 				device,
+ 				layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 		{
+-			LOGW_LEVEL("Recording graphics pipeline failed, usually caused by unsupported pNext.\n");
++			LOGW_LEVEL("Capture/record graphics pipeline failed: mode=normal, batch_index=%u, hash=unknown, reason=unknown.\n", i);
+ 		}
+ 	}
+ 
+@@ -839,7 +839,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateGraphicsPipelinesParanoid(Device *la
+ 				VK_NULL_HANDLE, info, nullptr, 0, 0,
+ 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 		{
+-			LOGW_LEVEL("Failed to capture eagerly.\n");
++			LOGW_LEVEL("Capture/record graphics pipeline failed: mode=eager, batch_index=%u, hash=unknown, reason=unknown.\n", i);
+ 		}
+ 
+ 		// Have to create all pipelines here, in case the application makes use of basePipelineIndex.
+@@ -854,7 +854,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateGraphicsPipelinesParanoid(Device *la
+ 				res == VK_SUCCESS ? pPipelines[i] : VK_NULL_HANDLE, info, nullptr, 0, 0,
+ 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 		{
+-			LOGW_LEVEL("Failed to record graphics pipeline, usually caused by unsupported pNext.\n");
++			LOGW_LEVEL("Capture/record graphics pipeline failed: mode=paranoid, batch_index=%u, hash=unknown, reason=unknown.\n", i);
+ 		}
+ 
+ 		if (res == VK_PIPELINE_COMPILE_REQUIRED_EXT)
+@@ -915,7 +915,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelinesNormal(Device *layer
+ 					layer->requiresModuleIdentifiers()
+ 					? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 			{
+-				LOGW_LEVEL("Recording graphics pipeline failed, usually caused by unsupported pNext.\n");
++				LOGW_LEVEL("Capture/record compute pipeline failed: mode=qa, batch_index=%u, hash=unknown, reason=unknown.\n", index);
+ 			}
+ 		};
+ 
+@@ -940,7 +940,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelinesNormal(Device *layer
+ 				device,
+ 				layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 		{
+-			LOGW_LEVEL("Failed to record compute pipeline, usually caused by unsupported pNext.\n");
++			LOGW_LEVEL("Capture/record compute pipeline failed: mode=normal, batch_index=%u, hash=unknown, reason=unknown.\n", i);
+ 		}
+ 	}
+ 
+@@ -977,7 +977,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelinesParanoid(Device *lay
+ 				VK_NULL_HANDLE, info, nullptr, 0, 0,
+ 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 		{
+-			LOGW_LEVEL("Failed to capture eagerly.\n");
++			LOGW_LEVEL("Capture/record compute pipeline failed: mode=eager, batch_index=%u, hash=unknown, reason=unknown.\n", i);
+ 		}
+ 
+ 		// Have to create all pipelines here, in case the application makes use of basePipelineIndex.
+@@ -992,7 +992,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelinesParanoid(Device *lay
+ 				res == VK_SUCCESS ? pPipelines[i] : VK_NULL_HANDLE, info, nullptr, 0, 0,
+ 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 		{
+-			LOGW_LEVEL("Failed to record compute pipeline, usually caused by unsupported pNext.\n");
++			LOGW_LEVEL("Capture/record compute pipeline failed: mode=paranoid, batch_index=%u, hash=unknown, reason=unknown.\n", i);
+ 		}
+ 
+ 		if (res == VK_PIPELINE_COMPILE_REQUIRED_EXT)
+@@ -1053,7 +1053,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateRayTracingPipelinesNormal(Device *la
+ 					layer->requiresModuleIdentifiers()
+ 					? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 			{
+-				LOGW_LEVEL("Recording graphics pipeline failed, usually caused by unsupported pNext.\n");
++				LOGW_LEVEL("Capture/record raytracing pipeline failed: mode=qa, batch_index=%u, hash=unknown, reason=unknown.\n", index);
+ 			}
+ 		};
+ 
+@@ -1099,7 +1099,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateRayTracingPipelinesNormal(Device *la
+ 				pPipelines[i], pCreateInfos[i], pPipelines, createInfoCount, 0,
+ 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 		{
+-			LOGW_LEVEL("Failed to record compute pipeline, usually caused by unsupported pNext.\n");
++			LOGW_LEVEL("Capture/record raytracing pipeline failed: mode=normal, batch_index=%u, hash=unknown, reason=unknown.\n", i);
+ 		}
+ 	}
+ 
+@@ -1137,7 +1137,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateRayTracingPipelinesParanoid(Device *
+ 				VK_NULL_HANDLE, info, nullptr, 0, 0,
+ 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 		{
+-			LOGW_LEVEL("Failed to capture eagerly.\n");
++			LOGW_LEVEL("Capture/record raytracing pipeline failed: mode=eager, batch_index=%u, hash=unknown, reason=unknown.\n", i);
+ 		}
+ 
+ 		// Have to create all pipelines here, in case the application makes use of basePipelineIndex.
+@@ -1154,7 +1154,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreateRayTracingPipelinesParanoid(Device *
+ 				res == VK_SUCCESS ? pPipelines[i] : VK_NULL_HANDLE, info, nullptr, 0, 0,
+ 				device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+ 		{
+-			LOGW_LEVEL("Failed to record compute pipeline, usually caused by unsupported pNext.\n");
++			LOGW_LEVEL("Capture/record raytracing pipeline failed: mode=paranoid, batch_index=%u, hash=unknown, reason=unknown.\n", i);
+ 		}
+ 
+ 		if (res == VK_PIPELINE_COMPILE_REQUIRED)
+@@ -1450,21 +1450,21 @@ static VKAPI_ATTR VkResult VKAPI_CALL CreatePipelineBinariesKHR(
+ 				if (!layer->getRecorder().record_graphics_pipeline(
+ 						VK_NULL_HANDLE, *static_cast<const VkGraphicsPipelineCreateInfo *>(pnext), nullptr, 0, 0,
+ 						device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+-					LOGW_LEVEL("Recording graphics pipeline failed, usually caused by unsupported pNext.\n");
++					LOGW_LEVEL("Capture/record graphics pipeline failed: mode=binary, handle=not-applicable, hash=unknown, reason=unknown.\n");
+ 				break;
+ 
+ 			case VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO:
+ 				if (!layer->getRecorder().record_compute_pipeline(
+ 						VK_NULL_HANDLE, *static_cast<const VkComputePipelineCreateInfo *>(pnext), nullptr, 0, 0,
+ 						device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+-					LOGW_LEVEL("Recording compute pipeline failed, usually caused by unsupported pNext.\n");
++					LOGW_LEVEL("Capture/record compute pipeline failed: mode=binary, handle=not-applicable, hash=unknown, reason=unknown.\n");
+ 				break;
+ 
+ 			case VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR:
+ 				if (!layer->getRecorder().record_raytracing_pipeline(
+ 						VK_NULL_HANDLE, *static_cast<const VkRayTracingPipelineCreateInfoKHR *>(pnext), nullptr, 0, 0,
+ 						device, layer->requiresModuleIdentifiers() ? layer->getTable()->GetShaderModuleCreateInfoIdentifierEXT : nullptr))
+-					LOGW_LEVEL("Recording ray tracing pipeline failed, usually caused by unsupported pNext.\n");
++					LOGW_LEVEL("Capture/record raytracing pipeline failed: mode=binary, handle=not-applicable, hash=unknown, reason=unknown.\n");
+ 				break;
+ 
+ 			default:
+diff --git a/local-docs/verification.md b/local-docs/verification.md
+index ea0e74d..9af0b9f 100644
+--- a/local-docs/verification.md
++++ b/local-docs/verification.md
+@@ -110,7 +110,32 @@ For multi-configuration generators, build with `--config Debug` and test with `-
+ | `linux-futex-test` / `spinlock-futex-test` | `test/futex-test` | Non-Windows concurrent lock stress; Apple uses the spinlock name. |
+ | `layer-test` | `test/layer-test` | Optional real Vulkan layer integration; see below. |
+ 
+-A normal Linux CLI-enabled build registers six tests before optional layer integration; Windows registers five. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
++A full CLI/layer build also registers the diagnostics regression tests for
++[issue #10](https://github.com/robinwassen/Fossilize/issues/10):
++
++| Registered CTest name | Scope |
++|---|---|
++| `replay-diagnostic-test` | Actual replay pipeline creation and cache-export branches with deterministic Vulkan/CRT failure injection, compile-required retries, exact errno retention and cleanup checks. |
++| `device-diagnostic-test` | Actual device initialization with fake loader/dispatch, distinct results at every checked setup stage, safe destruction, successful/null-device and support-limit controls. |
++| `capture-diagnostic-<mode>-<kind>-<outcome>` (45 tests) | Exported layer entrypoints through a fake loader: normal, QA, paranoid, eager and pipeline-binary recording; graphics/compute/raytracing; rejection, successful recording and controlled Vulkan failure. Each process has its own output directory and spam counters. |
++| `diagnostic-compatibility-test` | Preserved source interfaces, dependency-complete known-hash FOZ fixture/readback and real `fossilize-replay --null-device` CLI invocation. |
++
++These are CPU-only assertions, including explicit checks that survive `NDEBUG`.
++New runners inherit the project exception/sanitizer flags and have process
++timeouts. The layer caller in `test/capture_diagnostic_test.cpp` loads the
++library by path with `dlopen`/`LoadLibrary`; it can be built against baseline
++headers, run with the baseline library, and then run unchanged with the candidate
++library as limited Vulkan layer C ABI evidence. The caller in
++`test/diagnostic_compatibility_test.cpp` can likewise be compiled against baseline
++headers and linked to candidate libraries for source compatibility evidence.
++This does not establish a general C++ binary ABI guarantee. Preserve those
++executables and exact baseline/candidate identities outside source when checking
++compatibility. Human diagnostics intentionally add operation/result context and
++correct pipeline names; there is no new stable log parsing contract or result
++schema. Cache close failures become visible without changing aggregate CLI exit
++policy. These tests do not demonstrate driver compilation or durable cache output.
++
++A normal Linux CLI/layer-enabled build registers 54 tests before optional layer integration; Windows registers 53. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
+ 
+ The `*-library-only-*` presets disable **both CLI and tests**. They are build/package checks, not test coverage; their test presets/workflows must not be reported as a passing suite. To test the core without CLI/SPIR-V dependencies:
+ 
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index 45eeecd..0f455f7 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -63,3 +63,51 @@ if (NOT WIN32)
+     endif()
+ endif()
+ 
++
++# GPU-independent diagnostics exercise production replay/device branches and the
++# layer's exported loader entrypoints. Give every process a private output path.
++if (FOSSILIZE_CLI)
++    foreach(diagnostic replay device)
++        add_executable(${diagnostic}-diagnostic-test ${diagnostic}_diagnostic_test.cpp)
++        target_link_libraries(${diagnostic}-diagnostic-test PRIVATE fossilize cli-utils)
++        target_compile_options(${diagnostic}-diagnostic-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
++        set_target_properties(${diagnostic}-diagnostic-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
++        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${diagnostic}-diagnostic")
++        add_test(NAME ${diagnostic}-diagnostic-test COMMAND ${diagnostic}-diagnostic-test)
++        set_tests_properties(${diagnostic}-diagnostic-test PROPERTIES TIMEOUT 60
++            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${diagnostic}-diagnostic")
++    endforeach()
++endif()
++if (FOSSILIZE_VULKAN_LAYER)
++    add_executable(capture-diagnostic-test capture_diagnostic_test.cpp)
++    target_include_directories(capture-diagnostic-test PRIVATE ${CMAKE_SOURCE_DIR}/khronos)
++    target_link_libraries(capture-diagnostic-test PRIVATE ${CMAKE_DL_LIBS})
++    target_compile_options(capture-diagnostic-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
++    set_target_properties(capture-diagnostic-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
++    foreach(mode normal qa paranoid eager binary)
++        foreach(kind graphics compute raytracing)
++            foreach(outcome reject success vulkan-error)
++                set(case_name capture-diagnostic-${mode}-${kind}-${outcome})
++                file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${case_name}")
++                add_test(NAME ${case_name} COMMAND capture-diagnostic-test
++                    $<TARGET_FILE:VkLayer_fossilize> ${mode} ${kind} ${outcome})
++                set_tests_properties(${case_name} PROPERTIES TIMEOUT 60
++                    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${case_name}")
++            endforeach()
++        endforeach()
++    endforeach()
++endif()
++if (FOSSILIZE_CLI)
++    add_executable(diagnostic-compatibility-test diagnostic_compatibility_test.cpp)
++    target_link_libraries(diagnostic-compatibility-test PRIVATE fossilize cli-utils)
++    target_compile_options(diagnostic-compatibility-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
++    set_target_properties(diagnostic-compatibility-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
++    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/diagnostic-compatibility")
++    add_test(NAME diagnostic-compatibility-test COMMAND ${CMAKE_COMMAND}
++        -DCALLER=$<TARGET_FILE:diagnostic-compatibility-test>
++        -DREPLAY=$<TARGET_FILE:fossilize-replay>
++        -DWORK=${CMAKE_CURRENT_BINARY_DIR}/diagnostic-compatibility
++        -P ${CMAKE_CURRENT_SOURCE_DIR}/diagnostic_compatibility.cmake)
++    set_tests_properties(diagnostic-compatibility-test PROPERTIES TIMEOUT 90
++        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/diagnostic-compatibility")
++endif()
+diff --git a/test/capture_diagnostic_test.cpp b/test/capture_diagnostic_test.cpp
+new file mode 100644
+index 0000000..53edc5f
+--- /dev/null
++++ b/test/capture_diagnostic_test.cpp
+@@ -0,0 +1,184 @@
++// Fake loader driving the exported layer C ABI. This caller can be built once
++// against baseline headers, then run unchanged against another layer library.
++#define VK_NO_PROTOTYPES
++#include "vulkan/vulkan.h"
++#include "vulkan/vk_layer.h"
++#include "diagnostic_test.hpp"
++#ifdef _WIN32
++#include <windows.h>
++#else
++#include <dlfcn.h>
++#endif
++#include <vector>
++static struct Handle { void *dispatch; } instance_handle, device_handle;
++static VkInstance instance = reinterpret_cast<VkInstance>(&instance_handle);
++static VkPhysicalDevice gpu = reinterpret_cast<VkPhysicalDevice>(&instance_handle);
++static VkDevice device = reinterpret_cast<VkDevice>(&device_handle);
++static unsigned calls, destroys;
++static bool qa, fail_vulkan;
++static std::vector<VkPipeline> destroyed;
++static VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL next_instance(VkInstance, const char *);
++static VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL next_device(VkDevice, const char *);
++static VKAPI_ATTR VkResult VKAPI_CALL create_instance(const VkInstanceCreateInfo *, const VkAllocationCallbacks *, VkInstance *p) { *p = instance; return VK_SUCCESS; }
++static VKAPI_ATTR VkResult VKAPI_CALL create_device(VkPhysicalDevice, const VkDeviceCreateInfo *, const VkAllocationCallbacks *, VkDevice *p) { *p = device; return VK_SUCCESS; }
++static VKAPI_ATTR void VKAPI_CALL destroy_instance(VkInstance, const VkAllocationCallbacks *) {}
++static VKAPI_ATTR void VKAPI_CALL destroy_device(VkDevice, const VkAllocationCallbacks *) {}
++static VKAPI_ATTR void VKAPI_CALL properties(VkPhysicalDevice, VkPhysicalDeviceProperties *p) { memset(p, 0, sizeof(*p)); p->apiVersion = VK_API_VERSION_1_3; strcpy(p->deviceName, "fake-layer-gpu"); }
++static VkResult create_pipeline(uint32_t count, VkPipeline *p)
++{
++	calls++;
++	VkResult result = fail_vulkan ? VK_ERROR_DEVICE_LOST : qa && calls == 1 ? VK_PIPELINE_COMPILE_REQUIRED : VK_SUCCESS;
++	for (uint32_t i = 0; i < count; i++) p[i] = result == VK_SUCCESS ? (VkPipeline)(uintptr_t(0x1234 + i)) : VK_NULL_HANDLE;
++	return result;
++}
++static VKAPI_ATTR VkResult VKAPI_CALL graphics(VkDevice, VkPipelineCache, uint32_t n, const VkGraphicsPipelineCreateInfo *, const VkAllocationCallbacks *, VkPipeline *p) { return create_pipeline(n, p); }
++static VKAPI_ATTR VkResult VKAPI_CALL compute(VkDevice, VkPipelineCache, uint32_t n, const VkComputePipelineCreateInfo *, const VkAllocationCallbacks *, VkPipeline *p) { return create_pipeline(n, p); }
++static VKAPI_ATTR VkResult VKAPI_CALL raytracing(VkDevice, VkDeferredOperationKHR, VkPipelineCache, uint32_t n, const VkRayTracingPipelineCreateInfoKHR *, const VkAllocationCallbacks *, VkPipeline *p) { return create_pipeline(n, p); }
++static VKAPI_ATTR void VKAPI_CALL destroy_pipeline(VkDevice, VkPipeline p, const VkAllocationCallbacks *) { destroys++; destroyed.push_back(p); }
++static VKAPI_ATTR VkResult VKAPI_CALL binaries(VkDevice, const VkPipelineBinaryCreateInfoKHR *, const VkAllocationCallbacks *, VkPipelineBinaryHandlesInfoKHR *) { calls++; return fail_vulkan ? VK_ERROR_DEVICE_LOST : VK_SUCCESS; }
++static VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL next_instance(VkInstance, const char *name)
++{
++	if (!strcmp(name, "vkCreateInstance")) return reinterpret_cast<PFN_vkVoidFunction>(create_instance);
++	if (!strcmp(name, "vkCreateDevice")) return reinterpret_cast<PFN_vkVoidFunction>(create_device);
++	if (!strcmp(name, "vkDestroyInstance")) return reinterpret_cast<PFN_vkVoidFunction>(destroy_instance);
++	if (!strcmp(name, "vkGetPhysicalDeviceProperties")) return reinterpret_cast<PFN_vkVoidFunction>(properties);
++	return nullptr;
++}
++static VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL next_device(VkDevice, const char *name)
++{
++	if (!strcmp(name, "vkGetDeviceProcAddr")) return reinterpret_cast<PFN_vkVoidFunction>(next_device);
++	if (!strcmp(name, "vkDestroyDevice")) return reinterpret_cast<PFN_vkVoidFunction>(destroy_device);
++	if (!strcmp(name, "vkCreateGraphicsPipelines")) return reinterpret_cast<PFN_vkVoidFunction>(graphics);
++	if (!strcmp(name, "vkCreateComputePipelines")) return reinterpret_cast<PFN_vkVoidFunction>(compute);
++	if (!strcmp(name, "vkCreateRayTracingPipelinesKHR")) return reinterpret_cast<PFN_vkVoidFunction>(raytracing);
++	if (!strcmp(name, "vkDestroyPipeline")) return reinterpret_cast<PFN_vkVoidFunction>(destroy_pipeline);
++	if (!strcmp(name, "vkCreatePipelineBinariesKHR")) return reinterpret_cast<PFN_vkVoidFunction>(binaries);
++	return nullptr;
++}
++static void environment(const char *key, const char *value)
++{
++#ifdef _WIN32
++	_putenv_s(key, value);
++#else
++	setenv(key, value, 1);
++#endif
++}
++int main(int argc, char **argv)
++{
++	if (argc != 5) return 2;
++	DiagnosticChecks checks;
++	const std::string mode = argv[2], kind = argv[3], outcome = argv[4];
++	bool rejection = outcome == "reject";
++	fail_vulkan = outcome == "vulkan-error";
++	qa = mode == "qa";
++	environment("FOSSILIZE_DUMP_SYNC", mode == "eager" ? "1" : "0");
++	environment("FOSSILIZE_DUMP_SIGSEGV", mode == "paranoid" ? "1" : "0");
++	environment("FOSSILIZE_PRECOMPILE_QA", qa ? "1" : "0");
++	environment("FOSSILIZE_DUMP_PATH", "capture-fixture");
++#ifdef _WIN32
++	_putenv_s("FOSSILIZE_APPLICATION_INFO_FILTER_PATH", "");
++#else
++	unsetenv("FOSSILIZE_APPLICATION_INFO_FILTER_PATH");
++#endif
++	instance_handle.dispatch = &instance_handle;
++	device_handle.dispatch = &device_handle;
++#ifdef _WIN32
++	HMODULE library = LoadLibraryA(argv[1]);
++	auto get_instance = library ? reinterpret_cast<PFN_vkGetInstanceProcAddr>(GetProcAddress(library, "VK_LAYER_fossilize_GetInstanceProcAddr")) : nullptr;
++	auto get_device = library ? reinterpret_cast<PFN_vkGetDeviceProcAddr>(GetProcAddress(library, "VK_LAYER_fossilize_GetDeviceProcAddr")) : nullptr;
++#else
++	void *library = dlopen(argv[1], RTLD_NOW | RTLD_LOCAL);
++	auto get_instance = library ? reinterpret_cast<PFN_vkGetInstanceProcAddr>(dlsym(library, "VK_LAYER_fossilize_GetInstanceProcAddr")) : nullptr;
++	auto get_device = library ? reinterpret_cast<PFN_vkGetDeviceProcAddr>(dlsym(library, "VK_LAYER_fossilize_GetDeviceProcAddr")) : nullptr;
++#endif
++	checks.require(get_instance && get_device, "layer-export-lookup");
++	if (!get_instance || !get_device) return 1;
++	VkLayerInstanceLink instance_link = {};
++	instance_link.pfnNextGetInstanceProcAddr = next_instance;
++	VkLayerInstanceCreateInfo instance_chain = {};
++	instance_chain.sType = VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO;
++	instance_chain.function = VK_LAYER_LINK_INFO;
++	instance_chain.u.pLayerInfo = &instance_link;
++	VkApplicationInfo app = {VK_STRUCTURE_TYPE_APPLICATION_INFO}; app.apiVersion = VK_API_VERSION_1_3;
++	VkInstanceCreateInfo instance_info = {VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
++	instance_info.pNext = &instance_chain; instance_info.pApplicationInfo = &app;
++	auto create_i = reinterpret_cast<PFN_vkCreateInstance>(get_instance(VK_NULL_HANDLE, "vkCreateInstance"));
++	checks.require(create_i && create_i(&instance_info, nullptr, &instance) == VK_SUCCESS, "layer-instance-create");
++	VkLayerDeviceLink device_link = {};
++	device_link.pfnNextGetInstanceProcAddr = next_instance; device_link.pfnNextGetDeviceProcAddr = next_device;
++	VkLayerDeviceCreateInfo device_chain = {};
++	device_chain.sType = VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO; device_chain.function = VK_LAYER_LINK_INFO;
++	device_chain.u.pLayerInfo = &device_link;
++	VkDeviceCreateInfo device_info = {VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO}; device_info.pNext = &device_chain;
++	auto create_d = reinterpret_cast<PFN_vkCreateDevice>(get_instance(instance, "vkCreateDevice"));
++	checks.require(create_d && create_d(gpu, &device_info, nullptr, &device) == VK_SUCCESS, "layer-device-create");
++	static const uint32_t code[] = {0x07230203, 0x10000, 0, 1, 0};
++	VkShaderModuleCreateInfo module = {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO}; module.codeSize = sizeof(code); module.pCode = code;
++	VkPipelineShaderStageCreateInfo stage = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO};
++	stage.pNext = &module; stage.pName = rejection ? nullptr : "main"; stage.stage = VK_SHADER_STAGE_VERTEX_BIT;
++	VkGraphicsPipelineCreateInfo g = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO}; g.stageCount = 1; g.pStages = &stage;
++	VkComputePipelineCreateInfo c = {VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO}; c.stage = stage; c.stage.stage = VK_SHADER_STAGE_COMPUTE_BIT;
++	// The compute copier requires a non-null entrypoint name. Use a malformed
++	// nested stage tag for its synchronous rejection instead of dereferencing
++	// an invalid name; this does not establish an unsupported Vulkan feature.
++	VkBaseInStructure malformed = {VK_STRUCTURE_TYPE_MAX_ENUM, reinterpret_cast<const VkBaseInStructure *>(&module)};
++	if (rejection) { c.stage.pName = "main"; c.stage.pNext = &malformed; }
++	VkPipelineShaderStageCreateInfo ray_stage = stage; ray_stage.stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
++	VkRayTracingPipelineCreateInfoKHR r = {VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR}; r.stageCount = 1; r.pStages = &ray_stage;
++	VkPipeline output = VK_NULL_HANDLE;
++	VkResult result = VK_ERROR_UNKNOWN;
++	DiagnosticStderr capture;
++	if (mode == "binary")
++	{
++		VkPipelineCreateInfoKHR pipeline_info = {VK_STRUCTURE_TYPE_PIPELINE_CREATE_INFO_KHR};
++		pipeline_info.pNext = kind == "graphics" ? static_cast<void *>(&g) : kind == "compute" ? static_cast<void *>(&c) : static_cast<void *>(&r);
++		VkPipelineBinaryCreateInfoKHR info = {VK_STRUCTURE_TYPE_PIPELINE_BINARY_CREATE_INFO_KHR}; info.pPipelineCreateInfo = &pipeline_info;
++		VkPipelineBinaryHandlesInfoKHR handles = {VK_STRUCTURE_TYPE_PIPELINE_BINARY_HANDLES_INFO_KHR};
++		auto fn = reinterpret_cast<PFN_vkCreatePipelineBinariesKHR>(get_device(device, "vkCreatePipelineBinariesKHR"));
++		checks.require(fn != nullptr, "binary-entrypoint"); if (fn) result = fn(device, &info, nullptr, &handles);
++	}
++	else if (kind == "graphics")
++	{
++		auto fn = reinterpret_cast<PFN_vkCreateGraphicsPipelines>(get_device(device, "vkCreateGraphicsPipelines"));
++		checks.require(fn != nullptr, "graphics-entrypoint"); if (fn) result = fn(device, VK_NULL_HANDLE, 1, &g, nullptr, &output);
++	}
++	else if (kind == "compute")
++	{
++		auto fn = reinterpret_cast<PFN_vkCreateComputePipelines>(get_device(device, "vkCreateComputePipelines"));
++		checks.require(fn != nullptr, "compute-entrypoint"); if (fn) result = fn(device, VK_NULL_HANDLE, 1, &c, nullptr, &output);
++	}
++	else
++	{
++		auto fn = reinterpret_cast<PFN_vkCreateRayTracingPipelinesKHR>(get_device(device, "vkCreateRayTracingPipelinesKHR"));
++		checks.require(fn != nullptr, "raytracing-entrypoint"); if (fn) result = fn(device, VK_NULL_HANDLE, VK_NULL_HANDLE, 1, &r, nullptr, &output);
++	}
++	std::string log = capture.finish();
++	checks.require(result == (fail_vulkan ? VK_ERROR_DEVICE_LOST : VK_SUCCESS), "application-result-preserved");
++	if (mode != "binary") checks.require(output == (fail_vulkan ? VK_NULL_HANDLE : (VkPipeline)0x1234), "application-handle-preserved");
++	checks.require(calls == (qa && (!fail_vulkan || kind == "raytracing") ? 2u : 1u), "driver-call-count");
++	checks.require(destroys == (qa && !fail_vulkan ? 1u : 0u), "driver-destroy-count");
++	if (destroys) checks.require(destroyed[0] == VK_NULL_HANDLE, "qa-destroy-original-null");
++	bool records = !fail_vulkan || mode == "paranoid" || mode == "eager";
++	if (rejection && records)
++	{
++		checks.contains(log, "Capture/record " + kind + " pipeline failed", "correct-resource-phase");
++		checks.contains(log, "mode=" + (mode == "eager" ? std::string("eager") : mode), "capture-mode");
++		checks.contains(log, mode == "binary" ? "handle=not-applicable" : "batch_index=0", "known-identity");
++		checks.contains(log, "hash=unknown", "unknown-hash-honest");
++		checks.contains(log, "reason=unknown", "unknown-cause-honest");
++	}
++	else checks.require(log.find("failed") == std::string::npos && log.find("Failed") == std::string::npos, "successful-recording-no-failure");
++	checks.require(log.find("unsupported") == std::string::npos, "no-unsupported-speculation");
++	checks.require(log.find("crash") == std::string::npos, "no-crash-speculation");
++	if (mode != "binary" && output)
++		reinterpret_cast<PFN_vkDestroyPipeline>(get_device(device, "vkDestroyPipeline"))(device, output, nullptr);
++	reinterpret_cast<PFN_vkDestroyDevice>(get_device(device, "vkDestroyDevice"))(device, nullptr);
++	reinterpret_cast<PFN_vkDestroyInstance>(get_instance(instance, "vkDestroyInstance"))(instance, nullptr);
++#ifdef _WIN32
++	FreeLibrary(library);
++#else
++	dlclose(library);
++#endif
++	fprintf(stdout, "Executed CAPTURE-KINDS/%s/%s/%s; failures=%d\n", mode.c_str(), kind.c_str(), outcome.c_str(), checks.failures);
++	return checks.failures ? 1 : 0;
++}
+diff --git a/test/device_diagnostic_test.cpp b/test/device_diagnostic_test.cpp
+new file mode 100644
+index 0000000..c618470
+--- /dev/null
++++ b/test/device_diagnostic_test.cpp
+@@ -0,0 +1,155 @@
++#include "diagnostic_test.hpp"
++#include "../cli/device.hpp"
++static VkResult diagnostic_initialize();
++static uint32_t diagnostic_version();
++static void diagnostic_load_instance(VkInstance);
++static void diagnostic_load_device(VkDevice);
++#define volkInitialize diagnostic_initialize
++#define volkGetInstanceVersion diagnostic_version
++#define volkLoadInstance diagnostic_load_instance
++#define volkLoadDevice diagnostic_load_device
++#include "../cli/device.cpp"
++#undef volkInitialize
++#undef volkGetInstanceVersion
++#undef volkLoadInstance
++#undef volkLoadDevice
++using namespace Fossilize;
++
++static std::string failure_stage;
++static VkResult injected_result;
++static unsigned destroy_instances, destroy_devices, destroy_callbacks;
++static bool no_devices, no_loader;
++static VkResult result_for(const char *operation) { return failure_stage == operation ? injected_result : VK_SUCCESS; }
++static VKAPI_ATTR VkResult VKAPI_CALL instance_extensions(const char *, uint32_t *count, VkExtensionProperties *data)
++{
++	if (data) { memset(data, 0, sizeof(*data)); strcpy(data->extensionName, VK_EXT_DEBUG_REPORT_EXTENSION_NAME); }
++	*count = 1;
++	return result_for(data ? "instance-extension-data" : "instance-extension-count");
++}
++static VKAPI_ATTR VkResult VKAPI_CALL layers(uint32_t *count, VkLayerProperties *data)
++{
++	if (data) { memset(data, 0, sizeof(*data)); strcpy(data->layerName, "VK_LAYER_KHRONOS_validation"); }
++	*count = 1;
++	return result_for(data ? "instance-layer-data" : "instance-layer-count");
++}
++static VKAPI_ATTR VkResult VKAPI_CALL create_instance(const VkInstanceCreateInfo *, const VkAllocationCallbacks *, VkInstance *p)
++{
++	auto result = result_for("vkCreateInstance");
++	if (result == VK_SUCCESS) *p = (VkInstance)0x1000;
++	return result;
++}
++static VKAPI_ATTR VkResult VKAPI_CALL create_callback(VkInstance, const VkDebugReportCallbackCreateInfoEXT *, const VkAllocationCallbacks *, VkDebugReportCallbackEXT *p)
++{
++	auto result = result_for("vkCreateDebugReportCallbackEXT");
++	if (result == VK_SUCCESS) *p = (VkDebugReportCallbackEXT)0x2000;
++	return result;
++}
++static VKAPI_ATTR VkResult VKAPI_CALL physical_devices(VkInstance, uint32_t *count, VkPhysicalDevice *data)
++{
++	if (data) *data = (VkPhysicalDevice)0x3000;
++	*count = no_devices ? 0 : 1;
++	return result_for(data ? "physical-device-data" : "physical-device-count");
++}
++static VKAPI_ATTR void VKAPI_CALL properties(VkPhysicalDevice, VkPhysicalDeviceProperties *p)
++{
++	memset(p, 0, sizeof(*p)); p->apiVersion = VK_API_VERSION_1_1;
++	strcpy(p->deviceName, "deterministic-gpu"); p->vendorID = 0x1234; p->deviceID = 0x5678;
++}
++static VKAPI_ATTR VkResult VKAPI_CALL device_extensions(VkPhysicalDevice, const char *, uint32_t *count, VkExtensionProperties *data)
++{
++	if (data) { memset(data, 0, sizeof(*data)); strcpy(data->extensionName, VK_KHR_PIPELINE_BINARY_EXTENSION_NAME); }
++	*count = 1;
++	return result_for(data ? "device-extension-data" : "device-extension-count");
++}
++static VKAPI_ATTR void VKAPI_CALL physical_features(VkPhysicalDevice, VkPhysicalDeviceFeatures *p) { memset(p, 0, sizeof(*p)); }
++static VKAPI_ATTR void VKAPI_CALL queues(VkPhysicalDevice, uint32_t *count, VkQueueFamilyProperties *p)
++{
++	*count = 1; if (p) { memset(p, 0, sizeof(*p)); p->queueFlags = VK_QUEUE_GRAPHICS_BIT; p->queueCount = 1; }
++}
++static VKAPI_ATTR VkResult VKAPI_CALL create_device(VkPhysicalDevice, const VkDeviceCreateInfo *, const VkAllocationCallbacks *, VkDevice *p)
++{
++	auto result = result_for("vkCreateDevice");
++	if (result == VK_SUCCESS) *p = (VkDevice)0x4000;
++	return result;
++}
++static VKAPI_ATTR VkResult VKAPI_CALL pipeline_key(VkDevice, const VkPipelineCreateInfoKHR *, VkPipelineBinaryKeyKHR *key)
++{
++	key->keySize = 1; key->key[0] = 0xab;
++	return result_for("vkGetPipelineKeyKHR");
++}
++static VKAPI_ATTR void VKAPI_CALL destroy_instance(VkInstance, const VkAllocationCallbacks *) { destroy_instances++; errno = ENOSPC; }
++static VKAPI_ATTR void VKAPI_CALL destroy_device(VkDevice, const VkAllocationCallbacks *) { destroy_devices++; errno = ENOSPC; }
++static VKAPI_ATTR void VKAPI_CALL destroy_callback(VkInstance, VkDebugReportCallbackEXT, const VkAllocationCallbacks *) { destroy_callbacks++; errno = ENOSPC; }
++static VkResult diagnostic_initialize()
++{
++	vkEnumerateInstanceExtensionProperties = instance_extensions;
++	vkEnumerateInstanceLayerProperties = layers;
++	vkCreateInstance = create_instance;
++	vkCreateDebugReportCallbackEXT = create_callback;
++	vkEnumeratePhysicalDevices = physical_devices;
++	vkGetPhysicalDeviceProperties = properties;
++	vkEnumerateDeviceExtensionProperties = device_extensions;
++	vkGetPhysicalDeviceFeatures = physical_features;
++	vkGetPhysicalDeviceQueueFamilyProperties = queues;
++	vkCreateDevice = create_device;
++	vkGetPipelineKeyKHR = pipeline_key;
++	vkDestroyInstance = destroy_instance;
++	vkDestroyDevice = destroy_device;
++	vkDestroyDebugReportCallbackEXT = destroy_callback;
++	return result_for("volkInitialize");
++}
++static uint32_t diagnostic_version() { return no_loader ? 0 : VK_API_VERSION_1_1; }
++static void diagnostic_load_instance(VkInstance) {}
++static void diagnostic_load_device(VkDevice) {}
++int main()
++{
++	DiagnosticChecks checks;
++#ifdef _WIN32
++	_putenv_s("FOSSILIZE_LOG_PIPELINE_BINARY_KEY", "1");
++#else
++	setenv("FOSSILIZE_LOG_PIPELINE_BINARY_KEY", "1", 1);
++#endif
++	const char *stages[] = {"volkInitialize", "instance-extension-count", "instance-extension-data", "instance-layer-count", "instance-layer-data", "vkCreateInstance", "vkCreateDebugReportCallbackEXT", "physical-device-count", "physical-device-data", "device-extension-count", "device-extension-data", "vkCreateDevice", "vkGetPipelineKeyKHR", "success", "null-device", "no-devices", "no-loader", "unsupported-api"};
++	for (unsigned stage = 0; stage < sizeof(stages) / sizeof(stages[0]); stage++)
++	{
++		for (auto result : {VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST})
++		{
++			failure_stage = stages[stage]; injected_result = result;
++			destroy_instances = destroy_devices = destroy_callbacks = 0;
++			no_devices = failure_stage == "no-devices"; no_loader = failure_stage == "no-loader";
++			VulkanDevice::Options opts;
++			opts.enable_validation = true; opts.device_index = 0;
++			opts.null_device = failure_stage == "null-device";
++			VkApplicationInfo app = {VK_STRUCTURE_TYPE_APPLICATION_INFO}; app.apiVersion = VK_API_VERSION_1_3;
++			if (failure_stage == "unsupported-api") opts.application_info = &app;
++			bool initialized;
++			DiagnosticStderr capture;
++			{ VulkanDevice device; initialized = device.init_device(opts); }
++			std::string log = capture.finish();
++			std::string id = failure_stage + "/" + std::to_string(int(result));
++			bool success = stage >= 12 && stage <= 14;
++			checks.require(initialized == success, id + "/return");
++			checks.require(log.find("crash") == std::string::npos, id + "/no-crash-guess");
++			bool instance_created = (stage >= 6 && stage <= 13) || stage == 15;
++			bool callback_created = (stage >= 7 && stage <= 13) || stage == 15;
++			checks.require(destroy_instances == unsigned(instance_created), id + "/instance-cleanup");
++			checks.require(destroy_callbacks == unsigned(callback_created), id + "/callback-cleanup");
++			checks.require(destroy_devices == unsigned(stage == 12 || stage == 13), id + "/device-cleanup");
++			if (stage <= 12)
++			{
++				checks.contains(log, "Device/setup " + failure_stage + " failed", id + "/operation-phase");
++				checks.contains(log, "VkResult=" + std::to_string(int(result)), id + "/raw-result");
++				checks.contains(log, "hash=not-applicable", id + "/no-invented-hash");
++				checks.contains(log, stage >= 9 ? "gpu_index=0" : "gpu_index=-1", id + "/gpu-identity");
++			}
++			else if (success) checks.require(log.find("failed") == std::string::npos, id + "/success-quiet");
++			else
++			{
++				checks.require(log.find("VkResult=") == std::string::npos, id + "/no-synthetic-result");
++				checks.contains(log, stage == 15 ? "No physical devices" : stage == 16 ? "Could not find loader" : "unsupported by this Vulkan loader", id + "/limitation");
++			}
++		}
++	}
++	fprintf(stdout, "Executed VK-DEVICE:36 including 13 injected stages, success/null and limitations; failures=%d\n", checks.failures);
++	return checks.failures ? 1 : 0;
++}
+diff --git a/test/diagnostic_compatibility.cmake b/test/diagnostic_compatibility.cmake
+new file mode 100644
+index 0000000..e65dd3a
+--- /dev/null
++++ b/test/diagnostic_compatibility.cmake
+@@ -0,0 +1,20 @@
++execute_process(COMMAND "${CALLER}" "${WORK}/compatibility.foz"
++    RESULT_VARIABLE status OUTPUT_VARIABLE output ERROR_VARIABLE error TIMEOUT 30)
++if (NOT status EQUAL 0)
++    message(FATAL_ERROR "Old-source caller failed: ${status}\n${output}\n${error}")
++endif()
++execute_process(COMMAND "${REPLAY}" --null-device --num-threads 1 "${WORK}/compatibility.foz"
++    RESULT_VARIABLE status OUTPUT_VARIABLE output ERROR_VARIABLE error TIMEOUT 30)
++file(WRITE "${WORK}/replay.log" "${output}${error}")
++if (NOT status EQUAL 0)
++    message(FATAL_ERROR "Preserved CLI invocation failed: ${status}\n${output}\n${error}")
++endif()
++foreach(kind graphics compute raytracing)
++    if (NOT error MATCHES "Playing back 1 ${kind} pipelines")
++        message(FATAL_ERROR "Missing expected ${kind} resource: ${error}")
++    endif()
++endforeach()
++if (error MATCHES "ERROR|failed|Failed|unsupported")
++    message(FATAL_ERROR "Successful compatibility replay emitted failure: ${error}")
++endif()
++message(STATUS "COMPATIBILITY: old caller, known resource/hash set and preserved --null-device invocation passed")
+diff --git a/test/diagnostic_compatibility_test.cpp b/test/diagnostic_compatibility_test.cpp
+new file mode 100644
+index 0000000..6d424ab
+--- /dev/null
++++ b/test/diagnostic_compatibility_test.cpp
+@@ -0,0 +1,65 @@
++// Uses the pre-existing public interfaces. Also compile this file against the
++// baseline headers when checking source compatibility with candidate libraries.
++#define VK_NO_PROTOTYPES
++#include "diagnostic_test.hpp"
++#include "fossilize.hpp"
++#include "fossilize_db.hpp"
++#include "logging.hpp"
++#include "fossilize_errors.hpp"
++#include "device.hpp"
++#include <memory>
++using namespace Fossilize;
++static void callback(LogLevel, const char *, void *userdata) { ++*static_cast<unsigned *>(userdata); }
++int main(int argc, char **argv)
++{
++	if (argc != 2) return 2;
++	DiagnosticChecks checks;
++	unsigned messages = 0;
++	set_thread_log_callback(callback, &messages);
++	set_thread_log_level(LOG_INFO);
++	VulkanDevice::Options options;
++	options.null_device = true;
++	VulkanDevice device;
++	checks.require(device.init_device(options), "old-source-null-device");
++	{
++		std::unique_ptr<DatabaseInterface> db(create_database(argv[1], DatabaseMode::OverWrite));
++		checks.require(db && db->prepare(), "fixture-db-prepare");
++		if (!db) return 1;
++		StateRecorder recorder;
++		recorder.init_recording_synchronized(db.get());
++		VkApplicationInfo app = {VK_STRUCTURE_TYPE_APPLICATION_INFO}; app.apiVersion = VK_API_VERSION_1_0;
++		checks.require(recorder.record_application_info(app), "old-source-application");
++		static const uint32_t code[] = {0x07230203, 0x10000, 0, 1, 0};
++		VkShaderModuleCreateInfo module = {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO}; module.codeSize = sizeof(code); module.pCode = code;
++		checks.require(recorder.record_shader_module((VkShaderModule)1, module, 0x101), "old-source-module");
++		VkPipelineLayoutCreateInfo layout = {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
++		checks.require(recorder.record_pipeline_layout((VkPipelineLayout)2, layout, 0x102), "old-source-layout");
++		VkPipelineShaderStageCreateInfo stage = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO};
++		stage.module = (VkShaderModule)1; stage.pName = "main";
++		VkGraphicsPipelineCreateInfo g = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO};
++		stage.stage = VK_SHADER_STAGE_VERTEX_BIT; g.stageCount = 1; g.pStages = &stage; g.layout = (VkPipelineLayout)2;
++		checks.require(recorder.record_graphics_pipeline((VkPipeline)3, g, nullptr, 0, 0x103), "old-source-graphics");
++		VkComputePipelineCreateInfo c = {VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO};
++		stage.stage = VK_SHADER_STAGE_COMPUTE_BIT; c.stage = stage; c.layout = (VkPipelineLayout)2;
++		checks.require(recorder.record_compute_pipeline((VkPipeline)4, c, nullptr, 0, 0x104), "old-source-compute");
++		VkRayTracingPipelineCreateInfoKHR r = {VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR};
++		stage.stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR; r.stageCount = 1; r.pStages = &stage; r.layout = (VkPipelineLayout)2;
++		checks.require(recorder.record_raytracing_pipeline((VkPipeline)5, r, nullptr, 0, 0x105), "old-source-raytracing");
++		recorder.tear_down_recording_thread();
++	}
++	std::unique_ptr<DatabaseInterface> db(create_database(argv[1], DatabaseMode::ReadOnly));
++	checks.require(db && db->prepare(), "fixture-readback");
++	for (auto tag : {RESOURCE_SHADER_MODULE, RESOURCE_PIPELINE_LAYOUT, RESOURCE_GRAPHICS_PIPELINE, RESOURCE_COMPUTE_PIPELINE, RESOURCE_RAYTRACING_PIPELINE})
++	{
++		size_t count = 0;
++		checks.require(db->get_hash_list_for_resource_tag(tag, &count, nullptr) && count == 1, "fixture-resource-set/" + std::to_string(unsigned(tag)));
++		Hash hash = 0;
++		checks.require(db->get_hash_list_for_resource_tag(tag, &count, &hash), "fixture-hash-read");
++		Hash expected = tag == RESOURCE_SHADER_MODULE ? 0x101 : tag == RESOURCE_PIPELINE_LAYOUT ? 0x102 : tag == RESOURCE_GRAPHICS_PIPELINE ? 0x103 : tag == RESOURCE_COMPUTE_PIPELINE ? 0x104 : 0x105;
++		checks.require(hash == expected, "fixture-known-hash/" + std::to_string(unsigned(tag)));
++	}
++	set_thread_log_callback(nullptr, nullptr);
++	checks.require(messages == 0, "old-log-callback-success-quiet");
++	fprintf(stdout, "Executed COMPATIBILITY/source-and-fixture; failures=%d\n", checks.failures);
++	return checks.failures ? 1 : 0;
++}
+diff --git a/test/diagnostic_test.hpp b/test/diagnostic_test.hpp
+new file mode 100644
+index 0000000..d121c83
+--- /dev/null
++++ b/test/diagnostic_test.hpp
+@@ -0,0 +1,71 @@
++#pragma once
++// Explicit checks survive Release/NDEBUG. Each CTest owns an isolated work directory.
++#include <cstdio>
++#include <cstdlib>
++#include <cstring>
++#include <string>
++#ifdef _WIN32
++#include <io.h>
++#define DIAG_DUP _dup
++#define DIAG_DUP2 _dup2
++#define DIAG_CLOSE _close
++#define DIAG_FILENO _fileno
++#else
++#include <unistd.h>
++#define DIAG_DUP dup
++#define DIAG_DUP2 dup2
++#define DIAG_CLOSE close
++#define DIAG_FILENO fileno
++#endif
++
++struct DiagnosticChecks
++{
++	int failures = 0;
++	void require(bool value, const std::string &id)
++	{
++		if (!value)
++		{
++			fprintf(stdout, "FAIL %s\n", id.c_str());
++			failures++;
++		}
++	}
++	void contains(const std::string &text, const std::string &part, const std::string &id)
++	{
++		require(text.find(part) != std::string::npos, id + " expected: " + part + " observed: " + text);
++	}
++};
++
++struct DiagnosticStderr
++{
++	FILE *file = nullptr;
++	int saved = -1;
++	DiagnosticStderr()
++	{
++		fflush(stderr);
++		file = tmpfile();
++		if (!file || (saved = DIAG_DUP(DIAG_FILENO(stderr))) < 0 ||
++		    DIAG_DUP2(DIAG_FILENO(file), DIAG_FILENO(stderr)) < 0)
++			std::abort();
++	}
++	std::string finish()
++	{
++		fflush(stderr);
++		DIAG_DUP2(saved, DIAG_FILENO(stderr));
++		DIAG_CLOSE(saved);
++		saved = -1;
++		rewind(file);
++		std::string result;
++		char buffer[1024];
++		size_t n;
++		while ((n = fread(buffer, 1, sizeof(buffer), file)) != 0)
++			result.append(buffer, n);
++		fclose(file);
++		file = nullptr;
++		return result;
++	}
++	~DiagnosticStderr()
++	{
++		if (saved >= 0)
++			finish();
++	}
++};
+diff --git a/test/replay_diagnostic_test.cpp b/test/replay_diagnostic_test.cpp
+new file mode 100644
+index 0000000..75321bd
+--- /dev/null
++++ b/test/replay_diagnostic_test.cpp
+@@ -0,0 +1,179 @@
++// Exercise production replay branches, rather than a duplicate formatter.
++#include "diagnostic_test.hpp"
++#include <fstream>
++#include <cerrno>
++#include <vector>
++static FILE *diagnostic_open(const char *, const char *);
++static size_t diagnostic_write(const void *, size_t, size_t, FILE *);
++static int diagnostic_close(FILE *);
++#define fopen diagnostic_open
++#define fwrite diagnostic_write
++#define fclose diagnostic_close
++#define main fossilize_replay_original_main
++#define NO_ROBUST_REPLAYER 1
++#include "../cli/fossilize_replay.cpp"
++#undef main
++#undef fopen
++#undef fwrite
++#undef fclose
++
++static std::vector<VkResult> results;
++static unsigned calls, destroys, cache_destroys, opens, writes, closes;
++static std::string order;
++static int io_mode, io_error;
++static std::string bytes;
++static VkResult next_result(VkPipeline *pipeline)
++{
++	VkResult result = results.at(calls++);
++	*pipeline = result == VK_SUCCESS ? (VkPipeline)0x1234 : VK_NULL_HANDLE;
++	errno = ERANGE;
++	return result;
++}
++static VKAPI_ATTR VkResult VKAPI_CALL graphics(VkDevice, VkPipelineCache, uint32_t, const VkGraphicsPipelineCreateInfo *, const VkAllocationCallbacks *, VkPipeline *p) { return next_result(p); }
++static VKAPI_ATTR VkResult VKAPI_CALL compute(VkDevice, VkPipelineCache, uint32_t, const VkComputePipelineCreateInfo *, const VkAllocationCallbacks *, VkPipeline *p) { return next_result(p); }
++static VKAPI_ATTR VkResult VKAPI_CALL raytracing(VkDevice, VkDeferredOperationKHR, VkPipelineCache, uint32_t, const VkRayTracingPipelineCreateInfoKHR *, const VkAllocationCallbacks *, VkPipeline *p) { return next_result(p); }
++static VKAPI_ATTR void VKAPI_CALL destroy(VkDevice, VkPipeline, const VkAllocationCallbacks *) { destroys++; errno = EDOM; }
++static FILE *diagnostic_open(const char *path, const char *mode)
++{
++	if (io_mode < 0) return fopen(path, mode);
++	opens++; order += "open ";
++	if (io_mode == 1) { errno = io_error; return nullptr; }
++	return tmpfile();
++}
++static size_t diagnostic_write(const void *data, size_t size, size_t count, FILE *file)
++{
++	if (io_mode < 0) return fwrite(data, size, count, file);
++	writes++; order += "write ";
++	if (io_mode == 2) { errno = io_error; return count ? count - 1 : 0; }
++	bytes.assign(static_cast<const char *>(data), size * count);
++	return fwrite(data, size, count, file);
++}
++static int diagnostic_close(FILE *file)
++{
++	if (io_mode < 0) return fclose(file);
++	closes++; order += "close ";
++	int result = fclose(file);
++	// Deliberately overwrite a prior fwrite errno, including on successful close.
++	errno = io_mode == 3 ? io_error : EDOM;
++	return io_mode == 3 ? EOF : result;
++}
++static VKAPI_ATTR VkResult VKAPI_CALL cache_data(VkDevice, VkPipelineCache, size_t *size, void *data)
++{
++	static const char content[] = "cache-bytes";
++	if (data) memcpy(data, content, sizeof(content));
++	*size = sizeof(content);
++	return VK_SUCCESS;
++}
++static VKAPI_ATTR VkResult VKAPI_CALL validation_data(VkDevice d, VkValidationCacheEXT c, size_t *s, void *p) { return cache_data(d, (VkPipelineCache)c, s, p); }
++static VKAPI_ATTR void VKAPI_CALL destroy_cache(VkDevice, VkPipelineCache, const VkAllocationCallbacks *) { cache_destroys++; order += "destroy "; errno = ERANGE; }
++static VKAPI_ATTR void VKAPI_CALL destroy_validation(VkDevice d, VkValidationCacheEXT c, const VkAllocationCallbacks *a) { destroy_cache(d, (VkPipelineCache)c, a); }
++
++int main()
++{
++	DiagnosticChecks checks;
++	VulkanDevice::Options device_opts;
++	device_opts.null_device = true;
++	ThreadedReplayer::Options opts;
++	opts.num_threads = 0;
++	ThreadedReplayer replay(device_opts, opts);
++	replay.device.reset(new VulkanDevice);
++	checks.require(replay.device->init_device(device_opts), "null-device-init");
++	vkCreateGraphicsPipelines = graphics;
++	vkCreateComputePipelines = compute;
++	vkCreateRayTracingPipelinesKHR = raytracing;
++	vkDestroyPipeline = destroy;
++	io_mode = -1;
++	const char *kinds[] = { "graphics", "compute", "raytracing" };
++	for (unsigned kind = 0; kind < 3; kind++)
++	{
++		for (unsigned scenario = 0; scenario < 7; scenario++)
++		{
++			std::string id = std::string(kinds[kind]) + "/" + std::to_string(scenario);
++			results = scenario == 0 ? std::vector<VkResult>{VK_ERROR_OUT_OF_HOST_MEMORY} :
++			          scenario == 1 ? std::vector<VkResult>{VK_ERROR_DEVICE_LOST} :
++			          scenario == 2 ? std::vector<VkResult>{VK_SUCCESS} :
++			          scenario == 3 ? std::vector<VkResult>{VK_PIPELINE_COMPILE_REQUIRED} :
++			          scenario == 4 ? std::vector<VkResult>{VK_PIPELINE_COMPILE_REQUIRED, VK_SUCCESS} :
++			          scenario == 5 ? std::vector<VkResult>{VK_PIPELINE_COMPILE_REQUIRED, VK_ERROR_DEVICE_LOST} :
++			                          std::vector<VkResult>{VK_SUCCESS};
++			replay.opts.skip_pipelines_on_compile_required = scenario == 3;
++			calls = destroys = 0;
++			VkPipeline output = VK_NULL_HANDLE, entry = (VkPipeline)0x9876;
++			PipelineWorkItem item;
++			item.hash = 0xfedcba9876543210ull + kind;
++			item.output.pipeline = &output;
++			item.hash_map_entry.pipeline = &entry;
++			VkGraphicsPipelineCreateInfo g = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO};
++			VkComputePipelineCreateInfo c = {VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO};
++			VkRayTracingPipelineCreateInfoKHR r = {VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR};
++			if (scenario >= 3) { g.flags = c.flags = r.flags = VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT; }
++			if (scenario == 6) { g.flags |= VK_PIPELINE_CREATE_LIBRARY_BIT_KHR; r.flags |= VK_PIPELINE_CREATE_LIBRARY_BIT_KHR; }
++			DiagnosticStderr capture;
++			if (kind == 0) { item.tag = RESOURCE_GRAPHICS_PIPELINE; item.create_info.graphics_create_info = &g; replay.run_creation_work_item_graphics_iteration(item, VK_NULL_HANDLE, true); }
++			if (kind == 1) { item.tag = RESOURCE_COMPUTE_PIPELINE; item.create_info.compute_create_info = &c; replay.run_creation_work_item_compute_iteration(item, VK_NULL_HANDLE, true); }
++			if (kind == 2) { item.tag = RESOURCE_RAYTRACING_PIPELINE; item.create_info.raytracing_create_info = &r; replay.run_creation_work_item_raytracing_iteration(item, VK_NULL_HANDLE, true); }
++			std::string log = capture.finish();
++			// Cleanup after the branch also clobbers unrelated OS error state.
++			errno = ENOSPC;
++			checks.require(calls == results.size(), id + "/calls");
++			bool dependency = scenario == 6 && kind != 1;
++			checks.require(entry == (dependency ? (VkPipeline)0x1234 : VK_NULL_HANDLE) && output == (dependency ? (VkPipeline)0x1234 : VK_NULL_HANDLE), id + "/outputs");
++			bool success = results.back() == VK_SUCCESS;
++			checks.require(destroys == (success && !dependency ? 2u : 1u), id + "/destroy-count");
++			if (dependency) destroy(replay.device->get_device(), output, nullptr);
++			checks.require(log.find("crash") == std::string::npos, id + "/no-crash-guess");
++			char hash[32]; snprintf(hash, sizeof(hash), "0x%016" PRIx64, item.hash);
++			if (scenario == 2 || scenario == 6) checks.require(log.empty(), id + "/success-quiet");
++			else
++			{
++				checks.contains(log, std::string("Replay/create ") + kinds[kind] + " pipeline", id + "/phase-kind");
++				checks.contains(log, hash, id + "/hash");
++				if (!success) checks.contains(log, "VkResult=" + std::to_string(int(results.back())), id + "/raw-result");
++				if (scenario >= 3) checks.contains(log, "VkResult=" + std::to_string(int(VK_PIPELINE_COMPILE_REQUIRED)), id + "/compile-required");
++				checks.require((log.find("pipeline failed") == std::string::npos) == success, id + "/final-outcome");
++			}
++		}
++	}
++	checks.require(replay.graphics_pipeline_count == 3 && replay.compute_pipeline_count == 3 && replay.raytracing_pipeline_count == 3, "success-counters");
++	checks.require(replay.graphics_pipeline_compile_required_count == 3 && replay.compute_pipeline_compile_required_count == 3 && replay.raytracing_pipeline_compile_required_count == 3, "compile-required-counters");
++	vkGetPipelineCacheData = cache_data;
++	vkGetValidationCacheDataEXT = validation_data;
++	vkDestroyPipelineCache = destroy_cache;
++	vkDestroyValidationCacheEXT = destroy_validation;
++	for (unsigned kind = 0; kind < 2; kind++)
++	{
++		for (int mode = 0; mode <= 3; mode++)
++		{
++			for (int error : {EACCES, ENOSPC, 0})
++			{
++				io_mode = mode; io_error = error;
++				opens = writes = closes = cache_destroys = 0; order.clear(); bytes.clear();
++				replay.opts.on_disk_pipeline_cache_path = "injected-cache";
++				replay.opts.on_disk_validation_cache_path = "injected-cache";
++				const char *kind_name = kind ? "validation" : "pipeline";
++				std::string id = std::string(kind_name) + "/io-" + std::to_string(mode) + "/" + std::to_string(error);
++				DiagnosticStderr capture;
++				if (kind) { replay.validation_cache = (VkValidationCacheEXT)0x456; replay.flush_validation_cache(); }
++				else { replay.disk_pipeline_cache = (VkPipelineCache)0x456; replay.flush_pipeline_cache(); }
++				std::string log = capture.finish();
++				checks.require(opens == 1 && writes == (mode == 1 ? 0u : 1u) && closes == (mode == 1 ? 0u : 1u) && cache_destroys == 1, id + "/cleanup-counts");
++				checks.require(order == (mode == 1 ? "open destroy " : "open write close destroy "), id + "/cleanup-order");
++				checks.require(!replay.disk_pipeline_cache && !replay.validation_cache, id + "/cache-cleared");
++				if (mode == 0) { checks.require(log.empty(), id + "/quiet"); checks.require(bytes == std::string("cache-bytes", 12), id + "/exact-bytes"); }
++				else
++				{
++					checks.contains(log, std::string("Replay/export ") + kind_name + " cache failed", id + "/phase-kind");
++					checks.contains(log, std::string("operation=") + (mode == 1 ? "open" : mode == 2 ? "write" : "close"), id + "/operation");
++					checks.contains(log, error ? "errno=" + std::to_string(error) : "errno=unknown", id + "/originating-errno");
++					checks.contains(log, "hash=not-applicable", id + "/identity");
++				}
++			}
++		}
++	}
++	io_mode = -1;
++	DiagnosticStderr missing;
++	ThreadedReplayer::write_cache_data("missing-parent-diagnostic-test/no-cache", "pipeline", "x", 1);
++	checks.contains(missing.finish(), "operation=open, errno=" + std::to_string(ENOENT), "real-missing-parent");
++	fprintf(stdout, "Executed VK-PIPELINES:21 OS-CACHE:24+missing-parent; failures=%d\n", checks.failures);
++	return checks.failures ? 1 : 0;
++}

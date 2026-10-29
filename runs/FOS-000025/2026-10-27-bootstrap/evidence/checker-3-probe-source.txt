@@ -1,0 +1,92 @@
+import copy, json, os, subprocess, sys
+sys.path.insert(0, '/home/robin/dev/fossilize-harness-checker-3/.agents/skills/implement-change-harness/scripts')
+from test_harness_state import HarnessTests
+from harness_state import Harness, git
+
+def execute(t, modules):
+    result=subprocess.run([sys.executable,'-B','-m','unittest','-v',*modules],cwd=t.source, capture_output=True,text=True,timeout=30)
+    print('COMMAND',modules,'exit',result.returncode)
+    print(result.stderr.strip())
+    return result
+
+def accepted(t, modules, mapping):
+    result=execute(t,modules)
+    assert result.returncode==0
+    report=t.check_report(result)
+    ids=[v for v in mapping.values()]
+    report.update(discovered=ids,executed=ids,test_mapping={c:{'location':i.split('.')[0]+'.py','tests':[i]} for c,i in mapping.items()})
+    report['evidence'][0]['command']=[sys.executable,'-B','-m','unittest','-v',*modules]
+    t.act('report',report)
+    return report['attempt_id']
+
+def stage(t):
+    print('STATE',json.dumps({'phase':t.state['phase'],'operation':t.state['operation'],'active':t.state['active_unit'],'units':[(u['key'],u['status'],u['accepted']) for u in t.state['units']]},sort_keys=True))
+
+def probe(split):
+    t=HarnessTests();t.setUp()
+    try:
+        print('PROBE', 'reversed_split' if split else 'unsplit')
+        if split:
+            plan=t.split_plan();first,second=[u['key'] for u in plan['subtasks']];plan['subtasks'].reverse()
+            t.launch('planner');t.act('report',dict(t.report(),plan=plan))
+            assert t.state['active_unit']==first
+        else:
+            t.planned();first=t.root_key
+        t.implemented();t.checked()
+        if split:
+            assert t.state['active_unit']==second
+            t.launch('implementer')
+            (t.source/'behavior.py').write_text('def value():\n    return 2\ndef second_value():\n    return 2\n')
+            (t.source/'test_second.py').write_text('import unittest\nfrom behavior import second_value\nclass Second(unittest.TestCase):\n    def test_second(self):\n        self.assertEqual(second_value(),2)\n')
+            candidate=t.commit_candidate(value=2)
+            # commit_candidate intentionally replaced behavior; restore second API as part of same unit.
+            (t.source/'behavior.py').write_text('def value():\n    return 2\ndef second_value():\n    return 2\n')
+            git(t.source,'add','.');git(t.source,'commit','-m','second API')
+            candidate=git(t.source,'rev-parse','HEAD').decode().strip()
+            t.act('report',dict(t.report(),result_candidate_sha=candidate,test_mapping={'C2':'test_second.py'},commands=[{'exit_code':0}]))
+            t.launch('checker');accepted(t,['test_second'],{'C2':'test_second.Second.test_second'})
+        else:
+            # Final-only rejection is a factual checker finding even with local subtask passing.
+            pass
+        assert t.state['operation']=='final'
+        t.launch('checker'); rejected_envelope=copy.deepcopy(t.report())
+        if split:
+            failed=execute(t,['test_behavior','test_second']);assert failed.returncode!=0
+            evidence=failed.stderr
+        else:
+            evidence='Independent final inspection requires corrected root candidate; subtask approval is insufficient.'
+        t.act('report',dict(t.report(),verdict='changes_required',findings=[{'id':'probe-final','status':'open','route':'implementation','evidence':evidence}],next_action='repair root and renew checks'))
+        stage(t)
+        assert t.state['active_unit']==first and all(u['status']=='ready' and u['accepted'] is None for u in t.state['units'])
+        t.harness=Harness(t.source,clock=lambda:t.now)
+        assert t.harness.show()['state']==t.state
+        t.unchanged_rejection('publish-intent',t.intent(),'final acceptance')
+        t.launch('implementer');assert t.report()['unit']==first
+        (t.source/'behavior.py').write_text('def value():\n    return 1\ndef second_value():\n    return 2\n')
+        git(t.source,'add','.');git(t.source,'commit','--allow-empty','-m','independent repaired root')
+        corrected=git(t.source,'rev-parse','HEAD').decode().strip()
+        t.act('report',dict(t.report(),result_candidate_sha=corrected,test_mapping={'C1':'test_behavior.py'},commands=[{'exit_code':0}]))
+        t.launch('checker')
+        t.unchanged_rejection('report',t.check_report(),'unresolved prior finding')
+        verified=execute(t,['test_behavior']+(['test_second'] if split else []));assert verified.returncode==0
+        t.act('resolve-finding',{'finding_id':'probe-final','evidence':verified.stderr})
+        accepted(t,['test_behavior'],{'C1':'test_behavior.Behavior.test_value'})
+        if split:
+            assert t.state['active_unit']==second and t.state['operation']=='implement'
+            t.launch('implementer');assert t.report()['unit']==second
+            t.act('report',dict(t.report(),result_candidate_sha=corrected,test_mapping={'C2':'test_second.py'},commands=[{'exit_code':0}]))
+            t.launch('checker');accepted(t,['test_second'],{'C2':'test_second.Second.test_second'})
+        assert t.state['operation']=='final' and t.state['final_acceptance'] is None
+        previous=t.report()['attempt_id']
+        t.unchanged_rejection('publish-intent',t.intent(),'final acceptance')
+        t.launch('checker');assert t.report()['operation']=='final' and t.report()['attempt_id']!=previous
+        mapping={'C1':'test_behavior.Behavior.test_value'}
+        if split:mapping['C2']='test_second.Second.test_second'
+        accepted(t,['test_behavior']+(['test_second'] if split else []),mapping)
+        assert t.state['phase']=='publishing' and t.state['final_acceptance']['candidate_sha']==corrected
+        assert all(u['accepted']['candidate_sha']==corrected for u in t.state['units'])
+        stage(t);print('PASS actual repair dispatch, corrected candidate, renewed unit chain, distinct final acceptance after restart')
+    finally:t.doCleanups()
+
+probe(False)
+probe(True)

@@ -1,0 +1,32 @@
+## Problem
+
+Pipeline replay and Vulkan device setup diagnostics discard raw failure results. Some compute and ray-tracing capture messages name the wrong pipeline type and speculate about unsupported pNext chains. Cache export errors lose the originating OS error during cleanup.
+
+## What changes
+
+- Preserve numeric VkResult, operation/phase and available pipeline hash or device context in replay/setup failures, including compile-required paths.
+- Correct pipeline capture resource names across normal, QA, paranoid, eager and binary modes, and report unknown recording causes honestly.
+- Snapshot errno at cache open/write/close failures before cleanup can overwrite it; distinguish pipeline and validation caches.
+- Register GPU-independent tests through production replay, device and exported layer call paths, with successful controls and compatibility fixtures.
+
+## Why this matters
+
+Failure reports retain the evidence needed to distinguish controlled API errors, capture rejection and cache export failure without treating them as driver crashes or unsupported features.
+
+## Why this approach
+
+This is the initial diagnostic-context slice requested in #10. It retains public interfaces, Vulkan return/handle behavior and existing CLI exit policy while improving existing human diagnostics. It introduces no common result schema, process-controller redesign or persistence guarantee.
+
+## Verification and limits
+
+Candidate: `a24e8afd8b584a3ad95d049885c3445ba3f1fa9c`; base: `b42b22c2e73bcfed731ee17752c244e2be7e737f`.
+
+Linux GCC 13.3, full CLI/layer builds, Debug and Release with exceptions OFF and ON: all 54 registered CTests passed in each configuration. Independent checking reruns the applicable gates. Baseline-header callers and an unchanged layer consumer exercise source compatibility and the limited Vulkan layer C ABI. Compiled defect controls check that missing raw results, overwritten errno, incorrect pipeline names and unsupported-feature speculation trigger assertion failures; the clean candidate passes.
+
+Native Windows verification is explicitly deferred and remains unverified under the user's authorization for this run. Linux CPU mocks do not prove native Windows behavior, real driver compilation, Steam integration, durable cache output or a general C++ ABI guarantee. Human diagnostic wording intentionally changes.
+
+## Task references
+
+Closes https://github.com/robinwassen/Fossilize/issues/10
+
+Shared requirements: https://github.com/robinwassen/Fossilize/issues/8 (remains open).

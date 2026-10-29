@@ -1,0 +1,82 @@
+{
+  "assertions": "Committed CHECK assertions remain active under NDEBUG. Every planned injected first-error/order/exact-close case, normal/empty filesystem roundtrip, Linux dev-full, legacy compatibility/completion plus existing core/diagnostic/utility regressions passed. Full inventory and raw output retained externally.",
+  "command": "timeout --signal=TERM --kill-after=5s 600s python3 /tmp/fossilize-12/verify_checker-final_config.py Release ON",
+  "commands": [
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-12/checker-final",
+        "-B",
+        "/tmp/fossilize-12/checker-final-build-release-exceptions-on",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+      ],
+      "cwd": "/tmp/fossilize-12/checker-final",
+      "exit_code": 0,
+      "log": "/tmp/fossilize-12/evidence-checker-final/release-on/0.log",
+      "seconds": 1.8179194279946387
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-12/checker-final-build-release-exceptions-on",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-12/checker-final",
+      "exit_code": 0,
+      "log": "/tmp/fossilize-12/evidence-checker-final/release-on/1.log",
+      "seconds": 268.75320709100924
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-12/checker-final-build-release-exceptions-on",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-12/checker-final",
+      "exit_code": 0,
+      "log": "/tmp/fossilize-12/evidence-checker-final/release-on/2.log",
+      "seconds": 0.016249176987912506
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-12/checker-final-build-release-exceptions-on",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "cwd": "/tmp/fossilize-12/checker-final",
+      "exit_code": 0,
+      "log": "/tmp/fossilize-12/evidence-checker-final/release-on/3.log",
+      "seconds": 1.830033407022711
+    }
+  ],
+  "cwd": "/tmp/fossilize-12/checker-final",
+  "executed_passed_count": 91,
+  "external_inventory": "/tmp/fossilize-12/evidence-checker-final/release-on/2.log",
+  "external_test_output": "/tmp/fossilize-12/evidence-checker-final/release-on/3.log",
+  "gate": "linux-release-exceptions-on",
+  "helper_effective_flags": "-fvisibility=hidden -O3 -DNDEBUG -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow",
+  "inventory_equals_actual_passed_names": true,
+  "registered_count": 91,
+  "skipped": [],
+  "tuple": {
+    "attempt_id": "checker-final",
+    "base_sha": "a97dfec075a52e69a6ad517071c08b2b292983e5",
+    "candidate_sha": "5480319b0dca1b4d33518370d00da1fef46ed1fc",
+    "plan_version": 2,
+    "worker_id": "/root/checker_final_12"
+  }
+}

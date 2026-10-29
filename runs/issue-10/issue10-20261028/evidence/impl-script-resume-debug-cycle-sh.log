@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+cmake=/tmp/fossilize-10/tools/cmake/data/bin/cmake
+ctest=/tmp/fossilize-10/tools/cmake/data/bin/ctest
+build=/tmp/fossilize-10/build-debug-off
+"$cmake" --build "$build" --parallel 6 > /tmp/fossilize-10/build-debug-off-resume.log 2>&1
+"$ctest" --test-dir "$build" -N > /tmp/fossilize-10/discovery-debug-off.log 2>&1
+"$ctest" --test-dir "$build" --output-on-failure > /tmp/fossilize-10/ctest-debug-off.log 2>&1

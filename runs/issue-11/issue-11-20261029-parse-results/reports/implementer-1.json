@@ -1,0 +1,3131 @@
+{
+  "attempt_id": "implementer-1",
+  "base_sha": "36b78637e847463c4f58758a907b33ce5bf07ce5",
+  "baseline": {
+    "candidate_helper_sha": "feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd",
+    "meaningful_original_defect": "All six negative runners fail specifically because baseline returns success despite parse false, not because setup fails; baseline list also prints the rejected item as an ordinary empty dependency row.",
+    "negative_assertions": 6,
+    "negative_runner_exit_codes": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "negative_utility_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "positive_controls": 6,
+    "utility_source_sha": "36b78637e847463c4f58758a907b33ce5bf07ce5",
+    "worktree": "/home/robin/dev/fossilize-issue-11-base"
+  },
+  "candidate_sha": null,
+  "clean_source": true,
+  "commands": [
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-baseline --parallel 4 --target fossilize-list fossilize-rehash fossilize-prune",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "baseline-build",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-build.log",
+      "result": "passed",
+      "seconds": 10.26697850227356,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11-base -B /tmp/fossilize-11/build-baseline -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "baseline-configure",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-configure.log",
+      "result": "passed",
+      "seconds": 2.422955274581909,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=empty -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-list-empty -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-list-empty"
+      ],
+      "executed": [
+        "baseline-list-empty"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "baseline-list-empty",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-list-empty.log",
+      "result": "passed",
+      "seconds": 0.011932611465454102,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=invalid-json -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-list-invalid-json -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-list-invalid-json"
+      ],
+      "executed": [
+        "baseline-list-invalid-json"
+      ],
+      "exit_code": 1,
+      "expected": 1,
+      "expected_regression_assertion_exit_code": 1,
+      "id": "baseline-list-invalid-json",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-list-invalid-json.log",
+      "result": "passed-original-defect-control",
+      "seconds": 0.013647794723510742,
+      "status": 1,
+      "utility_exit_code": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=populated -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-list-populated -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-list-populated"
+      ],
+      "executed": [
+        "baseline-list-populated"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "baseline-list-populated",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-list-populated.log",
+      "result": "passed",
+      "seconds": 0.014153480529785156,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=version -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-list-version -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-list-version"
+      ],
+      "executed": [
+        "baseline-list-version"
+      ],
+      "exit_code": 1,
+      "expected": 1,
+      "expected_regression_assertion_exit_code": 1,
+      "id": "baseline-list-version",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-list-version.log",
+      "result": "passed-original-defect-control",
+      "seconds": 0.013076066970825195,
+      "status": 1,
+      "utility_exit_code": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=empty -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-prune-empty -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-prune-empty"
+      ],
+      "executed": [
+        "baseline-prune-empty"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "baseline-prune-empty",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-prune-empty.log",
+      "result": "passed",
+      "seconds": 0.01683783531188965,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=invalid-json -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-prune-invalid-json -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-prune-invalid-json"
+      ],
+      "executed": [
+        "baseline-prune-invalid-json"
+      ],
+      "exit_code": 1,
+      "expected": 1,
+      "expected_regression_assertion_exit_code": 1,
+      "id": "baseline-prune-invalid-json",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-prune-invalid-json.log",
+      "result": "passed-original-defect-control",
+      "seconds": 0.014297008514404297,
+      "status": 1,
+      "utility_exit_code": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=populated -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-prune-populated -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-prune-populated"
+      ],
+      "executed": [
+        "baseline-prune-populated"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "baseline-prune-populated",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-prune-populated.log",
+      "result": "passed",
+      "seconds": 0.016597986221313477,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=version -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-prune-version -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-prune-version"
+      ],
+      "executed": [
+        "baseline-prune-version"
+      ],
+      "exit_code": 1,
+      "expected": 1,
+      "expected_regression_assertion_exit_code": 1,
+      "id": "baseline-prune-version",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-prune-version.log",
+      "result": "passed-original-defect-control",
+      "seconds": 0.014042377471923828,
+      "status": 1,
+      "utility_exit_code": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=empty -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-rehash-empty -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-rehash-empty"
+      ],
+      "executed": [
+        "baseline-rehash-empty"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "baseline-rehash-empty",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-rehash-empty.log",
+      "result": "passed",
+      "seconds": 0.01781487464904785,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=invalid-json -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-rehash-invalid-json -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-rehash-invalid-json"
+      ],
+      "executed": [
+        "baseline-rehash-invalid-json"
+      ],
+      "exit_code": 1,
+      "expected": 1,
+      "expected_regression_assertion_exit_code": 1,
+      "id": "baseline-rehash-invalid-json",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-rehash-invalid-json.log",
+      "result": "passed-original-defect-control",
+      "seconds": 0.014452695846557617,
+      "status": 1,
+      "utility_exit_code": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=populated -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-rehash-populated -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-rehash-populated"
+      ],
+      "executed": [
+        "baseline-rehash-populated"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "baseline-rehash-populated",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-rehash-populated.log",
+      "result": "passed",
+      "seconds": 0.018853425979614258,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=version -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-rehash-version -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "baseline-rehash-version"
+      ],
+      "executed": [
+        "baseline-rehash-version"
+      ],
+      "exit_code": 1,
+      "expected": 1,
+      "expected_regression_assertion_exit_code": 1,
+      "id": "baseline-rehash-version",
+      "log": "/tmp/fossilize-11/implementer-evidence/baseline-rehash-version.log",
+      "result": "passed-original-defect-control",
+      "seconds": 0.012387514114379883,
+      "status": 1,
+      "utility_exit_code": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-debug-off --parallel 4",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-off-build",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-off-build.log",
+      "result": "passed",
+      "seconds": 240.2309443950653,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-debug-off --parallel 4",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-off-build.retry-1",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-off-build.retry-1.log",
+      "result": "passed",
+      "seconds": 7.513540267944336,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-debug-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-off-configure",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-off-configure.log",
+      "result": "passed",
+      "seconds": 1.776352882385254,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-debug-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-off-configure.retry-1",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-off-configure.retry-1.log",
+      "result": "passed",
+      "seconds": 1.2849464416503906,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-off --output-on-failure --parallel 3",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application"
+      ],
+      "executed": [
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "fossilize-system-test",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-prune-version",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "varint-system-test"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-off-ctest",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-off-ctest.log",
+      "result": "passed",
+      "seconds": 2.213921546936035,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-off --output-on-failure --parallel 3",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application"
+      ],
+      "executed": [
+        "linux-futex-test",
+        "utility-parse-prune-rejected-application",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-mixed",
+        "fossilize-system-test",
+        "utility-parse-prune-mixed",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-rehash-populated",
+        "utility-parse-prune-version",
+        "utility-parse-rehash-empty",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-list-populated",
+        "utility-parse-list-empty-dependencies",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-empty",
+        "utility-parse-list-invalid-json",
+        "replay-diagnostic-test",
+        "object-cache-test",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "device-diagnostic-test",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-reject",
+        "application-info-filter-test",
+        "feature-filter-test",
+        "varint-system-test"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-off-ctest.retry-1",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-off-ctest.retry-1.log",
+      "result": "passed",
+      "seconds": 2.3231310844421387,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-off --show-only=json-v1",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-off-discovery",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-off-discovery.log",
+      "result": "passed",
+      "seconds": 0.011180400848388672,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-off --show-only=json-v1",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-off-discovery.retry-1",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-off-discovery.retry-1.log",
+      "result": "passed",
+      "seconds": 0.011271238327026367,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-debug-on --parallel 4",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-on-build",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-on-build.log",
+      "result": "passed",
+      "seconds": 298.3146855831146,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-debug-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-on-configure",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-on-configure.log",
+      "result": "passed",
+      "seconds": 1.9634342193603516,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-on --output-on-failure --parallel 3",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application"
+      ],
+      "executed": [
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "fossilize-system-test",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-rehash-version",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-prune-version",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "varint-system-test"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-on-ctest",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-on-ctest.log",
+      "result": "passed",
+      "seconds": 1.8715877532958984,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-on --show-only=json-v1",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "debug-on-discovery",
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-on-discovery.log",
+      "result": "passed",
+      "seconds": 0.014117717742919922,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-ordinary --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-ordinary.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+        "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery",
+        "test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects",
+        "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch",
+        "test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection",
+        "test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct",
+        "test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile",
+        "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved",
+        "test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs",
+        "test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts",
+        "test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved",
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment",
+        "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries",
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_inventory_and_rejection",
+        "test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery",
+        "test_delivery_wrapup.DeliveryTests.test_W12_compact_result_cache_integrity_and_finite_deadlines",
+        "test_delivery_wrapup.DeliveryTests.test_W14_ambiguous_published_dispatch_never_blindly_resends",
+        "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once",
+        "test_delivery_wrapup.DeliveryTests.test_W14_successful_comment_lost_response_delayed_and_failed_readback"
+      ],
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+        "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery",
+        "test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects",
+        "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch",
+        "test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection",
+        "test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct",
+        "test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile",
+        "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved",
+        "test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs",
+        "test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts",
+        "test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved",
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment",
+        "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries",
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_inventory_and_rejection",
+        "test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery",
+        "test_delivery_wrapup.DeliveryTests.test_W12_compact_result_cache_integrity_and_finite_deadlines",
+        "test_delivery_wrapup.DeliveryTests.test_W14_ambiguous_published_dispatch_never_blindly_resends",
+        "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once",
+        "test_delivery_wrapup.DeliveryTests.test_W14_successful_comment_lost_response_delayed_and_failed_readback"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-delivery-ordinary",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-delivery-ordinary.log",
+      "result": "passed",
+      "scenarios": [
+        {
+          "id": "W09:approval:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries"
+        },
+        {
+          "id": "W09:approval:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries"
+        },
+        {
+          "id": "W09:complete:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries"
+        },
+        {
+          "id": "W09:complete:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries"
+        },
+        {
+          "id": "W14:merge:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once"
+        },
+        {
+          "id": "W14:merge:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once"
+        },
+        {
+          "id": "W14:ticket-comment-8:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once"
+        },
+        {
+          "id": "W14:ticket-comment-8:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once"
+        }
+      ],
+      "seconds": 523.4842729568481,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w09 --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-w09.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+      ],
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-delivery-w09",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-delivery-w09.log",
+      "result": "passed",
+      "scenarios": [
+        {
+          "id": "W09:merge:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge-verification:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge-verification:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge-verification:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge-verification:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge-verification:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:detach:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:detach:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:detach:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:detach:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:detach:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:remote-delete:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:remote-delete:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:remote-delete:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:remote-delete:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:remote-delete:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:local-delete:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:local-delete:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:local-delete:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:local-delete:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:local-delete:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-close-8:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-close-8:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-close-8:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-close-8:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-close-8:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-comment-8:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-comment-8:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-comment-8:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-comment-8:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-comment-8:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        }
+      ],
+      "seconds": 275.57049465179443,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-0 --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-w11-0.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+      ],
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-delivery-w11-0",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-delivery-w11-0.log",
+      "result": "passed",
+      "scenarios": [
+        {
+          "id": "W11:approval:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:merge:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:merge:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:merge-verification:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:merge-verification:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:detach:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:detach:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:remote-delete:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:remote-delete:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:local-delete:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:local-delete:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:ticket-close-8:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:ticket-close-8:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:ticket-comment-8:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:ticket-comment-8:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        }
+      ],
+      "seconds": 149.45823979377747,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-1 --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-w11-1.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+      ],
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-delivery-w11-1",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-delivery-w11-1.log",
+      "result": "passed",
+      "scenarios": [
+        {
+          "id": "W11:approval:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:merge:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:merge:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:merge-verification:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:merge-verification:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:detach:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:detach:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:remote-delete:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:remote-delete:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:local-delete:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:local-delete:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:ticket-close-8:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:ticket-close-8:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:ticket-comment-8:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:ticket-comment-8:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        }
+      ],
+      "seconds": 138.78550553321838,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-2 --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-w11-2.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+      ],
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-delivery-w11-2",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-delivery-w11-2.log",
+      "result": "passed",
+      "scenarios": [
+        {
+          "id": "W11:merge:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:merge:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:merge-verification:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:merge-verification:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:detach:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:detach:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:remote-delete:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:remote-delete:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:local-delete:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:local-delete:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:ticket-close-8:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:ticket-close-8:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:ticket-comment-8:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:ticket-comment-8:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:complete:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        }
+      ],
+      "seconds": 136.908185005188,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-3 --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-w11-3.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+      ],
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-delivery-w11-3",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-delivery-w11-3.log",
+      "result": "passed",
+      "scenarios": [
+        {
+          "id": "W11:merge:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:merge:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:merge-verification:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:merge-verification:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:detach:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:detach:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:remote-delete:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:remote-delete:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:local-delete:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:local-delete:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:ticket-close-8:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:ticket-close-8:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:ticket-comment-8:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:ticket-comment-8:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:complete:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        }
+      ],
+      "seconds": 124.47168922424316,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --inventory --output /tmp/fossilize-11/implementer-evidence/harness/inventory.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-inventory",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-inventory.log",
+      "result": "passed",
+      "seconds": 0.2831845283508301,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-extra --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-extra.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_harness_runner.RunnerTests.test_W15_actual_result_records_skip_failure_duplicate_and_success",
+        "test_harness_runner.RunnerTests.test_W15_exclusive_output_rejects_stale_results_and_guidance_lists_all_groups",
+        "test_harness_runner.RunnerTests.test_W15_real_full_discovery_has_unique_ownership_without_fixtures",
+        "test_harness_runner.RunnerTests.test_W15_union_success_and_all_hostile_result_controls"
+      ],
+      "executed": [
+        "test_harness_runner.RunnerTests.test_W15_actual_result_records_skip_failure_duplicate_and_success",
+        "test_harness_runner.RunnerTests.test_W15_exclusive_output_rejects_stale_results_and_guidance_lists_all_groups",
+        "test_harness_runner.RunnerTests.test_W15_real_full_discovery_has_unique_ownership_without_fixtures",
+        "test_harness_runner.RunnerTests.test_W15_union_success_and_all_hostile_result_controls"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-regression-extra",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-regression-extra.log",
+      "result": "passed",
+      "scenarios": [],
+      "seconds": 0.561699390411377,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_artifacts --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_artifacts.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone",
+        "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes",
+        "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root",
+        "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+        "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending",
+        "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery",
+        "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication",
+        "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+        "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations",
+        "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation",
+        "test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge",
+        "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation",
+        "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+        "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+        "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion"
+      ],
+      "executed": [
+        "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone",
+        "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes",
+        "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root",
+        "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+        "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending",
+        "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery",
+        "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication",
+        "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+        "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations",
+        "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation",
+        "test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge",
+        "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation",
+        "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+        "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+        "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-regression-test_harness_artifacts",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_artifacts.log",
+      "result": "passed",
+      "scenarios": [],
+      "seconds": 27.784871339797974,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_closeout --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_closeout.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+        "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+        "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+        "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+        "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+        "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+        "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record"
+      ],
+      "executed": [
+        "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+        "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+        "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+        "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+        "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+        "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+        "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-regression-test_harness_closeout",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_closeout.log",
+      "result": "passed",
+      "scenarios": [],
+      "seconds": 66.02341651916504,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_artifacts --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_issue_artifacts.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha"
+      ],
+      "executed": [
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-regression-test_harness_issue_artifacts",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_issue_artifacts.log",
+      "result": "passed",
+      "scenarios": [],
+      "seconds": 6.446794748306274,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_closeout --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_issue_closeout.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_incomplete_epic_child_prevents_closing_reference",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readback_requires_exact_base_plan_input_binding",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readiness_without_source_edit_then_separate_final_acceptance",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_split_units_renew_at_combined_candidate_without_new_implementation",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D02_real_remote_one_pr_response_loss_open_until_user_merge",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry"
+      ],
+      "executed": [
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_incomplete_epic_child_prevents_closing_reference",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readback_requires_exact_base_plan_input_binding",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readiness_without_source_edit_then_separate_final_acceptance",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_split_units_renew_at_combined_candidate_without_new_implementation",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D02_real_remote_one_pr_response_loss_open_until_user_merge",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-regression-test_harness_issue_closeout",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_issue_closeout.log",
+      "result": "passed",
+      "scenarios": [],
+      "seconds": 88.56970977783203,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_migration --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_migration.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only",
+        "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state",
+        "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift",
+        "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget",
+        "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable",
+        "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria",
+        "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority",
+        "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances",
+        "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes",
+        "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically",
+        "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline",
+        "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes",
+        "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind",
+        "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token"
+      ],
+      "executed": [
+        "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only",
+        "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state",
+        "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift",
+        "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget",
+        "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable",
+        "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria",
+        "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority",
+        "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances",
+        "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes",
+        "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically",
+        "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline",
+        "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes",
+        "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind",
+        "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-regression-test_harness_migration",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_migration.log",
+      "result": "passed",
+      "scenarios": [],
+      "seconds": 40.88286733627319,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_state --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_state.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+        "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+        "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+        "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+        "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+        "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+        "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+        "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+        "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+        "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+        "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+        "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+        "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+        "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+        "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+        "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan",
+        "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+        "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+        "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+        "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+        "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+        "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair",
+        "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+        "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+        "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+        "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+        "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+      ],
+      "executed": [
+        "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+        "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+        "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+        "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+        "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+        "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+        "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+        "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+        "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+        "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+        "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+        "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+        "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+        "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+        "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+        "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan",
+        "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+        "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+        "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+        "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+        "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+        "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair",
+        "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+        "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+        "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+        "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+        "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-regression-test_harness_state",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_state.log",
+      "result": "passed",
+      "scenarios": [],
+      "seconds": 140.22511649131775,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_guidance --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_issue_guidance.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror"
+      ],
+      "executed": [
+        "test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-regression-test_issue_guidance",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-regression-test_issue_guidance.log",
+      "result": "passed",
+      "scenarios": [],
+      "seconds": 0.42616701126098633,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_migration --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_issue_migration.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit",
+        "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected",
+        "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch",
+        "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates",
+        "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates",
+        "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion",
+        "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile",
+        "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent",
+        "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation",
+        "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved",
+        "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union",
+        "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock",
+        "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication",
+        "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch"
+      ],
+      "executed": [
+        "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit",
+        "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected",
+        "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch",
+        "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates",
+        "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates",
+        "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion",
+        "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile",
+        "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent",
+        "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation",
+        "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved",
+        "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union",
+        "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock",
+        "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication",
+        "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-regression-test_issue_migration",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-regression-test_issue_migration.log",
+      "result": "passed",
+      "scenarios": [],
+      "seconds": 54.41159391403198,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_source --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_issue_source.json",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "test_issue_source.IssueSourceTests.test_S01_url_numeric_full_identity_paginated_snapshot",
+        "test_issue_source.IssueSourceTests.test_S01_wrong_repo_pr_auth_and_cycle_fail_closed",
+        "test_issue_source.IssueSourceTests.test_S03_parent_membership_is_not_blocking",
+        "test_issue_source.IssueSourceTests.test_S03_transitive_cancelled_readiness_and_material_drift"
+      ],
+      "executed": [
+        "test_issue_source.IssueSourceTests.test_S01_url_numeric_full_identity_paginated_snapshot",
+        "test_issue_source.IssueSourceTests.test_S01_wrong_repo_pr_auth_and_cycle_fail_closed",
+        "test_issue_source.IssueSourceTests.test_S03_parent_membership_is_not_blocking",
+        "test_issue_source.IssueSourceTests.test_S03_transitive_cancelled_readiness_and_material_drift"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-regression-test_issue_source",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-regression-test_issue_source.log",
+      "result": "passed",
+      "scenarios": [],
+      "seconds": 7.96002721786499,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-validate",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-validate.log",
+      "result": "passed",
+      "seconds": 0.08638238906860352,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --verify-results /tmp/fossilize-11/implementer-evidence/harness",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "harness-verify",
+      "log": "/tmp/fossilize-11/implementer-evidence/harness-verify.log",
+      "result": "passed",
+      "seconds": 0.4588005542755127,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-release-off --parallel 4",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "release-off-build",
+      "log": "/tmp/fossilize-11/implementer-evidence/release-off-build.log",
+      "result": "passed",
+      "seconds": 389.0702979564667,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-release-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "release-off-configure",
+      "log": "/tmp/fossilize-11/implementer-evidence/release-off-configure.log",
+      "result": "passed",
+      "seconds": 1.7752249240875244,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-off --output-on-failure --parallel 3",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application"
+      ],
+      "executed": [
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "fossilize-system-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-rehash-version",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-prune-version",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "varint-system-test"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "release-off-ctest",
+      "log": "/tmp/fossilize-11/implementer-evidence/release-off-ctest.log",
+      "result": "passed",
+      "seconds": 1.0063848495483398,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-off --show-only=json-v1",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "release-off-discovery",
+      "log": "/tmp/fossilize-11/implementer-evidence/release-off-discovery.log",
+      "result": "passed",
+      "seconds": 0.011345624923706055,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-release-on --parallel 4",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "release-on-build",
+      "log": "/tmp/fossilize-11/implementer-evidence/release-on-build.log",
+      "result": "passed",
+      "seconds": 255.04406642913818,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-release-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "release-on-configure",
+      "log": "/tmp/fossilize-11/implementer-evidence/release-on-configure.log",
+      "result": "passed",
+      "seconds": 1.9433269500732422,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-on --output-on-failure --parallel 3",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application"
+      ],
+      "executed": [
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "fossilize-system-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "utility-parse-list-version",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-prune-version",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "varint-system-test"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "release-on-ctest",
+      "log": "/tmp/fossilize-11/implementer-evidence/release-on-ctest.log",
+      "result": "passed",
+      "seconds": 0.8337385654449463,
+      "status": 0
+    },
+    {
+      "command": "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-on --show-only=json-v1",
+      "cwd": "/home/robin/dev/fossilize-issue-11",
+      "discovered": [],
+      "executed": [],
+      "exit_code": 0,
+      "expected": 0,
+      "id": "release-on-discovery",
+      "log": "/tmp/fossilize-11/implementer-evidence/release-on-discovery.log",
+      "result": "passed",
+      "seconds": 0.013517618179321289,
+      "status": 0
+    }
+  ],
+  "environment": {
+    "CLI": true,
+    "cmake": "4.4.4",
+    "compiler": "GCC 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1)",
+    "layer": true,
+    "ninja": "1.13.2.git.kitware.jobserver-pipe-1",
+    "os": "Linux x86_64",
+    "runtime_layer_test": false,
+    "submodules": "All required gitlink revisions initialized in candidate and base worktrees; no dependency source modifications."
+  },
+  "files": [
+    "cli/fossilize_list.cpp",
+    "cli/fossilize_rehash.cpp",
+    "cli/fossilize_prune.cpp",
+    "test/utility_parse_test.cpp",
+    "test/utility_parse.cmake",
+    "test/CMakeLists.txt",
+    "local-docs/verification.md"
+  ],
+  "flag_verification": [
+    {
+      "checks": [
+        {
+          "NDEBUG": false,
+          "fno_exceptions": true,
+          "source": "fossilize.cpp"
+        },
+        {
+          "NDEBUG": false,
+          "fno_exceptions": true,
+          "source": "utility_parse_test.cpp"
+        },
+        {
+          "NDEBUG": false,
+          "fno_exceptions": true,
+          "source": "fossilize_list.cpp"
+        },
+        {
+          "NDEBUG": false,
+          "fno_exceptions": true,
+          "source": "fossilize_rehash.cpp"
+        },
+        {
+          "NDEBUG": false,
+          "fno_exceptions": true,
+          "source": "fossilize_prune.cpp"
+        }
+      ],
+      "compile_commands": "/tmp/fossilize-11/build-debug-off/compile_commands.json",
+      "configuration": "debug-off",
+      "result": "passed"
+    },
+    {
+      "checks": [
+        {
+          "NDEBUG": true,
+          "fno_exceptions": true,
+          "source": "fossilize.cpp"
+        },
+        {
+          "NDEBUG": true,
+          "fno_exceptions": true,
+          "source": "utility_parse_test.cpp"
+        },
+        {
+          "NDEBUG": true,
+          "fno_exceptions": true,
+          "source": "fossilize_list.cpp"
+        },
+        {
+          "NDEBUG": true,
+          "fno_exceptions": true,
+          "source": "fossilize_rehash.cpp"
+        },
+        {
+          "NDEBUG": true,
+          "fno_exceptions": true,
+          "source": "fossilize_prune.cpp"
+        }
+      ],
+      "compile_commands": "/tmp/fossilize-11/build-release-off/compile_commands.json",
+      "configuration": "release-off",
+      "result": "passed"
+    },
+    {
+      "checks": [
+        {
+          "NDEBUG": false,
+          "fno_exceptions": false,
+          "source": "fossilize.cpp"
+        },
+        {
+          "NDEBUG": false,
+          "fno_exceptions": false,
+          "source": "utility_parse_test.cpp"
+        },
+        {
+          "NDEBUG": false,
+          "fno_exceptions": false,
+          "source": "fossilize_list.cpp"
+        },
+        {
+          "NDEBUG": false,
+          "fno_exceptions": false,
+          "source": "fossilize_rehash.cpp"
+        },
+        {
+          "NDEBUG": false,
+          "fno_exceptions": false,
+          "source": "fossilize_prune.cpp"
+        }
+      ],
+      "compile_commands": "/tmp/fossilize-11/build-debug-on/compile_commands.json",
+      "configuration": "debug-on",
+      "result": "passed"
+    },
+    {
+      "checks": [
+        {
+          "NDEBUG": true,
+          "fno_exceptions": false,
+          "source": "fossilize.cpp"
+        },
+        {
+          "NDEBUG": true,
+          "fno_exceptions": false,
+          "source": "utility_parse_test.cpp"
+        },
+        {
+          "NDEBUG": true,
+          "fno_exceptions": false,
+          "source": "fossilize_list.cpp"
+        },
+        {
+          "NDEBUG": true,
+          "fno_exceptions": false,
+          "source": "fossilize_rehash.cpp"
+        },
+        {
+          "NDEBUG": true,
+          "fno_exceptions": false,
+          "source": "fossilize_prune.cpp"
+        }
+      ],
+      "compile_commands": "/tmp/fossilize-11/build-release-on/compile_commands.json",
+      "configuration": "release-on",
+      "result": "passed"
+    }
+  ],
+  "gate_summaries": [
+    {
+      "gate": "cpp-debug-exceptions-off",
+      "log": "/tmp/fossilize-11/implementer-evidence/gate-summary-debug-off.log",
+      "result": "passed"
+    },
+    {
+      "gate": "cpp-release-exceptions-off",
+      "log": "/tmp/fossilize-11/implementer-evidence/gate-summary-release-off.log",
+      "result": "passed"
+    },
+    {
+      "gate": "cpp-debug-exceptions-on",
+      "log": "/tmp/fossilize-11/implementer-evidence/gate-summary-debug-on.log",
+      "result": "passed"
+    },
+    {
+      "gate": "cpp-release-exceptions-on",
+      "log": "/tmp/fossilize-11/implementer-evidence/gate-summary-release-on.log",
+      "result": "passed"
+    },
+    {
+      "gate": "original-defect-controls",
+      "log": "/tmp/fossilize-11/implementer-evidence/gate-summary-original-defect-controls.log",
+      "result": "passed"
+    },
+    {
+      "gate": "harness-regression",
+      "log": "/tmp/fossilize-11/implementer-evidence/gate-summary-harness-regression.log",
+      "result": "passed"
+    }
+  ],
+  "harness": {
+    "attempt_token": "836cb45735f94aa9809cf5884a7e0b29",
+    "candidate_sha": "feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd",
+    "discovered": 130,
+    "exact_union_status": "passed",
+    "executed": 130,
+    "executed_scenarios": 103,
+    "groups": [
+      {
+        "executed": 19,
+        "group": "delivery-ordinary",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/delivery-ordinary.json",
+        "scenarios": 8,
+        "successful": true
+      },
+      {
+        "executed": 1,
+        "group": "delivery-w09",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/delivery-w09.json",
+        "scenarios": 35,
+        "successful": true
+      },
+      {
+        "executed": 1,
+        "group": "delivery-w11-0",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/delivery-w11-0.json",
+        "scenarios": 15,
+        "successful": true
+      },
+      {
+        "executed": 1,
+        "group": "delivery-w11-1",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/delivery-w11-1.json",
+        "scenarios": 15,
+        "successful": true
+      },
+      {
+        "executed": 1,
+        "group": "delivery-w11-2",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/delivery-w11-2.json",
+        "scenarios": 15,
+        "successful": true
+      },
+      {
+        "executed": 1,
+        "group": "delivery-w11-3",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/delivery-w11-3.json",
+        "scenarios": 15,
+        "successful": true
+      },
+      {
+        "executed": 4,
+        "group": "regression-extra",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/regression-extra.json",
+        "scenarios": 0,
+        "successful": true
+      },
+      {
+        "executed": 17,
+        "group": "regression-test_harness_artifacts",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_artifacts.json",
+        "scenarios": 0,
+        "successful": true
+      },
+      {
+        "executed": 7,
+        "group": "regression-test_harness_closeout",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_closeout.json",
+        "scenarios": 0,
+        "successful": true
+      },
+      {
+        "executed": 9,
+        "group": "regression-test_harness_issue_artifacts",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_issue_artifacts.json",
+        "scenarios": 0,
+        "successful": true
+      },
+      {
+        "executed": 9,
+        "group": "regression-test_harness_issue_closeout",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_issue_closeout.json",
+        "scenarios": 0,
+        "successful": true
+      },
+      {
+        "executed": 14,
+        "group": "regression-test_harness_migration",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_migration.json",
+        "scenarios": 0,
+        "successful": true
+      },
+      {
+        "executed": 27,
+        "group": "regression-test_harness_state",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_state.json",
+        "scenarios": 0,
+        "successful": true
+      },
+      {
+        "executed": 1,
+        "group": "regression-test_issue_guidance",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/regression-test_issue_guidance.json",
+        "scenarios": 0,
+        "successful": true
+      },
+      {
+        "executed": 14,
+        "group": "regression-test_issue_migration",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/regression-test_issue_migration.json",
+        "scenarios": 0,
+        "successful": true
+      },
+      {
+        "executed": 4,
+        "group": "regression-test_issue_source",
+        "result_file": "/tmp/fossilize-11/implementer-evidence/harness/regression-test_issue_source.json",
+        "scenarios": 0,
+        "successful": true
+      }
+    ],
+    "inventory_digest": "b62908c521d68b40e7b58475457e51595bde6f5b66c5872d6d00b2f38aa81260",
+    "validator_status": "passed"
+  },
+  "input_revision": 4,
+  "input_sha": "36b78637e847463c4f58758a907b33ce5bf07ce5",
+  "limitations": [
+    "Native Windows runtime unavailable; portable CMake target-file/execute_process registration is present but does not prove Windows execution.",
+    "CPU-only fixtures verify parser and utility/database behavior, not real Vulkan driver compilation, GPU/Steam/cache warming or global observability conformance.",
+    "Opt/disasm and explicit optimizer fallback outcomes remain the original conditional future migration scope; neither is migrated or claimed verified.",
+    "Fail-fast is not transactional rollback: callbacks accepted from a failing multi-object blob can remain in rehash output; asynchronous persistence/finalization failure reporting is unchanged.",
+    "Prune failure promises only previously accepted application metadata, no pipeline prefix or dependency closure."
+  ],
+  "matrix": [
+    {
+      "command_id": "debug-off-ctest.retry-1",
+      "configuration": "debug-off",
+      "discovered": 73,
+      "executed": 73,
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-off-ctest.retry-1.log",
+      "result": "passed"
+    },
+    {
+      "command_id": "release-off-ctest",
+      "configuration": "release-off",
+      "discovered": 73,
+      "executed": 73,
+      "log": "/tmp/fossilize-11/implementer-evidence/release-off-ctest.log",
+      "result": "passed"
+    },
+    {
+      "command_id": "debug-on-ctest",
+      "configuration": "debug-on",
+      "discovered": 73,
+      "executed": 73,
+      "log": "/tmp/fossilize-11/implementer-evidence/debug-on-ctest.log",
+      "result": "passed"
+    },
+    {
+      "command_id": "release-on-ctest",
+      "configuration": "release-on",
+      "discovered": 73,
+      "executed": 73,
+      "log": "/tmp/fossilize-11/implementer-evidence/release-on-ctest.log",
+      "result": "passed"
+    }
+  ],
+  "observations": [
+    "Initial Debug/OFF probe preceded the commit of the same source tree; all four mandatory matrix executions and the fresh complete harness suite ran at the committed candidate.",
+    "Prune rejected-application includes a fixture proved to invoke exactly one valid application callback before gracefully rejecting a missing descriptor-set reference; valid later pipeline records are present and asserted absent from failed output.",
+    "Rehash empty-input default application metadata is preexisting behavior observed in exact-base and candidate controls, validated exactly according to the planner clarification."
+  ],
+  "operation": "implement",
+  "outcome": "implemented_and_verified",
+  "plan_version": 1,
+  "records": {
+    "runs/issue-11/issue-11-20261029-parse-results/evidence/gate-summary-debug-off.log": "candidate=feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd\nbase=36b78637e847463c4f58758a907b33ce5bf07ce5\nplan_version=1\nconfiguration=debug-off\nCLI=ON; layer=ON; runtime_layer_test=OFF\nresult=passed; CTest discovered=73; executed=73; mandatory skipped=0\nException and NDEBUG flags inspected in compile_commands for library, all three migrated tools and utility helper.\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-debug-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=1.285; full_log=/tmp/fossilize-11/implementer-evidence/debug-off-configure.retry-1.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-debug-off --parallel 4\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=7.514; full_log=/tmp/fossilize-11/implementer-evidence/debug-off-build.retry-1.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-off --show-only=json-v1\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.011; full_log=/tmp/fossilize-11/implementer-evidence/debug-off-discovery.retry-1.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-off --output-on-failure --parallel 3\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=2.323; full_log=/tmp/fossilize-11/implementer-evidence/debug-off-ctest.retry-1.log\nDiscovered and executed IDs:\nlinux-futex-test\nutility-parse-prune-rejected-application\nutility-parse-list-legacy-invocations\nutility-parse-rehash-mixed\nfossilize-system-test\nutility-parse-prune-mixed\nutility-parse-list-mixed\nutility-parse-list-dependency-failure\nutility-parse-rehash-populated\nutility-parse-prune-version\nutility-parse-rehash-empty\nutility-parse-prune-invalid-json\nutility-parse-rehash-version\nutility-parse-rehash-invalid-json\nutility-parse-prune-empty\nutility-parse-prune-populated\nutility-parse-list-populated\nutility-parse-list-empty-dependencies\ndiagnostic-compatibility-test\nutility-parse-list-version\nutility-parse-list-empty\nutility-parse-list-invalid-json\nreplay-diagnostic-test\nobject-cache-test\ncapture-diagnostic-qa-graphics-success\ncapture-diagnostic-paranoid-raytracing-success\ndevice-diagnostic-test\ncapture-diagnostic-paranoid-raytracing-vulkan-error\ncapture-diagnostic-paranoid-compute-success\ncapture-diagnostic-normal-compute-success\ncapture-diagnostic-paranoid-compute-reject\ncapture-diagnostic-qa-compute-vulkan-error\ncapture-diagnostic-normal-raytracing-success\ncapture-diagnostic-eager-raytracing-success\ncapture-diagnostic-qa-compute-success\ncapture-diagnostic-normal-graphics-success\ncapture-diagnostic-paranoid-compute-vulkan-error\ncapture-diagnostic-normal-raytracing-vulkan-error\ncapture-diagnostic-binary-graphics-success\ncapture-diagnostic-qa-raytracing-success\ncapture-diagnostic-paranoid-graphics-success\ncapture-diagnostic-eager-graphics-vulkan-error\ncapture-diagnostic-eager-compute-reject\ncapture-diagnostic-normal-graphics-reject\ncapture-diagnostic-qa-compute-reject\ncapture-diagnostic-paranoid-graphics-vulkan-error\ncapture-diagnostic-qa-graphics-reject\ncapture-diagnostic-paranoid-graphics-reject\ncapture-diagnostic-eager-compute-vulkan-error\ncapture-diagnostic-qa-graphics-vulkan-error\ncapture-diagnostic-eager-compute-success\ncapture-diagnostic-normal-graphics-vulkan-error\ncapture-diagnostic-qa-raytracing-reject\ncapture-diagnostic-qa-raytracing-vulkan-error\ncapture-diagnostic-paranoid-raytracing-reject\ncapture-diagnostic-binary-compute-success\ncapture-diagnostic-binary-raytracing-success\ncapture-diagnostic-normal-compute-reject\ncapture-diagnostic-normal-compute-vulkan-error\ncapture-diagnostic-binary-raytracing-vulkan-error\ncapture-diagnostic-eager-raytracing-vulkan-error\ncapture-diagnostic-normal-raytracing-reject\ncapture-diagnostic-binary-compute-reject\ncapture-diagnostic-binary-compute-vulkan-error\ncapture-diagnostic-binary-graphics-vulkan-error\ncapture-diagnostic-binary-graphics-reject\ncapture-diagnostic-eager-graphics-success\ncapture-diagnostic-eager-graphics-reject\ncapture-diagnostic-binary-raytracing-reject\ncapture-diagnostic-eager-raytracing-reject\napplication-info-filter-test\nfeature-filter-test\nvarint-system-test\n",
+    "runs/issue-11/issue-11-20261029-parse-results/evidence/gate-summary-debug-on.log": "candidate=feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd\nbase=36b78637e847463c4f58758a907b33ce5bf07ce5\nplan_version=1\nconfiguration=debug-on\nCLI=ON; layer=ON; runtime_layer_test=OFF\nresult=passed; CTest discovered=73; executed=73; mandatory skipped=0\nException and NDEBUG flags inspected in compile_commands for library, all three migrated tools and utility helper.\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-debug-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=1.963; full_log=/tmp/fossilize-11/implementer-evidence/debug-on-configure.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-debug-on --parallel 4\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=298.315; full_log=/tmp/fossilize-11/implementer-evidence/debug-on-build.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-on --show-only=json-v1\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.014; full_log=/tmp/fossilize-11/implementer-evidence/debug-on-discovery.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-debug-on --output-on-failure --parallel 3\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=1.872; full_log=/tmp/fossilize-11/implementer-evidence/debug-on-ctest.log\nDiscovered and executed IDs:\napplication-info-filter-test\nobject-cache-test\nfeature-filter-test\nlinux-futex-test\nreplay-diagnostic-test\ndevice-diagnostic-test\ncapture-diagnostic-normal-graphics-reject\ncapture-diagnostic-normal-graphics-success\ncapture-diagnostic-normal-graphics-vulkan-error\ncapture-diagnostic-normal-compute-reject\ncapture-diagnostic-normal-compute-success\ncapture-diagnostic-normal-compute-vulkan-error\ncapture-diagnostic-normal-raytracing-reject\ncapture-diagnostic-normal-raytracing-success\ncapture-diagnostic-normal-raytracing-vulkan-error\ncapture-diagnostic-qa-graphics-reject\ncapture-diagnostic-qa-graphics-success\ncapture-diagnostic-qa-graphics-vulkan-error\ncapture-diagnostic-qa-compute-reject\ncapture-diagnostic-qa-compute-success\ncapture-diagnostic-qa-compute-vulkan-error\ncapture-diagnostic-qa-raytracing-reject\ncapture-diagnostic-qa-raytracing-success\ncapture-diagnostic-qa-raytracing-vulkan-error\ncapture-diagnostic-paranoid-graphics-reject\ncapture-diagnostic-paranoid-graphics-success\ncapture-diagnostic-paranoid-graphics-vulkan-error\nfossilize-system-test\ncapture-diagnostic-paranoid-compute-reject\ncapture-diagnostic-paranoid-compute-success\ncapture-diagnostic-paranoid-compute-vulkan-error\ncapture-diagnostic-paranoid-raytracing-reject\ncapture-diagnostic-paranoid-raytracing-success\ncapture-diagnostic-paranoid-raytracing-vulkan-error\ncapture-diagnostic-eager-graphics-reject\ncapture-diagnostic-eager-graphics-success\ncapture-diagnostic-eager-graphics-vulkan-error\ncapture-diagnostic-eager-compute-reject\ncapture-diagnostic-eager-compute-success\ncapture-diagnostic-eager-compute-vulkan-error\ncapture-diagnostic-eager-raytracing-reject\ncapture-diagnostic-eager-raytracing-success\ncapture-diagnostic-eager-raytracing-vulkan-error\ncapture-diagnostic-binary-graphics-reject\ncapture-diagnostic-binary-graphics-success\ncapture-diagnostic-binary-graphics-vulkan-error\ncapture-diagnostic-binary-compute-reject\ncapture-diagnostic-binary-compute-success\ncapture-diagnostic-binary-compute-vulkan-error\ncapture-diagnostic-binary-raytracing-reject\ncapture-diagnostic-binary-raytracing-success\ncapture-diagnostic-binary-raytracing-vulkan-error\ndiagnostic-compatibility-test\nutility-parse-list-version\nutility-parse-list-invalid-json\nutility-parse-list-empty\nutility-parse-list-populated\nutility-parse-list-mixed\nutility-parse-list-dependency-failure\nutility-parse-list-empty-dependencies\nutility-parse-rehash-version\nutility-parse-list-legacy-invocations\nutility-parse-rehash-invalid-json\nutility-parse-rehash-empty\nutility-parse-rehash-populated\nutility-parse-prune-version\nutility-parse-rehash-mixed\nutility-parse-prune-invalid-json\nutility-parse-prune-empty\nutility-parse-prune-populated\nutility-parse-prune-mixed\nutility-parse-prune-rejected-application\nvarint-system-test\n",
+    "runs/issue-11/issue-11-20261029-parse-results/evidence/gate-summary-harness-regression.log": "candidate=feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd\ninventory_digest=b62908c521d68b40e7b58475457e51595bde6f5b66c5872d6d00b2f38aa81260\n130 discovered/executed methods; 103 explicit scenarios; all16 groups passed; exact disjoint union passed; validator passed.\nharness-delivery-ordinary: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-ordinary --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-ordinary.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=523.484; full_log=/tmp/fossilize-11/implementer-evidence/harness-delivery-ordinary.log\nharness-delivery-w09: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w09 --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-w09.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=275.570; full_log=/tmp/fossilize-11/implementer-evidence/harness-delivery-w09.log\nharness-delivery-w11-0: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-0 --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-w11-0.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=149.458; full_log=/tmp/fossilize-11/implementer-evidence/harness-delivery-w11-0.log\nharness-delivery-w11-1: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-1 --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-w11-1.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=138.786; full_log=/tmp/fossilize-11/implementer-evidence/harness-delivery-w11-1.log\nharness-delivery-w11-2: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-2 --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-w11-2.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=136.908; full_log=/tmp/fossilize-11/implementer-evidence/harness-delivery-w11-2.log\nharness-delivery-w11-3: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-3 --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/delivery-w11-3.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=124.472; full_log=/tmp/fossilize-11/implementer-evidence/harness-delivery-w11-3.log\nharness-inventory: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --inventory --output /tmp/fossilize-11/implementer-evidence/harness/inventory.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.283; full_log=/tmp/fossilize-11/implementer-evidence/harness-inventory.log\nharness-regression-extra: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-extra --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-extra.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.562; full_log=/tmp/fossilize-11/implementer-evidence/harness-regression-extra.log\nharness-regression-test_harness_artifacts: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_artifacts --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_artifacts.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=27.785; full_log=/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_artifacts.log\nharness-regression-test_harness_closeout: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_closeout --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_closeout.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=66.023; full_log=/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_closeout.log\nharness-regression-test_harness_issue_artifacts: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_artifacts --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_issue_artifacts.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=6.447; full_log=/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_issue_artifacts.log\nharness-regression-test_harness_issue_closeout: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_closeout --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_issue_closeout.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=88.570; full_log=/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_issue_closeout.log\nharness-regression-test_harness_migration: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_migration --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_migration.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=40.883; full_log=/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_migration.log\nharness-regression-test_harness_state: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_state --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_harness_state.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=140.225; full_log=/tmp/fossilize-11/implementer-evidence/harness-regression-test_harness_state.log\nharness-regression-test_issue_guidance: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_guidance --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_issue_guidance.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.426; full_log=/tmp/fossilize-11/implementer-evidence/harness-regression-test_issue_guidance.log\nharness-regression-test_issue_migration: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_migration --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_issue_migration.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=54.412; full_log=/tmp/fossilize-11/implementer-evidence/harness-regression-test_issue_migration.log\nharness-regression-test_issue_source: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_source --inventory /tmp/fossilize-11/implementer-evidence/harness/inventory.json --output /tmp/fossilize-11/implementer-evidence/harness/regression-test_issue_source.json\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=7.960; full_log=/tmp/fossilize-11/implementer-evidence/harness-regression-test_issue_source.log\nharness-validate: timeout --signal=TERM --kill-after=5s 600s python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.086; full_log=/tmp/fossilize-11/implementer-evidence/harness-validate.log\nharness-verify: timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B /home/robin/dev/fossilize-issue-11/.agents/skills/implement-change-harness/scripts/run_harness_tests.py --verify-results /tmp/fossilize-11/implementer-evidence/harness\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.459; full_log=/tmp/fossilize-11/implementer-evidence/harness-verify.log\n",
+    "runs/issue-11/issue-11-20261029-parse-results/evidence/gate-summary-original-defect-controls.log": "candidate_helper=feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd\nunchanged_base_utilities=36b78637e847463c4f58758a907b33ce5bf07ce5\nAll six version/invalid-json baseline utility exits were 0; unchanged candidate assertions failed specifically on expected-1/got-0, exit1.\nAll six baseline populated/empty controls passed; list originally emitted an ordinary empty dependency row.\nbaseline-build: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-baseline --parallel 4 --target fossilize-list fossilize-rehash fossilize-prune\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; expected=0; full_log=/tmp/fossilize-11/implementer-evidence/baseline-build.log\nbaseline-configure: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11-base -B /tmp/fossilize-11/build-baseline -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; expected=0; full_log=/tmp/fossilize-11/implementer-evidence/baseline-configure.log\nbaseline-list-empty: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=empty -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-list-empty -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; expected=0; full_log=/tmp/fossilize-11/implementer-evidence/baseline-list-empty.log\nbaseline-list-invalid-json: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=invalid-json -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-list-invalid-json -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=1; expected=1; full_log=/tmp/fossilize-11/implementer-evidence/baseline-list-invalid-json.log\nbaseline-list-populated: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=populated -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-list-populated -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; expected=0; full_log=/tmp/fossilize-11/implementer-evidence/baseline-list-populated.log\nbaseline-list-version: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=version -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-list-version -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=1; expected=1; full_log=/tmp/fossilize-11/implementer-evidence/baseline-list-version.log\nbaseline-prune-empty: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=empty -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-prune-empty -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; expected=0; full_log=/tmp/fossilize-11/implementer-evidence/baseline-prune-empty.log\nbaseline-prune-invalid-json: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=invalid-json -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-prune-invalid-json -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=1; expected=1; full_log=/tmp/fossilize-11/implementer-evidence/baseline-prune-invalid-json.log\nbaseline-prune-populated: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=populated -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-prune-populated -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; expected=0; full_log=/tmp/fossilize-11/implementer-evidence/baseline-prune-populated.log\nbaseline-prune-version: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=version -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-prune-version -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=1; expected=1; full_log=/tmp/fossilize-11/implementer-evidence/baseline-prune-version.log\nbaseline-rehash-empty: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=empty -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-rehash-empty -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; expected=0; full_log=/tmp/fossilize-11/implementer-evidence/baseline-rehash-empty.log\nbaseline-rehash-invalid-json: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=invalid-json -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-rehash-invalid-json -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=1; expected=1; full_log=/tmp/fossilize-11/implementer-evidence/baseline-rehash-invalid-json.log\nbaseline-rehash-populated: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=populated -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-rehash-populated -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; expected=0; full_log=/tmp/fossilize-11/implementer-evidence/baseline-rehash-populated.log\nbaseline-rehash-version: timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=version -DWORK=/tmp/fossilize-11/implementer-evidence/baseline-rehash-version -P /home/robin/dev/fossilize-issue-11/test/utility_parse.cmake\ncwd=/home/robin/dev/fossilize-issue-11; exit=1; expected=1; full_log=/tmp/fossilize-11/implementer-evidence/baseline-rehash-version.log\n",
+    "runs/issue-11/issue-11-20261029-parse-results/evidence/gate-summary-release-off.log": "candidate=feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd\nbase=36b78637e847463c4f58758a907b33ce5bf07ce5\nplan_version=1\nconfiguration=release-off\nCLI=ON; layer=ON; runtime_layer_test=OFF\nresult=passed; CTest discovered=73; executed=73; mandatory skipped=0\nException and NDEBUG flags inspected in compile_commands for library, all three migrated tools and utility helper.\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-release-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=1.775; full_log=/tmp/fossilize-11/implementer-evidence/release-off-configure.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-release-off --parallel 4\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=389.070; full_log=/tmp/fossilize-11/implementer-evidence/release-off-build.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-off --show-only=json-v1\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.011; full_log=/tmp/fossilize-11/implementer-evidence/release-off-discovery.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-off --output-on-failure --parallel 3\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=1.006; full_log=/tmp/fossilize-11/implementer-evidence/release-off-ctest.log\nDiscovered and executed IDs:\napplication-info-filter-test\nobject-cache-test\nfeature-filter-test\nlinux-futex-test\nfossilize-system-test\nreplay-diagnostic-test\ndevice-diagnostic-test\ncapture-diagnostic-normal-graphics-reject\ncapture-diagnostic-normal-graphics-success\ncapture-diagnostic-normal-graphics-vulkan-error\ncapture-diagnostic-normal-compute-reject\ncapture-diagnostic-normal-compute-success\ncapture-diagnostic-normal-compute-vulkan-error\ncapture-diagnostic-normal-raytracing-reject\ncapture-diagnostic-normal-raytracing-success\ncapture-diagnostic-normal-raytracing-vulkan-error\ncapture-diagnostic-qa-graphics-reject\ncapture-diagnostic-qa-graphics-success\ncapture-diagnostic-qa-graphics-vulkan-error\ncapture-diagnostic-qa-compute-reject\ncapture-diagnostic-qa-compute-success\ncapture-diagnostic-qa-compute-vulkan-error\ncapture-diagnostic-qa-raytracing-reject\ncapture-diagnostic-qa-raytracing-success\ncapture-diagnostic-qa-raytracing-vulkan-error\ncapture-diagnostic-paranoid-graphics-reject\ncapture-diagnostic-paranoid-graphics-success\ncapture-diagnostic-paranoid-graphics-vulkan-error\ncapture-diagnostic-paranoid-compute-reject\ncapture-diagnostic-paranoid-compute-success\ncapture-diagnostic-paranoid-compute-vulkan-error\ncapture-diagnostic-paranoid-raytracing-reject\ncapture-diagnostic-paranoid-raytracing-success\ncapture-diagnostic-paranoid-raytracing-vulkan-error\ncapture-diagnostic-eager-graphics-reject\ncapture-diagnostic-eager-graphics-success\ncapture-diagnostic-eager-graphics-vulkan-error\ncapture-diagnostic-eager-compute-reject\ncapture-diagnostic-eager-compute-success\ncapture-diagnostic-eager-compute-vulkan-error\ncapture-diagnostic-eager-raytracing-reject\ncapture-diagnostic-eager-raytracing-success\ncapture-diagnostic-eager-raytracing-vulkan-error\ncapture-diagnostic-binary-graphics-reject\ncapture-diagnostic-binary-graphics-success\ncapture-diagnostic-binary-graphics-vulkan-error\ncapture-diagnostic-binary-compute-reject\ncapture-diagnostic-binary-compute-success\ncapture-diagnostic-binary-compute-vulkan-error\ncapture-diagnostic-binary-raytracing-reject\ncapture-diagnostic-binary-raytracing-success\ncapture-diagnostic-binary-raytracing-vulkan-error\ndiagnostic-compatibility-test\nutility-parse-list-version\nutility-parse-list-invalid-json\nutility-parse-list-empty\nutility-parse-list-populated\nutility-parse-list-mixed\nutility-parse-list-dependency-failure\nutility-parse-list-empty-dependencies\nutility-parse-rehash-version\nutility-parse-list-legacy-invocations\nutility-parse-rehash-invalid-json\nutility-parse-rehash-empty\nutility-parse-rehash-populated\nutility-parse-prune-version\nutility-parse-rehash-mixed\nutility-parse-prune-invalid-json\nutility-parse-prune-empty\nutility-parse-prune-populated\nutility-parse-prune-mixed\nutility-parse-prune-rejected-application\nvarint-system-test\n",
+    "runs/issue-11/issue-11-20261029-parse-results/evidence/gate-summary-release-on.log": "candidate=feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd\nbase=36b78637e847463c4f58758a907b33ce5bf07ce5\nplan_version=1\nconfiguration=release-on\nCLI=ON; layer=ON; runtime_layer_test=OFF\nresult=passed; CTest discovered=73; executed=73; mandatory skipped=0\nException and NDEBUG flags inspected in compile_commands for library, all three migrated tools and utility helper.\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-release-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=1.943; full_log=/tmp/fossilize-11/implementer-evidence/release-on-configure.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-release-on --parallel 4\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=255.044; full_log=/tmp/fossilize-11/implementer-evidence/release-on-build.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-on --show-only=json-v1\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.014; full_log=/tmp/fossilize-11/implementer-evidence/release-on-discovery.log\ntimeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-on --output-on-failure --parallel 3\ncwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.834; full_log=/tmp/fossilize-11/implementer-evidence/release-on-ctest.log\nDiscovered and executed IDs:\napplication-info-filter-test\nobject-cache-test\nfeature-filter-test\nlinux-futex-test\nreplay-diagnostic-test\nfossilize-system-test\ndevice-diagnostic-test\ncapture-diagnostic-normal-graphics-reject\ncapture-diagnostic-normal-graphics-success\ncapture-diagnostic-normal-graphics-vulkan-error\ncapture-diagnostic-normal-compute-reject\ncapture-diagnostic-normal-compute-success\ncapture-diagnostic-normal-compute-vulkan-error\ncapture-diagnostic-normal-raytracing-reject\ncapture-diagnostic-normal-raytracing-success\ncapture-diagnostic-normal-raytracing-vulkan-error\ncapture-diagnostic-qa-graphics-reject\ncapture-diagnostic-qa-graphics-success\ncapture-diagnostic-qa-graphics-vulkan-error\ncapture-diagnostic-qa-compute-reject\ncapture-diagnostic-qa-compute-success\ncapture-diagnostic-qa-compute-vulkan-error\ncapture-diagnostic-qa-raytracing-reject\ncapture-diagnostic-qa-raytracing-success\ncapture-diagnostic-qa-raytracing-vulkan-error\ncapture-diagnostic-paranoid-graphics-reject\ncapture-diagnostic-paranoid-graphics-success\ncapture-diagnostic-paranoid-graphics-vulkan-error\ncapture-diagnostic-paranoid-compute-reject\ncapture-diagnostic-paranoid-compute-success\ncapture-diagnostic-paranoid-compute-vulkan-error\ncapture-diagnostic-paranoid-raytracing-reject\ncapture-diagnostic-paranoid-raytracing-success\ncapture-diagnostic-paranoid-raytracing-vulkan-error\ncapture-diagnostic-eager-graphics-reject\ncapture-diagnostic-eager-graphics-success\ncapture-diagnostic-eager-graphics-vulkan-error\ncapture-diagnostic-eager-compute-reject\ncapture-diagnostic-eager-compute-success\ncapture-diagnostic-eager-compute-vulkan-error\ncapture-diagnostic-eager-raytracing-reject\ncapture-diagnostic-eager-raytracing-success\ncapture-diagnostic-eager-raytracing-vulkan-error\ncapture-diagnostic-binary-graphics-reject\ncapture-diagnostic-binary-graphics-success\ncapture-diagnostic-binary-graphics-vulkan-error\ncapture-diagnostic-binary-compute-reject\ncapture-diagnostic-binary-compute-success\ncapture-diagnostic-binary-compute-vulkan-error\ncapture-diagnostic-binary-raytracing-reject\ncapture-diagnostic-binary-raytracing-success\ncapture-diagnostic-binary-raytracing-vulkan-error\nutility-parse-list-version\ndiagnostic-compatibility-test\nutility-parse-list-invalid-json\nutility-parse-list-empty\nutility-parse-list-populated\nutility-parse-list-mixed\nutility-parse-list-dependency-failure\nutility-parse-list-empty-dependencies\nutility-parse-rehash-version\nutility-parse-rehash-invalid-json\nutility-parse-list-legacy-invocations\nutility-parse-rehash-empty\nutility-parse-rehash-populated\nutility-parse-prune-version\nutility-parse-rehash-mixed\nutility-parse-prune-invalid-json\nutility-parse-prune-empty\nutility-parse-prune-populated\nutility-parse-prune-mixed\nutility-parse-prune-rejected-application\nvarint-system-test\n"
+  },
+  "result_candidate_sha": "feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd",
+  "role": "implementer",
+  "skipped": [],
+  "summary": "Fail immediately on parser false in list connectivity, rehash and prune; report affected tag/hash and incomplete scope. Preserve precisely bounded accepted output and distinguish verified empty dependencies from rejected entries.",
+  "test_mapping": {
+    "utility-parse-list-dependency-failure": {
+      "assertions": [
+        "A valid selected compute entry with rejected nonselected layout or shader dependency (version and invalid JSON variants) exits nonzero, identifies failing dependency tag/hash and incomplete scope, with no ordinary compute row.",
+        "This exercises replayer_create_info_fill nonselected-tag propagation separately from rejected selected-tag entries."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-list-dependency-failure"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-list-empty": {
+      "assertions": [
+        "Actual existing CLI invocation on a valid prepared empty FOZ exits zero, no parse/incomplete diagnostic; list connectivity stdout is empty.",
+        "For rehash/prune reopen emitted output through DatabaseInterface and verify every relevant resource count is zero."
+      ],
+      "clarification": "Planner empty clarification: zero resource-work records; rehash exact preexisting synthesized default application context is separately asserted. See coordinator immutable planner-empty-clarification.json.",
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-list-empty"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-list-empty-dependencies": {
+      "assertions": [
+        "A valid empty pipeline layout is parsed successfully and produces its ordinary empty dependency row with exit zero. This contrasts actual verified emptiness with rejection."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-list-empty-dependencies"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-list-invalid-json": {
+      "assertions": [
+        "Invoke actual fossilize-list subprocess on a valid outer FOZ containing one compute resource with syntactically invalid JSON such as {.",
+        "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+        "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-list-invalid-json"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-list-legacy-invocations": {
+      "assertions": [
+        "Preserve ordinary list and --size behavior on valid populated/empty fixtures; check exact known hash lines or sizes/totals and zero exit.",
+        "Ordinary hash listing does not validate resource JSON; it remains outside the new parse-failure contract. On rejected JSON, plain list still lists discovered hash successfully; --connectivity is the validating mode."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-list-legacy-invocations"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-list-mixed": {
+      "assertions": [
+        "Two selected compute entries ordered by ascending hash: valid first, rejected second (repeat with invalid JSON and incompatible version).",
+        "Exit nonzero, affected second entry and incomplete scope diagnostic present; stdout has no ordinary rows at all because list resolves all connectivity before printing.",
+        "No partial connectivity payload is promised when any create-info fill fails."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-list-mixed"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-list-populated": {
+      "assertions": [
+        "Actual existing CLI invocation on dependency-complete fixture with known shader, layout and compute objects exits zero and has no incomplete diagnostic.",
+        "List connectivity has the exact expected compute row and layout/module dependency hashes.",
+        "For rehash verify one valid object per expected resource type, reparse emitted resources and verify reference closure/creation values under recalculated hashes; for prune verify original expected tag/hash set and payload semantics. No raytracing fixture in rehash, which does not migrate that support boundary."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-list-populated"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-list-version": {
+      "assertions": [
+        "Invoke actual fossilize-list subprocess on a valid outer FOZ containing one compute resource with {\"version\":999}.",
+        "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+        "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-list-version"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-prune-empty": {
+      "assertions": [
+        "Actual existing CLI invocation on a valid prepared empty FOZ exits zero, no parse/incomplete diagnostic; list connectivity stdout is empty.",
+        "For rehash/prune reopen emitted output through DatabaseInterface and verify every relevant resource count is zero."
+      ],
+      "clarification": "Planner empty clarification: zero resource-work records; rehash exact preexisting synthesized default application context is separately asserted. See coordinator immutable planner-empty-clarification.json.",
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-prune-empty"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-prune-invalid-json": {
+      "assertions": [
+        "Invoke actual fossilize-prune subprocess on a valid outer FOZ containing one compute resource with syntactically invalid JSON such as {.",
+        "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+        "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-prune-invalid-json"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-prune-mixed": {
+      "assertions": [
+        "Two applicationInfo entries ordered by ascending hash: valid first, rejected second (repeat invalid JSON/version).",
+        "Exit nonzero and incomplete scope reported; output reopens and contains the first accepted applicationInfo payload/hash, and never contains the rejected second raw metadata entry.",
+        "Prune stops before access_pipelines/copy_accessed_types after failure, so it does not promise any pipeline output prefix or complete dependency closure."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-prune-mixed"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-prune-populated": {
+      "assertions": [
+        "Actual existing CLI invocation on dependency-complete fixture with known shader, layout and compute objects exits zero and has no incomplete diagnostic.",
+        "List connectivity has the exact expected compute row and layout/module dependency hashes.",
+        "For rehash verify one valid object per expected resource type, reparse emitted resources and verify reference closure/creation values under recalculated hashes; for prune verify original expected tag/hash set and payload semantics. No raytracing fixture in rehash, which does not migrate that support boundary."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-prune-populated"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-prune-rejected-application": {
+      "assertions": [
+        "A lone applicationInfo entry with version rejection or invalid JSON exits nonzero before the raw application-info copy branch; reopen output and assert rejected hash absent.",
+        "If a deterministic parser-false fixture after application callbacks is feasible using supported valid fields plus a gracefully rejected dependency/pNext, include it and assert no rejected raw metadata or pipeline closure is copied; do not use assertion-crashing malformed schemas."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-prune-rejected-application"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-prune-version": {
+      "assertions": [
+        "Invoke actual fossilize-prune subprocess on a valid outer FOZ containing one compute resource with {\"version\":999}.",
+        "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+        "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-prune-version"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-regression-controls": {
+      "assertions": "All six unchanged-base negative controls fail specifically on false-zero exit; all six populated/empty controls pass; list rejected entries produce misleading ordinary empty rows on base.",
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": [
+        "/tmp/fossilize-11/implementer-evidence/baseline-list-version.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-list-invalid-json.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-list-empty.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-list-populated.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-rehash-version.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-rehash-invalid-json.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-rehash-empty.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-rehash-populated.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-prune-version.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-prune-invalid-json.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-prune-empty.log",
+        "/tmp/fossilize-11/implementer-evidence/baseline-prune-populated.log"
+      ],
+      "executed": [
+        "baseline-list-version",
+        "baseline-list-invalid-json",
+        "baseline-list-empty",
+        "baseline-list-populated",
+        "baseline-rehash-version",
+        "baseline-rehash-invalid-json",
+        "baseline-rehash-empty",
+        "baseline-rehash-populated",
+        "baseline-prune-version",
+        "baseline-prune-invalid-json",
+        "baseline-prune-empty",
+        "baseline-prune-populated"
+      ]
+    },
+    "utility-parse-rehash-empty": {
+      "assertions": [
+        "Actual existing CLI invocation on a valid prepared empty FOZ exits zero, no parse/incomplete diagnostic; list connectivity stdout is empty.",
+        "For rehash/prune reopen emitted output through DatabaseInterface and verify every relevant resource count is zero."
+      ],
+      "clarification": "Planner empty clarification: zero resource-work records; rehash exact preexisting synthesized default application context is separately asserted. See coordinator immutable planner-empty-clarification.json.",
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-rehash-empty"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-rehash-invalid-json": {
+      "assertions": [
+        "Invoke actual fossilize-rehash subprocess on a valid outer FOZ containing one compute resource with syntactically invalid JSON such as {.",
+        "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+        "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-rehash-invalid-json"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-rehash-mixed": {
+      "assertions": [
+        "Two sampler entries ordered by ascending hash: valid first, rejected second (repeat invalid JSON/version), with valid application context as needed.",
+        "Exit nonzero and incomplete scope reported; after recorder teardown output reopens and contains the known valid first sampler with correct create values, excluding the early-rejected second entry.",
+        "Output is an incomplete prefix, not an atomic transaction; no promise to roll back callbacks already accepted from a later failing multi-object blob."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-rehash-mixed"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-rehash-populated": {
+      "assertions": [
+        "Actual existing CLI invocation on dependency-complete fixture with known shader, layout and compute objects exits zero and has no incomplete diagnostic.",
+        "List connectivity has the exact expected compute row and layout/module dependency hashes.",
+        "For rehash verify one valid object per expected resource type, reparse emitted resources and verify reference closure/creation values under recalculated hashes; for prune verify original expected tag/hash set and payload semantics. No raytracing fixture in rehash, which does not migrate that support boundary."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-rehash-populated"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    },
+    "utility-parse-rehash-version": {
+      "assertions": [
+        "Invoke actual fossilize-rehash subprocess on a valid outer FOZ containing one compute resource with {\"version\":999}.",
+        "Exit is nonzero normal termination, stderr identifies parse failure, affected tag/hash and incomplete scope; failure must not be inferred merely from log severity.",
+        "List uses --tag 7 --connectivity and emits no ordinary connectivity row; rehash/prune output is never represented as a successful complete result."
+      ],
+      "configurations": [
+        "debug-off",
+        "release-off",
+        "debug-on",
+        "release-on"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "executed": [
+        "utility-parse-rehash-version"
+      ],
+      "source": "test/utility_parse.cmake; test/utility_parse_test.cpp; test/CMakeLists.txt"
+    }
+  },
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/11",
+  "worker_id": "/root/issue11_implementer"
+}

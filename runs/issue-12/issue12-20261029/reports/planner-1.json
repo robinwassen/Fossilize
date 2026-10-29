@@ -1,0 +1,474 @@
+{
+  "attempt_id": "planner-1",
+  "base_sha": "a97dfec075a52e69a6ad517071c08b2b292983e5",
+  "candidate_sha": null,
+  "input_revision": 1,
+  "input_sha": "a97dfec075a52e69a6ad517071c08b2b292983e5",
+  "limitations": [
+    "Native Windows execution is pending an explicit user scope decision; mandatory status retained in this report.",
+    "Full Python harness suite is required by unconditional verification guidance even though this implementation changes C++ helpers only.",
+    "No source edits, test execution or implementation acceptance by this planner."
+  ],
+  "observations": [
+    "Read AGENTS.md required documents, issue workflow, verification guide, relevant observability specs and harness role/state references at detached a97dfec075a52e69a6ad517071c08b2b292983e5; read live #12 and #8 with explicit gh repository. Live #12 body matches immutable original.",
+    "Existing cli/file.cpp checks fopen and fputs/fwrite but not fflush/fclose; helpers currently have no injectable operations or structured result. cli-utils is static, current callers use unchanged bool entrypoints.",
+    "Planning checkout submodules were uninitialized; coordinator is preparing implementation dependencies. No implementation changes or verification executions were performed by planner.",
+    "Actual planner worker identity /root/planner_12 supplied by coordinator; exact dispatch tuple preserves input_revision=1, input_sha/base_sha a97dfec075a52e69a6ad517071c08b2b292983e5, candidate_sha=null, plan_version=0, operation=plan and root work_unit."
+  ],
+  "operation": "plan",
+  "plan": {
+    "cases": [
+      {
+        "assertions": [
+          "Injected open failure returns false with operation=open and exact raw errno; no write/flush/close occurs; legacy wrapper also exposes first errno."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "string-open",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-string-open"
+        ]
+      },
+      {
+        "assertions": [
+          "A nonempty request accepts fewer bytes than requested and returns failure with operation=write and exact raw errno; flush and close each attempted once; close errno cannot replace write errno."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "string-short-write",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-string-short-write"
+        ]
+      },
+      {
+        "assertions": [
+          "Write accepts the full payload; flush fails and close also clobbers errno; returned operation=flush and raw errno retain the flush error; one close."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "string-flush",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-string-flush"
+        ]
+      },
+      {
+        "assertions": [
+          "Write and flush succeed; close failure returns failure with operation=close and exact raw errno; no second close even after cleanup/destruction."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "string-close",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-string-close"
+        ]
+      },
+      {
+        "assertions": [
+          "Inject write+flush+close failures with distinct errno and separately flush+close; earliest error/operation survive every later failure and destructor cleanup. Test failure-with-zero-errno retains raw unknown zero rather than stale errno."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "string-first-error",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-string-first-error"
+        ]
+      },
+      {
+        "assertions": [
+          "All operations succeed; structured result is success/none/zero; exact payload and w or wb open mode observed; one open, one flush, one close, no extra cleanup call. Empty request still flushes and closes."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "string-success",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-string-success"
+        ]
+      },
+      {
+        "assertions": [
+          "Normal and empty writes return true and separately structured success; reopen/read contents byte-for-byte for binary payload (including NUL) and ASCII string. Use isolated paths. Empty output truncates prior contents to zero length. Nonexistent parent destination fails with open and raw error."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "string-filesystem",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-string-filesystem"
+        ]
+      },
+      {
+        "assertions": [
+          "On Linux real /dev/full accepts buffered nonempty output but completion fails through production operations and both structured and bool APIs. Check operation flush or close as actually exposed by CRT and raw ENOSPC; do not claim durability."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "string-dev-full",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-string-dev-full"
+        ]
+      },
+      {
+        "assertions": [
+          "Injected open failure returns false with operation=open and exact raw errno; no write/flush/close occurs; legacy wrapper also exposes first errno."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "buffer-open",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-buffer-open"
+        ]
+      },
+      {
+        "assertions": [
+          "A nonempty request accepts fewer bytes than requested and returns failure with operation=write and exact raw errno; flush and close each attempted once; close errno cannot replace write errno."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "buffer-short-write",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-buffer-short-write"
+        ]
+      },
+      {
+        "assertions": [
+          "Write accepts the full payload; flush fails and close also clobbers errno; returned operation=flush and raw errno retain the flush error; one close."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "buffer-flush",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-buffer-flush"
+        ]
+      },
+      {
+        "assertions": [
+          "Write and flush succeed; close failure returns failure with operation=close and exact raw errno; no second close even after cleanup/destruction."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "buffer-close",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-buffer-close"
+        ]
+      },
+      {
+        "assertions": [
+          "Inject write+flush+close failures with distinct errno and separately flush+close; earliest error/operation survive every later failure and destructor cleanup. Test failure-with-zero-errno retains raw unknown zero rather than stale errno."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "buffer-first-error",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-buffer-first-error"
+        ]
+      },
+      {
+        "assertions": [
+          "All operations succeed; structured result is success/none/zero; exact payload and w or wb open mode observed; one open, one flush, one close, no extra cleanup call. Empty request still flushes and closes."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "buffer-success",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-buffer-success"
+        ]
+      },
+      {
+        "assertions": [
+          "Normal and empty writes return true and separately structured success; reopen/read contents byte-for-byte for binary payload (including NUL) and ASCII string. Use isolated paths. Empty output truncates prior contents to zero length. Nonexistent parent destination fails with open and raw error."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "buffer-filesystem",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-buffer-filesystem"
+        ]
+      },
+      {
+        "assertions": [
+          "On Linux real /dev/full accepts buffered nonempty output but completion fails through production operations and both structured and bool APIs. Check operation flush or close as actually exposed by CRT and raw ENOSPC; do not claim durability."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "buffer-dev-full",
+        "location": "test/file_helper_test.cpp and test/CMakeLists.txt",
+        "tests": [
+          "file-helper-buffer-dev-full"
+        ]
+      },
+      {
+        "assertions": [
+          "Compile fixture with unchanged input file.hpp using exact old bool function pointers, link candidate helpers and run both existing entrypoints. ASCII string termination at NUL and buffer embedded-NUL contents preserved; text mode newline roundtrip uses the native expected translation, binary newline bytes unchanged. Normal/empty success and nonexistent destination false are asserted.",
+          "Fixture references only baseline API. New result API tests do not substitute for old-source compatibility evidence. Exact old symbols remain; no general C++ binary ABI claim."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "legacy-source-compatibility",
+        "location": "test/file_helper_compatibility_test.cpp, test/CMakeLists.txt and local-docs/verification.md",
+        "tests": [
+          "file-helper-legacy-compatibility"
+        ]
+      },
+      {
+        "assertions": [
+          "Build the same committed baseline-only caller against unchanged input file.cpp/file.hpp and run its --dev-full completion assertion: it must fail for both string and buffer historical false-success paths, while success and nonexistent-destination controls pass.",
+          "Run that unchanged caller against candidate: completion assertions now pass. Portable injected close-error tests independently assert late failure without /dev/full. Record expected baseline nonzero as a passing control, never as candidate test failure."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "original-defect-controls",
+        "location": "test/file_helper_compatibility_test.cpp and external baseline extraction/build evidence",
+        "tests": [
+          "file-helper-legacy-completion",
+          "baseline/file-helper-string-dev-full",
+          "baseline/file-helper-buffer-dev-full"
+        ]
+      },
+      {
+        "assertions": [
+          "Run current committed candidate full discovered standard-library harness Python suite in supported bounded groups and exact-union verifier, plus skill metadata validator. Every discovered method/scenario executes exactly once in its owning group; no missing/skipped/stale results. This remains mandatory despite C++-only change because verification.md says so unconditionally."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "harness-regression",
+        "location": ".agents/skills/implement-change-harness/scripts/run_harness_tests.py and local-docs/verification.md",
+        "tests": [
+          "harness/full-discovered-union",
+          "harness/skill-metadata"
+        ]
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-12",
+        "expected": [
+          "Configure/build/CTest all succeed on exact committed candidate; CTest JSON contains every planned file-helper scenario (including both Linux dev-full tests), legacy fixture and all existing registered regressions. Nonzero inventory and executed count, no mandatory skip. Test assertions stay active in Release.",
+          "Map each planned case to configuration-qualified executed CTest IDs; preserve concise logs, actual counts, candidate/base/plan/attempt, compiler and effective exception flags. Existing core/diagnostic/utility tests pass; no GPU runtime evidence claimed."
+        ],
+        "id": "linux-debug-exceptions-off",
+        "kind": "both",
+        "method": [
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S . -B /tmp/fossilize-12/build-debug-exceptions-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-12/build-debug-exceptions-off --parallel 4",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-12/build-debug-exceptions-off --show-only=json-v1",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-12/build-debug-exceptions-off --output-on-failure --no-tests=error"
+        ],
+        "prerequisites": [
+          "Populated pinned submodules; CMake 4.x, Ninja, native Linux compiler and Python; fresh out-of-source build; all commands individually limited to 600 real seconds."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-12",
+        "expected": [
+          "Configure/build/CTest all succeed on exact committed candidate; CTest JSON contains every planned file-helper scenario (including both Linux dev-full tests), legacy fixture and all existing registered regressions. Nonzero inventory and executed count, no mandatory skip. Test assertions stay active in Release.",
+          "Map each planned case to configuration-qualified executed CTest IDs; preserve concise logs, actual counts, candidate/base/plan/attempt, compiler and effective exception flags. Existing core/diagnostic/utility tests pass; no GPU runtime evidence claimed."
+        ],
+        "id": "linux-debug-exceptions-on",
+        "kind": "both",
+        "method": [
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S . -B /tmp/fossilize-12/build-debug-exceptions-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-12/build-debug-exceptions-on --parallel 4",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-12/build-debug-exceptions-on --show-only=json-v1",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-12/build-debug-exceptions-on --output-on-failure --no-tests=error"
+        ],
+        "prerequisites": [
+          "Populated pinned submodules; CMake 4.x, Ninja, native Linux compiler and Python; fresh out-of-source build; all commands individually limited to 600 real seconds."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-12",
+        "expected": [
+          "Configure/build/CTest all succeed on exact committed candidate; CTest JSON contains every planned file-helper scenario (including both Linux dev-full tests), legacy fixture and all existing registered regressions. Nonzero inventory and executed count, no mandatory skip. Test assertions stay active in Release.",
+          "Map each planned case to configuration-qualified executed CTest IDs; preserve concise logs, actual counts, candidate/base/plan/attempt, compiler and effective exception flags. Existing core/diagnostic/utility tests pass; no GPU runtime evidence claimed."
+        ],
+        "id": "linux-release-exceptions-off",
+        "kind": "both",
+        "method": [
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S . -B /tmp/fossilize-12/build-release-exceptions-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-12/build-release-exceptions-off --parallel 4",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-12/build-release-exceptions-off --show-only=json-v1",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-12/build-release-exceptions-off --output-on-failure --no-tests=error"
+        ],
+        "prerequisites": [
+          "Populated pinned submodules; CMake 4.x, Ninja, native Linux compiler and Python; fresh out-of-source build; all commands individually limited to 600 real seconds."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-12",
+        "expected": [
+          "Configure/build/CTest all succeed on exact committed candidate; CTest JSON contains every planned file-helper scenario (including both Linux dev-full tests), legacy fixture and all existing registered regressions. Nonzero inventory and executed count, no mandatory skip. Test assertions stay active in Release.",
+          "Map each planned case to configuration-qualified executed CTest IDs; preserve concise logs, actual counts, candidate/base/plan/attempt, compiler and effective exception flags. Existing core/diagnostic/utility tests pass; no GPU runtime evidence claimed."
+        ],
+        "id": "linux-release-exceptions-on",
+        "kind": "both",
+        "method": [
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S . -B /tmp/fossilize-12/build-release-exceptions-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-12/build-release-exceptions-on --parallel 4",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-12/build-release-exceptions-on --show-only=json-v1",
+          "timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-12/build-release-exceptions-on --output-on-failure --no-tests=error"
+        ],
+        "prerequisites": [
+          "Populated pinned submodules; CMake 4.x, Ninja, native Linux compiler and Python; fresh out-of-source build; all commands individually limited to 600 real seconds."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-12",
+        "expected": [
+          "Baseline fails the targeted E3 completion oracle for both helpers and candidate passes it; success controls rule out a broken harness. Old declarations compile/run against candidate unchanged. No binary ABI guarantee inferred."
+        ],
+        "id": "baseline-compatibility-controls",
+        "kind": "both",
+        "method": [
+          "Extract cli/file.hpp and cli/file.cpp at a97dfec075a52e69a6ad517071c08b2b292983e5 with git show into a new /tmp/fossilize-12/baseline-controls directory. Never overwrite source.",
+          "Using native c++ -std=c++14 and a 600-second timeout, compile committed test/file_helper_compatibility_test.cpp with the extracted baseline include path and baseline file.cpp. Run normal/empty/missing-path mode (expect pass), then --dev-full mode (expect recorded assertions failing for both baseline helpers).",
+          "Compile the same unchanged fixture against extracted baseline header and candidate cli/file.cpp (candidate implementation header resolution must not hide the baseline caller declarations). Run normal/empty/missing/text/binary and --dev-full modes under 600-second timeouts (expect pass). Record exact compiler command and separate baseline/candidate executable identities."
+        ],
+        "prerequisites": [
+          "Linux /dev/full, native compiler, exact committed baseline/candidate files and fixture; private writable output paths.",
+          "Coordinator prepared read-only detached baseline /tmp/fossilize-12/baseline at exact input SHA; its cli/file.hpp and cli/file.cpp may be used instead of extracting them again."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-12",
+        "expected": [
+          "Native builds and assertion-bearing CTest pass; native text newline conversion and binary bytes match compatibility contract; first raw errno/operation and one close remain correct under Windows CRT. No Windows process/controller/GPU claim."
+        ],
+        "id": "windows-native-pending-decision",
+        "kind": "both",
+        "method": [
+          "PENDING USER SCOPE DECISION: on native Windows in prepared MSVC/Ninja environment, for Debug and Release configure cmake -S <exact candidate checkout> -B <fresh native output> -G Ninja -DCMAKE_BUILD_TYPE=<mode> -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF; build full targets; ctest --test-dir <output> --show-only=json-v1 then --output-on-failure --no-tests=error. Each process has a real <=600-second watchdog.",
+          "Run both helper injected open/short-write/flush/close/first-error/success tests, portable filesystem and legacy source fixtures. Linux-only /dev/full tests are not registered on Windows. MSVC does not implement the FOSSILIZE_ENABLE_EXCEPTIONS OFF branch; report this fact and rely on GCC/Clang OFF/ON matrix for no-exception proof. If native MinGW/Clang is chosen instead, execute OFF/ON for both modes.",
+          "If no native runner is available, return unavailable/incomplete and ask coordinator for explicit user scope decision; do not report a passing gate or silently turn it optional. Coordinator may reconcile the plan after a direct user decision while retaining original AC1 unchanged."
+        ],
+        "prerequisites": [
+          "Native Windows host/compiler plus populated pinned dependencies; current environment provides no known native Windows runner. User scope decision remains pending."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-12",
+        "expected": [
+          "All discovered IDs and scenarios have exact disjoint passing union, all groups complete, verifier exits zero; skill metadata passes. Record real discovered/executed unittest IDs in addition to aggregate mapping IDs; discovery by itself is insufficient."
+        ],
+        "id": "full-harness-python",
+        "kind": "both",
+        "method": [
+          "Create a new external <dir> for each exact candidate/attempt; timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --inventory --output <dir>/inventory.json. Replace <dir> with its fresh absolute path before execution.",
+          "For every documented group (regression-test_harness_artifacts, regression-test_harness_closeout, regression-test_harness_issue_artifacts, regression-test_harness_issue_closeout, regression-test_harness_migration, regression-test_harness_state, regression-test_issue_guidance, regression-test_issue_migration, regression-test_issue_source, delivery-ordinary, delivery-w09, delivery-w11-0, delivery-w11-1, delivery-w11-2, delivery-w11-3, regression-extra), run timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group <group> --inventory <dir>/inventory.json --output <dir>/<group>.json. At most three independent groups concurrently; each actual process has its own deadline.",
+          "Run timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --verify-results <dir>.",
+          "Run timeout --signal=TERM --kill-after=5s 600s python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness."
+        ],
+        "prerequisites": [
+          "Python standard library, Git, gh fixture support, POSIX filesystem; PyYAML for metadata validator; exact committed candidate and new external evidence directory."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-12",
+        "expected": [
+          "All original AC1 requirements and shared gates covered with current evidence; no mandatory skips/unavailable gates or overstated compatibility/durability/platform claims. Native Windows decision is explicitly resolved before acceptance."
+        ],
+        "id": "independent-final-review",
+        "kind": "final",
+        "method": [
+          "Fresh detached checker reads live #12/#8 through gh --repo robinwassen/Fossilize, immutable AC1, full base-to-candidate git diff, tests/registration and current candidate; rerun every both gate and inspect compatibility/behavior/durability documentation. Map every planned case to actual executed IDs.",
+          "Use IDs linux/<build-mode>/exceptions-<off|on>/ctest/<name>, windows/<build-mode>/ctest/<name>, baseline/<name> and harness/<unittest-id>; include real original runner IDs in evidence. Aggregate IDs may label full-union checks but never replace individual discovered/executed evidence.",
+          "Confirm only #12 is an eligible closing target; shared parent #8 remains open. No source/base/plan/live-material-input drift, no unresolved findings, clean committed candidate. A changed candidate requires renewed checks; do not reuse historical reports as execution."
+        ],
+        "prerequisites": [
+          "All work-unit gates passing at exact candidate; resolved explicit platform decision if runner unavailable; live issue authentication and fresh checker."
+        ]
+      }
+    ],
+    "implementation": [
+      "Keep the existing two- and three-argument bool function definitions and exact signatures in cli/file.hpp; add distinctly named result-returning entrypoints rather than changing signatures or adding default parameters. Use a small plain result with success, an operation enum (none/open/write/flush/close), and raw errno. The result is inspectable without parsing logs and success has none/zero error fields.",
+      "Introduce a per-call internal file-operation adapter (open, byte write, flush, close plus context) shared by production stdio and tests; avoid mutable global hooks. Preserve fopen modes w for strings and wb for buffers. String length remains strlen (stops at first NUL); use byte-count writing so string and buffer short writes have an explicit oracle. Preserve native text newline translation.",
+      "Capture errno immediately at each failed operation, before flush/close/other cleanup. Reset errno before each adapter operation so stale values cannot be attributed to a new failure; if a failing operation supplies errno=0 retain raw zero as unknown rather than inventing an OS error. Record only the earliest failure. After any successful open, attempt flush then close even after a write error, retaining earliest write/flush errors when cleanup sets different errno values. Invalidate owned handle before close so failure cannot cause retry/double close. Close failure alone must fail.",
+      "Any owned-handle destructor/cleanup is noexcept and does not publish errors by throwing; explicit completion returns the authoritative result. No new allocations or exception dependence in write/finalization path. Legacy bool wrappers use the structured result, return its success, and restore its raw first errno on failure after cleanup.",
+      "Add test/file_helper_test.cpp with explicit checks active under NDEBUG; one test executable dispatches named scenarios. Register each scenario separately with CTest, including both helper kinds. Fault adapter counts every operation and marks consumed handles; fail tests on double close or use after close. Supply distinct errno values per failure and cleanup clobbering controls.",
+      "Add a legacy caller fixture using only baseline declarations and exact bool function-pointer types. Register candidate roundtrip and completion modes with CTest. The fixture must compile against extracted input-revision file.hpp and candidate file.cpp, then run candidate successful and failure modes. Its Linux dev-full mode also runs against unchanged input file.cpp and must reject both historical false-success results; keep old and new evidence separate.",
+      "Register new tests in test/CMakeLists.txt with FOSSILIZE_TESTS, platform guards only for /dev/full, project exception/sanitizer compile/link flags, private per-test working directories and finite TIMEOUT. Prefer compiling cli/file.cpp directly into the lightweight helper targets so no GPU/CLI dependencies are needed for the new tests, while full CLI/layer builds still verify unchanged callers.",
+      "Update local-docs/verification.md with test inventory, API/compatibility guarantees and explicit platform limitations. Do not change unconditional mandatory harness-suite guidance to evade it. All source/tests/docs stay in the implementation commit; transient build/probe outputs stay outside source.",
+      "Report source compatibility as preserved for the two legacy functions using unchanged old declarations plus compile/run fixtures; no all-callers generalization. Binary: exact legacy symbols retained, but static cli-utils has no general supported C++ binary ABI claim, so no prebuilt-consumer ABI claim. Protocol: no wire/file format or machine-output schema change introduced here. Behavioral: normal/empty contents, truncation, text/binary distinction and initial open/write failures preserved; formerly false-success flush/close cases intentionally return false with the first error. Do not silently propagate this into unrelated tool exit redesign.",
+      "Implementer and both fresh checkers run real bounded commands against committed candidate, exact planned IDs and mappings. No mandatory skipped/unavailable result counts as accepted. Native Windows is pending user scope decision; preserve original AC1 verbatim regardless of that decision.",
+      "The coordinator may supply external verification drivers for each exact configuration or harness group; workers request canonical command-intent for each top-level verification command before execution. The driver must preserve the listed commands/assertions, record actual per-process statuses, and enforce <=600-second deadlines on each build/test process. Inspection calls do not require source changes or nested canonical writes. At most three harness group processes concurrently."
+    ],
+    "non_goals": [
+      "No fsync/fdatasync/FlushFileBuffers, atomic replacement, rollback of partial files or power-loss durability promise.",
+      "No change to load_buffer_from_file, exporters, aggregate CLI exit policies, databases, capture finalization, logging schemas, process control or complete observability compliance.",
+      "No general C++ binary ABI guarantee or wire/protocol compatibility claim beyond no protocol change; no GPU/driver compilation, cache reuse, Steam or layer runtime claim."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000003`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n3. **FOS-000003 \u2014 Check shared file-helper flush/close completion.** **S; no dependencies; \u00a76.** [file:56](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/file.cpp#L56) and `write_buffer_to_file()` return true after unchecked `fclose()` (E3). Return failure for write/flush/close errors, preserving the first raw error and operation. Keep destructor/cleanup behavior nonthrowing. **Check:** `/dev/full`, nonexistent destination and successful normal write. Successful close means completion through the OS interface, not power-loss durability. This supplies a truthful primitive for later exporters.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with injectable file operations:** Open, short-write, flush and close failures each return failure; when several occur, the first error and its operation survive cleanup. Close is attempted exactly once for each opened handle.\n   - **Filesystem integration tests:** E3 fails on Linux /dev/full; a portable injected close-error case covers other platforms. Normal and empty writes succeed and read back byte-for-byte; no result claims stronger durability than tested flush/close completion.\n\n<!-- fossilize-migration-v1:FOS-000003 -->\n"
+      }
+    ],
+    "scope": [
+      "One coherent unsplit implementation of https://github.com/robinwassen/Fossilize/issues/12 (legacy FOS-000003); both shared string and buffer file-write helpers must return success only after checked write, flush and close. Preserve the first failing operation and its immediately captured raw errno in a programmatic result and through legacy failure errno.",
+      "Add deterministic per-call injected stdio tests, real filesystem tests, a preserved old-source caller fixture, CTest registration and concise verification/compatibility documentation. Shared requirements from https://github.com/robinwassen/Fossilize/issues/8 apply.",
+      "Native Windows CMake/CTest is a mandatory pending environmental gate until the coordinator records an explicit user scope decision. Linux plus a portable injected close error alone is not native Windows evidence. No process implementation changes are planned, so Windows CreateProcess/JobObject/controller/cancellation matrices are outside this change."
+    ],
+    "version": 1,
+    "work_units": []
+  },
+  "plan_version": 0,
+  "role": "planner",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/12",
+  "worker_id": "/root/planner_12"
+}

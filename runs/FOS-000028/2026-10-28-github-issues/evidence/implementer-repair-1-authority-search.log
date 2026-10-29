@@ -1,0 +1,28 @@
+.agents/skills/implement-change-harness/references/state.md:83:legacy allocation/publication facts; current workflows allocate no FOS keys.
+local-docs/issue-workflow.md:11:allocate FOS keys, restore Markdown backlogs or maintain another task ledger.
+.agents/skills/implement-change-harness/scripts/test_issue_guidance.py:11:        for path in ('local-docs/backlog-keys.md','local-docs/reviews/harness-backlog.md','local-docs/reviews/github-issues-migration.md'):
+.agents/skills/implement-change-harness/scripts/test_issue_guidance.py:23:            self.assertNotIn('backlog-keys.md',text,str(path))
+.agents/skills/implement-change-harness/scripts/test_issue_guidance.py:30:        self.assertNotIn('Done markers',skill)
+.agents/skills/implement-change-harness/scripts/test_harness_artifacts.py:145:        legacy_journal["issued"] = [{"key": self.root_key, "location": "local-docs/backlog-keys.md"}]
+.agents/skills/implement-change-harness/scripts/test_harness_state.py:69:        (repo / "local-docs/backlog-keys.md").write_text("# Registry\n\n| Key | Item | Canonical location | Allocation state |\n|---|---|---|---|\n" + "\n".join(self.registry_rows) + "\n")
+.agents/skills/implement-change-harness/scripts/test_harness_state.py:166:        git(self.source, "commit", "-m", "close canonical backlog")
+.agents/skills/implement-change-harness/scripts/test_harness_state.py:714:                old = (self.source / "local-docs/backlog-keys.md").read_text()
+.agents/skills/implement-change-harness/scripts/test_harness_state.py:715:                (self.source / "local-docs/backlog-keys.md").write_text(old.replace(f"{key}` | First | [task](First.md) | Allocated", f"{key}` | First | [task](First.md) | Retired"))
+.agents/skills/implement-change-harness/scripts/test_harness_state.py:720:                (self.source / "local-docs/backlog-keys.md").write_text(old)
+.agents/skills/implement-change-harness/scripts/test_harness_state.py:1102:                   "allocations.json": encoded({"high_water": 25, "issued": [{"key": self.root_key, "location": "local-docs/backlog-keys.md"}]}),
+.agents/skills/implement-change-harness/scripts/test_issue_migration.py:203:        registry=self.source/'local-docs/backlog-keys.md'
+.agents/skills/implement-change-harness/scripts/harness_state.py:201:            if path == "local-docs/backlog-keys.md":
+.agents/skills/implement-change-harness/scripts/harness_state.py:507:                            if (registered and row.get("location") == "local-docs/backlog-keys.md"
+.agents/skills/implement-change-harness/scripts/harness_state.py:1026:            raise Invalid('FOS allocation retired; create persistent GitHub sub-issue using journaled external operations')
+.agents/skills/implement-change-harness/scripts/test_harness_closeout.py:91:        registry = (self.source / "local-docs/backlog-keys.md").read_bytes()
+.agents/skills/implement-change-harness/scripts/test_harness_closeout.py:134:        ledger = self.source / "local-docs/backlog-keys.md"
+.agents/skills/implement-change-harness/scripts/test_harness_closeout.py:153:        self.assertEqual((self.source / "local-docs/backlog-keys.md").read_bytes(), registry)
+.agents/skills/implement-change-harness/scripts/test_harness_closeout.py:323:        ledger = self.source / "local-docs/backlog-keys.md"
+.agents/skills/implement-change-harness/scripts/test_harness_migration.py:234:              'allocations.json':encoded({'high_water':25,'issued':[{'key':self.root_key,'location':'local-docs/backlog-keys.md'}]}),path:encoded(old),
+.agents/skills/implement-change-harness/scripts/legacy_state.py:199:            if path == "local-docs/backlog-keys.md":
+.agents/skills/implement-change-harness/scripts/legacy_state.py:477:                            if (registered and row.get("location") == "local-docs/backlog-keys.md"
+.agents/skills/implement-change-harness/scripts/legacy_state.py:723:            if row["key"] in registry and row.get("location") == "local-docs/backlog-keys.md":
+.agents/skills/implement-change-harness/scripts/legacy_state.py:857:            state["next_action"] = "remove/reconcile stale Done markers, commit, then closeout-cleanup"
+.agents/skills/implement-change-harness/scripts/legacy_state.py:1049:            state["next_action"] = "remove/reconcile stale Done markers, commit, then closeout-cleanup"
+.agents/skills/implement-change-harness/scripts/legacy_state.py:1176:                            state.update(phase="closing", operation="closeout", status="ready", next_action="persist closeout-intent before editing canonical backlog")
+.agents/skills/implement-change-harness/scripts/issue_migration.py:101:                       'permanent legacy allocation provenance' if path.endswith('backlog-keys.md') else

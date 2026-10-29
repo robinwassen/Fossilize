@@ -1,0 +1,56 @@
+test_PAR05_native_memory_overbudget_cannot_pass (test_harness_native_backend.NativeBackendTests.test_PAR05_native_memory_overbudget_cannot_pass) ... ERROR
+test_PAR05_native_source_network_device_bus_and_environment_boundaries (test_harness_native_backend.NativeBackendTests.test_PAR05_native_source_network_device_bus_and_environment_boundaries) ... ERROR
+test_PAR05_native_volume_limit_is_aggregate_tmpfs (test_harness_native_backend.NativeBackendTests.test_PAR05_native_volume_limit_is_aggregate_tmpfs) ... ERROR
+
+======================================================================
+ERROR: test_PAR05_native_memory_overbudget_cannot_pass (test_harness_native_backend.NativeBackendTests.test_PAR05_native_memory_overbudget_cannot_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/test_harness_native_backend.py", line 77, in test_PAR05_native_memory_overbudget_cannot_pass
+    process,data,_=self.probe("a=bytearray(256*1024*1024);print('unexpected')",memory=64*1024**2)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/test_harness_native_backend.py", line 20, in probe
+    preflight()
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/harness_runner.py", line 34, in preflight
+    check(result.returncode == 0, 'unavailable: working namespace/quota backend required: ' + result.stderr.decode()[:200])
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/harness_resources.py", line 30, in check
+    raise ResourceError(message)
+harness_resources.ResourceError: unavailable: working namespace/quota backend required: bwrap: execvp /usr/bin/true: No such file or directory
+
+
+======================================================================
+ERROR: test_PAR05_native_source_network_device_bus_and_environment_boundaries (test_harness_native_backend.NativeBackendTests.test_PAR05_native_source_network_device_bus_and_environment_boundaries)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/test_harness_native_backend.py", line 56, in test_PAR05_native_source_network_device_bus_and_environment_boundaries
+    process,data,proof=self.probe(code)
+                       ^^^^^^^^^^^^^^^^
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/test_harness_native_backend.py", line 20, in probe
+    preflight()
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/harness_runner.py", line 34, in preflight
+    check(result.returncode == 0, 'unavailable: working namespace/quota backend required: ' + result.stderr.decode()[:200])
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/harness_resources.py", line 30, in check
+    raise ResourceError(message)
+harness_resources.ResourceError: unavailable: working namespace/quota backend required: bwrap: execvp /usr/bin/true: No such file or directory
+
+
+======================================================================
+ERROR: test_PAR05_native_volume_limit_is_aggregate_tmpfs (test_harness_native_backend.NativeBackendTests.test_PAR05_native_volume_limit_is_aggregate_tmpfs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/test_harness_native_backend.py", line 73, in test_PAR05_native_volume_limit_is_aggregate_tmpfs
+    process,data,_=self.probe(code)
+                   ^^^^^^^^^^^^^^^^
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/test_harness_native_backend.py", line 20, in probe
+    preflight()
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/harness_runner.py", line 34, in preflight
+    check(result.returncode == 0, 'unavailable: working namespace/quota backend required: ' + result.stderr.decode()[:200])
+  File "/home/robin/.codex/worktrees/4997/fossilize/.agents/skills/implement-change-harness/scripts/harness_resources.py", line 30, in check
+    raise ResourceError(message)
+harness_resources.ResourceError: unavailable: working namespace/quota backend required: bwrap: execvp /usr/bin/true: No such file or directory
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.045s
+
+FAILED (errors=3)

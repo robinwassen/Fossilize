@@ -1,0 +1,71 @@
+test_W02_approval_scope_and_acceptance_fences_zero_effects (test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects) ... ok
+test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved (test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved) ... ok
+test_W05_conditional_delete_races_preserve_advanced_refs (test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs) ... ok
+test_W08_another_active_run_is_preserved (test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved) ... ok
+test_W11_publication_inventory_and_rejection (test_delivery_wrapup.DeliveryTests.test_W11_publication_inventory_and_rejection) ... ok
+test_W11_terminal_publication_failure_is_not_delivery (test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery) ... ok
+test_W14_ambiguous_published_dispatch_never_blindly_resends (test_delivery_wrapup.DeliveryTests.test_W14_ambiguous_published_dispatch_never_blindly_resends) ... ok
+test_W14_known_unsent_dispatch_publication_recovers_exactly_once (test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once) ... 
+  test_W14_known_unsent_dispatch_publication_recovers_exactly_once (test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once) (scenario_id='W14:merge:before-push') ... FAIL
+  test_W14_known_unsent_dispatch_publication_recovers_exactly_once (test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once) (scenario_id='W14:merge:after-push') ... FAIL
+  test_W14_known_unsent_dispatch_publication_recovers_exactly_once (test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once) (scenario_id='W14:ticket-comment-8:before-push') ... FAIL
+  test_W14_known_unsent_dispatch_publication_recovers_exactly_once (test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once) (scenario_id='W14:ticket-comment-8:after-push') ... FAIL
+test_W14_successful_comment_lost_response_delayed_and_failed_readback (test_delivery_wrapup.DeliveryTests.test_W14_successful_comment_lost_response_delayed_and_failed_readback) ... ok
+
+======================================================================
+FAIL: test_W14_known_unsent_dispatch_publication_recovers_exactly_once (test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once) (scenario_id='W14:merge:before-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 758, in test_W14_known_unsent_dispatch_publication_recovers_exactly_once
+    self.assert_delivered(result)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '121bf14e159421cd90d78f0dc79ed42f24daf3e5', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '121bf14e159421cd90d78f0dc79ed42f24daf3e5', 'merge_sha': None, 'checkpoint_sha': '976fb58ba2cc52cfbbc40a4de35b4576638d44c7', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '976fb58ba2cc52cfbbc40a4de35b4576638d44c7', 'remote_sha': '976fb58ba2cc52cfbbc40a4de35b4576638d44c7', 'destination': {'endpoint_sha256': 'd75190aa8f1ea9cc00a59c8dd9714977e801f280f40872e37219ecb4d78983f7', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-bfrb3z5t/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-bfrb3z5t/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 121bf14e159421cd90d78f0dc79ed42f24daf3e5 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W14_known_unsent_dispatch_publication_recovers_exactly_once (test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once) (scenario_id='W14:merge:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 758, in test_W14_known_unsent_dispatch_publication_recovers_exactly_once
+    self.assert_delivered(result)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '121bf14e159421cd90d78f0dc79ed42f24daf3e5', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '121bf14e159421cd90d78f0dc79ed42f24daf3e5', 'merge_sha': None, 'checkpoint_sha': '4c8f4e47f95c21b842b84ca677aa9b27411d1aa9', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '4c8f4e47f95c21b842b84ca677aa9b27411d1aa9', 'remote_sha': '4c8f4e47f95c21b842b84ca677aa9b27411d1aa9', 'destination': {'endpoint_sha256': 'd75190aa8f1ea9cc00a59c8dd9714977e801f280f40872e37219ecb4d78983f7', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-bfrb3z5t/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-bfrb3z5t/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 121bf14e159421cd90d78f0dc79ed42f24daf3e5 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W14_known_unsent_dispatch_publication_recovers_exactly_once (test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once) (scenario_id='W14:ticket-comment-8:before-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 758, in test_W14_known_unsent_dispatch_publication_recovers_exactly_once
+    self.assert_delivered(result)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '121bf14e159421cd90d78f0dc79ed42f24daf3e5', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '121bf14e159421cd90d78f0dc79ed42f24daf3e5', 'merge_sha': '859394dcfd5e6988c25047181626d04769065c85', 'checkpoint_sha': 'b0aea3543237baa320bd86bbb46fbdcedecce2d6', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': 'b0aea3543237baa320bd86bbb46fbdcedecce2d6', 'remote_sha': 'b0aea3543237baa320bd86bbb46fbdcedecce2d6', 'destination': {'endpoint_sha256': 'd75190aa8f1ea9cc00a59c8dd9714977e801f280f40872e37219ecb4d78983f7', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-bfrb3z5t/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-bfrb3z5t/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 121bf14e159421cd90d78f0dc79ed42f24daf3e5 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W14_known_unsent_dispatch_publication_recovers_exactly_once (test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once) (scenario_id='W14:ticket-comment-8:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 758, in test_W14_known_unsent_dispatch_publication_recovers_exactly_once
+    self.assert_delivered(result)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '121bf14e159421cd90d78f0dc79ed42f24daf3e5', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '121bf14e159421cd90d78f0dc79ed42f24daf3e5', 'merge_sha': '40a949bf51923c41a2203745648644b1bf1cd943', 'checkpoint_sha': 'f7c67aff808351383da5e3b56973ca463b8cd0c1', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': 'f7c67aff808351383da5e3b56973ca463b8cd0c1', 'remote_sha': 'f7c67aff808351383da5e3b56973ca463b8cd0c1', 'destination': {'endpoint_sha256': 'd75190aa8f1ea9cc00a59c8dd9714977e801f280f40872e37219ecb4d78983f7', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-bfrb3z5t/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-bfrb3z5t/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 121bf14e159421cd90d78f0dc79ed42f24daf3e5 --accepted-revision 20'}
+
+----------------------------------------------------------------------
+Ran 9 tests in 171.231s
+
+FAILED (failures=4)
+group did not pass

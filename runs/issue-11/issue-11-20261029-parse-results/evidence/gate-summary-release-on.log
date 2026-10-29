@@ -1,0 +1,89 @@
+candidate=feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd
+base=36b78637e847463c4f58758a907b33ce5bf07ce5
+plan_version=1
+configuration=release-on
+CLI=ON; layer=ON; runtime_layer_test=OFF
+result=passed; CTest discovered=73; executed=73; mandatory skipped=0
+Exception and NDEBUG flags inspected in compile_commands for library, all three migrated tools and utility helper.
+timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11 -B /tmp/fossilize-11/build-release-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=1.943; full_log=/tmp/fossilize-11/implementer-evidence/release-on-configure.log
+timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/build-release-on --parallel 4
+cwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=255.044; full_log=/tmp/fossilize-11/implementer-evidence/release-on-build.log
+timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-on --show-only=json-v1
+cwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.014; full_log=/tmp/fossilize-11/implementer-evidence/release-on-discovery.log
+timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/build-release-on --output-on-failure --parallel 3
+cwd=/home/robin/dev/fossilize-issue-11; exit=0; seconds=0.834; full_log=/tmp/fossilize-11/implementer-evidence/release-on-ctest.log
+Discovered and executed IDs:
+application-info-filter-test
+object-cache-test
+feature-filter-test
+linux-futex-test
+replay-diagnostic-test
+fossilize-system-test
+device-diagnostic-test
+capture-diagnostic-normal-graphics-reject
+capture-diagnostic-normal-graphics-success
+capture-diagnostic-normal-graphics-vulkan-error
+capture-diagnostic-normal-compute-reject
+capture-diagnostic-normal-compute-success
+capture-diagnostic-normal-compute-vulkan-error
+capture-diagnostic-normal-raytracing-reject
+capture-diagnostic-normal-raytracing-success
+capture-diagnostic-normal-raytracing-vulkan-error
+capture-diagnostic-qa-graphics-reject
+capture-diagnostic-qa-graphics-success
+capture-diagnostic-qa-graphics-vulkan-error
+capture-diagnostic-qa-compute-reject
+capture-diagnostic-qa-compute-success
+capture-diagnostic-qa-compute-vulkan-error
+capture-diagnostic-qa-raytracing-reject
+capture-diagnostic-qa-raytracing-success
+capture-diagnostic-qa-raytracing-vulkan-error
+capture-diagnostic-paranoid-graphics-reject
+capture-diagnostic-paranoid-graphics-success
+capture-diagnostic-paranoid-graphics-vulkan-error
+capture-diagnostic-paranoid-compute-reject
+capture-diagnostic-paranoid-compute-success
+capture-diagnostic-paranoid-compute-vulkan-error
+capture-diagnostic-paranoid-raytracing-reject
+capture-diagnostic-paranoid-raytracing-success
+capture-diagnostic-paranoid-raytracing-vulkan-error
+capture-diagnostic-eager-graphics-reject
+capture-diagnostic-eager-graphics-success
+capture-diagnostic-eager-graphics-vulkan-error
+capture-diagnostic-eager-compute-reject
+capture-diagnostic-eager-compute-success
+capture-diagnostic-eager-compute-vulkan-error
+capture-diagnostic-eager-raytracing-reject
+capture-diagnostic-eager-raytracing-success
+capture-diagnostic-eager-raytracing-vulkan-error
+capture-diagnostic-binary-graphics-reject
+capture-diagnostic-binary-graphics-success
+capture-diagnostic-binary-graphics-vulkan-error
+capture-diagnostic-binary-compute-reject
+capture-diagnostic-binary-compute-success
+capture-diagnostic-binary-compute-vulkan-error
+capture-diagnostic-binary-raytracing-reject
+capture-diagnostic-binary-raytracing-success
+capture-diagnostic-binary-raytracing-vulkan-error
+utility-parse-list-version
+diagnostic-compatibility-test
+utility-parse-list-invalid-json
+utility-parse-list-empty
+utility-parse-list-populated
+utility-parse-list-mixed
+utility-parse-list-dependency-failure
+utility-parse-list-empty-dependencies
+utility-parse-rehash-version
+utility-parse-rehash-invalid-json
+utility-parse-list-legacy-invocations
+utility-parse-rehash-empty
+utility-parse-rehash-populated
+utility-parse-prune-version
+utility-parse-rehash-mixed
+utility-parse-prune-invalid-json
+utility-parse-prune-empty
+utility-parse-prune-populated
+utility-parse-prune-mixed
+utility-parse-prune-rejected-application
+varint-system-test

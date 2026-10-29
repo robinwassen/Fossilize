@@ -1,0 +1,18 @@
+import sys,json,unittest
+sys.path.insert(0,'/home/robin/dev/fossilize-FOS-000028-checker-1/.agents/skills/implement-change-harness/scripts')
+from test_harness_issue_closeout import IssueCloseoutTests
+class Probe(IssueCloseoutTests):
+ def runTest(self):
+  self.prepare();self.launch('checker')
+  self.act('report',dict(self.report(),verdict='changes_required',findings=[{'id':'probe-missing-design','status':'open','evidence':'Required original criterion has no planned assertion design; requires planner revision.','route':'planner','affected_task':self.root_issue['html_url']}],next_action='Fresh planner must add missing design then renew implementation/checks'))
+  before={'phase':self.state['phase'],'operation':self.state['operation'],'resume_phase':self.state['closeout']['resume_phase']}
+  self.gh.api(f"issues/{self.root_issue['number']}/comments",'POST',{'body':'Superseded readiness because final checker found missing design. '+self.state['closeout']['marker']})
+  self.act('closeout-cleanup',{'observation':'Read back exact superseding marker after missing-design rejection'})
+  after={'phase':self.state['phase'],'operation':self.state['operation'],'next_action':self.state['next_action']}
+  rejected={}
+  for role in ('planner','implementer'):
+   try:self.launch(role)
+   except Exception as e:rejected[role]=str(e)
+  print(json.dumps({'before_cleanup':before,'after_cleanup':after,'dispatch_rejections':rejected}))
+  self.assertEqual(self.state['phase'],'planning','cleanup must preserve explicit checker planner routing')
+if __name__=='__main__':unittest.main()

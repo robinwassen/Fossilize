@@ -1,0 +1,48 @@
+"""Independent recheck of prior counterexamples; disposable Git/fake-gh only."""
+import json,sys
+from pathlib import Path
+sys.path.insert(0,str(Path.cwd()/'.agents/skills/implement-change-harness/scripts'))
+from test_delivery_wrapup import DeliveryTests,Interrupted
+from harness_state import Store
+fixture=DeliveryTests('test_W14_known_unsent_dispatch_publication_recovers_exactly_once')
+try:
+ fixture.setUp();fixture.fast_reads=True
+ for stage in ('merge','ticket-comment-8'):
+  for phase in ('before-push','after-push'):
+   fixture.restore();hits=[]
+   def fail(current,boundary,delivery):
+    if (current,boundary)==(stage,'before-publication'):
+     row=delivery.delivery['steps'].get(stage,{})
+     if row.get('dispatched') and row.get('status')=='intent':hits.append(stage);delivery.h.store.fail=phase
+   first=fixture.run_delivery(fault=fail)
+   state=json.loads(Store(fixture.source).records(Store(fixture.source).tip())[fixture.path])
+   row=state['delivery']['steps'][stage];svc=fixture.service()
+   sends_before=svc.get('merge_count',0)
+   comments_before=len([c for c in svc['issues']['8'].get('comments_data',[]) if '<!-- harness-delivery:' in c['body']])
+   assert hits==[stage] and first['outcome']=='incomplete'
+   assert row['not_sent'] and not row['dispatched'] and comments_before==0
+   assert sends_before==(0 if stage=='merge' else 1)
+   observed=[]
+   for _ in range(2):
+    r=fixture.run_delivery();fixture.assert_delivered(r)
+    assert r['resume_command']==first['resume_command']
+    observed.append({'outcome':r['outcome'],'merge_count':fixture.service()['merge_count'],'exact_publication':r['artifact_publication']['status']})
+   print(json.dumps({'id':'independent.no-send.'+stage+'.'+phase,'first':first['outcome'],'disposition':row,'merge_count_before':sends_before,'comments_before':comments_before,'retries':observed}),flush=True)
+ for stage in ('merge','ticket-comment-8'):
+  fixture.restore()
+  def die(current,boundary,delivery):
+   if (current,boundary)==(stage,'after-publication'):
+    row=delivery.delivery['steps'].get(stage,{})
+    if row.get('dispatched') and row['status']=='intent':raise Interrupted()
+  try:fixture.run_delivery(fault=die)
+  except Interrupted:pass
+  else:raise AssertionError('death seam missed')
+  outcomes=[]
+  for _ in range(2):
+   r=fixture.run_delivery();svc=fixture.service()
+   assert r['outcome']=='incomplete' and 'reconcile service' in r['summary']
+   assert svc.get('merge_count',0)==(0 if stage=='merge' else 1)
+   assert not [c for c in svc['issues']['8'].get('comments_data',[]) if '<!-- harness-delivery:' in c['body']]
+   outcomes.append(r['outcome'])
+  print(json.dumps({'id':'independent.ambiguous.'+stage,'retries':outcomes,'duplicate_effects':0}),flush=True)
+finally:fixture.doCleanups()

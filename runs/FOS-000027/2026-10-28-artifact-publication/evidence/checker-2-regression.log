@@ -1,0 +1,26 @@
+Committed P08c regression against original helper033cd849 in disposable snapshot:
+test_P08c_historical_allocations_survive_every_parent_edge (test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge) ... 
+  test_P08c_historical_allocations_survive_every_parent_edge (test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge) (case='removed reservation') ... FAIL
+
+======================================================================
+FAIL: test_P08c_historical_allocations_survive_every_parent_edge (test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge) (case='removed reservation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/fos27-checker-2-original-p969fdz3/test_harness_artifacts.py", line 352, in test_P08c_historical_allocations_survive_every_parent_edge
+    self.assertEqual((self.tip, self.remote_tip()), (parent, bad))
+AssertionError: Tuples differ: ('8886dc3fb86091772bf66e27c09a7480277d69f2'[40 chars]9f2') != ('e3b845e1914710715cbefa284f9af775adeb0d3c'[40 chars]9f2')
+
+First differing element 0:
+'8886dc3fb86091772bf66e27c09a7480277d69f2'
+'e3b845e1914710715cbefa284f9af775adeb0d3c'
+
+- ('8886dc3fb86091772bf66e27c09a7480277d69f2',
++ ('e3b845e1914710715cbefa284f9af775adeb0d3c',
+   '8886dc3fb86091772bf66e27c09a7480277d69f2')
+
+----------------------------------------------------------------------
+Ran 1 test in 0.443s
+
+FAILED (failures=1)
+
+Expected defect detection confirmed: original helper adopts the reservation-dropping descendant, failing the exact retained-tip assertion.

@@ -1,0 +1,217 @@
+test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) ... 
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:merge:intent:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:merge:returned:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:merge-verification:intent:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:merge-verification:returned:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:detach:intent:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:detach:returned:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:remote-delete:intent:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:remote-delete:returned:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:local-delete:intent:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:local-delete:returned:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:ticket-close-8:intent:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:ticket-close-8:returned:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:ticket-comment-8:intent:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:ticket-comment-8:returned:after-push') ... FAIL
+  test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:complete:readback:after-push') ... FAIL
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:merge:intent:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': None, 'checkpoint_sha': '5592231b6074383594eb7c5138d64cc8adb2ce51', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '5592231b6074383594eb7c5138d64cc8adb2ce51', 'remote_sha': '5592231b6074383594eb7c5138d64cc8adb2ce51', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:merge:returned:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': None, 'checkpoint_sha': '6ad84690eb8110adf84f7ad3d66742faa9360ba7', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '6ad84690eb8110adf84f7ad3d66742faa9360ba7', 'remote_sha': '6ad84690eb8110adf84f7ad3d66742faa9360ba7', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:merge-verification:intent:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': 'a80f19dbbf67e3de125dfc9e274f35ba64f53e03', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': 'a80f19dbbf67e3de125dfc9e274f35ba64f53e03', 'remote_sha': 'a80f19dbbf67e3de125dfc9e274f35ba64f53e03', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:merge-verification:returned:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': '64e5c74c6b91484d09c952d4e4108c05a5c5c347', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '64e5c74c6b91484d09c952d4e4108c05a5c5c347', 'remote_sha': '64e5c74c6b91484d09c952d4e4108c05a5c5c347', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:detach:intent:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': '580642bb7537787ebe8ae7f5c994eff589133600', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '580642bb7537787ebe8ae7f5c994eff589133600', 'remote_sha': '580642bb7537787ebe8ae7f5c994eff589133600', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:detach:returned:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': '59a9846ec5d2a66e58c15160852c8f84ff38eefa', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '59a9846ec5d2a66e58c15160852c8f84ff38eefa', 'remote_sha': '59a9846ec5d2a66e58c15160852c8f84ff38eefa', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:remote-delete:intent:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': 'cdea64279d9880881e0d5173be771506dbc9c13b', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': 'cdea64279d9880881e0d5173be771506dbc9c13b', 'remote_sha': 'cdea64279d9880881e0d5173be771506dbc9c13b', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:remote-delete:returned:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': '198520c4436e8cecfb9b36b2c452075b194a666d', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '198520c4436e8cecfb9b36b2c452075b194a666d', 'remote_sha': '198520c4436e8cecfb9b36b2c452075b194a666d', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:local-delete:intent:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': 'f092472e905929b8e91e66cc5e8ccc049320666a', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': 'f092472e905929b8e91e66cc5e8ccc049320666a', 'remote_sha': 'f092472e905929b8e91e66cc5e8ccc049320666a', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:local-delete:returned:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': '5ff2ab9fe081e97345dfd9758f46098509e5d62a', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '5ff2ab9fe081e97345dfd9758f46098509e5d62a', 'remote_sha': '5ff2ab9fe081e97345dfd9758f46098509e5d62a', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:ticket-close-8:intent:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': 'c121a09c736be3d6fac94cd85e65a444c7a537a4', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': 'c121a09c736be3d6fac94cd85e65a444c7a537a4', 'remote_sha': 'c121a09c736be3d6fac94cd85e65a444c7a537a4', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:ticket-close-8:returned:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': 'cae0307c759062fe30f048a9ad5c4fcbf27d606e', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': 'cae0307c759062fe30f048a9ad5c4fcbf27d606e', 'remote_sha': 'cae0307c759062fe30f048a9ad5c4fcbf27d606e', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:ticket-comment-8:intent:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': 'b18493b00f2aae44349f77e48897b851d5a97754', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': 'b18493b00f2aae44349f77e48897b851d5a97754', 'remote_sha': 'b18493b00f2aae44349f77e48897b851d5a97754', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:ticket-comment-8:returned:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': '377231074bd1fb9a4a3c216a10f00361d9ae2e08', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '377231074bd1fb9a4a3c216a10f00361d9ae2e08', 'remote_sha': '377231074bd1fb9a4a3c216a10f00361d9ae2e08', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+======================================================================
+FAIL: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) (scenario_id='W11:complete:readback:after-push')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 718, in publication_matrix
+    self.assert_delivered(again)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 297, in assert_delivered
+    self.assertEqual(result['outcome'], 'delivered', result)
+AssertionError: 'decision-needed' != 'delivered'
+- decision-needed
++ delivered
+ : {'outcome': 'decision-needed', 'delivered': False, 'summary': 'delivery actor already owns this fixture run', 'scope': {'approved': True, 'repository': 'robinwassen/Fossilize', 'pr': 'https://github.com/robinwassen/Fossilize/pull/99', 'head': '7ee9621bf09460921b2792167117326c90ad1700', 'root_issue': 'https://github.com/robinwassen/Fossilize/issues/8', 'run_id': 'run-1', 'accepted_revision': 20}, 'candidate_sha': '7ee9621bf09460921b2792167117326c90ad1700', 'merge_sha': 'd586d09b61f8bdea199dc147834a0df01dd1cf6a', 'checkpoint_sha': '67d5539f29e0d7fbe5a008cd860386bac08c7fe1', 'artifact_publication': {'status': 'confirmed', 'checkpoint_sha': '67d5539f29e0d7fbe5a008cd860386bac08c7fe1', 'remote_sha': '67d5539f29e0d7fbe5a008cd860386bac08c7fe1', 'destination': {'endpoint_sha256': '4751a0113d42c94655e8b9ba14cd96a5bea1710ac991adcd83f4346ab48e06e4', 'ref': 'refs/heads/harness-artifacts', 'remote': 'origin', 'repository': 'robinwassen/Fossilize', 'review_summary': 'New orphan records; no prior history', 'reviewed_tip': None, 'version': 1}, 'outcome': 'already-published', 'next_action': 'publish-artifacts selected run; supervisor retries contention'}, 'resume_command': 'python3 -B /tmp/harness-test-fkxwih2j/source/.agents/skills/implement-change-harness/scripts/harness_state.py --repo /tmp/harness-test-fkxwih2j/source wrap-up --approve --root-issue https://github.com/robinwassen/Fossilize/issues/8 --run-id run-1 --approved-repository robinwassen/Fossilize --approved-pr https://github.com/robinwassen/Fossilize/pull/99 --approved-head 7ee9621bf09460921b2792167117326c90ad1700 --accepted-revision 20'}
+
+----------------------------------------------------------------------
+Ran 1 test in 77.408s
+
+FAILED (failures=15)
+group did not pass

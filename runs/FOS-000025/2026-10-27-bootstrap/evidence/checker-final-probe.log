@@ -1,0 +1,23 @@
+Independent final checker disposable semantic probe; candidate source untouched.
+Actual deliberately faulty implementation returns2 while original planned assertion expects1.
+Actual test weakened to assertTrue(True); command ['/usr/bin/python3', '-m', 'unittest', '-v', 'test_behavior']
+exit_code=0
+test_value (test_behavior.Behavior.test_value) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+
+diff --git a/test_behavior.py b/test_behavior.py
+index ba9f6b0..32593dd 100644
+--- a/test_behavior.py
++++ b/test_behavior.py
+@@ -2,4 +2,4 @@ import unittest
+ from behavior import value
+ class Behavior(unittest.TestCase):
+     def test_value(self):
+-        self.assertEqual(value(), 1)
++        self.assertTrue(True)
+
+PASS: independent semantic inspection rejects vacuous success; durable finding routes to implementation; publication remains blocked.

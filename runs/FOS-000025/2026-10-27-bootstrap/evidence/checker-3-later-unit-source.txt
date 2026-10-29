@@ -1,0 +1,45 @@
+import sys, json, subprocess, os
+sys.path.insert(0,'/home/robin/dev/fossilize-harness-checker-3/.agents/skills/implement-change-harness/scripts')
+from test_harness_state import HarnessTests
+from harness_state import Invalid,git
+
+def run(t, modules):
+    r=subprocess.run([sys.executable,'-B','-m','unittest','-v',*modules],cwd=t.source,capture_output=True,text=True,timeout=30)
+    print('COMMAND',modules,'exit',r.returncode);print(r.stderr)
+    return r
+
+t=HarnessTests();t.setUp()
+try:
+    p=t.split_plan();first,second=[u['key'] for u in p['subtasks']];p['subtasks'].reverse()
+    t.launch('planner');t.act('report',dict(t.report(),plan=p))
+    t.implemented();t.checked()
+    t.launch('implementer')
+    (t.source/'second.py').write_text('def second_value(x):\n    return x+1\n')
+    (t.source/'test_second.py').write_text('import unittest\nfrom second import second_value\nclass Second(unittest.TestCase):\n    def test_second(self):\n        self.assertEqual(second_value(1),2)\n')
+    (t.source/'test_final.py').write_text('import unittest\nfrom second import second_value\nclass Final(unittest.TestCase):\n    def test_final(self):\n        self.assertEqual(second_value(2),4)\n')
+    candidate=t.commit_candidate()
+    t.act('report',dict(t.report(),result_candidate_sha=candidate,test_mapping={'C2':'test_second.py'},commands=[{'exit_code':0}]))
+    t.launch('checker');passed=run(t,['test_second']);assert passed.returncode==0
+    report=t.check_report(passed);tid='test_second.Second.test_second'
+    report.update(discovered=[tid],executed=[tid],test_mapping={'C2':{'location':'test_second.py:5','tests':[tid]}})
+    report['evidence'][0]['command']=[sys.executable,'-B','-m','unittest','-v','test_second']
+    t.act('report',report)
+    t.launch('checker');failed=run(t,['test_behavior','test_second','test_final']);assert failed.returncode!=0
+    assert '3 != 4' in failed.stderr
+    t.act('report',dict(t.report(),verdict='changes_required',findings=[{'id':'later-only','affected_task':second,'status':'open','route':'implementation','evidence':failed.stderr}],next_action='repair second.py in Second unit; retain passing First'))
+    assert t.state['active_unit']==first
+    # Honor one-unit scope: First needs no source fix. Its fresh implementer returns same candidate.
+    t.implemented(candidate);t.launch('checker')
+    passing=t.check_report();assert passing['evidence'][0]['exit_code']==0
+    before=t.harness.show()
+    try:t.act('report',passing)
+    except Invalid as e:print('BLOCKER passing prerequisite acceptance:',str(e))
+    else:raise AssertionError('unexpected acceptance')
+    assert t.harness.show()==before
+    try:t.launch('implementer')
+    except Invalid as e:print('BLOCKER dependent implementer dispatch:',str(e))
+    else:raise AssertionError('unexpected dispatch')
+    still=run(t,['test_final']);assert still.returncode!=0
+    print('STATE',json.dumps({'phase':t.state['phase'],'active_unit':t.state['active_unit'],'finding_id':t.state['findings'][0]['id'],'affected_task':second},sort_keys=True))
+    print('First assertion still passes, Second final assertion still fails. Advancing requires prematurely resolving the failed Second finding or changing Second source while implementing First; both conflict with documented role scope.')
+finally:t.doCleanups()

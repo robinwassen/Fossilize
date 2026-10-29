@@ -1,0 +1,39 @@
+import hashlib,json,pathlib,subprocess,sys,time
+sys.path.insert(0,'/home/robin/.codex/skills/implement-change-harness/scripts')
+from github_issues import GitHub
+root=pathlib.Path('/tmp/fossilize-10/checker-final')
+area=pathlib.Path('/tmp/fossilize-10/final-review');area.mkdir(exist_ok=False)
+def command(args,cwd=root):
+ p=subprocess.run(args,cwd=cwd,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=60)
+ assert p.returncode==0,(args,p.returncode,p.stderr)
+ return p.stdout
+candidate='a24e8afd8b584a3ad95d049885c3445ba3f1fa9c';base='b42b22c2e73bcfed731ee17752c244e2be7e737f'
+state=json.loads(command(['git','show','harness-artifacts:runs/issue-10/issue10-20261028/state.json']))
+for source in [root,pathlib.Path('/home/robin/dev/fossilize-issue-10')]:
+ assert command(['git','rev-parse','HEAD'],source).strip()==candidate
+ assert not command(['git','status','--porcelain'],source)
+assert command(['git','rev-parse','HEAD^']).strip()==base
+files=command(['git','diff','--name-only',base+'..'+candidate]).splitlines();assert len(files)==11
+assert not command(['git','diff','--check',base+'..'+candidate])
+diff=command(['git','diff',base+'..'+candidate]);(area/'complete-diff.log').write_text(diff)
+plan=json.load(open('/tmp/fossilize-10/planner2-report.json'))['plan'];old=json.load(open('/tmp/fossilize-10/planner-report.json'))['plan']
+assert plan['version']==2 and plan['original']==old['original']==state['original'] and plan['cases']==old['cases']
+assert state['closeout']['candidate_sha']==candidate and state['closeout']['base_sha']==base and state['closeout']['plan_version']==2 and state['closeout']['stage']=='prepared'
+assert state['closeout']['closing_references']==['Closes https://github.com/robinwassen/Fossilize/issues/10']
+assert all(f['status']=='resolved' for f in state['findings'])
+waiver=json.loads(command(['git','show','harness-artifacts:runs/issue-10/issue10-20261028/evidence/windows-scope-decision.json']))
+assert waiver['authorization']=='Ok, skip windows for now. Should be ok!' and waiver['candidate_sha']==candidate
+api=GitHub(repository='robinwassen/Fossilize',timeout=60)
+snapshot=api.snapshot(10,[10]);assert snapshot==state['issue_snapshot']==json.load(open('/tmp/fossilize-10/final-live-snapshot.json'))
+issue=api.issue(10);parent=api.issue(8)
+assert issue['state']=='open' and parent['state']=='open' and issue['parent']==parent['url'] and not issue['children'] and not issue['blocked_by']
+assert issue['body']==state['original'][0]['requirement']
+comments=api.comments(10)
+ready=[c for c in comments if state['closeout']['marker'] in c['body']];assert len(ready)==1
+body=ready[0]['body'];assert state['closeout']['binding'] in body and 'Native Windows explicitly deferred and unverified' in body and 'Parent #8 remains open' in body and 'separate final checking is pending' in body
+pr=pathlib.Path('/tmp/fossilize-10/pr-body.md').read_text()
+assert pr.count('Closes https://github.com/robinwassen/Fossilize/issues/10')==1 and 'Closes https://github.com/robinwassen/Fossilize/issues/8' not in pr
+assert 'Native Windows verification is explicitly deferred and remains unverified' in pr
+for heading in ['Problem','What changes','Why this matters','Why this approach','Verification and limits','Task references']: assert '\n## '+heading+'\n' in '\n'+pr
+review=dict(candidate_sha=candidate,base_sha=base,plan_version=2,attempt_id='checker-final',input_digest=snapshot['digest'],files=files,diff_sha256=hashlib.sha256(diff.encode()).hexdigest(),original_and_six_cases_preserved=True,issue=issue,parent=parent,readiness_url=ready[0]['html_url'],readiness_binding=state['closeout']['binding'],closing_references=state['closeout']['closing_references'],windows=waiver,review='Complete 11-file diff, all committed test assertions, registration, feature conditions, isolation/watchdogs and source/C-layer ABI/protocol/behavior compatibility reviewed independently. No unrelated schema/controller/persistence redesign. No unresolved findings.',result='passed',exit_code=0)
+(area/'review.json').write_text(json.dumps(review,indent=2)); print(json.dumps({k:review[k] for k in ['candidate_sha','base_sha','plan_version','attempt_id','input_digest','readiness_url','result','exit_code']},indent=2))

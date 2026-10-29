@@ -1,0 +1,159 @@
+{
+  "admitted": null,
+  "boot": null,
+  "contract": {
+    "argv": [
+      "/usr/bin/python3.12",
+      "-B",
+      "-c",
+      "import copy,json,multiprocessing as mp,time,sys,unittest\nfrom pathlib import Path\nsys.path.insert(0,'.agents/skills/implement-change-harness/scripts')\nfrom harness_state import Harness,Invalid,git,REF\nfrom harness_parallel import index_of\nfrom test_harness_migration import LiveFixture\nclass Fixture(LiveFixture,unittest.TestCase):pass\n\ndef start(source,root,run,payload,authority,barrier,out):\n try:\n  h=Harness(source,root_issue=root,run_id=run,fixture_authority=authority)\n  p=copy.deepcopy(payload);p.update(root_issue=root,run_id=run);p.pop('original',None)\n  p['repository'].update(implementation_worktree=source,branch='codex/'+run)\n  barrier.wait(15)\n  result=h.apply('initialize',p,None,0)\n  until=time.monotonic()+90\n  while result.get('artifact_publication',{}).get('status')!='confirmed':\n   assert time.monotonic()<until,result\n   rows=h.store.records(h.store.tip());s=h.selected(rows)\n   result=h.apply('publish-artifacts',{},h.store.tip(),s['revision'] if s else 0)\n  rows=h.store.records(h.store.tip());s=h.selected(rows)\n  out.put({'root':root,'run':run,'state':s is not None,'observer':index_of(rows)['waiting'].get(h.selector()),'tip':h.store.tip()})\n except BaseException as error:\n  import traceback\n  out.put({'error':repr(error),'trace':traceback.format_exc()})\n\ndef probe(child):\n f=Fixture(methodName='runTest');f.setup_live()\n try:\n  other=f.create('Child',f.original[0]['requirement']) if child else f.root_issue\n  if child:f.gh.api('issues/'+str(f.root_issue['number'])+'/sub_issues','POST',{'sub_issue_id':other['id']})\n  sources=[]\n  for run in ('race-A','race-B'):\n   source=f.root/run;git(f.repo,'clone',str(f.bare),str(source));git(source,'checkout','-b','codex/'+run,'origin/master')\n   git(source,'config','user.name','Race');git(source,'config','user.email','race@example.invalid');sources.append(str(source))\n  ctx=mp.get_context('fork');barrier=ctx.Barrier(2);out=ctx.Queue()\n  workers=[ctx.Process(target=start,args=(source,issue['html_url'],run,f.payload,str(f.resource_authority),barrier,out)) for source,issue,run in zip(sources,(f.root_issue,other),('race-A','race-B'))]\n  for w in workers:w.start()\n  for w in workers:\n   w.join(110)\n   if w.is_alive():w.kill();w.join(5);raise AssertionError('race watchdog')\n   assert w.exitcode==0,w.exitcode\n  results=[out.get(timeout=5)for _ in workers];assert not any('error'in r for r in results),results\n  reader=Harness(sources[0],root_issue=f.root_issue['html_url'],run_id='race-A',fixture_authority=f.resource_authority)\n  remote=git(sources[0],'ls-remote','--refs','origin',REF).decode().split()[0]\n  git(sources[0],'fetch','--no-write-fetch-head','origin',REF+':refs/harness/race-observed')\n  rows=reader.store.records(remote);idx=index_of(rows)\n  assert len(idx['runs'])==1,idx\n  assert len(idx['waiting'])==1,idx\n  assert sum(r['state']for r in results)==1,results\n  assert len({owner['owner']for owner in idx['claims'].values()})==1,idx\n  assert not f.service().get('pr_create_count'),f.service()\n  return {'scenario':'root-child'if child else'same-issue','results':results,'owners':list(idx['runs']),'observers':list(idx['waiting']),'claimed':sorted(idx['claims']),'no_PR_created':True}\n finally:f.doCleanups()\nresults=[probe(False),probe(True)]\nPath('/work/evidence/checker-races.json').write_text(json.dumps(results,indent=2))\nprint(json.dumps({'passed':True,'scenarios':[r['scenario']for r in results]}))\n"
+    ],
+    "attempt_id": "checker-unit-1",
+    "base_sha": "5eb2c496dde819c868fa3d7d1e52c51047d9adb8",
+    "budgets": {
+      "cpu_percent": 100,
+      "disk_bytes": 536870912,
+      "export_bytes": 8388608,
+      "log_bytes": 524288,
+      "memory_bytes": 1073741824,
+      "processes": 128
+    },
+    "candidate_sha": "d4f1c4c88bf29d2a61590cb90106fa37e1886ed1",
+    "cwd": "/work/source",
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "exports": [
+      "checker-races.json"
+    ],
+    "gate": "checker-counterexamples",
+    "helper_digest": "bf1168b2038ce6b196f63714e81d567153fdd32069cce1b104991447e0d2df49",
+    "imports": {},
+    "input_sha": "d4f1c4c88bf29d2a61590cb90106fa37e1886ed1",
+    "plan_version": 1,
+    "profile": "cpu-private",
+    "release": "owned-cgroup-empty-and-exports-verified",
+    "resource_set": [
+      {
+        "capacity": 300,
+        "key": "077a8e5aae842101e6b478d4:cpu:all",
+        "kind": "cpu",
+        "scope": "host",
+        "units": 100
+      },
+      {
+        "capacity": 6442450944,
+        "key": "077a8e5aae842101e6b478d4:memory:all",
+        "kind": "memory",
+        "scope": "host",
+        "units": 1073741824
+      },
+      {
+        "capacity": 768,
+        "key": "077a8e5aae842101e6b478d4:process:all",
+        "kind": "process",
+        "scope": "host",
+        "units": 128
+      },
+      {
+        "capacity": 3,
+        "key": "077a8e5aae842101e6b478d4:io:all",
+        "kind": "io",
+        "scope": "host",
+        "units": 1
+      }
+    ],
+    "resources": [
+      {
+        "capacity": 3,
+        "id": "all",
+        "kind": "cpu",
+        "scope": "host"
+      }
+    ],
+    "root_issue": "https://github.com/robinwassen/Fossilize/issues/40",
+    "run_id": "issue40-20261029",
+    "source": "/tmp/fossilize-issue40-checker-unit1",
+    "source_identity": {
+      "device": 2051,
+      "inode": 3544178,
+      "path": "/tmp/fossilize-issue40-checker-unit1"
+    },
+    "timeout": 600,
+    "tools": [
+      {
+        "device": 2051,
+        "inode": 19267657,
+        "path": "/usr/bin/python3.12",
+        "requested_identity": [
+          2051,
+          19268858,
+          "python3.12"
+        ],
+        "requested_path": "/usr/bin/python3",
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      },
+      {
+        "device": 2051,
+        "inode": 19269024,
+        "path": "/usr/bin/git",
+        "requested_identity": [
+          2051,
+          19269024,
+          null
+        ],
+        "requested_path": "/usr/bin/git",
+        "sha256": "eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201"
+      },
+      {
+        "device": 2051,
+        "inode": 19268638,
+        "path": "/usr/bin/bwrap",
+        "requested_identity": [
+          2051,
+          19268638,
+          null
+        ],
+        "requested_path": "/usr/bin/bwrap",
+        "sha256": "e318903862396f96de3df57264e0158682b952fd3fb53ac23d876413e7b30f71"
+      },
+      {
+        "device": 2051,
+        "inode": 19282469,
+        "path": "/usr/bin/systemd-run",
+        "requested_identity": [
+          2051,
+          19282469,
+          null
+        ],
+        "requested_path": "/usr/bin/systemd-run",
+        "sha256": "de28cc5757d3789efa5f6fed5659893410469f68b42175d4531f5b34d3a09e16"
+      },
+      {
+        "device": 2051,
+        "inode": 19282443,
+        "path": "/usr/bin/systemctl",
+        "requested_identity": [
+          2051,
+          19282443,
+          null
+        ],
+        "requested_path": "/usr/bin/systemctl",
+        "sha256": "37ec607113f55f1b385b4fa75588a43402aec0de57927500763b267713f10f63"
+      }
+    ],
+    "version": 1
+  },
+  "digest": "785ccf50c97fa720bb69857e8ae43bcc65a37e3e0838d5fb55908f3b045efcc0",
+  "execution": null,
+  "exports": null,
+  "finished": null,
+  "generation": null,
+  "id": "21be5747bbd54559a28adf3f8f160826",
+  "reason": null,
+  "receipt": null,
+  "seq": 211,
+  "status": "cancelled",
+  "submitted": 1793293409.7200866,
+  "unit": null
+}

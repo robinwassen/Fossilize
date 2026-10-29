@@ -1,0 +1,395 @@
+{
+  "attempt_id": "checker-1",
+  "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+  "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+  "counts": {
+    "discovered": 18,
+    "executed": 18,
+    "independent_probe_scenarios": 4,
+    "passed": 18,
+    "planned_cases_mapped": 17,
+    "skipped": 0
+  },
+  "criterion_results": {
+    "AC1": "changes_required: dependency readiness and finding uniqueness defects",
+    "AC2": "changes_required: malformed duplicate findings can make the run unrecoverable; real transaction/lock/source-isolation tests passed",
+    "AC3": "existing allocation/archive/interruption tests passed; no separate key blocker certified. Semantic reassignment still requires checker scrutiny",
+    "AC4": "changes_required: post-dispatch deadline expiry bypasses stop; stale tuple/model/liveness and dispatch-bound limits pass covered tests",
+    "AC5": "changes_required: planned T13 readiness invariant is not fully implemented; all 17 case mappings exist and 18 current tests passed; separate final gate remains pending",
+    "AC6": "bootstrap history/original/legacy report preservation and current fenced checker reviewed; separate fresh final attempt is pending",
+    "AC7": "package validator passed, docs/test/runtime scope reviewed; correct the three helper/test gaps and deadline-limit wording",
+    "AC8": "not complete: rejected candidate must not publish; separate final acceptance and G05 remain pending"
+  },
+  "discovered": [
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+  ],
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "candidate_worktree": "fresh detached /home/robin/dev/fossilize-harness-checker-1",
+    "executable": "/usr/bin/python3",
+    "git": "git version 2.43.0",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "evidence": [
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+      "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+      "command": "timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s .agents/skills/implement-change-harness/scripts -p 'test_*.py' -v",
+      "criteria": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-checker-1",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "candidate_worktree": "fresh detached /home/robin/dev/fossilize-harness-checker-1",
+        "executable": "/usr/bin/python3",
+        "git": "git version 2.43.0",
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+      },
+      "exit_code": 0,
+      "gate": "G01",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G01.log",
+      "notes": "Actual stdout/stderr retained; scope limitations listed separately.",
+      "plan_version": 1,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+      "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+      "command": "timeout 600 python3 -B /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+      "criteria": [
+        "AC7"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-checker-1",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "candidate_worktree": "fresh detached /home/robin/dev/fossilize-harness-checker-1",
+        "executable": "/usr/bin/python3",
+        "git": "git version 2.43.0",
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+      },
+      "exit_code": 0,
+      "gate": "G02",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G02.log",
+      "notes": "Actual stdout/stderr retained; scope limitations listed separately.",
+      "plan_version": 1,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+      "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+      "command": "Independent read of original keyed requirement/guidance, full base-to-candidate diff, helper/tests/contracts, factual reports, actual bootstrap artifact history, and execution of /tmp/FOS-000025-checker-1-probes.py",
+      "criteria": [
+        "AC1",
+        "AC6",
+        "AC7",
+        "AC8"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-checker-1",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "candidate_worktree": "fresh detached /home/robin/dev/fossilize-harness-checker-1",
+        "executable": "/usr/bin/python3",
+        "git": "git version 2.43.0",
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+      },
+      "exit_code": null,
+      "gate": "G03",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G03.log",
+      "notes": "Semantic review rejects three concrete invariants despite passing regression suite.",
+      "plan_version": 1,
+      "result": "failed"
+    },
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+      "candidate_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+      "command": "Separately: git diff --check <base>...<candidate>; git diff --name-status <base>...<candidate>; git ls-tree -r --name-only harness-artifacts",
+      "criteria": [
+        "AC2",
+        "AC7"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-checker-1",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "candidate_worktree": "fresh detached /home/robin/dev/fossilize-harness-checker-1",
+        "executable": "/usr/bin/python3",
+        "git": "git version 2.43.0",
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+      },
+      "exit_code": 0,
+      "gate": "G04",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G04.log",
+      "notes": "Actual stdout/stderr retained; scope limitations listed separately.",
+      "plan_version": 1,
+      "result": "passed"
+    }
+  ],
+  "executed": [
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+  ],
+  "findings": [
+    {
+      "affected_task": "FOS-000025",
+      "criteria": [
+        "AC1",
+        "AC5"
+      ],
+      "evidence": "Disposable reverse_dependency probe takes the existing registered two-unit split fixture, reverses the acyclic plan to [Second depends First, First], and submits the planner report. The report commits active_unit FOS-000027 with dependency FOS-000026 still unaccepted. launch(implementer) succeeds and checkpoints an acknowledged running implementer for FOS-000027. See checker-1-probes.log PROBE reverse_dependency; scratch source is retained.",
+      "expected": "Only a unit whose dependencies are accepted can dispatch. Array order must not bypass dependency readiness; source-observation reset and replans need the same rule.",
+      "file": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/harness_state.py",
+      "id": "FOS-000025-C1-001",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:642-645 (also dispatch:580-615 and observe-source:562)",
+      "next_action": "Implement dependency-ready initial/reset selection (or explicitly reject non-topological plans) and guard implementer dispatch; extend existing T13 with a valid non-topological plan and readiness assertions.",
+      "planned_cases": [
+        "T13"
+      ],
+      "priority": 1,
+      "route": "implementation",
+      "status": "open",
+      "title": "Initial split unit can run before its dependencies accept"
+    },
+    {
+      "affected_task": "FOS-000025",
+      "criteria": [
+        "AC4",
+        "AC8"
+      ],
+      "evidence": "Disposable late_final probe starts final checker at fake time1000 with deadline15400, advances clock to15401, and submits actual passing assertion-run evidence. Helper moves to publishing with exhausted=false. publish-intent, real local bare-remote push observation, exact PR lookup and attachment then complete the run with extensions=[] and exhausted=false. See checker-1-probes.log PROBE late_final. Deadline is consulted only at dispatch, so no further dispatch occurs to enforce it.",
+      "expected": "An expired run must stop before further work/publication and require the recorded explicit extension. A late report can be retained as a factual result without authorizing post-deadline completion. No watchdog is required for this invocation-time safeguard.",
+      "file": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/harness_state.py",
+      "id": "FOS-000025-C1-002",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:593-607, 660-667, 701-718",
+      "next_action": "Enforce elapsed run budget on forward-progress/publication invocations, preserve late results and exact resume action without fabricating success, and extend T09/T15 with a deadline crossing during final checking or publishing.",
+      "planned_cases": [
+        "T09",
+        "T15"
+      ],
+      "priority": 1,
+      "route": "implementation",
+      "status": "open",
+      "title": "Deadline expiry can be bypassed through final acceptance and publication"
+    },
+    {
+      "affected_task": "FOS-000025",
+      "criteria": [
+        "AC1",
+        "AC2",
+        "AC7"
+      ],
+      "evidence": "Disposable duplicate_findings probe submits a changes_required report containing two open findings with id=same. Both are committed because duplicate validation checks only older state findings. In a fresh checker, resolve-finding(same) twice always selects the first item; the second remains open. Acceptance then fails unresolved prior finding, and no existing legal action can identify/resolve the second item. See checker-1-probes.log PROBE duplicate_findings.",
+      "expected": "Finding IDs are unique across the incoming report and durable state; malformed duplicates must fail without a ref/revision advance, preserving a recoverable run.",
+      "file": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/harness_state.py",
+      "id": "FOS-000025-C1-003",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:657-659 and 525-527",
+      "next_action": "Reject duplicate incoming finding IDs transactionally, validate unique durable finding identities, and extend existing malformed/evidence tests with a same-report duplicate and normal resolution control.",
+      "planned_cases": [
+        "T03",
+        "T10"
+      ],
+      "priority": 2,
+      "route": "implementation",
+      "status": "open",
+      "title": "Duplicate finding IDs within one report create an unresolvable run"
+    }
+  ],
+  "input_revision": 7,
+  "input_sha": "badc75168a2ef83222b67457798bcc2cf367f748",
+  "limitations": [
+    "This is subtask checking only. Fresh final combined-branch checking (G03) and actual PR publication/attachment (G05) are pending.",
+    "Original checkout is currently clean at2325a40846cceb9e053cc5b26aad4c030e07e1a2; only coordinator pre-run baseline can establish full unchanged-user-checkout comparison. Checker/source remained clean.",
+    "No live GitHub failure injection or product/GPU/Steam checks were run; Python/doc scope makes these exclusions appropriate.",
+    "The fourth probe shows a replan can replace a subtask definition while keeping its key/title. Meaning equivalence is not inferred by schema; record this as semantic-review limitation rather than an additional mechanical blocker.",
+    "No candidate fixes were made and the checker does not self-approve."
+  ],
+  "next_action": "Return the same FOS-000025 work unit to a fresh implementer to repair FOS-000025-C1-001 through C1-003 and add the specified regressions under existing T13/T09/T15/T03/T10 coverage; commit a new candidate, then dispatch a fresh independent checker. Keep final checking and publication blocked. No replan is required for these already planned invariants.",
+  "operation": "subtask",
+  "outcome": "independent_subtask_rejected",
+  "plan_version": 1,
+  "probe_command": "timeout 600 env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/FOS-000025-checker-1-probes.py",
+  "probe_exit_code": 0,
+  "records": {
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G01.log": "test_T01_happy_path_real_checkpoint_and_source_preservation (test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation) ... ok\ntest_T02_failure_boundaries_and_real_cas_loser (test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser) ... ok\ntest_T03_invalid_state_paths_schema_and_source_branch_adoption (test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption) ... ok\ntest_T04_process_worktree_lock_and_single_active_run (test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run) ... ok\ntest_T05_dynamic_registry_reservations_archives_conflicts (test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts) ... ok\ntest_T06_detached_exact_views_dirty_source_and_changed_candidate (test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate) ... ok\ntest_T07_dispatch_ack_loss_live_unknown_and_termination_fence (test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence) ... ok\ntest_T08_each_stale_tuple_field_rejected_ack_revision_supported (test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported) ... ok\ntest_T09_models_fallback_deadline_repair_replan_and_extension (test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension) ... ok\ntest_T09b_repeated_unchanged_rejection_stops_early (test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early) ... ok\ntest_T10_required_evidence_completeness_and_optional_unavailable (test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable) ... ok\ntest_T11_real_faulty_reproducer_and_weakened_test_finding (test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding) ... ok\ntest_T12_repair_versus_replan_and_no_implementer_acceptance (test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance) ... ok\ntest_T13_sequential_split_dependency_validation_final_regression (test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression) ... ok\ntest_T14_required_environment_unavailable_cannot_be_waived (test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived) ... ok\ntest_T15_publication_order_wrong_tuple_moving_base_push_conflict (test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict) ... ok\ntest_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry (test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry) ... ok\ntest_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts (test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 37.097s\n\nOK\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G02.log": "Skill is valid!\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G03.log": "Candidate badc75168a2ef83222b67457798bcc2cf367f748\nBase bbe8ae4acd9ad527658bb58e6b06474924a06284\nArtifact tip observed 4e34492e0889b1f7405dc0ee3c063379f5bf8c51\nArtifact roots c0856d9bcb7b7c77f859eedd4da9bbc33b574990\n\nCOMMIT c0856d9bcb7b7c77f859eedd4da9bbc33b574990 1793131642 Initialize empty harness artifacts branch\npaths []\n\nCOMMIT 3d78abc9536b3d72396a94c7ab014e2af5854468 1793131642 FOS-000025: checkpoint bootstrap planner intent\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": null, \"operation\": \"planner_dispatch\", \"phase\": \"planning\", \"plan_version\": null, \"revision\": 1, \"schema_version\": 1, \"status\": \"ready\"}\n\nCOMMIT c434723584d36380ec5aac7d812f1360ebcd24f5 1793131661 FOS-000025: acknowledge isolated planner\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": null, \"operation\": \"planner_dispatch\", \"phase\": \"planning\", \"plan_version\": null, \"revision\": 2, \"schema_version\": 1, \"status\": \"running\"}\nATTEMPT {\"attempt_id\": \"planner-1\", \"effort\": \"high\", \"input_sha\": \"643c490\", \"model\": \"gpt-6.1-sol\", \"role\": \"planner\", \"status\": \"running\", \"worker_id\": \"/root/fos25_planner\"}\n\nCOMMIT 4f8b91fb237cbac0073e659a48dc7b870fa51386 1793131905 FOS-000025: persist planner plans and implementation dispatch intent\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": null, \"operation\": \"implementer_dispatch\", \"phase\": \"implementing\", \"plan_version\": null, \"revision\": 3, \"schema_version\": 1, \"status\": \"ready\"}\nATTEMPT {\"attempt_id\": \"planner-1\", \"effort\": \"high\", \"input_sha\": \"643c490\", \"model\": \"gpt-6.1-sol\", \"report\": \"reports/planner-1.json\", \"role\": \"planner\", \"status\": \"complete\", \"worker_id\": \"/root/fos25_planner\"}\nATTEMPT {\"attempt_id\": \"implementer-1\", \"effort\": \"high\", \"effort_reason\": \"Transactional state and recovery invariants require careful failure handling\", \"input_sha\": \"643c490d34347289ab4a7316b3b1d14f770028a5\", \"model\": \"gpt-6.1-sol\", \"role\": \"implementer\", \"status\": \"dispatch_intent\", \"worker_id\": null}\nPLAN version 1\n\nCOMMIT b4c353e1d61f54ef4ab32d7245afbd40d1397929 1793131922 FOS-000025: acknowledge isolated implementer\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": null, \"operation\": \"implementer_dispatch\", \"phase\": \"implementing\", \"plan_version\": null, \"revision\": 4, \"schema_version\": 1, \"status\": \"running\"}\nATTEMPT {\"attempt_id\": \"planner-1\", \"effort\": \"high\", \"input_sha\": \"643c490\", \"model\": \"gpt-6.1-sol\", \"report\": \"reports/planner-1.json\", \"role\": \"planner\", \"status\": \"complete\", \"worker_id\": \"/root/fos25_planner\"}\nATTEMPT {\"attempt_id\": \"implementer-1\", \"effort\": \"high\", \"effort_reason\": \"Transactional state and recovery invariants require careful failure handling\", \"input_sha\": \"643c490d34347289ab4a7316b3b1d14f770028a5\", \"model\": \"gpt-6.1-sol\", \"role\": \"implementer\", \"status\": \"running\", \"worker_id\": \"/root/fos25_implementer\"}\nPLAN version 1\n\nCOMMIT afe4877227a8ad4b647a9067eccd4ad0a107f226 1793132889 FOS-000025: preserve completed implementation report for explicit import\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": null, \"operation\": \"implementer_dispatch\", \"phase\": \"implementing\", \"plan_version\": null, \"revision\": 5, \"schema_version\": 1, \"status\": \"ready\"}\nATTEMPT {\"attempt_id\": \"planner-1\", \"effort\": \"high\", \"input_sha\": \"643c490\", \"model\": \"gpt-6.1-sol\", \"report\": \"reports/planner-1.json\", \"role\": \"planner\", \"status\": \"complete\", \"worker_id\": \"/root/fos25_planner\"}\nATTEMPT {\"attempt_id\": \"implementer-1\", \"candidate_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"effort\": \"high\", \"effort_reason\": \"Transactional state and recovery invariants require careful failure handling\", \"input_sha\": \"643c490d34347289ab4a7316b3b1d14f770028a5\", \"model\": \"gpt-6.1-sol\", \"report\": \"reports/implementer-1.json\", \"role\": \"implementer\", \"status\": \"complete\", \"worker_id\": \"/root/fos25_implementer\"}\nPLAN version 1\n\nCOMMIT f8c4a052697fe033688c45c71970dddd10cfe79b 1793132897 FOS-000025 explicit bootstrap import\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": \"FOS-000025\", \"operation\": \"bootstrap-reconciliation\", \"phase\": \"checking\", \"plan_version\": null, \"revision\": 6, \"schema_version\": 2, \"status\": \"awaiting_decision\"}\nPLAN version 1\n\nCOMMIT f5834c24c37e948d09e896f2449ef2e069319c2c 1793132917 FOS-000025 reconcile revision 7\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": \"FOS-000025\", \"operation\": \"subtask\", \"phase\": \"checking\", \"plan_version\": null, \"revision\": 7, \"schema_version\": 2, \"status\": \"ready\"}\nPLAN version 1\n\nCOMMIT ff1a4daf31ff49348e0b416700cccffcda20f730 1793132918 FOS-000025 dispatch revision 8\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": \"FOS-000025\", \"operation\": \"subtask\", \"phase\": \"checking\", \"plan_version\": null, \"revision\": 8, \"schema_version\": 2, \"status\": \"running\"}\nATTEMPT {\"actual\": {\"effort\": \"high\", \"model\": \"gpt-6.1-sol\"}, \"attempt_id\": \"checker-1\", \"base_sha\": \"bbe8ae4acd9ad527658bb58e6b06474924a06284\", \"candidate_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"fallback_reason\": null, \"input_revision\": 7, \"input_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"observations\": [], \"operation\": \"subtask\", \"plan_version\": 1, \"requested\": {\"effort\": \"high\", \"model\": \"gpt-6.1-sol\"}, \"role\": \"checker\", \"started\": 1793132918.326202, \"status\": \"intent\", \"unit\": \"FOS-000025\", \"worker_id\": null}\nPLAN version 1\n\nCOMMIT d3bdbd08a51e7114c371d0f563cfff0cbaaaeb0c 1793132938 FOS-000025 acknowledge revision 9\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": \"FOS-000025\", \"operation\": \"subtask\", \"phase\": \"checking\", \"plan_version\": null, \"revision\": 9, \"schema_version\": 2, \"status\": \"running\"}\nATTEMPT {\"actual\": {\"effort\": \"high\", \"model\": \"gpt-6.1-sol\"}, \"attempt_id\": \"checker-1\", \"base_sha\": \"bbe8ae4acd9ad527658bb58e6b06474924a06284\", \"candidate_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"fallback_reason\": null, \"input_revision\": 7, \"input_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"observations\": [], \"operation\": \"subtask\", \"plan_version\": 1, \"requested\": {\"effort\": \"high\", \"model\": \"gpt-6.1-sol\"}, \"role\": \"checker\", \"started\": 1793132918.326202, \"status\": \"running\", \"unit\": \"FOS-000025\", \"worker_id\": \"/root/fos25_checker_1\"}\nPLAN version 1\n\nCOMMIT 7e4ad5b6eee267ee58ee10130d7018c4a14dd6a5 1793132949 FOS-000025 command-intent revision 10\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": \"FOS-000025\", \"operation\": \"subtask\", \"phase\": \"checking\", \"plan_version\": null, \"revision\": 10, \"schema_version\": 2, \"status\": \"running\"}\nATTEMPT {\"actual\": {\"effort\": \"high\", \"model\": \"gpt-6.1-sol\"}, \"attempt_id\": \"checker-1\", \"base_sha\": \"bbe8ae4acd9ad527658bb58e6b06474924a06284\", \"candidate_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"fallback_reason\": null, \"input_revision\": 7, \"input_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"observations\": [], \"operation\": \"subtask\", \"plan_version\": 1, \"requested\": {\"effort\": \"high\", \"model\": \"gpt-6.1-sol\"}, \"role\": \"checker\", \"started\": 1793132918.326202, \"status\": \"running\", \"unit\": \"FOS-000025\", \"worker_id\": \"/root/fos25_checker_1\"}\nPLAN version 1\n\nCOMMIT 6de6428133839390fa5f2f065efe4e8d77872ccf 1793132950 FOS-000025 command-intent revision 11\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": \"FOS-000025\", \"operation\": \"subtask\", \"phase\": \"checking\", \"plan_version\": null, \"revision\": 11, \"schema_version\": 2, \"status\": \"running\"}\nATTEMPT {\"actual\": {\"effort\": \"high\", \"model\": \"gpt-6.1-sol\"}, \"attempt_id\": \"checker-1\", \"base_sha\": \"bbe8ae4acd9ad527658bb58e6b06474924a06284\", \"candidate_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"fallback_reason\": null, \"input_revision\": 7, \"input_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"observations\": [], \"operation\": \"subtask\", \"plan_version\": 1, \"requested\": {\"effort\": \"high\", \"model\": \"gpt-6.1-sol\"}, \"role\": \"checker\", \"started\": 1793132918.326202, \"status\": \"running\", \"unit\": \"FOS-000025\", \"worker_id\": \"/root/fos25_checker_1\"}\nPLAN version 1\n\nCOMMIT 4e34492e0889b1f7405dc0ee3c063379f5bf8c51 1793132950 FOS-000025 command-intent revision 12\npaths ['active.json', 'allocations.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json', 'runs/FOS-000025/2026-10-27-bootstrap/state.json']\nSTATE {\"active_unit\": \"FOS-000025\", \"operation\": \"subtask\", \"phase\": \"checking\", \"plan_version\": null, \"revision\": 12, \"schema_version\": 2, \"status\": \"running\"}\nATTEMPT {\"actual\": {\"effort\": \"high\", \"model\": \"gpt-6.1-sol\"}, \"attempt_id\": \"checker-1\", \"base_sha\": \"bbe8ae4acd9ad527658bb58e6b06474924a06284\", \"candidate_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"fallback_reason\": null, \"input_revision\": 7, \"input_sha\": \"badc75168a2ef83222b67457798bcc2cf367f748\", \"observations\": [], \"operation\": \"subtask\", \"plan_version\": 1, \"requested\": {\"effort\": \"high\", \"model\": \"gpt-6.1-sol\"}, \"role\": \"checker\", \"started\": 1793132918.326202, \"status\": \"running\", \"unit\": \"FOS-000025\", \"worker_id\": \"/root/fos25_checker_1\"}\nPLAN version 1\n\nOriginal checkout current status: \nOriginal current HEAD 2325a40846cceb9e053cc5b26aad4c030e07e1a2\nChecker status \nREVIEW: Read original FOS-000025 requirements, AGENTS required docs and verification guide; full base diff; all six package source/metadata/reference files; all 18 test methods; factual planner and implementer reports; normalized schema and actual bootstrap history above.\nREVIEW: Only skill and local documentation changed. No source C++/Vulkan behavior claims or builds. Runtime imports are Python standard library. quick_validate uses host PyYAML only. Repository directory and metadata match documented discovery.\nREVIEW LIMIT: Actual roles/termination are preserved facts, not cryptographically authenticated by helper. Current original checkout status cannot establish byte-for-byte pre-run preservation without coordinator baseline. Fresh final checking and publication are future gates, not claimed here.\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G04.log": "Whitespace command: git diff --check bbe8ae4acd9ad527658bb58e6b06474924a06284...badc75168a2ef83222b67457798bcc2cf367f748\nExit 0; stdout/stderr follows:\n\nPath command: git diff --name-status <base>...<candidate>\nExit 0; stdout follows:\nA\t.agents/skills/implement-change-harness/SKILL.md\nA\t.agents/skills/implement-change-harness/agents/openai.yaml\nA\t.agents/skills/implement-change-harness/references/roles.md\nA\t.agents/skills/implement-change-harness/references/state.md\nA\t.agents/skills/implement-change-harness/scripts/harness_state.py\nA\t.agents/skills/implement-change-harness/scripts/test_harness_state.py\nM\tlocal-docs/backlog-keys.md\nM\tlocal-docs/specs/basic-change-harness-plan.md\nM\tlocal-docs/verification.md\n\nArtifact inventory: git ls-tree -r --name-only harness-artifacts\nExit 0; stdout follows:\nactive.json\nallocations.json\nruns/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json\nruns/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json\nruns/FOS-000025/2026-10-27-bootstrap/state.json\n\nReview: authorized skill/project-doc paths only; no artifact records in source, product changes, outputs or ignore edits. Original checkout currently clean; pre-run byte-for-byte comparison requires coordinator baseline. Checker candidate currently clean.\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-probe-source.txt": "import sys, json, copy, traceback\nfrom pathlib import Path\nsys.path.insert(0, '/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts')\nfrom test_harness_state import HarnessTests\nfrom harness_state import git, canonical_inventory\n\ndef fixture():\n    t=HarnessTests(); t.setUp(); return t\n\ndef run(name, fn):\n    t=fixture()\n    try:\n        print('\\nPROBE', name, flush=True)\n        fn(t)\n    except Exception as e:\n        print(type(e).__name__, str(e), flush=True)\n        traceback.print_exc()\n    finally:\n        t.doCleanups()\n\ndef reverse_dependency(t):\n    p=t.split_plan(); p['subtasks'].reverse()\n    t.launch('planner'); t.act('report', dict(t.report(), plan=p))\n    unit=next(u for u in t.state['units'] if u['key']==t.state['active_unit'])\n    print('after planner active unit=', unit, flush=True)\n    t.launch('implementer')\n    print('IMPLEMENTER DISPATCHED with unmet dependencies=', unit['dependencies'], 'attempt=', t.state['attempts'][-1], flush=True)\n    assert unit['dependencies'], 'probe setup requires unmet dependencies'\n    assert t.state['attempts'][-1]['status']=='running'\n\ndef late_final(t):\n    t.planned(); t.implemented(); t.checked(); t.launch('checker')\n    t.now=t.state['limits']['deadline']+1\n    print('now/deadline=', t.now, t.state['limits']['deadline'])\n    t.act('report', t.check_report())\n    print('LATE FINAL ACCEPTED phase=',t.state['phase'],'exhausted=',t.state['limits']['exhausted'])\n    t.act('publish-intent', t.intent())\n    git(t.source,'push','origin','codex/test')\n    t.act('publish-observation',{'event':'push','remote_sha':t.state['repository']['candidate_sha']})\n    t.act('publish-observation', t.lookup([t.pr()]))\n    t.act('publish-observation',{'event':'attachment','url':t.pr()['url'],'success':True})\n    print('COMPLETED AFTER EXPIRED BUDGET phase=',t.state['phase'],'exhausted=',t.state['limits']['exhausted'],'extensions=',t.state['limits']['extensions'])\n\ndef duplicate_findings(t):\n    t.planned(); t.implemented(); t.launch('checker')\n    f={'id':'same','status':'open','route':'implementation','evidence':'concrete failure'}\n    t.act('report',dict(t.report(),verdict='changes_required',findings=[f,copy.deepcopy(f)],next_action='repair'))\n    print('DUPLICATE FINDING IDS COMMITTED=', [f['id'] for f in t.state['findings']])\n    t.implemented(); t.launch('checker')\n    t.act('resolve-finding',{'finding_id':'same','evidence':'independent recheck'})\n    print('after first resolution=',t.state['findings'])\n    t.act('resolve-finding',{'finding_id':'same','evidence':'independent recheck again'})\n    print('after second resolution=',t.state['findings'])\n    try:t.act('report',t.check_report())\n    except Exception as e:print('ACCEPTANCE BLOCKED=',type(e).__name__,str(e))\n\ndef meaning_replan(t):\n    p=t.split_plan(); t.launch('planner'); t.act('report',dict(t.report(),plan=p))\n    t.implemented(); t.launch('checker')\n    t.act('report',dict(t.report(),verdict='changes_required',findings=[{'id':'replan','status':'open','route':'planner','evidence':'required plan change'}],next_action='replan'))\n    t.launch('planner'); p['version']=2; p['subtasks'][0]['definition']='An entirely unrelated task replaces first behavior under its existing key'\n    t.act('report',dict(t.report(),plan=p))\n    print('REINTERPRETED SAME PERMANENT KEY=',t.state['units'][0])\n\nfor n,f in [('reverse_dependency',reverse_dependency),('late_final',late_final),('duplicate_findings',duplicate_findings),('meaning_replan',meaning_replan)]:run(n,f)\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-probes.log": "\nPROBE reverse_dependency\nafter planner active unit= {'key': 'FOS-000027', 'title': 'Second', 'definition': 'second behavior', 'dependencies': ['FOS-000026'], 'criteria': ['AC1'], 'status': 'ready', 'accepted': None}\nIMPLEMENTER DISPATCHED with unmet dependencies= ['FOS-000026'] attempt= {'actual': {'effort': 'high', 'model': 'gpt-6.1-sol'}, 'attempt_id': 'implementer-2', 'base_sha': 'bb4bebc686d9af49e2609425ef94e9b58c8142e3', 'candidate_sha': None, 'fallback_reason': None, 'input_revision': 6, 'input_sha': 'bb4bebc686d9af49e2609425ef94e9b58c8142e3', 'observations': [], 'operation': 'implement', 'plan_version': 1, 'requested': {'effort': 'high', 'model': 'gpt-6.1-sol'}, 'role': 'implementer', 'started': 1000, 'status': 'running', 'unit': 'FOS-000027', 'worker_id': 'worker/implementer-2'}\n\nPROBE late_final\nnow/deadline= 15401 15400\nLATE FINAL ACCEPTED phase= publishing exhausted= False\nCOMPLETED AFTER EXPIRED BUDGET phase= complete exhausted= False extensions= []\n\nPROBE duplicate_findings\nDUPLICATE FINDING IDS COMMITTED= ['same', 'same']\nafter first resolution= [{'evidence': 'concrete failure', 'id': 'same', 'route': 'implementation', 'status': 'resolved', 'recheck': {'finding_id': 'same', 'evidence': 'independent recheck'}, 'attempt_id': 'checker-5'}, {'evidence': 'concrete failure', 'id': 'same', 'route': 'implementation', 'status': 'open'}]\nafter second resolution= [{'attempt_id': 'checker-5', 'evidence': 'concrete failure', 'id': 'same', 'recheck': {'finding_id': 'same', 'evidence': 'independent recheck again'}, 'route': 'implementation', 'status': 'resolved'}, {'evidence': 'concrete failure', 'id': 'same', 'route': 'implementation', 'status': 'open'}]\nACCEPTANCE BLOCKED= Invalid unresolved prior finding\n\nPROBE meaning_replan\nREINTERPRETED SAME PERMANENT KEY= {'key': 'FOS-000026', 'title': 'First', 'definition': 'An entirely unrelated task replaces first behavior under its existing key', 'dependencies': [], 'criteria': ['AC1'], 'status': 'ready', 'accepted': None}\n"
+  },
+  "report_type": "checker",
+  "review": {
+    "actual_bootstrap_tip_reviewed": "4e34492e0889b1f7405dc0ee3c063379f5bf8c51",
+    "candidate_source_or_canonical_state_edited": false,
+    "full_relevant_diff_read": true,
+    "guidance_read": [
+      "AGENTS.md",
+      "local-docs/README.md",
+      "local-docs/project-descriptor.md",
+      "local-docs/project-pillars.md",
+      "local-docs/verification.md",
+      "local-docs/specs/basic-change-harness-plan.md"
+    ],
+    "original_requirements_first": true,
+    "role_evidence": "Orphan empty root; planner intent/ack; committed planner before implementer intent/ack; completed implementer report; explicit import preserving legacy facts and unverified candidate; legacy-worker reconciliation; fenced checker dispatch/ack. No old acceptance fabricated.",
+    "test_assertions_fixtures_runner_reviewed": true,
+    "test_quality": "Real temporary Git repositories, common-dir process lock, actual update-ref CAS race, injected transaction failure boundaries, bare-remote effects, real failing/fixed unittest reproducer. PR/worker outcomes are deterministic observations; T11 weakened-assertion finding is simulated semantic evidence, not an automated assertion-quality detector."
+  },
+  "role": "checker",
+  "skipped": [],
+  "task_key": "FOS-000025",
+  "test_mapping": {
+    "T01": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:171",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation"
+      ]
+    },
+    "T02": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:187",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser"
+      ]
+    },
+    "T03": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:222",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption"
+      ]
+    },
+    "T04": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:262",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run"
+      ]
+    },
+    "T05": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:282",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts"
+      ]
+    },
+    "T06": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:322",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate"
+      ]
+    },
+    "T07": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:346",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence"
+      ]
+    },
+    "T08": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:362",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported"
+      ]
+    },
+    "T09": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:376",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+        "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early"
+      ]
+    },
+    "T10": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:420",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable"
+      ]
+    },
+    "T11": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:453",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding"
+      ]
+    },
+    "T12": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:473",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance"
+      ]
+    },
+    "T13": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:513",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression"
+      ]
+    },
+    "T14": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:568",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived"
+      ]
+    },
+    "T15": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:582",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict"
+      ]
+    },
+    "T16": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:600",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry"
+      ]
+    },
+    "T17": {
+      "location": "/home/robin/dev/fossilize-harness-checker-1/.agents/skills/implement-change-harness/scripts/test_harness_state.py:622",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+      ]
+    }
+  },
+  "unit": "FOS-000025",
+  "verdict": "changes_required",
+  "worker_id": "/root/fos25_checker_1"
+}

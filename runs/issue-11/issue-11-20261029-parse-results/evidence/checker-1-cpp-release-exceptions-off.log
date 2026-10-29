@@ -1,0 +1,112 @@
+Independent exact-candidate checker. Gate release-off
+release-off-configure:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /tmp/fossilize-11/checker-1 -B /tmp/fossilize-11/checker-build-release-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=1.87
+
+release-off-build:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/checker-build-release-off --parallel 4
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=264.76
+
+release-off-discover:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/checker-build-release-off --show-only=json-v1
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.014
+
+release-off-ctest:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-11/checker-build-release-off --output-on-failure --parallel 3 --output-junit /tmp/fossilize-11/checker-evidence-1/release-off-ctest.xml
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.937
+
+Compile commands inspected for list/rehash/prune/helper: requested exception flag and Debug/Release options verified.
+{
+  "fossilize_list.cpp": "/usr/bin/c++ -I/tmp/fossilize-11/checker-1 -I/tmp/fossilize-11/checker-1/rapidjson/include -I/tmp/fossilize-11/checker-1/khronos -I/tmp/fossilize-11/checker-1/miniz -I/tmp/fossilize-11/checker-1/cli -I/tmp/fossilize-11/checker-1/cli/volk -I/tmp/fossilize-11/checker-1/cli/../khronos  -fvisibility=hidden -O3 -DNDEBUG -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -o cli/CMakeFiles/fossilize-list.dir/fossilize_list.cpp.o -c /tmp/fossilize-11/checker-1/cli/fossilize_list.cpp",
+  "fossilize_rehash.cpp": "/usr/bin/c++ -I/tmp/fossilize-11/checker-1 -I/tmp/fossilize-11/checker-1/rapidjson/include -I/tmp/fossilize-11/checker-1/khronos -I/tmp/fossilize-11/checker-1/miniz -I/tmp/fossilize-11/checker-1/cli -I/tmp/fossilize-11/checker-1/cli/volk -I/tmp/fossilize-11/checker-1/cli/../khronos  -fvisibility=hidden -O3 -DNDEBUG -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -o cli/CMakeFiles/fossilize-rehash.dir/fossilize_rehash.cpp.o -c /tmp/fossilize-11/checker-1/cli/fossilize_rehash.cpp",
+  "fossilize_prune.cpp": "/usr/bin/c++ -I/tmp/fossilize-11/checker-1 -I/tmp/fossilize-11/checker-1/rapidjson/include -I/tmp/fossilize-11/checker-1/khronos -I/tmp/fossilize-11/checker-1/miniz -I/tmp/fossilize-11/checker-1/cli -I/tmp/fossilize-11/checker-1/cli/volk -I/tmp/fossilize-11/checker-1/cli/../khronos  -fvisibility=hidden -O3 -DNDEBUG -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -o cli/CMakeFiles/fossilize-prune.dir/fossilize_prune.cpp.o -c /tmp/fossilize-11/checker-1/cli/fossilize_prune.cpp",
+  "utility_parse_test.cpp": "/usr/bin/c++ -I/tmp/fossilize-11/checker-1 -I/tmp/fossilize-11/checker-1/rapidjson/include -I/tmp/fossilize-11/checker-1/khronos -I/tmp/fossilize-11/checker-1/miniz  -fvisibility=hidden -O3 -DNDEBUG -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -o test/CMakeFiles/utility-parse-test.dir/utility_parse_test.cpp.o -c /tmp/fossilize-11/checker-1/test/utility_parse_test.cpp"
+}
+CTest discovered/executed=73/73, failures=0, skipped=0; JUnit exact executed union verified.
+    Start 73: utility-parse-prune-rejected-application
+71/73 Test #72: utility-parse-prune-mixed .............................   Passed    0.02 sec
+72/73 Test #73: utility-parse-prune-rejected-application ..............   Passed    0.03 sec
+73/73 Test  #2: varint-system-test ....................................   Passed    0.92 sec
+
+100% tests passed out of 73
+
+Total Test time (real) =   0.92 sec
+
+Executed IDs:
+release-off::fossilize-system-test
+release-off::varint-system-test
+release-off::application-info-filter-test
+release-off::object-cache-test
+release-off::feature-filter-test
+release-off::linux-futex-test
+release-off::replay-diagnostic-test
+release-off::device-diagnostic-test
+release-off::capture-diagnostic-normal-graphics-reject
+release-off::capture-diagnostic-normal-graphics-success
+release-off::capture-diagnostic-normal-graphics-vulkan-error
+release-off::capture-diagnostic-normal-compute-reject
+release-off::capture-diagnostic-normal-compute-success
+release-off::capture-diagnostic-normal-compute-vulkan-error
+release-off::capture-diagnostic-normal-raytracing-reject
+release-off::capture-diagnostic-normal-raytracing-success
+release-off::capture-diagnostic-normal-raytracing-vulkan-error
+release-off::capture-diagnostic-qa-graphics-reject
+release-off::capture-diagnostic-qa-graphics-success
+release-off::capture-diagnostic-qa-graphics-vulkan-error
+release-off::capture-diagnostic-qa-compute-reject
+release-off::capture-diagnostic-qa-compute-success
+release-off::capture-diagnostic-qa-compute-vulkan-error
+release-off::capture-diagnostic-qa-raytracing-reject
+release-off::capture-diagnostic-qa-raytracing-success
+release-off::capture-diagnostic-qa-raytracing-vulkan-error
+release-off::capture-diagnostic-paranoid-graphics-reject
+release-off::capture-diagnostic-paranoid-graphics-success
+release-off::capture-diagnostic-paranoid-graphics-vulkan-error
+release-off::capture-diagnostic-paranoid-compute-reject
+release-off::capture-diagnostic-paranoid-compute-success
+release-off::capture-diagnostic-paranoid-compute-vulkan-error
+release-off::capture-diagnostic-paranoid-raytracing-reject
+release-off::capture-diagnostic-paranoid-raytracing-success
+release-off::capture-diagnostic-paranoid-raytracing-vulkan-error
+release-off::capture-diagnostic-eager-graphics-reject
+release-off::capture-diagnostic-eager-graphics-success
+release-off::capture-diagnostic-eager-graphics-vulkan-error
+release-off::capture-diagnostic-eager-compute-reject
+release-off::capture-diagnostic-eager-compute-success
+release-off::capture-diagnostic-eager-compute-vulkan-error
+release-off::capture-diagnostic-eager-raytracing-reject
+release-off::capture-diagnostic-eager-raytracing-success
+release-off::capture-diagnostic-eager-raytracing-vulkan-error
+release-off::capture-diagnostic-binary-graphics-reject
+release-off::capture-diagnostic-binary-graphics-success
+release-off::capture-diagnostic-binary-graphics-vulkan-error
+release-off::capture-diagnostic-binary-compute-reject
+release-off::capture-diagnostic-binary-compute-success
+release-off::capture-diagnostic-binary-compute-vulkan-error
+release-off::capture-diagnostic-binary-raytracing-reject
+release-off::capture-diagnostic-binary-raytracing-success
+release-off::capture-diagnostic-binary-raytracing-vulkan-error
+release-off::diagnostic-compatibility-test
+release-off::utility-parse-list-version
+release-off::utility-parse-list-invalid-json
+release-off::utility-parse-list-empty
+release-off::utility-parse-list-populated
+release-off::utility-parse-list-mixed
+release-off::utility-parse-list-dependency-failure
+release-off::utility-parse-list-empty-dependencies
+release-off::utility-parse-list-legacy-invocations
+release-off::utility-parse-rehash-version
+release-off::utility-parse-rehash-invalid-json
+release-off::utility-parse-rehash-empty
+release-off::utility-parse-rehash-populated
+release-off::utility-parse-rehash-mixed
+release-off::utility-parse-prune-version
+release-off::utility-parse-prune-invalid-json
+release-off::utility-parse-prune-empty
+release-off::utility-parse-prune-populated
+release-off::utility-parse-prune-mixed
+release-off::utility-parse-prune-rejected-application

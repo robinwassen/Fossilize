@@ -1,0 +1,46 @@
+COMMAND ['test_second'] exit 0
+test_second (test_second.Second.test_second) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+
+COMMAND ['test_behavior', 'test_second', 'test_final'] exit 1
+test_value (test_behavior.Behavior.test_value) ... ok
+test_second (test_second.Second.test_second) ... ok
+test_final (test_final.Final.test_final) ... FAIL
+
+======================================================================
+FAIL: test_final (test_final.Final.test_final)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/harness-test-ykpm9kid/source/test_final.py", line 5, in test_final
+    self.assertEqual(second_value(2),4)
+AssertionError: 3 != 4
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=1)
+
+BLOCKER passing prerequisite acceptance: unresolved prior finding
+BLOCKER dependent implementer dispatch: worker is live/ambiguous or run needs decision
+COMMAND ['test_final'] exit 1
+test_final (test_final.Final.test_final) ... FAIL
+
+======================================================================
+FAIL: test_final (test_final.Final.test_final)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/harness-test-ykpm9kid/source/test_final.py", line 5, in test_final
+    self.assertEqual(second_value(2),4)
+AssertionError: 3 != 4
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)
+
+STATE {"active_unit": "FOS-000026", "affected_task": "FOS-000027", "finding_id": "later-only", "phase": "checking"}
+First assertion still passes, Second final assertion still fails. Advancing requires prematurely resolving the failed Second finding or changing Second source while implementing First; both conflict with documented role scope.

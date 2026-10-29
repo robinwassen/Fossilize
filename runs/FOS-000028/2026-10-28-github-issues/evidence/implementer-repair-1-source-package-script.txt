@@ -1,0 +1,31 @@
+from pathlib import Path
+import hashlib,json,re,subprocess
+root=Path.cwd()
+def git(*args):return subprocess.check_output(['git',*args],text=True)
+candidate=git('rev-parse','HEAD').strip();assert candidate=='7f821f6b91fa32333a9330c027dc4f85b7f33b01'
+assert not git('status','--porcelain','--untracked-files=all').strip()
+changed=git('diff','--name-only','f1ad1ef2584d8aff75c5440d7689123e253de05c','HEAD').splitlines()
+assert set(changed)=={'.agents/skills/implement-change-harness/references/state.md','.agents/skills/implement-change-harness/scripts/harness_state.py','.agents/skills/implement-change-harness/scripts/test_harness_issue_closeout.py'}
+files=git('ls-files').splitlines();markdown=[p for p in files if p.endswith('.md')];broken=[];checked=[]
+for name in markdown:
+ p=root/name
+ for target in re.findall(r'(?<!!)\[[^\]]*\]\(([^)]+)\)',p.read_text()):
+  target=target.strip('<>')
+  if not target or target.startswith(('#','http:','https:','mailto:','codex:','plugin:')):continue
+  path=target.split('#',1)[0]
+  if not path:continue
+  checked.append([name,path])
+  if not (p.parent/path).exists():broken.append([name,target])
+assert not broken,broken
+for name in ('local-docs/backlog-keys.md','local-docs/reviews/harness-backlog.md','local-docs/reviews/github-issues-migration.md'):assert name not in files
+for name in markdown:
+ if name.startswith('.agents/skills/'):continue
+ assert not re.search(r'(?m)^(?:#{1,6}\s+|\d+\.\s+\*\*)FOS-\d{6,}\s+[—–-]',(root/name).read_text()),name
+source=root/'.agents/skills/implement-change-harness';dest=Path('/home/robin/.codex/skills/implement-change-harness')
+def manifest(p):return {str(q.relative_to(p)):hashlib.sha256(q.read_bytes()).hexdigest() for q in p.rglob('*') if q.is_file()}
+assert manifest(source)==manifest(dest)
+search=subprocess.run(['rg','-n','backlog-keys|FOS allocation|Done.marker|canonical.*backlog|allocate.*FOS','AGENTS.md','local-docs','.agents/skills/implement-change-harness'],capture_output=True,text=True)
+Path('/tmp/fos28-repair-1-authority-search.log').write_text(search.stdout)
+result={'candidate_sha':candidate,'clean':True,'repair_changed_paths':changed,'full_changed_paths':git('diff','--name-only','73f891d6c0cf498ac92e804d7d0f0cd344a083f5','HEAD').splitlines(),'markdown_files':len(markdown),'local_links_checked':len(checked),'broken_links':broken,'canonical_source_definitions':0,'installed_source_equality':True,'package_files':len(manifest(source)),'authority_search_log':'/tmp/fos28-repair-1-authority-search.log','authority_search_disposition':'References concern explicitly historical inventory/compatibility fixtures and retired-allocation rejection; current source directs task authority to GitHub.','result':'passed'}
+Path('/tmp/fos28-repair-1-source-package-check.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps(result))

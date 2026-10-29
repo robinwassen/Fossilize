@@ -1,0 +1,322 @@
+{
+  "attempt_id": "checker-2",
+  "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+  "candidate_sha": "37467de186ee1d0d670030b365c72e8ca3c278c6",
+  "counts": {
+    "discovered": 24,
+    "executed": 24,
+    "skipped": 0
+  },
+  "discovered": [
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+    "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+    "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+    "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+    "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+    "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+    "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+  ],
+  "evidence": [
+    {
+      "attempt_id": "checker-2",
+      "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+      "candidate_sha": "37467de186ee1d0d670030b365c72e8ca3c278c6",
+      "command": [
+        "timeout",
+        "600",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".agents/skills/implement-change-harness/scripts",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "criteria": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-checker-2",
+      "environment": {
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3"
+      },
+      "exit_code": 0,
+      "gate": "G01",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G01.log",
+      "plan_version": 1,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "checker-2",
+      "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+      "candidate_sha": "37467de186ee1d0d670030b365c72e8ca3c278c6",
+      "command": [
+        "timeout",
+        "600",
+        "python3",
+        "-B",
+        "/home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+        ".agents/skills/implement-change-harness"
+      ],
+      "criteria": [
+        "AC7"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-checker-2",
+      "environment": {
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3"
+      },
+      "exit_code": 0,
+      "gate": "G02",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G02.log",
+      "plan_version": 1,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "checker-2",
+      "base_sha": "bbe8ae4acd9ad527658bb58e6b06474924a06284",
+      "candidate_sha": "37467de186ee1d0d670030b365c72e8ca3c278c6",
+      "command": "git diff --check base...candidate; separate scope/artifact/history inventory",
+      "criteria": [
+        "AC2",
+        "AC7"
+      ],
+      "cwd": "/home/robin/dev/fossilize-harness-checker-2",
+      "environment": {
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3"
+      },
+      "exit_code": 0,
+      "gate": "G04",
+      "log": "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G04.log",
+      "plan_version": 1,
+      "result": "passed"
+    }
+  ],
+  "executed": [
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+    "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+    "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+    "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+    "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+    "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+    "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+  ],
+  "findings": [
+    {
+      "affected_task": "FOS-000025",
+      "criteria": [
+        "AC1",
+        "AC4",
+        "AC5"
+      ],
+      "evidence": "Independent disposable final_repair probe first obtains accepted unsplit-unit subtask evidence, dispatches separate final checker, and submits changes_required with an implementation-route finding. The checkpoint becomes implementing/repair/ready, but units[0] still has status=accepted and its old acceptance. launch(implementer) then fails at line642 with Invalid: implementer unit dependencies are not accepted. No replacement implementer attempt is created. See runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probes.log, PROBE final_repair; the exact probe source is retained in runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probe-source.txt. Existing T13 asserts only that final rejection blocks publication and does not attempt the mandated repair dispatch.",
+      "expected": "A final implementation rejection must return to an independently checkable repair path, permitting the appropriate dependency-ready implementer before renewed subtask/final checking. It must preserve correct dependency sequencing and invalidate affected acceptance rather than leave ready state undispatchable.",
+      "file": "/home/robin/dev/fossilize-harness-checker-2/.agents/skills/implement-change-harness/scripts/harness_state.py",
+      "id": "FOS-000025-C2-001",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_state.py:642-643 and 723-733",
+      "next_action": "Repair final rejection continuation and extend existing T13 coverage through actual repair dispatch, corrected candidate, renewed subtask check and separate final check. Cover the unambiguous unsplit root and dependency-safe selection/invalidation for split integration repair.",
+      "planned_cases": [
+        "T13"
+      ],
+      "priority": 1,
+      "route": "implementation",
+      "status": "open",
+      "title": "Final rejection cannot dispatch the required repair implementer"
+    }
+  ],
+  "input_revision": 17,
+  "input_sha": "37467de186ee1d0d670030b365c72e8ca3c278c6",
+  "limitations": [
+    "Separate final acceptance and real publication remain pending. No C++/Vulkan/driver/Steam behavior tested."
+  ],
+  "next_action": "Repair final rejection continuation and extend existing T13 coverage through actual repair dispatch, corrected candidate, renewed subtask check and separate final check. Cover the unambiguous unsplit root and dependency-safe selection/invalidation for split integration repair.",
+  "operation": "subtask",
+  "plan_version": 1,
+  "records": {
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G01.log": "test_T01_happy_path_real_checkpoint_and_source_preservation (test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation) ... ok\ntest_T02_failure_boundaries_and_real_cas_loser (test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser) ... ok\ntest_T03_invalid_state_paths_schema_and_source_branch_adoption (test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption) ... ok\ntest_T03b_duplicate_durable_finding_identity_is_invalid (test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid) ... ok\ntest_T04_process_worktree_lock_and_single_active_run (test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run) ... ok\ntest_T05_dynamic_registry_reservations_archives_conflicts (test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts) ... ok\ntest_T06_detached_exact_views_dirty_source_and_changed_candidate (test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate) ... ok\ntest_T07_dispatch_ack_loss_live_unknown_and_termination_fence (test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence) ... ok\ntest_T08_each_stale_tuple_field_rejected_ack_revision_supported (test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported) ... ok\ntest_T09_models_fallback_deadline_repair_replan_and_extension (test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension) ... ok\ntest_T09b_repeated_unchanged_rejection_stops_early (test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early) ... ok\ntest_T09c_late_final_report_retained_but_requires_extension (test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension) ... ok\ntest_T09d_expired_command_pauses_live_attempt_and_preserves_late_report (test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report) ... ok\ntest_T10_required_evidence_completeness_and_optional_unavailable (test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable) ... ok\ntest_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers (test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers) ... ok\ntest_T11_real_faulty_reproducer_and_weakened_test_finding (test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding) ... ok\ntest_T12_repair_versus_replan_and_no_implementer_acceptance (test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance) ... ok\ntest_T13_sequential_split_dependency_validation_final_regression (test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression) ... ok\ntest_T13b_non_topological_plan_replan_reset_and_dispatch_readiness (test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness) ... ok\ntest_T14_required_environment_unavailable_cannot_be_waived (test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived) ... ok\ntest_T15_publication_order_wrong_tuple_moving_base_push_conflict (test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict) ... ok\ntest_T15b_deadline_stops_publication_at_every_stage (test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage) ... ok\ntest_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry (test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry) ... ok\ntest_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts (test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts) ... ok\n\n----------------------------------------------------------------------\nRan 24 tests in 49.479s\n\nOK\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G02.log": "Skill is valid!\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G03.log": "G03 factual review: Read original FOS-000025 requirement, full proposed workflow, project required docs, normalized version1 plan, role/state contracts, complete helper and all 24 test methods. Read base-to-candidate documentation diff and entire added helper/test source. Artifact Git history begins with orphan empty branch, then planner intent/ack, plan before implementer intent/ack, completed implementation preserved, explicit schema2 import, worker reconciliation, fresh checker-1 rejection, repair implementer-2 and checker-2. Current fenced metadata and bootstrap provenance preserve actual requested/actual model and effort, exact SHAs, independent role identities. No candidate edits or canonical state mutation by this checker. Separate final checker and publication gates remain pending. Semantically reviewed real Git transactions/CAS fault injection, event-ordered POSIX lock process, actual assertion-bearing subprocess failures/success, stale tuples, split integration failure, fake-clock budget bounds and bare-remote push. Worker runtime and PR observations in tests are deterministic facts, not live-agent/GitHub integration proof. Concrete T13 repair continuation failure prevents subtask acceptance.\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G04.log": "[\"git\", \"rev-parse\", \"HEAD\"] exit=0\n37467de186ee1d0d670030b365c72e8ca3c278c6\n\n[\"git\", \"status\", \"--porcelain=v1\"] exit=0\n\n[\"git\", \"diff\", \"--check\", \"bbe8ae4acd9ad527658bb58e6b06474924a06284...37467de186ee1d0d670030b365c72e8ca3c278c6\"] exit=0\n\n[\"git\", \"diff\", \"--name-status\", \"bbe8ae4acd9ad527658bb58e6b06474924a06284...37467de186ee1d0d670030b365c72e8ca3c278c6\"] exit=0\nA\t.agents/skills/implement-change-harness/SKILL.md\nA\t.agents/skills/implement-change-harness/agents/openai.yaml\nA\t.agents/skills/implement-change-harness/references/roles.md\nA\t.agents/skills/implement-change-harness/references/state.md\nA\t.agents/skills/implement-change-harness/scripts/harness_state.py\nA\t.agents/skills/implement-change-harness/scripts/test_harness_state.py\nM\tlocal-docs/backlog-keys.md\nM\tlocal-docs/specs/basic-change-harness-plan.md\nM\tlocal-docs/verification.md\n\n[\"git\", \"ls-tree\", \"-r\", \"--name-only\", \"harness-artifacts\"] exit=0\nactive.json\nallocations.json\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G01.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G02.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G03.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-G04.log\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-probe-source.txt\nruns/FOS-000025/2026-10-27-bootstrap/evidence/checker-1-probes.log\nruns/FOS-000025/2026-10-27-bootstrap/reports/checker-1.json\nruns/FOS-000025/2026-10-27-bootstrap/reports/implementer-1.json\nruns/FOS-000025/2026-10-27-bootstrap/reports/implementer-2.json\nruns/FOS-000025/2026-10-27-bootstrap/reports/planner-1.json\nruns/FOS-000025/2026-10-27-bootstrap/state.json\n\n[\"git\", \"log\", \"--reverse\", \"--format=%h %s\", \"harness-artifacts\"] exit=0\nc0856d9 Initialize empty harness artifacts branch\n3d78abc FOS-000025: checkpoint bootstrap planner intent\nc434723 FOS-000025: acknowledge isolated planner\n4f8b91f FOS-000025: persist planner plans and implementation dispatch intent\nb4c353e FOS-000025: acknowledge isolated implementer\nafe4877 FOS-000025: preserve completed implementation report for explicit import\nf8c4a05 FOS-000025 explicit bootstrap import\nf5834c2 FOS-000025 reconcile revision 7\nff1a4da FOS-000025 dispatch revision 8\nd3bdbd0 FOS-000025 acknowledge revision 9\n7e4ad5b FOS-000025 command-intent revision 10\n6de6428 FOS-000025 command-intent revision 11\n4e34492 FOS-000025 command-intent revision 12\n464d885 FOS-000025 report revision 13\n3f56834 FOS-000025 dispatch revision 14\nfa69937 FOS-000025 acknowledge revision 15\n0488ffa FOS-000025 command-intent revision 16\naf17304 FOS-000025 report revision 17\nf34e43f FOS-000025 dispatch revision 18\neb290fc FOS-000025 acknowledge revision 19\nd85bacb FOS-000025 command-intent revision 20\n83f223d FOS-000025 command-intent revision 21\nd62f907 FOS-000025 command-intent revision 22\n79b78e9 FOS-000025 command-intent revision 23\n\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probe-source.txt": "import sys, copy, json\nsys.path.insert(0, '/home/robin/dev/fossilize-harness-checker-2/.agents/skills/implement-change-harness/scripts')\nfrom test_harness_state import HarnessTests\nfrom harness_state import Invalid, validate_state, git\n\ndef run(name, fn):\n t=HarnessTests();t.setUp()\n try:\n  print('PROBE',name,flush=True);fn(t)\n finally:t.doCleanups()\n\ndef readiness(t):\n p=t.split_plan(); first,second=[x['key'] for x in p['subtasks']];p['subtasks'].reverse()\n t.launch('planner');t.act('report',dict(t.report(),plan=p))\n assert t.state['active_unit']==first\n t.implemented();t.checked();assert t.state['active_unit']==second\n t.launch('implementer');assert t.state['attempts'][-1]['unit']==second\n print('PASS reversed acyclic plan selects dependency first; after acceptance dependent dispatches')\n\ndef deadline(t):\n t.planned();t.implemented();t.checked();t.launch('checker');r=t.check_report();t.now=t.state['limits']['deadline']+1\n t.act('report',r);assert t.state['operation']=='budget' and t.state['attempts'][-1]['status']=='complete'\n assert t.state['final_acceptance'] and t.state['limits']['exhausted']\n t.act('publish-intent',t.intent());assert t.state['publishing']['stage']=='none'\n t.act('budget-extension',{'deadline':t.now+100,'authorization':'probe human authorization','reason':'probe'})\n t.act('publish-intent',t.intent());assert t.state['publishing']['stage']=='push'\n print('PASS late final report retained; publication blocked until explicit extension; exact publish step resumes')\n\ndef duplicates(t):\n t.planned();t.implemented();t.launch('checker');f={'id':'duplicate','status':'open','route':'implementation','evidence':'probe defect'}\n before=t.harness.show();r=dict(t.report(),verdict='changes_required',findings=[f,copy.deepcopy(f)],next_action='repair')\n try:t.act('report',r);raise AssertionError('duplicate accepted')\n except Invalid as e:assert 'duplicate finding' in str(e)\n assert t.harness.show()==before\n r['findings'].pop();t.act('report',r);t.implemented();t.launch('checker')\n try:t.act('report',dict(t.report(),verdict='changes_required',findings=[f],next_action='repair'));raise AssertionError('cross-report duplicate accepted')\n except Invalid as e:assert 'duplicate finding' in str(e)\n t.act('resolve-finding',{'finding_id':'duplicate','evidence':'independent probe recheck'});t.act('report',t.check_report())\n assert t.state['operation']=='final'\n print('PASS same-report duplicates transactionally reject; previous-report duplicates reject; normal resolution recovers')\n\ndef final_repair(t):\n t.planned();t.implemented();t.checked();t.launch('checker')\n assert all(u['status']=='accepted' for u in t.state['units'])\n t.act('report',dict(t.report(),verdict='changes_required',findings=[{'id':'final-defect','status':'open','route':'implementation','evidence':'final integration uncovers defect'}],next_action='repair integrated candidate'))\n print('after final rejection=', json.dumps({k:t.state[k] for k in ['phase','operation','status','active_unit','units']},sort_keys=True))\n try:\n  t.launch('implementer')\n  print('REPAIR DISPATCHED')\n except Invalid as e:\n  print('BLOCKER final integration repair dispatch rejected:',str(e))\n  assert str(e)=='implementer unit dependencies are not accepted'\n else:raise AssertionError('expected reproduced blocker')\n\nfor n,f in [('C1-001',readiness),('C1-002',deadline),('C1-003',duplicates),('final_repair',final_repair)]:run(n,f)\n",
+    "runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probes.log": "PROBE C1-001\nPASS reversed acyclic plan selects dependency first; after acceptance dependent dispatches\nPROBE C1-002\nPASS late final report retained; publication blocked until explicit extension; exact publish step resumes\nPROBE C1-003\nPASS same-report duplicates transactionally reject; previous-report duplicates reject; normal resolution recovers\nPROBE final_repair\nafter final rejection= {\"active_unit\": \"FOS-000025\", \"operation\": \"repair\", \"phase\": \"implementing\", \"status\": \"ready\", \"units\": [{\"accepted\": {\"attempt_id\": \"checker-3\", \"base_sha\": \"fd998426d6a85f77b79523ea6a160c7f12482516\", \"candidate_sha\": \"45545799fdc3799d548db04c64ee93625b2a283d\", \"plan_version\": 1}, \"dependencies\": [], \"key\": \"FOS-000025\", \"status\": \"accepted\"}]}\nBLOCKER final integration repair dispatch rejected: implementer unit dependencies are not accepted\n"
+  },
+  "resolutions": [
+    {
+      "evidence": "Independent C1-001 probe at candidate 37467de186ee1d0d670030b365c72e8ca3c278c6 reverses the valid acyclic split, verifies dependency First is active, accepts First with actual assertion-run evidence, verifies Second becomes active and an acknowledged implementer dispatch is bound to Second. Full24 suite also reran T13 and T13b (replan/reset/direct unready dispatch) successfully. runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probes.log and runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G01.log.",
+      "finding_id": "FOS-000025-C1-001"
+    },
+    {
+      "evidence": "Independent C1-002 fake-clock probe submits final acceptance after deadline+1, verifies report completes durably while operation=budget/exhausted=true, and publish-intent leaves stage=none. An explicit authorized future-deadline extension restores publishing and permits stage=push. Full24 suite reran T09c/T09d/T15b verifying live-attempt late-report retention and all six expired publication observations resume only after extension. runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probes.log and runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G01.log.",
+      "finding_id": "FOS-000025-C1-002"
+    },
+    {
+      "evidence": "Independent C1-003 probe submits same-report duplicate IDs and checks complete harness.show equality before/after rejection, submits corrected single finding, rejects previous-report duplicate, resolves under fresh checker and accepts to final. Full24 suite independently reran T03b durable duplicate validation and T10b resolution recovery. runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-probes.log and runs/FOS-000025/2026-10-27-bootstrap/evidence/checker-2-G01.log.",
+      "finding_id": "FOS-000025-C1-003"
+    }
+  ],
+  "review": {
+    "G01": "passed: 24 methods, 0 skips, exit0; semantic counterexample still blocks acceptance",
+    "G02": "passed: Skill is valid, exit0",
+    "G03": "G03 factual review: Read original FOS-000025 requirement, full proposed workflow, project required docs, normalized version1 plan, role/state contracts, complete helper and all 24 test methods. Read base-to-candidate documentation diff and entire added helper/test source. Artifact Git history begins with orphan empty branch, then planner intent/ack, plan before implementer intent/ack, completed implementation preserved, explicit schema2 import, worker reconciliation, fresh checker-1 rejection, repair implementer-2 and checker-2. Current fenced metadata and bootstrap provenance preserve actual requested/actual model and effort, exact SHAs, independent role identities. No candidate edits or canonical state mutation by this checker. Separate final checker and publication gates remain pending. Semantically reviewed real Git transactions/CAS fault injection, event-ordered POSIX lock process, actual assertion-bearing subprocess failures/success, stale tuples, split integration failure, fake-clock budget bounds and bare-remote push. Worker runtime and PR observations in tests are deterministic facts, not live-agent/GitHub integration proof. Concrete T13 repair continuation failure prevents subtask acceptance.\n",
+    "G04": "passed whitespace/scope, clean detached candidate, artifact records-only listing; user checkout bytewise preservation not independently measured here"
+  },
+  "role": "checker",
+  "skipped": [],
+  "test_mapping": {
+    "T01": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation"
+      ]
+    },
+    "T02": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser"
+      ]
+    },
+    "T03": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+        "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid"
+      ]
+    },
+    "T04": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run"
+      ]
+    },
+    "T05": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts"
+      ]
+    },
+    "T06": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate"
+      ]
+    },
+    "T07": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence"
+      ]
+    },
+    "T08": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported"
+      ]
+    },
+    "T09": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+        "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+        "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+        "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report"
+      ]
+    },
+    "T10": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+        "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers"
+      ]
+    },
+    "T11": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding"
+      ]
+    },
+    "T12": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance"
+      ]
+    },
+    "T13": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+        "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness"
+      ]
+    },
+    "T14": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived"
+      ]
+    },
+    "T15": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+        "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage"
+      ]
+    },
+    "T16": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry"
+      ]
+    },
+    "T17": {
+      "location": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+      "tests": [
+        "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+      ]
+    }
+  },
+  "unit": "FOS-000025",
+  "verdict": "changes_required",
+  "worker_id": "/root/fos25_checker_2"
+}

@@ -1,0 +1,128 @@
+{
+  "assertions": "Original input file.cpp/file.hpp byte-identical. Same committed baseline-only caller compiled C++14 against unchanged header, then linked unchanged baseline and candidate. Baseline normal succeeds; both dev-full modes exit1 at exact false-success CHECKs. Candidate normal and both dev-full modes exit0. Expected baseline nonzero controls count as passed controls. No general C++ binary ABI claim.",
+  "command": "timeout --signal=TERM --kill-after=5s 600s python3 /tmp/fossilize-12/verify_checker-final_baseline_cpp14.py",
+  "commands": [
+    {
+      "command": [
+        "g++",
+        "-std=c++14",
+        "-fno-exceptions",
+        "-I/tmp/fossilize-12/baseline/cli",
+        "-c",
+        "/tmp/fossilize-12/checker-final/test/file_helper_compatibility_test.cpp",
+        "-o",
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/caller.o"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/old-header-caller.log",
+      "seconds": 0.3594927310477942
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++14",
+        "-fno-exceptions",
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/caller.o",
+        "/tmp/fossilize-12/baseline/cli/file.cpp",
+        "-o",
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/baseline"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/baseline-link.log",
+      "seconds": 0.3937820199644193
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++14",
+        "-fno-exceptions",
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/caller.o",
+        "/tmp/fossilize-12/checker-final/cli/file.cpp",
+        "-o",
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/candidate"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/candidate-link.log",
+      "seconds": 0.4262988360133022
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/baseline"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/baseline-compatibility.log",
+      "seconds": 0.005134053993970156
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/baseline",
+        "--dev-full-string"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14",
+      "exit_code": 1,
+      "expected": 1,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/baseline-string-dev-full.log",
+      "seconds": 0.003579754033125937
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/baseline",
+        "--dev-full-buffer"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14",
+      "exit_code": 1,
+      "expected": 1,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/baseline-buffer-dev-full.log",
+      "seconds": 0.004266423988156021
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/candidate"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/candidate-compatibility.log",
+      "seconds": 0.004301750042941421
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/candidate",
+        "--dev-full-string"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/candidate-string-dev-full.log",
+      "seconds": 0.0037982549984008074
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/candidate",
+        "--dev-full-buffer"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-final-cpp14/candidate-buffer-dev-full.log",
+      "seconds": 0.004226234974339604
+    }
+  ],
+  "cwd": "/tmp/fossilize-12/checker-final",
+  "ids": [
+    "baseline/file-helper-legacy-compatibility",
+    "baseline/file-helper-string-dev-full",
+    "baseline/file-helper-buffer-dev-full",
+    "baseline/candidate-old-header-legacy-compatibility",
+    "baseline/candidate-old-header-string-dev-full",
+    "baseline/candidate-old-header-buffer-dev-full"
+  ]
+}
