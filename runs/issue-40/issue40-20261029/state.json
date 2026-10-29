@@ -187,6 +187,16 @@
         "source_candidate": "4987688f8bc1c9e03b701bea81d25da2361a7d98",
         "started": 1793281144.3078797,
         "timeout": 600
+      },
+      {
+        "command": "/usr/bin/python3.12 -c 'from pathlib import Path\nwritten=[]\nfor name in ('\"'\"'/undeclared-root-probe'\"'\"','\"'\"'/dev/undeclared-probe'\"'\"','\"'\"'/runner/undeclared-probe'\"'\"'):\n try: Path(name).write_text('\"'\"'private namespace probe'\"'\"')\n except OSError as e: assert e.errno in (13,30), e\n else: written.append(name)\nassert not written, '\"'\"'UNDECLARED_WRITABLE_ROOTS:'\"'\"'+str(written)\nprint('\"'\"'only declared roots writable'\"'\"')'",
+        "contract_digest": "4ae9d1838f6c70205ccc1211c45881d9e3e393536b47f116b565a83cedde27ab",
+        "cwd": "/work/source",
+        "gate": "adversarial-writable-roots",
+        "note": "Negative-control namespace-only3tiny-file probe; expected denial, no host/user/source effects; observed prepared/notadmitted before dispatch",
+        "runner_job": "d301781af64549a2bc97eb30370e0f12",
+        "started": 1793281469.8433988,
+        "timeout": 600
       }
     ],
     "deadline": 1793289263.2216766,
@@ -1512,7 +1522,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 16,
+  "revision": 17,
   "root_issue": {
     "id": 6083578603,
     "node_id": "I_kwDOVZpjbc8AAAABapwK6w",
