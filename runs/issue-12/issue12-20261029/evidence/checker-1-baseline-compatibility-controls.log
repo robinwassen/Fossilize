@@ -1,0 +1,151 @@
+{
+  "commands": [
+    {
+      "command": [
+        "g++",
+        "-std=c++14",
+        "-fno-exceptions",
+        "-I/tmp/fossilize-12/baseline/cli",
+        "-c",
+        "/tmp/fossilize-12/checker-1/test/file_helper_compatibility_test.cpp",
+        "-o",
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/caller.o"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/old-header-caller.log",
+      "output": "",
+      "seconds": 0.3485492229810916
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++14",
+        "-fno-exceptions",
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/caller.o",
+        "/tmp/fossilize-12/baseline/cli/file.cpp",
+        "-o",
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/baseline"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/baseline-link.log",
+      "output": "",
+      "seconds": 0.3201163010089658
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++14",
+        "-fno-exceptions",
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/caller.o",
+        "/tmp/fossilize-12/checker-1/cli/file.cpp",
+        "-o",
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/candidate"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/candidate-link.log",
+      "output": "",
+      "seconds": 0.3100840900442563
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/baseline"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/baseline-compatibility.log",
+      "output": "",
+      "seconds": 0.002086974971462041
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/baseline",
+        "--dev-full-string"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14",
+      "exit_code": 1,
+      "expected": 1,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/baseline-string-dev-full.log",
+      "output": "/tmp/fossilize-12/checker-1/test/file_helper_compatibility_test.cpp:21: !string_write(\"/dev/full\", \"buffered\")\n",
+      "seconds": 0.0018444990273565054
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/baseline",
+        "--dev-full-buffer"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14",
+      "exit_code": 1,
+      "expected": 1,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/baseline-buffer-dev-full.log",
+      "output": "/tmp/fossilize-12/checker-1/test/file_helper_compatibility_test.cpp:22: !buffer_write(\"/dev/full\", \"buffered\", 8)\n",
+      "seconds": 0.0019656179938465357
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/candidate"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/candidate-compatibility.log",
+      "output": "",
+      "seconds": 0.0024429369950667024
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/candidate",
+        "--dev-full-string"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/candidate-string-dev-full.log",
+      "output": "",
+      "seconds": 0.002068942994810641
+    },
+    {
+      "command": [
+        "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/candidate",
+        "--dev-full-buffer"
+      ],
+      "cwd": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14",
+      "exit_code": 0,
+      "expected": 0,
+      "log": "/tmp/fossilize-12/baseline-evidence-checker-1-cpp14/candidate-buffer-dev-full.log",
+      "output": "",
+      "seconds": 0.0024355959612876177
+    }
+  ],
+  "controls": "original normal pass; both original false-success assertions fail; same old-header caller candidate normal/completion pass",
+  "cwd": "/tmp/fossilize-12/checker-1",
+  "deadlines": "top600; every child90",
+  "environment": {
+    "compiler": "GNU 13.3.0 /usr/bin/c++",
+    "configuration": "native Linux CPU tests; CLI and Vulkan layer ON; runtime layer integration OFF; pinned submodules populated",
+    "platform": "Linux x86_64",
+    "python": "3.12.3"
+  },
+  "historical_extra": "Earlier supplied -std=c++11 driver also passed; not used for planned C++14 gate acceptance.",
+  "identity": {
+    "attempt_id": "checker-1",
+    "base_sha": "a97dfec075a52e69a6ad517071c08b2b292983e5",
+    "candidate_sha": "5480319b0dca1b4d33518370d00da1fef46ed1fc",
+    "plan_version": 2
+  },
+  "tests": [
+    "baseline/file-helper-compatibility",
+    "baseline/file-helper-string-dev-full",
+    "baseline/file-helper-buffer-dev-full",
+    "baseline/candidate-file-helper-compatibility",
+    "baseline/candidate-file-helper-string-dev-full",
+    "baseline/candidate-file-helper-buffer-dev-full"
+  ],
+  "top_level_command": "timeout --signal=TERM --kill-after=5s 600s python3 /tmp/fossilize-12/verify_checker-1_baseline_cpp14.py"
+}

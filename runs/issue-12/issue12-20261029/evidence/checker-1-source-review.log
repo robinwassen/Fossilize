@@ -1,0 +1,78 @@
+{
+  "identity": {
+    "attempt_id": "checker-1",
+    "base_sha": "a97dfec075a52e69a6ad517071c08b2b292983e5",
+    "candidate_sha": "5480319b0dca1b4d33518370d00da1fef46ed1fc",
+    "plan_version": 2
+  },
+  "live_input_readbacks": {
+    "12": {
+      "command": [
+        "gh",
+        "issue",
+        "view",
+        "12",
+        "--repo",
+        "robinwassen/Fossilize",
+        "--json",
+        "number,title,body,state,id,url"
+      ],
+      "exit_code": 0,
+      "issue": {
+        "body": "Legacy identity: `FOS-000003`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n3. **FOS-000003 \u2014 Check shared file-helper flush/close completion.** **S; no dependencies; \u00a76.** [file:56](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/file.cpp#L56) and `write_buffer_to_file()` return true after unchecked `fclose()` (E3). Return failure for write/flush/close errors, preserving the first raw error and operation. Keep destructor/cleanup behavior nonthrowing. **Check:** `/dev/full`, nonexistent destination and successful normal write. Successful close means completion through the OS interface, not power-loss durability. This supplies a truthful primitive for later exporters.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with injectable file operations:** Open, short-write, flush and close failures each return failure; when several occur, the first error and its operation survive cleanup. Close is attempted exactly once for each opened handle.\n   - **Filesystem integration tests:** E3 fails on Linux /dev/full; a portable injected close-error case covers other platforms. Normal and empty writes succeed and read back byte-for-byte; no result claims stronger durability than tested flush/close completion.\n\n<!-- fossilize-migration-v1:FOS-000003 -->\n",
+        "id": "I_kwDOVZpjbc8AAAABamJ0Xg",
+        "number": 12,
+        "state": "OPEN",
+        "title": "FOS-000003 \u2014 Check shared file-helper flush/close completion",
+        "url": "https://github.com/robinwassen/Fossilize/issues/12"
+      }
+    },
+    "8": {
+      "command": [
+        "gh",
+        "issue",
+        "view",
+        "8",
+        "--repo",
+        "robinwassen/Fossilize",
+        "--json",
+        "number,title,body,state,id,url"
+      ],
+      "exit_code": 0,
+      "issue": {
+        "body": "Required outcome: deliver every migrated observability child with its original criteria. This epic stays open until all required children and shared gates complete.\n\n## Ordered implementation backlog\n\nAll criteria below are mandatory completion gates for the applicable implementation slice. They describe future assertions, not tests already implemented or passing. A task is complete only when its criteria are covered by committed automated tests registered with the project test runner/CI, and passing evidence records the commands, configurations and platforms. If a task is split, each split-out item must receive its own registered key and name its covered criteria; the parent remains incomplete until all are satisfied. Manual inspection, log screenshots and the observation-only research runner are insufficient acceptance evidence.\n\nUse unit tests for result/state logic and deterministic fault injection, plus subprocess/filesystem/IPC/layer integration tests for externally visible behavior. Assert returned outcomes, exit statuses, structured fields, actual output contents and handle/application behavior; prose-only assertions are appropriate only where human presentation itself is the requirement. Include successful controls alongside failure cases. Upgrade E1\u2013E9 into assertion-bearing regressions as their owning tasks are implemented. Tests must expose the defect before its fix where feasible, rather than merely mirror implementation internals.\n\nConcurrency/deadline tests must use fake clocks, barriers and controllable adapters instead of random driver instability or fragile sleeps. Give process tests watchdogs and isolated temporary output directories. Linux and Windows process changes require platform-specific automated evidence; GPU-independent mocks are the baseline, with hardware jobs for hardware claims. An unavailable platform/device is skipped/unverified and leaves that acceptance criterion open. Record applicable debug/release and exception-enabled/disabled coverage; use sanitizer jobs where useful for changed parsing, lifetime or concurrency code. Tests must check honest unknown outcomes where evidence is deliberately lost.\n\n**Compatibility gate for every affected public boundary:** declare whether source, binary, protocol and behavioral compatibility are preserved or intentionally changed. Maintain compile/run fixtures for preserved old callers/invocations, schema/protocol fixtures for preserved consumers and prebuilt-consumer checks only where binary compatibility is claimed. Assert and document intentional changes, including formerly false-success CLI exits. Additive signatures alone do not establish compatibility; do not claim that all existing callers continue working. Require structured outcomes without prose parsing once the relevant result API/mode is introduced.\n\n\n## Dependency and delivery notes\n\nThe critical path is **FOS-000005 \u2192 FOS-000009 \u2192 (FOS-000010 and FOS-000011) \u2192 FOS-000012 \u2192 FOS-000013 \u2192 FOS-000014**: worker facts precede reconciliation, which precedes a trustworthy controller/API result. **FOS-000003 \u2192 FOS-000016 \u2192 FOS-000017 \u2192 FOS-000019** is the persistence/capture path. **FOS-000006** prevents later runs from trusting a failed attempt. **FOS-000004** is an early containment fix, not a substitute for the richer accounting. Initial result schemas may report persistence/support detail as unknown until the respective producers are migrated; they must not imply whole-standard compliance early.\n\nKeep regression verification alongside every iteration. Do not defer all tests to `FOS-000024`. The highest-value fixtures are E1\u2013E9, deterministic worker failure/deadline injection, duplicate/stale messages, full diagnostic rings, close-time ENOSPC, optional versus required output loss, and cancellation before/after final publication. Linux and Windows process implementations need the same behavioral matrix even when mechanisms differ. Apple/Android builds use `NO_ROBUST_REPLAYER`; ordinary replay/library/capture contracts still apply without inventing worker support there.\n\n\n## Remaining verification\n\nBefore implementation is accepted, run supported CMake builds and tests on Linux and Windows, exception-enabled/disabled and release/debug configurations as applicable. Add deterministic fault injection rather than relying solely on the existing random `SIMULATE_UNSTABLE_DRIVER` hooks. Exercise runtime capture with multiple instances/devices and real Vulkan support failures; test cache feedback on hardware that exposes it. No current probe demonstrates actual cache warming or durable driver output.\n\n\n## Unkeyed report disposition\n# Repeated shader processing with unclear failure and cache-reuse outcomes\n\nThe Sims 4 repeatedly delayed startup with \u201cProcessing Vulkan shaders,\u201d despite previous processing having finished.\n\nSteam launched Fossilize\u2019s replayer before Proton, with a **10-second limit without pipeline completion**. Controlled tests showed workers timing out and compilation being interrupted. Allowing 60 seconds let the tested workload finish; its resulting cache was reusable.\n\nThe investigation was complicated by several observability gaps:\n\n- **Hidden failure context:** Steam\u2019s normal logs showed progress and completion without an actionable explanation of worker failures. Separate, unsuppressed replay runs exposed the timeouts.\n- **Ambiguous crash reporting:** Timeouts used SIGABRT and the crash-recovery path. A debugger was needed to establish that an interrupted worker was executing inside NVIDIA\u2019s shader compiler; this did not prove a spontaneous driver crash.\n- **Unclear completion:** One replay returned exit status zero despite reporting \u201cCannot continue,\u201d making successful termination insufficient evidence of completed work.\n- **Unclear reuse:** The logs did not clearly connect replay triggers, previously processed entries, skipped/failed work and persisted results. A shader-bucket update also triggered processing of an unchanged generic database.\n\n**The integration gap:** Fossilize needs to expose explicit failure reasons and partial outcomes even in quiet mode. Steam needs to retain and present those results alongside why replay was scheduled and what reuse information is available.\n\nThe investigation did **not** establish that the entire cache was discarded. Cache reuse worked in controlled tests, while deliberately forcing a warm replay still incurred substantial processing overhead.\n\n## References\n\nInvestigated 26\u201327 October 2026.\n\n- [Upstream issue: steam-for-linux #13810](https://github.com/ValveSoftware/steam-for-linux/issues/13810)\n- [Sanitized supporting evidence](https://gist.github.com/robinwassen/6d8cd12e4040cf409cb3553f4fb87b61)\n\nFossilize obligations overlap FOS-000004/000005/000007/000009/000012/000013/000014/000022; retained individually without a duplicate issue. Steam scheduling/presentation belongs to external steam-for-linux#13810; no new Fossilize implementation requirement.\n\nSpecifications, reproduced E1..E9 findings, adversarial review and sanitized fixtures are supporting evidence, not additional task definitions.\n\n<!-- fossilize-migration-v1:observability -->\n",
+        "id": "I_kwDOVZpjbc8AAAABamD6Iw",
+        "number": 8,
+        "state": "OPEN",
+        "title": "Observability: preserve trustworthy outcomes across Fossilize",
+        "url": "https://github.com/robinwassen/Fossilize/issues/8"
+      }
+    }
+  },
+  "resolved_prior_finding": {
+    "affected_task": "https://github.com/robinwassen/Fossilize/issues/12",
+    "attempt_id": "checker-1",
+    "evidence": "Plan v1 gate windows-native-pending-decision remains kind=both and requires native Windows Debug/Release configure/build/CTest, with its prerequisite still stating user scope decision remains pending. Plan scope[2], implementation instructions and independent-final-review retain that pending mandatory platform gate. Published evidence runs/issue-12/issue12-20261029/evidence/user-platform-scope-decision.json records the direct user authorization: Use Linux verification and portable injected tests; explicitly leave native Windows unverified in the PR. The user decision supersedes this pending verification design, but plan v1 has not incorporated it. Native Windows evidence cannot truthfully be marked passed or silently omitted under the current mandatory-gate plan.",
+    "id": "ISSUE12-SCOPE-DESIGN-001",
+    "recheck": {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/12",
+      "candidate_sha": "5480319b0dca1b4d33518370d00da1fef46ed1fc",
+      "evidence": "Fresh checker /root/checker_1_12 independently compared canonical v1 with v2 and immutable state: exact original and all 19 cases identical; all six required both-gate objects unchanged. Native Windows optional with explicit not_run/unverified, no native IDs. Durable direct user authorization matches exactly; v2 scope/final/publication disclosures implement it. Live issue12 body unchanged, shared issue8 OPEN, prepared PR body explicitly states native Windows not run/unverified and portable tests executed on Linux. This resolves scope design only; behavioral acceptance remains pending current checker gate execution.",
+      "finding_id": "ISSUE12-SCOPE-DESIGN-001",
+      "plan_version": 2,
+      "worker_id": "/root/checker_1_12"
+    },
+    "resolution_required": "Fresh planner must produce plan v2 retaining AC1 byte-for-byte and all Linux, portable injected, compatibility, baseline and complete harness requirements, explicitly apply the authorized verification scope, and require the PR to state native Windows not run/unverified. Reconcile dependent scope/gates/case mappings/final review wording; do not substitute portable Linux execution for native Windows evidence.",
+    "route": "planner",
+    "status": "resolved"
+  },
+  "review": [
+    "Derived original criteria before implementer claims: both helpers must fail open/write/flush/close, preserve earliest raw errno and operation, close exactly once, and remain nonthrowing in cleanup. Normal/empty readback, missing path, /dev/full and portable injected close required.",
+    "Inspected entire eight-file base-to-candidate diff, C++ CHECK assertions/fixtures, all CMake registration and build flag propagation, relevant observability specifications and full required project guidance.",
+    "Production completion path has no allocation or destructor; stdio callbacks are nonthrowing by contract. Explicit completion always flushes then consumes close once; errno is cleared per operation and captured before later cleanup. Old bool declarations/symbols remain and wrappers restore first raw error.",
+    "Injected tests check distinct first errors, zero unknown errno at all four failure stages, ordered counts/consumed handles, text/binary modes, empty completion; checks use CHECK/exit rather than assert and survive NDEBUG. Real filesystem and old-caller controls exercise production APIs.",
+    "All19 cases are unchanged from plan1; immutable AC1 is byte-for-byte identical to plan1, plan2 and original input. Six required both gates unchanged. Scope recheck was concretely reported early; coordinator resolved prior finding during this active checker and canonical resolved record independently read back.",
+    "Live #12 body/title/identity unchanged; shared #8 read with explicit repository and remains open. Prepared PR explicitly discloses native Windows not run/unverified and portable tests executed on Linux; only #12 closing reference.",
+    "No GPU/driver/Steam, power-loss durability, atomic replacement, rollback, general C++ binary ABI or all-caller source claim. No source edits or commits by checker; detached candidate clean."
+  ]
+}
