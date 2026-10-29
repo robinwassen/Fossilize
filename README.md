@@ -1,5 +1,7 @@
 # Fossilize
 
+work in progress fork of fosselize to make the sims 4 boot faster on linux, also my playground for harness engineering. experimenting moving slow forward using harness engineering to make foundational improvements to the code base.
+
 [![Build Status](https://travis-ci.org/ValveSoftware/Fossilize.svg?branch=master)](https://travis-ci.org/ValveSoftware/Fossilize)
 
 Fossilize is a library and Vulkan layer for serializing various persistent Vulkan objects which typically end up
