@@ -1,0 +1,34 @@
+test_PAR10_authentic_receipt_cross_candidate_attempt_plan_and_run_rejected (test_harness_concurrent_quality.QualityTests.test_PAR10_authentic_receipt_cross_candidate_attempt_plan_and_run_rejected) ... ok
+test_PAR10_composite_ordinary_requires_exact_authentic_complete_parts (test_harness_concurrent_quality.QualityTests.test_PAR10_composite_ordinary_requires_exact_authentic_complete_parts)
+Fixture-only schema controls; production receipts still need native proof. ... ERROR
+test_PAR10_delivery_A_byte_preserves_active_B_and_requires_bound_approval (test_harness_concurrent_quality.QualityTests.test_PAR10_delivery_A_byte_preserves_active_B_and_requires_bound_approval) ... ok
+test_PAR10_direct_passed_evidence_without_receipt_is_rejected (test_harness_concurrent_quality.QualityTests.test_PAR10_direct_passed_evidence_without_receipt_is_rejected) ... ok
+test_PAR10_manual_review_is_bound_judgment_without_fabricated_exit_code (test_harness_concurrent_quality.QualityTests.test_PAR10_manual_review_is_bound_judgment_without_fabricated_exit_code) ... ok
+test_PAR10_persisted_approved_actor_restored_after_transient_unit_loss (test_harness_concurrent_quality.QualityTests.test_PAR10_persisted_approved_actor_restored_after_transient_unit_loss) ... ok
+test_PAR10_two_clone_approved_wrapups_fifo_guards_base_before_second_merge (test_harness_concurrent_quality.QualityTests.test_PAR10_two_clone_approved_wrapups_fifo_guards_base_before_second_merge) ... ok
+
+======================================================================
+ERROR: test_PAR10_composite_ordinary_requires_exact_authentic_complete_parts (test_harness_concurrent_quality.QualityTests.test_PAR10_composite_ordinary_requires_exact_authentic_complete_parts)
+Fixture-only schema controls; production receipts still need native proof.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_quality.py", line 189, in test_PAR10_composite_ordinary_requires_exact_authentic_complete_parts
+    parts=[part('delivery-ordinary-'+str(n)) for n in range(3)]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_quality.py", line 176, in part
+    row=a.submit(c);generation=a.takeover();self.assertIn(row['id'],a.admit(generation))
+        ^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/harness_resources.py", line 204, in submit
+    c = contract_validate(contract, not self.fixture)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/harness_resources.py", line 88, in contract_validate
+    check(set(c) == mandatory and c['version'] == 1, 'complete version1 resource contract required')
+  File "/work/source/.agents/skills/implement-change-harness/scripts/harness_resources.py", line 32, in check
+    raise ResourceError(message)
+harness_resources.ResourceError: complete version1 resource contract required
+
+----------------------------------------------------------------------
+Ran 7 tests in 53.932s
+
+FAILED (errors=1)
+group did not pass
