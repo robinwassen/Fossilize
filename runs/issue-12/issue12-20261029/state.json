@@ -967,7 +967,7 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -1514,6 +1514,13 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793272931.2503467,
+      "body": "## Problem\n\nThe shared string and buffer write helpers returned success after unchecked close failures. Buffered output to `/dev/full` reproduced this false success, leaving callers unable to trust write completion.\n\n## What changes\n\nCheck write, flush, and close completion and return failure when any stage fails. Preserve the first failing operation and raw errno through cleanup, and close each opened handle exactly once. Add structured result entry points while retaining both existing bool signatures and their text/binary behavior.\n\n## Why this matters\n\nCallers can distinguish completed writes from failed output delivery. Success means write, flush, and close completed through stdio/OS interfaces, with no power-loss durability or atomic replacement promise.\n\n## Why this approach\n\nA per-call internal adapter provides deterministic failure injection without global hooks. Legacy callers retain their original entry points, while result-aware callers can inspect the first error without parsing prose.\n\n## Verification and limits\n\nIndependent work-unit and separate final checkers each passed all 91 registered CTests in Linux Debug/Release with exceptions OFF/ON (364 runs per checker), the complete 130-method harness suite and 103 scenarios, metadata validation, and original-defect controls. Both accepted the unchanged candidate `5480319b0dca1b4d33518370d00da1fef46ed1fc` under plan 2 against base `a97dfec075a52e69a6ad517071c08b2b292983e5`. Checks cover injected open/short-write/flush/close and multiple-error paths, normal/empty file roundtrips, Linux `/dev/full`, an unchanged-header legacy caller, and the full CTest Debug/Release matrix with exceptions enabled/disabled. Native Windows builds and tests were not run and remain unverified. Portable injected tests were executed on Linux. This follows the user's explicit verification scope decision. No general C++ binary ABI, GPU, Steam, or power-loss durability claim.\n\n\n[Independent reports and gate logs](https://github.com/robinwassen/Fossilize/tree/402b513babb099ecaa6d0b24df54af1d3fb731ef/runs/issue-12/issue12-20261029).\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/12\n\nLegacy identity: `FOS-000003`.\n\nShared parent https://github.com/robinwassen/Fossilize/issues/8 remains open.\n",
+      "body_sha256": "587d845c3f361ce13339cde3f2b7e8224fe542d76ba436b06a7650b66cc13577",
+      "event": "create-dispatched",
+      "title": "Report shared file-helper flush and close failures"
+    },
     "intent": {
       "base_sha": "a97dfec075a52e69a6ad517071c08b2b292983e5",
       "branch": "codex/issue-12-file-completion",
@@ -1534,10 +1541,16 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "body": "## Problem\n\nThe shared string and buffer write helpers returned success after unchecked close failures. Buffered output to `/dev/full` reproduced this false success, leaving callers unable to trust write completion.\n\n## What changes\n\nCheck write, flush, and close completion and return failure when any stage fails. Preserve the first failing operation and raw errno through cleanup, and close each opened handle exactly once. Add structured result entry points while retaining both existing bool signatures and their text/binary behavior.\n\n## Why this matters\n\nCallers can distinguish completed writes from failed output delivery. Success means write, flush, and close completed through stdio/OS interfaces, with no power-loss durability or atomic replacement promise.\n\n## Why this approach\n\nA per-call internal adapter provides deterministic failure injection without global hooks. Legacy callers retain their original entry points, while result-aware callers can inspect the first error without parsing prose.\n\n## Verification and limits\n\nIndependent work-unit and separate final checkers each passed all 91 registered CTests in Linux Debug/Release with exceptions OFF/ON (364 runs per checker), the complete 130-method harness suite and 103 scenarios, metadata validation, and original-defect controls. Both accepted the unchanged candidate `5480319b0dca1b4d33518370d00da1fef46ed1fc` under plan 2 against base `a97dfec075a52e69a6ad517071c08b2b292983e5`. Checks cover injected open/short-write/flush/close and multiple-error paths, normal/empty file roundtrips, Linux `/dev/full`, an unchanged-header legacy caller, and the full CTest Debug/Release matrix with exceptions enabled/disabled. Native Windows builds and tests were not run and remain unverified. Portable injected tests were executed on Linux. This follows the user's explicit verification scope decision. No general C++ binary ABI, GPU, Steam, or power-loss durability claim.\n\n\n[Independent reports and gate logs](https://github.com/robinwassen/Fossilize/tree/402b513babb099ecaa6d0b24df54af1d3fb731ef/runs/issue-12/issue12-20261029).\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/12\n\nLegacy identity: `FOS-000003`.\n\nShared parent https://github.com/robinwassen/Fossilize/issues/8 remains open.\n",
+        "body_sha256": "587d845c3f361ce13339cde3f2b7e8224fe542d76ba436b06a7650b66cc13577",
+        "event": "create-dispatched",
+        "title": "Report shared file-helper flush and close failures"
       }
     ],
     "remote_sha": "5480319b0dca1b4d33518370d00da1fef46ed1fc",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "a97dfec075a52e69a6ad517071c08b2b292983e5",
@@ -1550,7 +1563,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 130,
+  "revision": 131,
   "root_issue": {
     "id": 6079804510,
     "node_id": "I_kwDOVZpjbc8AAAABamJ0Xg",
