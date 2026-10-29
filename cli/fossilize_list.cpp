@@ -264,7 +264,10 @@ bool parse_tag(ResourceTag tag, StateReplayer &replayer, ListReplayer &list_repl
 		}
 
 		if (!replayer.parse(list_replayer, input_db, state_db.data(), state_db.size()))
-			LOGE("Failed to parse blob (tag: %d, hash: 0x%" PRIx64 ").\n", tag, hash);
+		{
+			LOGE("Failed to parse blob (tag: %d, hash: 0x%" PRIx64 "). Connectivity is incomplete; no connectivity rows were emitted.\n", tag, hash);
+			return false;
+		}
 	}
 
 	return true;

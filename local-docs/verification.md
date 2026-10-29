@@ -135,7 +135,42 @@ correct pipeline names; there is no new stable log parsing contract or result
 schema. Cache close failures become visible without changing aggregate CLI exit
 policy. These tests do not demonstrate driver compilation or durable cache output.
 
-A normal Linux CLI/layer-enabled build registers 54 tests before optional layer integration; Windows registers 53. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
+The utility parse regressions for [issue #11](https://github.com/robinwassen/Fossilize/issues/11)
+register 19 additional `utility-parse-<tool>-<case>` tests whenever CLI support
+is enabled. They invoke the actual list/rehash/prune executables through portable
+CMake `execute_process` calls (30-second child deadlines, 90-second CTest limits),
+using GPU-free valid outer FOZ fixtures. They check incompatible versions, invalid
+JSON, valid populated/empty inputs, deterministic valid-then-rejected ordering,
+list dependency failures and verified empty dependencies, ordinary list/size
+compatibility, and prune rejection both before and after an application callback.
+Readback reparses emitted records and checks hashes, payload semantics and compute
+reference closure. Empty inputs have zero resource-work records; rehash preserves
+its existing synthesized default application context, whose exact hash, empty
+application/features objects and decoded null context are checked separately. Explicit checks remain active in Release. The helper and
+utility paths can be overridden separately to run the same failure assertions
+against unchanged baseline executables. The applicable Linux runtime matrix is
+Debug/Release with exceptions OFF/ON, CLI and layer ON; portable registration is
+not evidence of native Windows execution, which requires a Windows host.
+
+The intentional command-result change is limited to parser failure in
+`fossilize-list --connectivity`, `fossilize-rehash` and `fossilize-prune`: they now
+stop immediately, identify the rejected tag/hash and incomplete scope, and return
+`EXIT_FAILURE`. Log severity does not determine the outcome. Plain list and
+`--size` remain enumeration and do not validate resource JSON. Connectivity fills
+all create info before printing; any fill failure emits no connectivity rows,
+including rows for earlier valid items. A successfully parsed empty dependency
+set still prints its ordinary empty row. Rehash can retain previously accepted
+resources after recorder teardown; its failed output is an incomplete prefix.
+Callbacks accepted from a later failing multi-object blob are not rolled back.
+Prune may retain previously copied accepted application metadata, but stops before
+copying the rejected metadata and before selecting/copying pipelines: it promises
+neither a pipeline prefix nor dependency closure after failure. No output from a
+failed invocation should be treated as a complete result. These changes do not
+redesign asynchronous persistence error reporting. Opt/disasm migration and the
+explicitly permitted optimizer fallback policy remain future scope; these tests
+make no claim to verify those tools or the complete observability standard.
+
+A normal Linux CLI/layer-enabled build registers 73 tests before optional layer integration; Windows registers 72. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
 
 The `*-library-only-*` presets disable **both CLI and tests**. They are build/package checks, not test coverage; their test presets/workflows must not be reported as a passing suite. To test the core without CLI/SPIR-V dependencies:
 

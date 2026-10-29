@@ -111,3 +111,30 @@ if (FOSSILIZE_CLI)
     set_tests_properties(diagnostic-compatibility-test PROPERTIES TIMEOUT 90
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/diagnostic-compatibility")
 endif()
+
+# Actual utility processes, portable CMake process control, no GPU or shell.
+if (FOSSILIZE_CLI)
+    add_executable(utility-parse-test utility_parse_test.cpp)
+    target_link_libraries(utility-parse-test PRIVATE fossilize)
+    target_compile_options(utility-parse-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
+    set_target_properties(utility-parse-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
+    foreach(tool list rehash prune)
+        set(cases version invalid-json empty populated mixed)
+        if(tool STREQUAL "list")
+            list(APPEND cases dependency-failure empty-dependencies legacy-invocations)
+        elseif(tool STREQUAL "prune")
+            list(APPEND cases rejected-application)
+        endif()
+        foreach(case IN LISTS cases)
+            set(name utility-parse-${tool}-${case})
+            set(work "${CMAKE_CURRENT_BINARY_DIR}/${name}")
+            file(MAKE_DIRECTORY "${work}")
+            add_test(NAME ${name} COMMAND ${CMAKE_COMMAND}
+                -DGENERATOR=$<TARGET_FILE:utility-parse-test>
+                -DTOOL=$<TARGET_FILE:fossilize-${tool}>
+                -DTOOL_NAME=${tool} -DCASE=${case} -DWORK=${work}
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/utility_parse.cmake)
+            set_tests_properties(${name} PROPERTIES TIMEOUT 90 WORKING_DIRECTORY "${work}")
+        endforeach()
+    endforeach()
+endif()
