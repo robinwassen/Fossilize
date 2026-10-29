@@ -81,7 +81,15 @@
   },
   "limits": {
     "command_timeout": 600,
-    "commands": [],
+    "commands": [
+      {
+        "command": "systemd-run --user --unit=fossilize62-bootstrap-checker2 --property=Type=exec --property=KillMode=control-group --property=RuntimeMaxSec=180 --property=TimeoutStopSec=5 --property=RemainAfterExit=yes --property=StandardOutput=append:/tmp/fossilize-62/bootstrap/events2.jsonl --property=StandardError=append:/tmp/fossilize-62/bootstrap/stderr2.log --wait /usr/bin/timeout --signal=TERM --kill-after=5s 160s codex exec --ignore-user-config --ignore-rules -c approval_policy=never -c model_reasoning_effort=high --sandbox danger-full-access -m gpt-6-astra -C /tmp/fossilize-62/bootstrap --json --output-schema /tmp/fossilize-62/bootstrap/schema.json -o /tmp/fossilize-62/bootstrap/report2.json [checked bounded fixture prompt]",
+        "cwd": "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+        "purpose": "Actual CLI bootstrap supported model fallback after model_not_found for app-only gpt-6.1-sol",
+        "started": 1793308641.4644747,
+        "timeout": 180
+      }
+    ],
     "deadline": 1793322581.555903,
     "exhausted": false,
     "extensions": [],
@@ -436,7 +444,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 6,
+  "revision": 7,
   "root_issue": {
     "id": 6107403434,
     "node_id": "I_kwDOVZpjbc8AAAABbAeUqg",
