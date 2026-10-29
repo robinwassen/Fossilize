@@ -91,13 +91,14 @@
       "observations": [],
       "operation": "replan",
       "plan_version": 1,
+      "report": "runs/issue-12/issue12-20261029/reports/planner-2.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793267847.7741468,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/12",
       "worker_id": "/root/planner_2_12"
     }
@@ -447,15 +448,15 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "replan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
       "requirement": "Legacy identity: `FOS-000003`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n3. **FOS-000003 \u2014 Check shared file-helper flush/close completion.** **S; no dependencies; \u00a76.** [file:56](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/file.cpp#L56) and `write_buffer_to_file()` return true after unchecked `fclose()` (E3). Return failure for write/flush/close errors, preserving the first raw error and operation. Keep destructor/cleanup behavior nonthrowing. **Check:** `/dev/full`, nonexistent destination and successful normal write. Successful close means completion through the OS interface, not power-loss durability. This supplies a truthful primitive for later exporters.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with injectable file operations:** Open, short-write, flush and close failures each return failure; when several occur, the first error and its operation survive cleanup. Close is attempted exactly once for each opened handle.\n   - **Filesystem integration tests:** E3 fails on Linux /dev/full; a portable injected close-error case covers other platforms. Normal and empty writes succeed and read back byte-for-byte; no result claims stronger durability than tested flush/close completion.\n\n<!-- fossilize-migration-v1:FOS-000003 -->\n"
     }
   ],
-  "phase": "planning",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -822,17 +823,19 @@
         ],
         "cwd": "/home/robin/dev/fossilize-issue-12",
         "expected": [
-          "Native builds and assertion-bearing CTest pass; native text newline conversion and binary bytes match compatibility contract; first raw errno/operation and one close remain correct under Windows CRT. No Windows process/controller/GPU claim."
+          "Current run status is not_run/unverified; no native Windows pass, CRT behavior, newline translation, compiler or runtime claim is permitted. Mandatory final and publication evidence explicitly disclose this limitation.",
+          "Only if separately executed natively: native builds and assertion-bearing CTest pass, native text newline conversion and binary bytes match compatibility assertions, and raw first errno/operation and one close remain correct under Windows CRT. This optional procedure makes no Windows process/controller/GPU claim."
         ],
         "id": "windows-native-pending-decision",
-        "kind": "both",
+        "kind": "optional",
         "method": [
-          "PENDING USER SCOPE DECISION: on native Windows in prepared MSVC/Ninja environment, for Debug and Release configure cmake -S <exact candidate checkout> -B <fresh native output> -G Ninja -DCMAKE_BUILD_TYPE=<mode> -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF; build full targets; ctest --test-dir <output> --show-only=json-v1 then --output-on-failure --no-tests=error. Each process has a real <=600-second watchdog.",
+          "OPTIONAL NATIVE EXECUTION PROCEDURE (not required for this authorized run): on native Windows in prepared MSVC/Ninja environment, for Debug and Release configure cmake -S <exact candidate checkout> -B <fresh native output> -G Ninja -DCMAKE_BUILD_TYPE=<mode> -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF; build full targets; ctest --test-dir <output> --show-only=json-v1 then --output-on-failure --no-tests=error. Each process has a real <=600-second watchdog.",
           "Run both helper injected open/short-write/flush/close/first-error/success tests, portable filesystem and legacy source fixtures. Linux-only /dev/full tests are not registered on Windows. MSVC does not implement the FOSSILIZE_ENABLE_EXCEPTIONS OFF branch; report this fact and rely on GCC/Clang OFF/ON matrix for no-exception proof. If native MinGW/Clang is chosen instead, execute OFF/ON for both modes.",
-          "If no native runner is available, return unavailable/incomplete and ask coordinator for explicit user scope decision; do not report a passing gate or silently turn it optional. Coordinator may reconcile the plan after a direct user decision while retaining original AC1 unchanged."
+          "For this run record result=not_run and limitation=unverified in optional-platform observations, with no native executed test IDs and no passing Windows evidence. Do not place this optional gate in the mandatory skipped list. Preserve the exact authorized limitation in final evidence and PR wording. Any future actual Windows run must have separate native command/status/test evidence and cannot be inferred from Linux injection or registration."
         ],
         "prerequisites": [
-          "Native Windows host/compiler plus populated pinned dependencies; current environment provides no known native Windows runner. User scope decision remains pending."
+          "Direct user platform scope decision is resolved, not pending: Use Linux verification and portable injected tests; explicitly leave native Windows unverified in the PR. Durable authorization: runs/issue-12/issue12-20261029/evidence/user-platform-scope-decision.json.",
+          "Optional future native execution requires a native Windows host/compiler and populated pinned dependencies. No known native Windows runner is available for this run. Gate ID is retained for traceability; its former pending mandatory status is superseded by plan v2."
         ]
       },
       {
@@ -861,17 +864,39 @@
         ],
         "cwd": "/home/robin/dev/fossilize-issue-12",
         "expected": [
-          "All original AC1 requirements and shared gates covered with current evidence; no mandatory skips/unavailable gates or overstated compatibility/durability/platform claims. Native Windows decision is explicitly resolved before acceptance."
+          "All original AC1 cases and mandatory gates have current exact-candidate evidence within the user-authorized Linux/portable scope; no mandatory skips/unavailable gates or overstated compatibility/durability/platform claims. Native Windows is separately recorded not_run/unverified under the resolved direct user decision.",
+          "Prepared PR body, final evidence and readiness wording explicitly say native Windows builds/tests were not run and remain unverified; portable injected tests executed on Linux are not represented as native Windows evidence. Shared parent #8 remains open."
         ],
         "id": "independent-final-review",
         "kind": "final",
         "method": [
           "Fresh detached checker reads live #12/#8 through gh --repo robinwassen/Fossilize, immutable AC1, full base-to-candidate git diff, tests/registration and current candidate; rerun every both gate and inspect compatibility/behavior/durability documentation. Map every planned case to actual executed IDs.",
-          "Use IDs linux/<build-mode>/exceptions-<off|on>/ctest/<name>, windows/<build-mode>/ctest/<name>, baseline/<name> and harness/<unittest-id>; include real original runner IDs in evidence. Aggregate IDs may label full-union checks but never replace individual discovered/executed evidence.",
-          "Confirm only #12 is an eligible closing target; shared parent #8 remains open. No source/base/plan/live-material-input drift, no unresolved findings, clean committed candidate. A changed candidate requires renewed checks; do not reuse historical reports as execution."
+          "Use IDs linux/<build-mode>/exceptions-<off|on>/ctest/<name>, baseline/<name> and harness/<unittest-id>; include real original runner IDs in evidence. Aggregate IDs may label full-union checks but never replace individual discovered/executed evidence. All 19 cases remain mandatory and map to actual Linux/portable/baseline/harness executions. Native Windows has no executed IDs in this run; if optional native execution is later performed, separately identify windows/<build-mode>/ctest/<name> with genuine native evidence.",
+          "Confirm only #12 is an eligible closing target; shared parent #8 remains open. No source/base/plan/live-material-input drift, no unresolved findings, clean committed candidate. A changed candidate requires renewed checks; do not reuse historical reports as execution.",
+          "Read the durable direct user scope decision and inspect the prepared PR Verification and limits section plus managed readiness/final evidence. Require explicit wording: Native Windows builds and tests were not run and remain unverified. Portable injected tests were executed on Linux. Reject any native pass or stronger cross-platform claim. Require publication readback to preserve the same limitation."
         ],
         "prerequisites": [
-          "All work-unit gates passing at exact candidate; resolved explicit platform decision if runner unavailable; live issue authentication and fresh checker."
+          "All mandatory work-unit gates passing at exact candidate; live issue authentication and a separate fresh final checker; resolved direct user scope decision retained as evidence, with optional native Windows not_run/unverified.",
+          "Prepared reviewable PR body and current readiness/final evidence explicitly disclose native Windows unverified status; historical implementation execution is not fresh checker acceptance."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-12",
+        "expected": [
+          "The actual published PR and final evidence explicitly state native Windows not run/unverified, identify Linux execution of portable injected tests, preserve honest compatibility/durability limits and bind evidence to the accepted exact candidate/base/plan. No substituted native execution IDs or native pass claims."
+        ],
+        "id": "publication-platform-scope-disclosure",
+        "kind": "publication",
+        "method": [
+          "Before PR creation, verify the exact prepared body states: Native Windows builds and tests were not run and remain unverified. Portable injected tests were executed on Linux. Tie its actual Linux/portable/baseline/full-harness evidence to the accepted candidate/base/plan v2 and preserve the original AC1.",
+          "After the one authorized implementation PR is created or recovered, coordinator reads its actual body through gh pr view <actual PR URL> --repo robinwassen/Fossilize --json body,headRefOid,baseRefName,state,isDraft,closingIssuesReferences. Record the exact command, PR identity/head and readback showing the same explicit native Windows limitation and honest verified platform list. Only #12 is an eligible closing issue; #8 remains open. This planner authorizes no external writes; coordinator alone performs canonical/publication operations.",
+          "If the PR omits the limitation or claims native Windows success without native evidence, publication is incomplete until its wording is corrected through the normal durable external-operation workflow and read back. Optional not_run is never a passing native test."
+        ],
+        "prerequisites": [
+          "Exact current independent final acceptance under plan v2; unchanged candidate/base/material issue inputs; prepared PR body with required Verification and limits section; durable direct user scope decision."
         ]
       }
     ],
@@ -885,8 +910,9 @@
       "Register new tests in test/CMakeLists.txt with FOSSILIZE_TESTS, platform guards only for /dev/full, project exception/sanitizer compile/link flags, private per-test working directories and finite TIMEOUT. Prefer compiling cli/file.cpp directly into the lightweight helper targets so no GPU/CLI dependencies are needed for the new tests, while full CLI/layer builds still verify unchanged callers.",
       "Update local-docs/verification.md with test inventory, API/compatibility guarantees and explicit platform limitations. Do not change unconditional mandatory harness-suite guidance to evade it. All source/tests/docs stay in the implementation commit; transient build/probe outputs stay outside source.",
       "Report source compatibility as preserved for the two legacy functions using unchanged old declarations plus compile/run fixtures; no all-callers generalization. Binary: exact legacy symbols retained, but static cli-utils has no general supported C++ binary ABI claim, so no prebuilt-consumer ABI claim. Protocol: no wire/file format or machine-output schema change introduced here. Behavioral: normal/empty contents, truncation, text/binary distinction and initial open/write failures preserved; formerly false-success flush/close cases intentionally return false with the first error. Do not silently propagate this into unrelated tool exit redesign.",
-      "Implementer and both fresh checkers run real bounded commands against committed candidate, exact planned IDs and mappings. No mandatory skipped/unavailable result counts as accepted. Native Windows is pending user scope decision; preserve original AC1 verbatim regardless of that decision.",
-      "The coordinator may supply external verification drivers for each exact configuration or harness group; workers request canonical command-intent for each top-level verification command before execution. The driver must preserve the listed commands/assertions, record actual per-process statuses, and enforce <=600-second deadlines on each build/test process. Inspection calls do not require source changes or nested canonical writes. At most three harness group processes concurrently."
+      "Implementer and both fresh checkers run real bounded commands against committed candidate, exact planned IDs and mappings. No mandatory skipped/unavailable result counts as accepted. Apply the direct user platform scope decision: Linux matrix and portable injected tests are mandatory; native Windows execution is optional, not_run/unverified for this run, and must be explicitly disclosed in final evidence and the PR. Portable Linux execution must never be mapped to Windows execution or claimed as native validation. Preserve original AC1 verbatim. Prior implementation reports are historical evidence only; plan v2 requires renewed work-unit checking and separate final checking at the exact candidate/base/plan tuple.",
+      "The coordinator may supply external verification drivers for each exact configuration or harness group; workers request canonical command-intent for each top-level verification command before execution. The driver must preserve the listed commands/assertions, record actual per-process statuses, and enforce <=600-second deadlines on each build/test process. Inspection calls do not require source changes or nested canonical writes. At most three harness group processes concurrently.",
+      "Fresh checker working directories, build directories, baseline output directories and harness evidence directories may be relocated to fresh absolute paths outside source without changing gate IDs, test IDs, flags, assertions, test inventories, deadlines or the exact candidate. Record resolved commands/cwd and compiler configuration. Expected CLI/layer-enabled inventory is 91 Linux tests and 87 registered Windows tests before optional runtime layer integration; 87 is a registration expectation, not native execution evidence."
     ],
     "non_goals": [
       "No fsync/fdatasync/FlushFileBuffers, atomic replacement, rollback of partial files or power-loss durability promise.",
@@ -902,12 +928,44 @@
     "scope": [
       "One coherent unsplit implementation of https://github.com/robinwassen/Fossilize/issues/12 (legacy FOS-000003); both shared string and buffer file-write helpers must return success only after checked write, flush and close. Preserve the first failing operation and its immediately captured raw errno in a programmatic result and through legacy failure errno.",
       "Add deterministic per-call injected stdio tests, real filesystem tests, a preserved old-source caller fixture, CTest registration and concise verification/compatibility documentation. Shared requirements from https://github.com/robinwassen/Fossilize/issues/8 apply.",
-      "Native Windows CMake/CTest is a mandatory pending environmental gate until the coordinator records an explicit user scope decision. Linux plus a portable injected close error alone is not native Windows evidence. No process implementation changes are planned, so Windows CreateProcess/JobObject/controller/cancellation matrices are outside this change."
+      "The direct user decision recorded in runs/issue-12/issue12-20261029/evidence/user-platform-scope-decision.json authorizes Linux verification and portable injected tests, with native Windows explicitly unverified in the PR. The complete Linux Debug/Release, exceptions OFF/ON matrix and every portable injected, filesystem, legacy compatibility, baseline control and full Python harness requirement remain mandatory. Native Windows CMake/CTest is optional for this run and must be recorded not_run/unverified when unexecuted; Linux execution does not establish native Windows behavior. Original AC1 remains verbatim. Shared parent #8 remains open with native Windows verification unverified. No process implementation changes are planned, so Windows CreateProcess/JobObject/controller/cancellation matrices are outside this change."
     ],
-    "version": 1,
+    "version": 2,
     "work_units": []
   },
   "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/12"
+        ],
+        "digest": "2fd9a09b3e39e02afb494f53dcc68b4ec6542e140e630b1354579b5e8402753f",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/12": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000003`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n3. **FOS-000003 \u2014 Check shared file-helper flush/close completion.** **S; no dependencies; \u00a76.** [file:56](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/file.cpp#L56) and `write_buffer_to_file()` return true after unchecked `fclose()` (E3). Return failure for write/flush/close errors, preserving the first raw error and operation. Keep destructor/cleanup behavior nonthrowing. **Check:** `/dev/full`, nonexistent destination and successful normal write. Successful close means completion through the OS interface, not power-loss durability. This supplies a truthful primitive for later exporters.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with injectable file operations:** Open, short-write, flush and close failures each return failure; when several occur, the first error and its operation survive cleanup. Close is attempted exactly once for each opened handle.\n   - **Filesystem integration tests:** E3 fails on Linux /dev/full; a portable injected close-error case covers other platforms. Normal and empty writes succeed and read back byte-for-byte; no result claims stronger durability than tested flush/close completion.\n\n<!-- fossilize-migration-v1:FOS-000003 -->\n",
+            "children": [],
+            "id": 6079804510,
+            "node_id": "I_kwDOVZpjbc8AAAABamJ0Xg",
+            "number": 12,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "FOS-000003 \u2014 Check shared file-helper flush/close completion",
+            "url": "https://github.com/robinwassen/Fossilize/issues/12"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/12"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    },
+    {
+      "superseded_plan": {
+        "version": 1,
+        "work_units": []
+      }
+    },
     {
       "prior_issue_snapshot": {
         "deliverables": [
@@ -950,7 +1008,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 61,
+  "revision": 62,
   "root_issue": {
     "id": 6079804510,
     "node_id": "I_kwDOVZpjbc8AAAABamJ0Xg",
@@ -960,7 +1018,7 @@
   },
   "run_id": "issue12-20261029",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-12",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/12",
   "verification": [],
