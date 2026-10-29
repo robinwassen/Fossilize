@@ -1,0 +1,6 @@
+foreach(kind string buffer)
+    execute_process(COMMAND "${CALLER}" --dev-full-${kind} RESULT_VARIABLE result TIMEOUT 20)
+    if(NOT result EQUAL 0)
+        message(FATAL_ERROR "${kind} completion failed: ${result}")
+    endif()
+endforeach()
