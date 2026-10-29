@@ -1,0 +1,21 @@
+test_PAR10_authentic_receipt_cross_candidate_attempt_plan_and_run_rejected (test_harness_concurrent_quality.QualityTests.test_PAR10_authentic_receipt_cross_candidate_attempt_plan_and_run_rejected) ... ok
+test_PAR10_delivery_A_byte_preserves_active_B_and_requires_bound_approval (test_harness_concurrent_quality.QualityTests.test_PAR10_delivery_A_byte_preserves_active_B_and_requires_bound_approval) ... FAIL
+test_PAR10_direct_passed_evidence_without_receipt_is_rejected (test_harness_concurrent_quality.QualityTests.test_PAR10_direct_passed_evidence_without_receipt_is_rejected) ... ok
+test_PAR10_manual_review_is_bound_judgment_without_fabricated_exit_code (test_harness_concurrent_quality.QualityTests.test_PAR10_manual_review_is_bound_judgment_without_fabricated_exit_code) ... ok
+
+======================================================================
+FAIL: test_PAR10_delivery_A_byte_preserves_active_B_and_requires_bound_approval (test_harness_concurrent_quality.QualityTests.test_PAR10_delivery_A_byte_preserves_active_B_and_requires_bound_approval)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_quality.py", line 42, in test_PAR10_delivery_A_byte_preserves_active_B_and_requires_bound_approval
+    result=f.run_delivery();f.assert_delivered(result)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 277, in assert_delivered
+    self.assertEqual(records[path], content, path)
+AssertionError: b'{\n[63 chars]sues/10": {\n      "generation": "405bd46a6375[986 chars]n}\n' != b'{\n[63 chars]sues/8": {\n      "generation": "efd1eb6b89f84[465 chars]n}\n' : active-runs.json
+
+----------------------------------------------------------------------
+Ran 4 tests in 23.288s
+
+FAILED (failures=1)
+group did not pass

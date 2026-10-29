@@ -1,0 +1,23 @@
+test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3) ... ERROR
+
+======================================================================
+ERROR: test_W11_publication_shard_3 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 142, in setUp
+    if self.concurrent_case:self.setup_concurrent_B()
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py", line 178, in setup_concurrent_B
+    initialized=helper.apply('initialize',payload,helper.store.tip(),0)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/harness_parallel.py", line 593, in apply
+    require('original' not in payload or payload['original'] == p['original'], 'original acceptance differs')
+  File "/work/source/.agents/skills/implement-change-harness/scripts/harness_core.py", line 31, in require
+    raise Invalid(message)
+harness_core.Invalid: original acceptance differs
+
+----------------------------------------------------------------------
+Ran 1 test in 7.566s
+
+FAILED (errors=1)
+group did not pass
