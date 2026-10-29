@@ -282,7 +282,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -791,6 +791,13 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793257849.9885037,
+      "body": "## Problem\n\n`fossilize-list --connectivity`, `fossilize-rehash`, and `fossilize-prune` logged rejected resource blobs but could still exit successfully. List could present a rejected item as an ordinary empty dependency row, and prune could copy rejected application metadata.\n\n## What changes\n\nStop at the first parser failure, return failure, and identify the resource tag/hash and incomplete scope. List emits no connectivity rows after a parse failure. Rehash can retain previously accepted resources; prune can retain previously accepted application metadata and stops before copying the rejected item or computing pipeline closure.\n\nAdd 19 portable CTest cases covering incompatible versions, invalid JSON, populated/empty inputs, mixed inputs, dependency failures, legacy list invocations, and prune rejection after an application callback. Document the exact partial-output policies.\n\n## Why this matters\n\nA successful utility result should not conceal incomplete processing or imply that rejected dependency data was verified empty.\n\n## Why this approach\n\nThe parser's boolean result directly determines the command outcome. Stopping immediately avoids continuing with dependency state that a failing parse may already have changed. This preserves existing CLI syntax and successful input behavior, including rehash's synthesized metadata for empty input.\n\n## Verification and limits\n\nThe implementer, an independent work-unit checker, and a separate final checker each verified the unchanged candidate:\n\n- Linux/GCC 13.3 Debug and Release, exceptions OFF and ON: 73/73 CTests per configuration, including 19 new utility cases; effective compiler flags checked.\n- Six original-defect controls failed against unchanged baseline utilities specifically because those utilities incorrectly exited zero; six populated/empty baseline controls passed.\n- All 130 harness methods and 103 explicit scenarios passed across 16 bounded groups, followed by exact-union verification and skill validation.\n\nThe final checker also re-read unchanged issue requirements, shared acceptance, source/submodule identities, and managed readiness evidence. Both independent checkers accepted with no findings or skipped mandatory checks.\n\nNative Windows execution is unverified. These GPU-free checks establish utility/parser/database behavior; they do not establish GPU, Steam, or cache behavior. Opt/disasm migration and optimizer fallback policy remain future scope. The failure policy does not promise transactional rollback or new persistence guarantees.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/11\n",
+      "body_sha256": "ee019c4bbf841c4d72043d54c21a2a9000def65cbf98276cae97bf56ecf1cb76",
+      "event": "create-dispatched",
+      "title": "Fail utility commands when resource parsing is incomplete"
+    },
     "intent": {
       "base_sha": "36b78637e847463c4f58758a907b33ce5bf07ce5",
       "branch": "codex/issue-11-utility-parse-results",
@@ -811,10 +818,16 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "body": "## Problem\n\n`fossilize-list --connectivity`, `fossilize-rehash`, and `fossilize-prune` logged rejected resource blobs but could still exit successfully. List could present a rejected item as an ordinary empty dependency row, and prune could copy rejected application metadata.\n\n## What changes\n\nStop at the first parser failure, return failure, and identify the resource tag/hash and incomplete scope. List emits no connectivity rows after a parse failure. Rehash can retain previously accepted resources; prune can retain previously accepted application metadata and stops before copying the rejected item or computing pipeline closure.\n\nAdd 19 portable CTest cases covering incompatible versions, invalid JSON, populated/empty inputs, mixed inputs, dependency failures, legacy list invocations, and prune rejection after an application callback. Document the exact partial-output policies.\n\n## Why this matters\n\nA successful utility result should not conceal incomplete processing or imply that rejected dependency data was verified empty.\n\n## Why this approach\n\nThe parser's boolean result directly determines the command outcome. Stopping immediately avoids continuing with dependency state that a failing parse may already have changed. This preserves existing CLI syntax and successful input behavior, including rehash's synthesized metadata for empty input.\n\n## Verification and limits\n\nThe implementer, an independent work-unit checker, and a separate final checker each verified the unchanged candidate:\n\n- Linux/GCC 13.3 Debug and Release, exceptions OFF and ON: 73/73 CTests per configuration, including 19 new utility cases; effective compiler flags checked.\n- Six original-defect controls failed against unchanged baseline utilities specifically because those utilities incorrectly exited zero; six populated/empty baseline controls passed.\n- All 130 harness methods and 103 explicit scenarios passed across 16 bounded groups, followed by exact-union verification and skill validation.\n\nThe final checker also re-read unchanged issue requirements, shared acceptance, source/submodule identities, and managed readiness evidence. Both independent checkers accepted with no findings or skipped mandatory checks.\n\nNative Windows execution is unverified. These GPU-free checks establish utility/parser/database behavior; they do not establish GPU, Steam, or cache behavior. Opt/disasm migration and optimizer fallback policy remain future scope. The failure policy does not promise transactional rollback or new persistence guarantees.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/11\n",
+        "body_sha256": "ee019c4bbf841c4d72043d54c21a2a9000def65cbf98276cae97bf56ecf1cb76",
+        "event": "create-dispatched",
+        "title": "Fail utility commands when resource parsing is incomplete"
       }
     ],
     "remote_sha": "feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "36b78637e847463c4f58758a907b33ce5bf07ce5",
@@ -827,7 +840,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 33,
+  "revision": 34,
   "root_issue": {
     "id": 6079799745,
     "node_id": "I_kwDOVZpjbc8AAAABamJhwQ",
