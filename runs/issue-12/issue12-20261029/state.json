@@ -116,13 +116,14 @@
       "observations": [],
       "operation": "implement",
       "plan_version": 2,
+      "report": "runs/issue-12/issue12-20261029/reports/implementer-2.json",
       "requested": {
         "effort": "medium",
         "model": "gpt-6.1-sol"
       },
       "role": "implementer",
       "started": 1793268029.6826217,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/12",
       "worker_id": "/root/implementer_2_12"
     }
@@ -868,15 +869,15 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "implement",
+  "next_action": "dispatch fresh independent checker at candidate",
+  "operation": "work_unit",
   "original": [
     {
       "id": "AC1",
       "requirement": "Legacy identity: `FOS-000003`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n3. **FOS-000003 \u2014 Check shared file-helper flush/close completion.** **S; no dependencies; \u00a76.** [file:56](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/file.cpp#L56) and `write_buffer_to_file()` return true after unchecked `fclose()` (E3). Return failure for write/flush/close errors, preserving the first raw error and operation. Keep destructor/cleanup behavior nonthrowing. **Check:** `/dev/full`, nonexistent destination and successful normal write. Successful close means completion through the OS interface, not power-loss durability. This supplies a truthful primitive for later exporters.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with injectable file operations:** Open, short-write, flush and close failures each return failure; when several occur, the first error and its operation survive cleanup. Close is attempted exactly once for each opened handle.\n   - **Filesystem integration tests:** E3 fails on Linux /dev/full; a portable injected close-error case covers other platforms. Normal and empty writes succeed and read back byte-for-byte; no result claims stronger durability than tested flush/close completion.\n\n<!-- fossilize-migration-v1:FOS-000003 -->\n"
     }
   ],
-  "phase": "implementing",
+  "phase": "checking",
   "plan": {
     "cases": [
       {
@@ -1428,7 +1429,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 114,
+  "revision": 115,
   "root_issue": {
     "id": 6079804510,
     "node_id": "I_kwDOVZpjbc8AAAABamJ0Xg",
@@ -1438,7 +1439,7 @@
   },
   "run_id": "issue12-20261029",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-12",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/12",
   "verification": [],
