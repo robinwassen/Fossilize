@@ -1,0 +1,49 @@
+test_PAR01_distinct_admitted_runs_cannot_reuse_source_namespace (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_distinct_admitted_runs_cannot_reuse_source_namespace) ... ok
+test_PAR01_linked_worktrees_two_processes_publish_distinct_runs (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_linked_worktrees_two_processes_publish_distinct_runs) ... ok
+test_PAR01_missing_selector_cannot_read_or_mutate (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_missing_selector_cannot_read_or_mutate) ... ok
+test_PAR01_raced_claim_cancellation_automatically_initializes_saved_waiter (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_raced_claim_cancellation_automatically_initializes_saved_waiter) ... FAIL
+test_PAR01_root_child_claim_observer_cancel_and_completed_tombstone (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_root_child_claim_observer_cancel_and_completed_tombstone) ... ok
+test_PAR01_separate_clones_interleaving_matches_serial_reference (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_separate_clones_interleaving_matches_serial_reference) ... ok
+test_PAR01_simultaneous_hidden_descendant_claims_both_winner_orders (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_simultaneous_hidden_descendant_claims_both_winner_orders) ... 
+  test_PAR01_simultaneous_hidden_descendant_claims_both_winner_orders (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_simultaneous_hidden_descendant_claims_both_winner_orders) (winner=0) ... FAIL
+test_PAR01_simultaneous_root_child_claims_both_winner_orders (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_simultaneous_root_child_claims_both_winner_orders) ... 
+  test_PAR01_simultaneous_root_child_claims_both_winner_orders (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_simultaneous_root_child_claims_both_winner_orders) (winner=0) ... FAIL
+test_PAR01_simultaneous_same_issue_claims_one_owner_and_automatic_outcome (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_simultaneous_same_issue_claims_one_owner_and_automatic_outcome) ... ok
+
+======================================================================
+FAIL: test_PAR01_raced_claim_cancellation_automatically_initializes_saved_waiter (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_raced_claim_cancellation_automatically_initializes_saved_waiter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_state.py", line 306, in test_PAR01_raced_claim_cancellation_automatically_initializes_saved_waiter
+    self.claim_race(cancel=True)
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_state.py", line 257, in claim_race
+    self.assertFalse(worker.is_alive(),'overlapping claim worker watchdog')
+AssertionError: True is not false : overlapping claim worker watchdog
+
+======================================================================
+FAIL: test_PAR01_simultaneous_hidden_descendant_claims_both_winner_orders (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_simultaneous_hidden_descendant_claims_both_winner_orders) (winner=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_state.py", line 293, in repeated_claim_races
+    try:other.claim_race(depth=depth,winner=winner)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_state.py", line 257, in claim_race
+    self.assertFalse(worker.is_alive(),'overlapping claim worker watchdog')
+AssertionError: True is not false : overlapping claim worker watchdog
+
+======================================================================
+FAIL: test_PAR01_simultaneous_root_child_claims_both_winner_orders (test_harness_concurrent_state.ConcurrentStateTests.test_PAR01_simultaneous_root_child_claims_both_winner_orders) (winner=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_state.py", line 293, in repeated_claim_races
+    try:other.claim_race(depth=depth,winner=winner)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/source/.agents/skills/implement-change-harness/scripts/test_harness_concurrent_state.py", line 257, in claim_race
+    self.assertFalse(worker.is_alive(),'overlapping claim worker watchdog')
+AssertionError: True is not false : overlapping claim worker watchdog
+
+----------------------------------------------------------------------
+Ran 9 tests in 541.386s
+
+FAILED (failures=3)
+group did not pass
