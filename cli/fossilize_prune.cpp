@@ -1001,7 +1001,10 @@ int main(int argc, char *argv[])
 			prune_replayer.has_application_info_for_blob = false;
 			prune_replayer.blob_belongs_to_application_info = false;
 			if (!replayer.parse(prune_replayer, input_db.get(), state_json.data(), state_json.size()))
-				LOGE("Failed to parse blob (tag: %d, hash: 0x%" PRIx64 ").\n", tag, hash);
+			{
+				LOGE("Failed to parse blob (tag: %d, hash: 0x%" PRIx64 "). Output is incomplete; only previously accepted application metadata may have been retained.\n", tag, hash);
+				return EXIT_FAILURE;
+			}
 
 			if (tag == RESOURCE_APPLICATION_INFO)
 			{

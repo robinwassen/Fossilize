@@ -224,7 +224,10 @@ int main(int argc, char *argv[])
 			}
 
 			if (!replayer.parse(rehash_replayer, input_db.get(), state_json.data(), state_json.size()))
-				LOGE("Failed to parse blob (tag: %d, hash: 0x%" PRIx64 ").\n", tag, hash);
+			{
+				LOGE("Failed to parse blob (tag: %d, hash: 0x%" PRIx64 "). Output is incomplete; only a prefix of accepted resources may have been retained.\n", tag, hash);
+				return EXIT_FAILURE;
+			}
 		}
 
 		if (tag == RESOURCE_APPLICATION_INFO)
