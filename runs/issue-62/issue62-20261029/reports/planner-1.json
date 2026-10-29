@@ -1,0 +1,310 @@
+{
+  "attempt_id": "planner-1",
+  "base_sha": "2ffeaae69e4e127dcb0bfb3bf6319c6599509546",
+  "candidate_sha": null,
+  "findings": [],
+  "input_revision": 1,
+  "input_sha": "2ffeaae69e4e127dcb0bfb3bf6319c6599509546",
+  "observations": {
+    "live_issue": "Read current #62 through gh --repo robinwassen/Fossilize; title/body match preserved original. #40/#43 read as relationship/context, not new acceptance.",
+    "prior_work": "Inspected #40 source diff/history read-only; broad scheduler not reused. Parent supplied canonical idle/backups reconciliation; no current #40 active owner reported.",
+    "verification": "Planning only: documentation/source reads, CLI help/auth status and user-systemd/cgroup capability queries. No tests or backend execution performed; all execution gates remain required."
+  },
+  "operation": "plan",
+  "plan": {
+    "assumptions": [
+      "Host preflight 2026-10-29: codex-cli 0.154.0 at /home/robin/.local/bin/codex; authenticated using ChatGPT; exec exposes --json, --output-schema, --output-last-message, fresh execution and resume. This is capability discovery, not an actual model execution pass.",
+      "systemd255 user manager running, user cgroup2 scope available, systemd-run/systemctl present, Linger=yes. Root cgroup writable probe was negative; use supported user-manager transient cgroups, not direct root cgroup writes. No transient service was launched during planning.",
+      "Python/Git/gh and test fixture adapters present. Backend model/catalog/report/tool compatibility still requires G2 actual execution; do not infer it from CLI help/authentication.",
+      "Primary production coordinator has app PR-attachment tool. CLI backend may not: document and test the supported publication interface explicitly. Missing required publication tools block that action rather than being hidden by fake attachments.",
+      "Native C++ dependencies in detached planner are uninitialized. This change should remain harness-only, so full CMake/Vulkan/Steam tests are not selected. If source scope changes, replan rather than silently retaining this exclusion."
+    ],
+    "cases": [
+      {
+        "assertions": [
+          "Two independent roots/runs in isolated worktrees can hold simultaneous planner/implementer attempts and make source edits; selected state/report/plan/attempt/candidate bytes remain independent.",
+          "Concurrent same-issue and root/sub-issue claims admit exactly one owner. An accepted report with another run, candidate, base, attempt or plan tuple is rejected.",
+          "Completing, closing or wrapping up A removes only A from active discovery; B remains selectable with its approvals and queued work intact. A selector is mandatory when ambiguity exists; normal new workflow uses explicit selector even with one active run."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R62-C01-explicit-runs",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_serial_state.py"
+      },
+      {
+        "assertions": [
+          "Explicit singleton migration preserves every existing report/evidence byte, allocation fact, original acceptance, budget/deadline, attempt tuple, pending external-operation identity and source destination.",
+          "Migrate idle and live schema3 fixtures. Repeating the same migration is reconciled; invalid/orphan/unknown-schema/overlapping ownership state is rejected. A migration never steals an active role or invents an approval.",
+          "Preserved #40 branch/backups are recorded read-only as prior unmerged work; no #40 scheduler is installed or live run terminated implicitly."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R62-C02-history-migration",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_serial_state.py"
+      },
+      {
+        "assertions": [
+          "A and B start from one artifact tip. B commits first. A ordinary checkpoint reloads latest records, confirms A expected revision still matches, and commits only A changes on B latest tree without manual reconciliation.",
+          "Same selected-run revision change fails closed. Tampered historical bytes, dropped immutable evidence, policy/endpoint changes and divergent remote history still fail. All source history remains separate from orphan artifacts.",
+          "Inject publication failure/lost response before and after push; exact-tip confirmation is required and authoritative readback precedes retry. No external effect is redispatched because another run advanced the artifact tip."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R62-C03-transactions",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_serial_state.py"
+      },
+      {
+        "assertions": [
+          "One supported submit-and-wait CLI accepts argv without shell reinterpretation and returns actual exit/signal/timeout result with separate stdout/stderr references. Invalid/missing tool/cwd/identity/limit fails honestly.",
+          "Durable job records precede launch and contain run/root/role/attempt, source SHA/cleanliness identity, cwd/argv, protocol/package digest, timeout and authorized continuation. FIFO sequence comes from durable records under stable host lock.",
+          "Planner, implementer, unit-checker and final-checker heavy command fixtures from two worktrees produce nonoverlapping start/end intervals; source editing/planning can progress outside the lane. No caller supplies its own flock.",
+          "Waiting does not start command timeout or consume repair attempts. The existing absolute run deadline remains unchanged: expiry while queued produces explicit incomplete/awaiting-decision and no launch; extension requires existing explicit budget-extension authority."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R62-C04-serial-entrypoint",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_serial_executor.py"
+      },
+      {
+        "assertions": [
+          "With lane held, accept B job then kill the submitting/waiting wrapper/chat process. After A exits, B executes and its saved bound continuation launches/advances the next authorized workflow action automatically.",
+          "B waits while A advances artifact history; B continuation consumes only current selected-run revision and succeeds automatically. Same-run material input change invalidates stale queued action instead of refreshing it silently.",
+          "Saved continuation is consumed exactly once through current reducer/idempotency records; malformed or stale reports, missing backend, exhausted budget, human approval boundary and unsupported attachment interfaces produce accurate blocked/incomplete status, never success."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R62-C05-durable-continuation",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_serial_executor.py"
+      },
+      {
+        "assertions": [
+          "Real systemd cgroup fixture spawns a grandchild that starts a new session and keeps writing. Kill the wrapper, restart runner, and verify successor never starts before all owned descendant writes cease and the exact owned cgroup is empty.",
+          "Restart while waiting reconstructs FIFO. Restart during launch/execution reads durable in-flight unit identity; it reattaches to provably owned work or stops it and verifies quiescence before admitting another command.",
+          "A missing/unqueryable unit, unavailable user bus, changed unit invocation or failed cleanup blocks lane with retained interrupted/uncertain evidence. PID disappearance alone cannot release lane. Stopping the runner cannot expose still-running children to a second runner.",
+          "Timeout kills the full owned group under finite stop/kill limits; real nonzero exits, signals and interruption remain distinguishable. No automatic retry of a nonrepeatable command without positive no-send/reconciliation evidence."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R62-C06-process-custody",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_serial_executor.py; .agents/skills/implement-change-harness/scripts/run_serial_native_checks.py"
+      },
+      {
+        "assertions": [
+          "Crash after child exit before result recording retains output/status custody and resolves from owned unit/job completion facts or records interrupted/unknown; it never invents pass or blindly reruns the command.",
+          "Crash around report ingest/continuation enqueue and PR/comment dispatch/returned/readback/publication boundaries preserves stable operation IDs and observes authoritative fixture service before retry. Lost create/comment response yields one effect, uncertain absence stays incomplete.",
+          "Known failing source stops further authorized success-path gates; completed failure evidence is retained and successors requiring acceptance cannot run."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R62-C07-interruption-and-effects",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_serial_executor.py; existing artifact/delivery regression scenarios"
+      },
+      {
+        "assertions": [
+          "Move/copy the entrypoint package while jobs wait and run; both entrypoints resolve the same out-of-checkout host runtime/lock/queue. Accepted work continues through pinned immutable executor package and cannot overlap a second runner.",
+          "Runtime/job symlink or ownership violations fail closed. Source/build checkout is never default runtime storage. No operation unlinks/replaces a live lock inode.",
+          "Changed protocol/package cannot silently reinterpret accepted jobs or another run rules. Documented drain/handoff refuses active work, validates cleanup, retains pending records and activates compatible pinned work only at a safe boundary."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R62-C08-movable-protocol",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_serial_executor.py; .agents/skills/implement-change-harness/scripts/run_serial_native_checks.py"
+      },
+      {
+        "assertions": [
+          "Invoke actual installed authenticated codex exec in a disposable repository through the supported production adapter, with fresh planner/implementer/checker and separate final-checker contexts, exact role envelopes and structured output reports.",
+          "Use a tiny real source edit and assertion-bearing test: planner derives fixture requirement, implementer commits it, independently launched checker runs its own serial verification against exact committed source, and separate final checker independently validates combined candidate. Log distinct actual CLI session/worker identities; reject deliberately crossed/stale report controls.",
+          "Block lane, terminate waiting client, advance another run artifacts, release lane, and observe actual agent continuation/report reducer and next authorized role action without another chat message.",
+          "Confirm backend can read AGENTS/docs, execute required Python/Git/gh/report interfaces, submit heavy jobs using lane and return output-schema/report files. No child uses unavailable collaboration tools as its only launch mechanism.",
+          "Exercise permitted publication using real local bare Git plus explicit subprocess fake-gh service/attachment adapter in a disposable fixture, including exact PR identity/head/base/readback and lost-response recovery. Production publication remains coordinator-owned; automatic merge is absent. A production attachment capability that cannot be provided is an explicit prerequisite/decision, never a fabricated complete outcome.",
+          "Mock command/agent processes supplement but cannot replace this gate. Authentication/model/tool/report/systemd failure is required gate unavailable/incomplete and blocks acceptance."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R62-C09-actual-agent-backend",
+        "location": ".agents/skills/implement-change-harness/scripts/run_serial_native_checks.py --case agent-backend"
+      },
+      {
+        "assertions": [
+          "Run full fresh inventory, every bounded discovered group, exact result-union verifier and skill validator from exact committed candidate independently in implementer, unit-checker and final-checker contexts. Nonzero discovered/executed tests/scenarios and all original compatibility mappings are required.",
+          "Register new ordinary unittest modules through actual discovery/catch-all or bounded new groups with exact disjoint union; do not replace real backend/native prerequisite failures with skips that count as passed.",
+          "Read docs against implementation: Linux one host/common Git repository boundary, required lane use by every role, lifetime/restart/logout/reboot behavior, honest unknown cleanup, explicit selector, migration, absolute deadline and version drain/handoff are precise."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R62-C10-existing-union",
+        "location": ".agents/skills/implement-change-harness/scripts/run_harness_tests.py; .agents/skills/implement-change-harness/SKILL.md; .agents/skills/implement-change-harness/references/roles.md; .agents/skills/implement-change-harness/references/state.md"
+      }
+    ],
+    "gates": [
+      {
+        "assertions": [
+          "R62-C01 through R62-C08 deterministic assertion cases all execute and pass; each maps to real test IDs. All process fixtures bounded and disposable; failed/skipped/incomplete required cases reject readiness."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Exact committed role worktree repository root; independent writable runtime/evidence directories outside source",
+        "expected": [
+          "R62-C01 through R62-C08 deterministic assertion cases all execute and pass; each maps to real test IDs. All process fixtures bounded and disposable; failed/skipped/incomplete required cases reject readiness."
+        ],
+        "id": "R62-G1-serial-functional",
+        "kind": "both",
+        "method": "Through the supported serial entrypoint run `timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s .agents/skills/implement-change-harness/scripts -p \"test_harness_serial_*.py\" -v` (equivalent explicit IDs allowed if bounded groups are needed). Capture exact command, source SHA, IDs, status, timing and sanitized logs.",
+        "prerequisites": [
+          "Python3 standard library, Git, POSIX flock, fixture gh executable, fresh bare artifact remote; pinned supported executor. Integration tests launching independent lanes use explicit isolated fixture runtime only and cannot touch the production lane."
+        ]
+      },
+      {
+        "assertions": [
+          "R62-C06 native grandchild custody/restart, R62-C08 movable pinned package and R62-C09 actual-agent backend cases pass with actual session/unit/InvocationID/cgroup/command identities, independent report mappings and allowed publication outcome. Fixture tests alone cannot satisfy this gate."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Exact committed role worktree repository root; independent writable runtime/evidence directories outside source",
+        "expected": [
+          "R62-C06 native grandchild custody/restart, R62-C08 movable pinned package and R62-C09 actual-agent backend cases pass with actual session/unit/InvocationID/cgroup/command identities, independent report mappings and allowed publication outcome. Fixture tests alone cannot satisfy this gate."
+        ],
+        "id": "R62-G2-native-custody-backend",
+        "kind": "both",
+        "method": "Via supported serial entrypoint invoke `timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_serial_native_checks.py --output ABSOLUTE_FRESH_EVIDENCE_DIR` with explicit production systemd/Codex adapters and an isolated test queue/unit namespace; split bounded subcases if needed, never extend 600 seconds. No persistent production service installation required for this disposable validation.",
+        "prerequisites": [
+          "Linux, cgroup v2, working user systemd manager and transient units, systemd-run/systemctl, authenticated supported codex exec CLI/model, Git/gh, report schemas, isolated disposable Git/service/publication adapters. Use per-command bounded deadlines and cleanup only owned transient units. Missing mandatory interface is a decision/blocker."
+        ]
+      },
+      {
+        "assertions": [
+          "R62-C10 full discovered test ID/scenario union, all groups passed without skips/duplicates/stale outputs, original 113-method compatibility manifest retained, source/test clean candidate identity verified, quick_validate passes. Each invocation uses serial lane even where older verification guide allows up to three processes."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Exact committed role worktree repository root; independent writable runtime/evidence directories outside source",
+        "expected": [
+          "R62-C10 full discovered test ID/scenario union, all groups passed without skips/duplicates/stale outputs, original 113-method compatibility manifest retained, source/test clean candidate identity verified, quick_validate passes. Each invocation uses serial lane even where older verification guide allows up to three processes."
+        ],
+        "id": "R62-G3-complete-existing-regressions",
+        "kind": "both",
+        "method": "Create fresh ABSOLUTE_EVIDENCE_DIR outside source for this exact committed candidate/role/attempt. Through serial entrypoint run each under real `timeout --signal=TERM --kill-after=5s 600s`: `env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --inventory --output ABSOLUTE_EVIDENCE_DIR/inventory.json`; for each group regression-test_harness_artifacts, regression-test_harness_closeout, regression-test_harness_issue_artifacts, regression-test_harness_issue_closeout, regression-test_harness_migration, regression-test_harness_state, regression-test_issue_guidance, regression-test_issue_migration, regression-test_issue_source, delivery-ordinary, delivery-w09, delivery-w11-0, delivery-w11-1, delivery-w11-2, delivery-w11-3, regression-extra run `env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group GROUP --inventory ABSOLUTE_EVIDENCE_DIR/inventory.json --output ABSOLUTE_EVIDENCE_DIR/GROUP.json`; then `env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --verify-results ABSOLUTE_EVIDENCE_DIR`; and `python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness`. Preserve all discovered new group names too if runner inventory evolves. Stop further expensive groups on known failure; report remainder incomplete, repair and use fresh evidence directory.",
+        "prerequisites": [
+          "Exact committed candidate, Python3, Git, fixture gh, fresh isolated outputs, installed quick_validate and its PyYAML dependency. Native C++/Vulkan builds are outside this harness-only change unless implementation unexpectedly touches native code."
+        ]
+      },
+      {
+        "assertions": [
+          "Every case remains mapped to independently executed required evidence, no unresolved finding, source/base/plan/live requirements unchanged, unsupported claims explicit, no #40 resource graph/database/cross-host/Steam machinery or unrelated native changes introduced. Runtime/service setup and publication capabilities have accurate prerequisites; no installation inferred from issue filing."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Exact committed role worktree repository root; independent writable runtime/evidence directories outside source",
+        "expected": [
+          "Every case remains mapped to independently executed required evidence, no unresolved finding, source/base/plan/live requirements unchanged, unsupported claims explicit, no #40 resource graph/database/cross-host/Steam machinery or unrelated native changes introduced. Runtime/service setup and publication capabilities have accurate prerequisites; no installation inferred from issue filing."
+        ],
+        "id": "R62-G4-final-policy-source-review",
+        "kind": "final",
+        "method": "Fresh final checker reads live issue #62 and relevant native relationships with explicit `gh --repo robinwassen/Fossilize`, reviews full base-to-candidate diff and all original criteria, independently reruns G1/G2/G3 on unchanged candidate, reviews self-migration/provenance and readiness artifacts.",
+        "prerequisites": [
+          "Fresh detached checker worktree at exact candidate, live GitHub read access, full native/backend/test prerequisites and remaining unchanged four-hour budget."
+        ]
+      },
+      {
+        "assertions": [
+          "Ready PR links exact independently accepted source and root #62, artifact tip confirmation exact, issue/PR readback and attachment real, other runs remain active and untouched, no duplicated PR/comment or merge. Unknown interface/effect remains incomplete with precise resumption."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Exact committed role worktree repository root; independent writable runtime/evidence directories outside source",
+        "expected": [
+          "Ready PR links exact independently accepted source and root #62, artifact tip confirmation exact, issue/PR readback and attachment real, other runs remain active and untouched, no duplicated PR/comment or merge. Unknown interface/effect remains incomplete with precise resumption."
+        ],
+        "id": "R62-G5-publication",
+        "kind": "publication",
+        "method": "Coordinator uses existing durable closeout/publication journal with explicit root/run selection; reread material issue snapshot and target master, verify latest exact accepted candidate and allowed Closes targets, push source normally, authoritative PR lookup/readback and attach through available supported coordinator interface. Inject uncertain effect boundaries only on disposable fixture services; production effects use existing authorization.",
+        "prerequisites": [
+          "G1-G4 acceptance, no unresolved findings, source/live task/base unchanged, authenticated gh and actual PR attachment interface. Explicit merge approval is separate and absent by default."
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "detail": "Record read-only #40 branch at 8901911d46c477c3af8a2f7d0cda4690cd9200d8 and stable idle backup at 7793cc6a613b5fcceae65617b87252542fa5714c (active.json null), plus stable restore backup dd45f72a290e0a6e602dcc034455343d503fee4e. Current base lacks their 35-file ~6724-line scheduler changes. Preserve refs/worktrees/artifacts; do not install #40 files or terminate other work. Define explicit root/run selectors, active index/claims, versioned command/continuation records, out-of-checkout runtime and package pin.",
+        "step": "Reconcile preserved work and freeze small contracts"
+      },
+      {
+        "detail": "Adapt existing helper with a small selector/index layer rather than a resource scheduler. Keep one orphan artifact branch and repository lock, reload its latest tree inside each short mutation, validate selected-run expected revision and apply only selected-run/index delta. Another run advance is refreshable contention; selected-run change stays a conflict. Preserve immutable history validation, exact-tip publication, append-only evidence and external-operation recovery. Delivery/records-only/show/migration paths must select the same explicit run; completion removes only that active index entry. Reject overlapping issue/deliverable claims across active runs.",
+        "step": "Make run selection and transaction updates explicit"
+      },
+      {
+        "detail": "Add explicit schema3-to-new-index migration and disposable live/idle fixtures; retain historical singleton records unchanged as provenance. This active #62 run must retain original budgets and every acknowledged envelope. Prefer migration after current implementer returns and canonical role is quiescent; coordinator alone performs/publishes it. If migration during an active role is unavoidable, require the same tightly scoped verbatim one-attempt bridge policy rather than synthesizing another dispatch or extending budget. Checker sees migration evidence.",
+        "step": "Self-migration without authority loss"
+      },
+      {
+        "detail": "Keep entrypoint, runner, production adapter, tests, systemd unit template and detailed docs under harness hierarchy. Runtime identity uses one stable per-host-user authority path outside source/build; entrypoint relocation does not change it. Own stable runner/admission lock and durable ordered JSON job records with atomic writes/fsync as needed; no SQLite/resource scheduler. Persist accepted immutable command contract before acknowledging it. Entry point submits, waits, returns actual status; client death does not cancel accepted job. Command timeout begins at launch; four-hour absolute deadline remains unchanged and is checked at admission.",
+        "step": "Implement a durable FIFO entrypoint and supervisor"
+      },
+      {
+        "detail": "Use systemd user transient service cgroups for owned command descendants; supervisor has restart-enabled provided unit. Persist launch intent plus deterministic unique unit/boot/InvocationID custody, retain logs/result/in-flight marker, and verify owned cgroup quiescence after cancellation/restart before next heavy command. Reattach/reconcile live exact owned unit or stop/kill complete group and record interruption. Missing/ambiguous custody blocks lane; PID-based flock handoff is insufficient. Fail closed for unavailable systemd/cgroup support. No unrelated process cleanup.",
+        "step": "Contain jobs and reconcile before admission"
+      },
+      {
+        "detail": "Use installed authenticated noninteractive Codex CLI adapter with per-attempt fresh role context, immutable bounded prompt/schema, explicit model/effort, output report and captured session identity. Supervisor manages durable continuation requests and separate role process custody; command lane is separate so a waiting agent cannot deadlock its own heavy job. Consume exact role report once through coordinator-owned reducer; advance only the current authorized next action/role, with fresh checker contexts and separate final checker preserved. If agent dies while command waits, reconcile old context/containment and resume/reconstruct that same authorized role with completed job evidence; never let old/new live actors cross or accept a new worker tuple blindly. Keep continuation finite and action-specific, not a general agent framework. Publication/comment work uses existing durable journal/authoritative readback. Human approval boundary and unavailable attachment backend stop accurately without invented success.",
+        "step": "Add actual supported agent continuation at existing reducer boundary"
+      },
+      {
+        "detail": "Copy/hash accepted executor package into immutable runtime storage or equivalent pinned location. Same queue/lock survives moved paths. Compatible updates and incompatible drain/handoff explicit; a self-update cannot start a second runner, alter accepted job protocol or mutate another run rules. Provided restart-enabled user unit documents Restart policy, KillMode, activation/stop/restart, logout dependence on user-manager/linger, and reboot persistence: enabled unit/runtime required for automatic reboot restart; transient test unit alone does not claim it. This host Linger=yes is observed, not assumed portable.",
+        "step": "Pin versions and document operational ownership"
+      },
+      {
+        "detail": "Add assertion-bearing tests C01-C10, fail controls and runner discovery; run all required gates independently for each role. Native/backend gate uses disposable transient user units/repos/service fixtures and actual Codex CLI. Keep outputs sanitized/outside source; report unavailable prerequisites before expensive implementation proceeds. Commit small coherent source/tests/docs candidate and return mappings; coordinator publishes via established workflow.",
+        "step": "Implement tests, actual probes and complete bounded regression union"
+      }
+    ],
+    "non_goals": [
+      "No port/cherry-pick of #40 scheduler, database/resource graph/capacity machinery or cross-machine writer semantics.",
+      "No multiple hosts/independent clones, distributed leases, sandbox infrastructure, automatic merge or unattended Steam/GPU restoration.",
+      "No broad state-helper rewrite, new persistent task ledger, service installation merely because the issue was filed, or silent deadline extension."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "## Problem\n\nIndependent harness runs should be able to plan and edit concurrently, while builds and verification wait their turn and continue automatically when execution becomes available. Some idle time is acceptable; simplicity, reliable continuation and preserved independent verification matter more than maximum throughput.\n\nThis is a deliberately narrower replacement proposal for https://github.com/robinwassen/Fossilize/issues/40. The user reports that its implementation attempt has run for eight hours and intends to shut it down. Do not inherit #40's general resource scheduler or cross-machine requirements. Filing this issue neither closes #40 nor terminates its running work.\n\n## Required outcome\n\nSupport Linux, one host and one common Git repository with isolated worktrees. Reuse the existing Git-backed harness records and artifact publication. Provide a small, movable execution entry point backed by one supervised runner and one serial lane for heavy commands. Planning, reasoning and source editing may overlap; all roles' builds, tests, benchmarks and exploratory heavy executions use the serial lane.\n\nExample interface (spelling is illustrative):\n\n```sh\nharness-exec --run RUN_ID --cwd BUILD_DIR -- ctest --output-on-failure\n```\n\nThe entry point submits, waits for and returns the actual job result. A waiting agent/chat need not remain alive for an accepted job and its workflow to continue. Persisted JSON alone is not autonomous execution.\n\n## Acceptance criteria\n\n1. **Independent run records.** Replace implicit singleton selection with explicit run identity. Preserve isolated source/build/output paths, one owner for the same issue/deliverable, existing role independence, candidate/plan/attempt binding, bounded repair and publication gates. Completing one run cannot clear another. Preserve existing history and live work during migration; reconcile any partial #40 implementation before changing it.\n\n2. **Reuse state and publication.** Retain one artifact branch and a short repository transaction lock. Reload its latest tree, validate the selected run's revision, and update only that run. Another run's ordinary checkpoint is refreshable contention, not a failed run. Serialize checkpoint/publication and preserve exact publication confirmation and uncertain-write recovery. Do not merge arbitrary state JSON or replay external effects blindly.\n\n3. **Encapsulated serial execution.** Keep the entry point, runner, tests and detailed documentation within the harness hierarchy or its established successor. Callers do not implement their own flock logic. Use one stable host-wide lock and a simple ordered queue derived from durable job records; no resource graph or capacity scheduler. Record run/role/attempt, source identity, command/cwd and execution limits before launch. Waiting consumes neither command timeout nor repair allowance; explicitly reconcile the existing overall deadline policy rather than silently extending an active run.\n\n4. **Real autonomous continuation.** Ordinary contention causes waiting, followed by automatic execution and continuation through the next authorized workflow action, without prompts or another chat message. Use an actual supported agent-launch adapter, such as a validated noninteractive CLI backend, and preserve fresh role contexts and independent checks. Confirm required tools/report interfaces work through that backend. A service wrapping the state helper alone is insufficient. Supervise the runner with restart enabled; reconstruct pending work and reconcile in-flight work before new admission. Document restart, logout and reboot behavior precisely.\n\n5. **Safe process ownership.** One runner controls admission. A killed wrapper must not release the next job while old descendants can still act. Use managed process containment and cleanup, with a durable in-flight marker; establish quiescence before admitting another job after failure/restart. Preserve interrupted/failure evidence. Retry only reconciled, repeatable operations; reconcile PR/comment mutations through authoritative lookup. Unknown cleanup blocks the lane with an accurate reason, never a fabricated pass.\n\n6. **Movable, versioned interface.** Script/package paths may move without changing the shared lock/queue identity or losing waiting work. Runtime storage lives outside source/build checkouts. Never unlink a live lock. Pin the executor/protocol for accepted jobs; activate incompatible updates only through a documented drain/handoff between jobs. A harness self-update cannot start a second executor over the same resource or silently change another run's rules.\n\n## Required verification\n\nUse disposable repositories, bounded processes and assertion-bearing tests:\n\n- Two runs overlap planning/editing, retain independent state, and complete without report/approval crossover; same-issue starts admit one owner.\n- Builds/tests from every role never overlap. A queued job executes and its workflow advances automatically when the lane is freed.\n- Another run advances artifact history while a job waits; the waiting run continues without manual reconciliation.\n- Restart while waiting and while running; include a killed wrapper with a surviving grandchild. No successor starts before cleanup/reconciliation.\n- Interrupt after execution but before result recording, and around artifact/PR publication. Preserve evidence without inventing success or duplicating external effects.\n- Move the harness entry point with waiting/running jobs; stable lock/queue identity prevents overlap and stranded jobs.\n- Exercise the actual agent backend end to end, including independent verification and the permitted publication outcome. Mock process fixtures alone do not establish autonomous agent continuation.\n\nRun the relevant existing harness regressions. Report unsupported, failed and incomplete checks honestly. Research probes confirmed blocking-flock handoff and reproduced premature release after wrapper death; they do not prove the proposed runner exists.\n\n## Scope and relationships\n\nParent: https://github.com/robinwassen/Fossilize/issues/9. Narrow replacement proposal for https://github.com/robinwassen/Fossilize/issues/40; do not copy all its acceptance criteria or make it a prerequisite. Related https://github.com/robinwassen/Fossilize/issues/43 owns change-scoped verification/evidence execution: integrate at the execution boundary and avoid duplicating its manifest/test-selection logic.\n\nOut of scope: multiple hosts or independent clone writers, distributed leases, databases, hierarchical/capacity scheduling, sandbox infrastructure, automatic merge, and unattended live Steam restoration. Existing unsupported mandatory gates remain incomplete; exclusions do not authorize skipping them. No live Steam/GPU experiments, service installation or new implementation run are authorized merely by this filing.\n\n<!-- harness-followup:lean-durable-parallel-executor-v1 -->\n"
+      }
+    ],
+    "risks": [
+      "Real agent continuation is the hard requirement: supervised JSON/state helper alone or a hello-only Codex probe cannot pass. Validate minimal actual role/report/tool roundtrip early before broad edits.",
+      "Every heavy process must use serial lane; tests of the executor necessarily create isolated disposable authority namespaces inside one outer serialized gate. Do not claim global enforcement against arbitrary unrelated processes.",
+      "Fresh full regressions plus actual backend checks for implementer/unit checker/final checker must fit remaining original four-hour budget. A long test cannot silently extend command/run limits or weaken union requirements.",
+      "Filesystem atomicity, cgroup invocation identity, service restart races, result-before-record crash and external effects need failure controls. Unknown means blocked/incomplete, never requeue automatically.",
+      "Migration touches current workflow authority: only coordinator writes canonical state; preserve exact accepted attempts/budgets and old helper usable until migration contract is verified."
+    ],
+    "scope": {
+      "boundaries": [
+        "Planning/reasoning/editing may overlap. Every role build/test/benchmark/exploratory heavy execution uses supported lane interface. Cooperative harness process custody is not a hostile-command sandbox or proof against unrelated desktop processes.",
+        "Preserve all existing acceptance/role/checker/publication policies. Existing failed/unsupported mandatory checks remain blockers. No native Fossilize/Steam/GPU work is necessary for this harness-only change.",
+        "Use existing runner selection/evidence API; integrate at command execution boundary without implementing issue43 manifest/provider selection."
+      ],
+      "outcome": "Linux, one host, one common Git repository: explicit independent durable run records, short serialized artifact transactions, movable submit/wait entrypoint, one FIFO heavy-command lane with managed containment, and real supported agent continuation through the next already-authorized workflow action.",
+      "root_issue": "https://github.com/robinwassen/Fossilize/issues/62",
+      "unit": "One coherent implementation and independently checked unit; work_units stays empty."
+    },
+    "version": 1,
+    "work_units": []
+  },
+  "plan_version": 0,
+  "role": "planner",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/62",
+  "worker_id": "/root/planner_62"
+}
