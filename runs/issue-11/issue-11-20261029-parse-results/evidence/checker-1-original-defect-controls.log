@@ -1,0 +1,127 @@
+Independent exact-base false-success controls with candidate fixture/runner.
+baseline-configure:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /home/robin/dev/fossilize-issue-11-base -B /tmp/fossilize-11/checker-build-baseline -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=2.141
+baseline-build:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-11/checker-build-baseline --parallel 4 --target fossilize-list fossilize-rehash fossilize-prune
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=16.975
+
+baseline-list-version:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=version -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-list-version -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=1; expected=None; elapsed_seconds=0.016
+{"id": "baseline-list-version", "tool_status": "0", "assertion_detected_original_defect": true}
+Actual CLI status=0
+stdout='0000000000000104 : \n'
+stderr=Fossilize ERROR: JSON version mismatches.Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+
+
+baseline-list-invalid-json:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=invalid-json -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-list-invalid-json -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=1; expected=None; elapsed_seconds=0.016
+{"id": "baseline-list-invalid-json", "tool_status": "0", "assertion_detected_original_defect": true}
+Actual CLI status=0
+stdout='0000000000000104 : \n'
+stderr=Fossilize ERROR: Got parse error: 4
+Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+
+
+baseline-list-empty:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=empty -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-list-empty -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=None; elapsed_seconds=0.016
+{"id": "baseline-list-empty", "tool_status": "0", "assertion_detected_original_defect": false}
+
+baseline-list-populated:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-list -DTOOL_NAME=list -DCASE=populated -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-list-populated -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=None; elapsed_seconds=0.019
+{"id": "baseline-list-populated", "tool_status": "0", "assertion_detected_original_defect": false}
+
+baseline-rehash-version:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=version -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-rehash-version -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=1; expected=None; elapsed_seconds=0.02
+{"id": "baseline-rehash-version", "tool_status": "0", "assertion_detected_original_defect": true}
+Actual CLI status=0
+stdout=''
+stderr=Fossilize ERROR: JSON version mismatches.Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+
+
+baseline-rehash-invalid-json:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=invalid-json -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-rehash-invalid-json -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=1; expected=None; elapsed_seconds=0.017
+{"id": "baseline-rehash-invalid-json", "tool_status": "0", "assertion_detected_original_defect": true}
+Actual CLI status=0
+stdout=''
+stderr=Fossilize ERROR: Got parse error: 4
+Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+
+
+baseline-rehash-empty:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=empty -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-rehash-empty -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=None; elapsed_seconds=0.022
+{"id": "baseline-rehash-empty", "tool_status": "0", "assertion_detected_original_defect": false}
+
+baseline-rehash-populated:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-rehash -DTOOL_NAME=rehash -DCASE=populated -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-rehash-populated -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=None; elapsed_seconds=0.023
+{"id": "baseline-rehash-populated", "tool_status": "0", "assertion_detected_original_defect": false}
+
+baseline-prune-version:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=version -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-prune-version -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=1; expected=None; elapsed_seconds=0.015
+{"id": "baseline-prune-version", "tool_status": "0", "assertion_detected_original_defect": true}
+Actual CLI status=0
+stdout=''
+stderr=Fossilize ERROR: JSON version mismatches.Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+Fossilize INFO: Pruned AppInfo entries: 0 -> 0 entries
+Fossilize INFO: Pruned Application Blob Link entries: 0 -> 0 entries
+Fossilize INFO: Pruned Shader Module entries: 0 -> 0 entries
+Fossilize INFO: Pruned Descriptor Set Layout entries: 0 -> 0 entries
+Fossilize INFO: Pruned Pipeline Layout entries: 0 -> 0 entries
+Fossilize INFO: Pruned Render Pass entries: 0 -> 0 entries
+Fossilize INFO: Pruned Graphics Pipeline entries: 0 -> 0 entries
+Fossilize INFO: Pruned Compute Pipeline entries: 1 -> 0 entries
+Fossilize INFO: Pruned Raytracing Pipeline entries: 0 -> 0 entries
+
+
+baseline-prune-invalid-json:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=invalid-json -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-prune-invalid-json -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=1; expected=None; elapsed_seconds=0.017
+{"id": "baseline-prune-invalid-json", "tool_status": "0", "assertion_detected_original_defect": true}
+Actual CLI status=0
+stdout=''
+stderr=Fossilize ERROR: Got parse error: 4
+Fossilize ERROR: Failed to parse blob (tag: 7, hash: 0x104).
+Fossilize INFO: Pruned AppInfo entries: 0 -> 0 entries
+Fossilize INFO: Pruned Application Blob Link entries: 0 -> 0 entries
+Fossilize INFO: Pruned Shader Module entries: 0 -> 0 entries
+Fossilize INFO: Pruned Descriptor Set Layout entries: 0 -> 0 entries
+Fossilize INFO: Pruned Pipeline Layout entries: 0 -> 0 entries
+Fossilize INFO: Pruned Render Pass entries: 0 -> 0 entries
+Fossilize INFO: Pruned Graphics Pipeline entries: 0 -> 0 entries
+Fossilize INFO: Pruned Compute Pipeline entries: 1 -> 0 entries
+Fossilize INFO: Pruned Raytracing Pipeline entries: 0 -> 0 entries
+
+
+baseline-prune-empty:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=empty -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-prune-empty -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=None; elapsed_seconds=0.019
+{"id": "baseline-prune-empty", "tool_status": "0", "assertion_detected_original_defect": false}
+
+baseline-prune-populated:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-11/checker-build-debug-off/test/utility-parse-test -DTOOL=/tmp/fossilize-11/checker-build-baseline/cli/fossilize-prune -DTOOL_NAME=prune -DCASE=populated -DWORK=/tmp/fossilize-11/checker-evidence-1/baseline-prune-populated -P /tmp/fossilize-11/checker-1/test/utility_parse.cmake
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=None; elapsed_seconds=0.02
+{"id": "baseline-prune-populated", "tool_status": "0", "assertion_detected_original_defect": false}
+All six negative controls fail specifically at expected parse-failure exit 1, got 0; all six valid/empty controls pass. Both list failures emit original misleading ordinary empty dependency row. No build/setup/timeout failure counted as defect detection.

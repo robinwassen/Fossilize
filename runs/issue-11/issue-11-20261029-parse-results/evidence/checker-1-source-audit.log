@@ -1,0 +1,51 @@
+Final freshness probe after required matrix: exact head, clean source, matching initialized recursive submodules, diff whitespace, live root body/title/state match immutable original.
+probe-head:
+command=timeout --signal=TERM --kill-after=5s 600s git rev-parse HEAD
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.005
+
+probe-status:
+command=timeout --signal=TERM --kill-after=5s 600s git status --porcelain
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.044
+
+probe-submodules:
+command=timeout --signal=TERM --kill-after=5s 600s git submodule status --recursive
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.177
+
+probe-diff-check:
+command=timeout --signal=TERM --kill-after=5s 600s git diff --check 36b78637e847463c4f58758a907b33ce5bf07ce5 feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.008
+
+probe-live-issue:
+command=timeout --signal=TERM --kill-after=5s 600s gh issue view 11 --repo robinwassen/Fossilize --json number,title,body,state,url
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.396
+
+probe-compiler:
+command=timeout --signal=TERM --kill-after=5s 600s g++ --version
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.005
+
+probe-cmake:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/cmake/data/bin/cmake --version
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.007
+
+probe-ninja:
+command=timeout --signal=TERM --kill-after=5s 600s /tmp/fossilize-10/tools/bin/ninja --version
+cwd=/tmp/fossilize-11/checker-1
+exit_code=0; expected=0; elapsed_seconds=0.004
+head=feaa495218d16fa3dbe3e1b6f814f1abcf0bf9dd
+source_status=''
+submodules= a0fba56c34a6700f1724bf9b751da5b488a3775c cli/SPIRV-Cross (vulkan-sdk-1.4.341.0)
+ 496543121ce6419f23d6fa5d7194ba66c36212d2 cli/SPIRV-Headers (v2026.08.0-2-g4965431)
+ d7ca4efbbe36709fc49e1a102cdbe1d970d5eb7e cli/SPIRV-Tools (v2022.4-1329-gd7ca4efb)
+ c885633e126a3a949ec0497273ec13e2c03e862c cli/dirent (1.23-38-gc885633)
+ 8a2387afabdf1336f132e0a8bf38701df9838130 cli/volk (vulkan-sdk-1.4.357.0-3-g8a2387a)
+ 8f4c021fa2f1e001d2376095928fc0532adf2ae6 rapidjson (v1.1.0-549-g8f4c021f)
+ ba96d0b1161f540656efdaed035b3c062b60e006 rapidjson/thirdparty/gtest (release-1.8.0-1003-gba96d0b1)
+
+live_issue_body_sha256=265dcbda853f3d033a7578a1800c3cc43641aad44f49f0eb060b58502ca67702
