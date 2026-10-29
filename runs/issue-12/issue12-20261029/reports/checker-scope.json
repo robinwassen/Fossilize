@@ -1,0 +1,89 @@
+{
+  "attempt_id": "checker-scope",
+  "base_sha": "a97dfec075a52e69a6ad517071c08b2b292983e5",
+  "candidate_sha": "5480319b0dca1b4d33518370d00da1fef46ed1fc",
+  "criterion_review": [
+    {
+      "criterion": "AC1",
+      "observation": "Live issue #12 body matches immutable original and plan.original exactly; live #12 and shared parent #8 read with explicit --repo robinwassen/Fossilize. This scope-design rejection does not accept source correctness or any behavioral gate.",
+      "result": "incomplete"
+    }
+  ],
+  "discovered": [],
+  "evidence": [],
+  "executed": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/12",
+      "evidence": "Plan v1 gate windows-native-pending-decision remains kind=both and requires native Windows Debug/Release configure/build/CTest, with its prerequisite still stating user scope decision remains pending. Plan scope[2], implementation instructions and independent-final-review retain that pending mandatory platform gate. Published evidence runs/issue-12/issue12-20261029/evidence/user-platform-scope-decision.json records the direct user authorization: Use Linux verification and portable injected tests; explicitly leave native Windows unverified in the PR. The user decision supersedes this pending verification design, but plan v1 has not incorporated it. Native Windows evidence cannot truthfully be marked passed or silently omitted under the current mandatory-gate plan.",
+      "id": "ISSUE12-SCOPE-DESIGN-001",
+      "resolution_required": "Fresh planner must produce plan v2 retaining AC1 byte-for-byte and all Linux, portable injected, compatibility, baseline and complete harness requirements, explicitly apply the authorized verification scope, and require the PR to state native Windows not run/unverified. Reconcile dependent scope/gates/case mappings/final review wording; do not substitute portable Linux execution for native Windows evidence.",
+      "route": "planner",
+      "status": "open"
+    }
+  ],
+  "input_revision": 56,
+  "input_sha": "5480319b0dca1b4d33518370d00da1fef46ed1fc",
+  "inspection": [
+    "Read immutable original before implementer claims; required AGENTS/project/verification/issue-workflow guidance and harness role/state contracts read.",
+    "Detached HEAD is exact candidate 5480319b0dca1b4d33518370d00da1fef46ed1fc with clean source status.",
+    "Read plan v1 mandatory gates and durable user-platform-scope-decision.json from harness-artifacts.",
+    "Reviewed diff inventory only; full source/assertion review is deferred to renewed independent verification after design reconciliation."
+  ],
+  "limitations": [
+    "No CMake/build/CTest, baseline fixture, harness suite or skill validator executions in this checker attempt. No historical results treated as current acceptance.",
+    "Native Windows remains not run/unverified by explicit user instruction; this is not a native-platform pass.",
+    "Report is a scope-design rejection only; code acceptance requires fresh exact-candidate planned executions after reconciliation."
+  ],
+  "next_action": "Dispatch a fresh planner to reconcile plan v1 with the durable direct user platform-scope decision, record plan v2 without changing immutable AC1, then renew exact-candidate implementer evidence and fresh independent work-unit/final verification under the reconciled plan.",
+  "not_run": [
+    {
+      "gate": "linux-debug-exceptions-off",
+      "reason": "Scope-design blocker identified before behavioral acceptance; no verification processes executed in this checker attempt.",
+      "result": "not_run"
+    },
+    {
+      "gate": "linux-debug-exceptions-on",
+      "reason": "Scope-design blocker identified before behavioral acceptance; no verification processes executed in this checker attempt.",
+      "result": "not_run"
+    },
+    {
+      "gate": "linux-release-exceptions-off",
+      "reason": "Scope-design blocker identified before behavioral acceptance; no verification processes executed in this checker attempt.",
+      "result": "not_run"
+    },
+    {
+      "gate": "linux-release-exceptions-on",
+      "reason": "Scope-design blocker identified before behavioral acceptance; no verification processes executed in this checker attempt.",
+      "result": "not_run"
+    },
+    {
+      "gate": "baseline-compatibility-controls",
+      "reason": "Scope-design blocker identified before behavioral acceptance; no verification processes executed in this checker attempt.",
+      "result": "not_run"
+    },
+    {
+      "gate": "windows-native-pending-decision",
+      "reason": "Scope-design blocker identified before behavioral acceptance; no verification processes executed in this checker attempt.",
+      "result": "not_run"
+    },
+    {
+      "gate": "full-harness-python",
+      "reason": "Scope-design blocker identified before behavioral acceptance; no verification processes executed in this checker attempt.",
+      "result": "not_run"
+    },
+    {
+      "gate": "independent-final-review",
+      "reason": "Scope-design blocker identified before behavioral acceptance; no verification processes executed in this checker attempt.",
+      "result": "not_run"
+    }
+  ],
+  "operation": "work_unit",
+  "plan_version": 1,
+  "role": "checker",
+  "skipped": [],
+  "test_mapping": {},
+  "verdict": "changes_required",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/12",
+  "worker_id": "/root/checker_scope_12"
+}
