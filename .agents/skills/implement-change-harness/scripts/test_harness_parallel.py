@@ -20,7 +20,6 @@ WRAPPER = Path(vl.__file__).resolve()
 
 
 class ParallelTests(LiveFixture, unittest.TestCase):
-    prepare = closeout.IssueCloseoutTests.prepare
     actual_pr_evidence = closeout.IssueCloseoutTests.actual_pr_evidence
 
     def setUp(self):
@@ -50,6 +49,17 @@ class ParallelTests(LiveFixture, unittest.TestCase):
 
     def command(self, name='probe', **extra):
         return dict(dict(command='fixture assertion ' + name, cwd=str(self.source), timeout=600), **extra)
+
+    def prepare(self):
+        self.planned(); candidate = self.implemented(); self.accepted()
+        repository = self.state['repository']
+        target = {'issue':self.root_issue['html_url'], 'evidence':'Independent fixture checker passed at the selected candidate.',
+                  'reference':'https://github.com/'+repository['target_repository']+'/compare/'+repository['target_branch']+'...'+repository['branch']}
+        self.act('closeout-intent',{'targets':[target]})
+        body = target['evidence']+' '+target['reference']+' '+self.state['closeout']['binding']+' '+self.state['closeout']['marker']
+        self.gh.api(f"issues/{self.root_issue['number']}/comments",'POST',{'body':body})
+        self.act('closeout-record',{'candidate_sha':candidate})
+        return candidate,target
 
     def complete_selected_run(self):
         candidate, target = self.prepare()
