@@ -134,6 +134,7 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/62",
+      "attempt_id": "checker-2",
       "evidence": {
         "cause": "git status records the untracked path but git diff HEAD omits its contents, so both dirty_digest computations are unchanged. The same gap exists for contents inside untracked directories.",
         "control": "Owned disposable Git/service fixture, isolated inner ProcessFixture lane, itself run through the real shared outer systemd lane; no production record or external service mutation.",
@@ -144,9 +145,15 @@
       "id": "R62-F01-untracked-source-drift",
       "location": ".agents/skills/implement-change-harness/scripts/harness_serial.py:231-232,255-257",
       "priority": "P2",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/62",
+        "evidence": "runs/issue-62/issue62-20261029/evidence/checker-2-f01-resolution.json",
+        "finding_id": "R62-F01-untracked-source-drift",
+        "observation": "Independent G1 ran25methods, all passed. The committed C10 control accepted unchanged untracked new_source.py VALUE=1, executed it through Runtime with actual child process and required stdout1. After VALUE=2 the original queued job failed validate and run(once=True) recordedfailed; its exact unit was absent from ProcessFixture.units, whose start() inserts every launched unit. Tracked data.bin with binary Git attribute was changed variant1 tovariant2 under queuedbinding, rejected and absent from launcher units. Symlink target change altered fingerprint; ignored-output did not."
+      },
       "requested_change": "Bind all accepted relevant untracked file contents/path identities, or explicitly reject such untracked work before acceptance; add a regression changing untracked source contents while queued and require no launch under the old identity.",
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Include untracked file contents in queued source identity"
     }
   ],
@@ -6246,7 +6253,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 164,
+  "revision": 165,
   "root_issue": {
     "id": 6107403434,
     "node_id": "I_kwDOVZpjbc8AAAABbAeUqg",
