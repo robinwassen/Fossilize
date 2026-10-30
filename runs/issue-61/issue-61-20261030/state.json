@@ -140,6 +140,10 @@
       {
         "started": 1793395970.3760328,
         "wait_seconds": 4.824315286008641
+      },
+      {
+        "started": 1793395979.9905584,
+        "wait_seconds": 18.917934547993354
       }
     ],
     "command_timeout": 600,
@@ -529,9 +533,26 @@
         "intent_id": "imp61-G61-regression-extra",
         "started": 1793395976.1278281,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--verify-results",
+          "/tmp/fossilize-61/output/implementer-1"
+        ],
+        "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --verify-results /tmp/fossilize-61/output/implementer-1",
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "eligible_deadline": 1793409985.3644817,
+        "intent_id": "imp61-G61-results",
+        "started": 1793396000.1800182,
+        "timeout": 600
       }
     ],
-    "deadline": 1793409966.446547,
+    "deadline": 1793409985.3644817,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -1418,7 +1439,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 25,
+  "revision": 26,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
