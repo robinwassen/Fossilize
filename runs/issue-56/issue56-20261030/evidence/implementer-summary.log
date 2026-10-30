@@ -1,0 +1,45 @@
+Issue: https://github.com/robinwassen/Fossilize/issues/56
+Candidate: da2b76eb9c80223985f4b993fb18bca82c121503
+Base: 451aabbafeb4b590aa936b7d5e3e38c306626955
+Plan: 1; implementer-1; GNU C++13.3.0; CMake4.4; Linux CPU only
+Source clean: True
+linux-debug-exceptions-off: 105 discovered; 105 executed; all passed; CXX_FLAGS =  -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread
+linux-release-exceptions-off: 105 discovered; 105 executed; all passed; CXX_FLAGS =  -fvisibility=hidden -O3 -DNDEBUG -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread
+linux-debug-exceptions-on: 105 discovered; 105 executed; all passed; CXX_FLAGS =  -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -pthread
+linux-release-exceptions-on: 105 discovered; 105 executed; all passed; CXX_FLAGS =  -fvisibility=hidden -O3 -DNDEBUG -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -pthread
+Debug/OFF decisive repeat: 14 cases, 42 executions, all passed.
+fork-child-initial-first-sigmask: baseline exit8 expected; injections=1; FAIL no-controller-fallthrough-or-worker-fork; FAIL exact-worker-exit-status; all cleanup assertions passed.
+fork-child-initial-first-stdout-dup2: baseline exit8 expected; injections=1; FAIL no-controller-fallthrough-or-worker-fork; FAIL exact-worker-exit-status; all cleanup assertions passed.
+fork-child-initial-first-stdin-dup2: baseline exit8 expected; injections=1; FAIL no-controller-fallthrough-or-worker-fork; FAIL exact-worker-exit-status; all cleanup assertions passed.
+Baseline healthy + healthy-recovery: 2/2 passed.
+Production audit: three child fatal Boolean returns now _exit(EXIT_FAILURE); existing prctl/race _exit, best-effort stderr and normal slave exit retained. Parent aggregate EXIT_SUCCESS unchanged/asserted.
+14 planned case IDs: fork-child-initial-first-sigmask, fork-child-initial-last-sigmask, fork-child-recovery-sigmask, fork-child-initial-first-stdout-dup2, fork-child-initial-last-stdout-dup2, fork-child-recovery-stdout-dup2, fork-child-initial-first-stdin-dup2, fork-child-initial-last-stdin-dup2, fork-child-recovery-stdin-dup2, fork-child-healthy, fork-child-healthy-recovery, fork-child-parent-death, fork-child-prctl-failure, fork-child-parent-race
+Command receipts (execution status; measured lock wait seconds):
+impl-dev-configure: 0; 0.0
+impl-dev-build: 0; 0.0
+impl-dev-fork-tests: 0; 0.0
+impl-debug-exceptions-off-configure: 0; 0.0
+impl-debug-exceptions-off-build: 0; 0.0
+impl-debug-exceptions-off-discover: 0; 413.7459914290812
+impl-debug-exceptions-off-tests: 0; 52.02450441697147
+impl-fork-repeat: 0; 0.0
+impl-release-exceptions-off-configure: 0; 0.0
+impl-release-exceptions-off-build: 0; 0.0
+impl-release-exceptions-off-discover: 0; 33.94445018307306
+impl-release-exceptions-off-tests: 0; 0.0
+impl-debug-exceptions-on-configure: 0; 0.0
+impl-debug-exceptions-on-build: 0; 88.37507572001778
+impl-debug-exceptions-on-discover: 0; 0.29650019598193467
+impl-debug-exceptions-on-tests: 0; 0.0
+impl-release-exceptions-on-configure: 0; 0.0
+impl-release-exceptions-on-build: 0; 3.7670182139845565
+impl-release-exceptions-on-discover: 0; 497.37192705005873
+impl-release-exceptions-on-tests: 0; 17.514508442021906
+impl-baseline-configure-cwd2: 0; 328.84616851294413
+impl-baseline-build-cwd2: 0; 2.19010479003191
+impl-baseline-sigmask-cwd2: 8; 163.87967686599586
+impl-baseline-stdout-dup2-cwd2: 8; 2.2557356520555913
+impl-baseline-stdin-dup2-cwd2: 8; 0.0
+impl-baseline-controls-cwd2: 0; 0.0
+Six old baseline intent IDs were not dispatched; matching-cwd replacements used fresh cwd2 IDs. No verification child interrupted during orchestration correction.
+Limits: Windows excluded by user; no real GPU/Steam/driver-cache claim; controlled recovery is not real driver crash handling; Apple/Android robust replay unsupported.
