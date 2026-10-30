@@ -392,6 +392,8 @@ class Delivery:
     def run(self):
         try:
             with repository_lock(self.h.repo, blocking=bool(self.h.selection)):
+                if self.h.selection:
+                    self.deadline = time.monotonic() + 600
                 self.tip = self.h.store.tip()
                 self.records = self.h.store.records(self.tip)
                 active = json.loads(self.records.get('active.json', b'null'))

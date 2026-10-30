@@ -429,3 +429,12 @@ settlement. Migration accepts settle_wait or a configured Journal. Workers never
 supply their own canonical writer; the live coordinator owns this invocation. Approved wrap-up accepts the same explicit selection and never
 requires unrelated active runs to finish. Its existing approval/publication checks
 still apply.
+
+Ordinary non-mutating selected initialize-resume and publish-artifacts results also
+return artifact_wait on contention. Settle it through the same coordinator action
+before the next run budget gate. Initial creation starts its original budget only
+after artifact-lock acquisition. Completed-run confirmation has no forward run
+budget gate. Selected approved delivery starts its separate600-second progression
+timer after acquisition; its execution bounds and approval checks remain intact.
+Version2 active index keys equal each pointer's state path; malformed keys fail
+without normalizing or mutating the shared tree.

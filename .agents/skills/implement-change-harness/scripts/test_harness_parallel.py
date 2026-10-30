@@ -1,5 +1,6 @@
 """P01-P05: ordinary live parallelism, bounded processes and historical readers."""
 import copy
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
@@ -272,6 +273,21 @@ class ParallelTests(LiveFixture, unittest.TestCase):
                 with self.assertRaisesRegex(Invalid,'already accounted'):
                     self.act('artifact-wait',receipt_artifact)
             self.assertFalse(self.state['limits']['exhausted'])
+        # Non-mutating publication/resume returns must surface measured lock
+        # contention too. Mock only this short lock boundary; actual process
+        # contention is already established above.
+        for action,payload in (('publish-artifacts',{}),('initialize',self.payload)):
+            canonical = copy.deepcopy(self.state)
+            @contextmanager
+            def contended(repo, blocking=False):
+                self.now += 1.0
+                yield 1.0
+            self.now = time.time()
+            with patch('harness_state.repository_lock',contended):
+                observed = self.harness.apply(action,payload,self.tip,self.state['revision'])
+            self.assertEqual(observed['state'],canonical)
+            self.assertIsNotNone(observed['artifact_wait'])
+            self.act('artifact-wait',observed['artifact_wait'])
         # Give this independent journal subsection its own original fixture
         # budget, measured immediately after initialization rather than consumed
         # by the preceding deadline-crossing experiments.
@@ -367,9 +383,34 @@ class ParallelTests(LiveFixture, unittest.TestCase):
         self.assertIn(retained_tip,git(self.source,'rev-list',self.harness.store.tip()).decode().splitlines())
         self.assertEqual(git(self.source,'ls-tree','-r',retained_tip).decode(),retained_blobs)
         self.harness.remote_history(self.harness.store.tip(),final,self.harness.artifact_policy(final),preserve=False)
-        for active in (pointer, {'version':2,'runs':{'historical-key':pointer}}):
+        for active in (pointer, {'version':2,'runs':{pointer['state']:pointer}}):
             live = dict(records); live[path] = encoded(original_live_state); live['active.json'] = encoded(active)
             self.harness.validate_run_records(live,active)
+        with self.assertRaisesRegex(Invalid,'index key'):
+            self.harness.validate_run_records(live,{'version':2,'runs':{'wrong-key':pointer}})
+        # Selected delivery's finite progression clock starts after blocking lock
+        # acquisition. Advance mocked time beyond 600s while acquiring, then
+        # still enforce exactly 600s of actual progression. No external effect.
+        import delivery_wrapup as delivery_module
+        clock = [100.0]
+        class CheckedTimer(BaseException):
+            pass
+        @contextmanager
+        def delayed_delivery_lock(repo,blocking=False):
+            self.assertTrue(blocking)
+            clock[0] += 701
+            yield 701
+        with patch('delivery_wrapup.time.monotonic',side_effect=lambda:clock[0]), patch('delivery_wrapup.repository_lock',delayed_delivery_lock):
+            delivery = delivery_module.Delivery(self.harness,{'root_issue':self.root_issue['html_url'],'run_id':self.state['run_id']})
+            def checked_timer():
+                self.assertEqual(delivery.deadline,clock[0]+600)
+                delivery.seam('timer-control','before')
+                clock[0] += 601
+                with self.assertRaisesRegex(Invalid,'deadline reached'):
+                    delivery.seam('timer-control','after')
+                raise CheckedTimer()
+            with patch.object(delivery,'accepted',side_effect=checked_timer), self.assertRaises(CheckedTimer):
+                delivery.run()
         import run_harness_tests as runner
         discovered, spec = runner.specification()
         for case in ('P01','P02','P03','P04','P05'):

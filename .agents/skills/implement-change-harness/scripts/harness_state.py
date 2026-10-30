@@ -70,6 +70,7 @@ def active_pointers(active):
     require(isinstance(active, dict), "invalid active index")
     if active.get("version") == 2:
         require(set(active) == {"version", "runs"} and isinstance(active["runs"], dict), "invalid active index")
+        require(all(isinstance(pointer, dict) and key == pointer.get("state") for key,pointer in active["runs"].items()), "active index key differs from state path")
         pointers = list(active["runs"].values())
     else:
         pointers = [active]
@@ -442,6 +443,7 @@ class Harness:
         self.store = Store(repo, fail)
         self.clock = clock
         self.validated_artifact_history = set()
+        self.pending_artifact_wait = None
 
     def artifact_policy(self, records):
         return json.loads(records.get("allocations.json", b"{}" )).get(POLICY)
@@ -760,6 +762,7 @@ class Harness:
         if not self.selection and state is None:
             terminal = bool(records) and not active_pointers(json.loads(records.get('active.json', b'null')))
             terminal = terminal and not any(json.loads(v).get('abandonment') for p,v in records.items() if p.endswith('/state.json'))
+        extra.setdefault("artifact_wait", self.pending_artifact_wait)
         return dict(tip=actual_tip, state=state, artifact_publication=publication,
                     workflow_complete=terminal and publication["status"] == "confirmed", **extra)
 
@@ -824,6 +827,7 @@ class Harness:
                 raise Invalid(str(error)) from error
         lock_started = self.clock()
         with repository_lock(self.repo, blocking=bool(self.selection)) as lock_wait:
+            self.pending_artifact_wait = self.wait_receipt(lock_started, lock_wait) if self.selection else None
             tip = self.store.tip()
             records = self.store.records(tip)
             self.check_predecessor(expected_tip, tip, records)
@@ -931,6 +935,7 @@ class Harness:
                 require('original' not in payload or payload['original'] == derived, 'new run original must be exact issue body snapshot')
                 payload['original'] = derived
                 state = initial_state(self.repo, payload, self.clock())
+                self.pending_artifact_wait = None  # Initial budget starts after acquisition.
                 if self.selection:
                     state["paths"] = copy.deepcopy(payload.get("paths", {}))
                     self.validate_paths(state, records)
@@ -951,6 +956,7 @@ class Harness:
                 if self.selection and lock_wait and not state['limits']['exhausted'] and lock_started < state['limits']['deadline']:
                     state['limits']['deadline'] += lock_wait
                     state['limits'].setdefault('artifact_waits', []).append({'started':lock_started,'wait_seconds':lock_wait})
+                    self.pending_artifact_wait = None
                 state["revision"] += 1
                 self.reduce(state, action, payload, journal, records, wait_settled=action in ('command-wait','artifact-wait'))
             validate_state(state, self.repo)
@@ -1593,8 +1599,11 @@ def main():
                         "head": args.approved_head, "accepted_revision": args.accepted_revision}
             result = Harness(args.repo, root_issue=args.root_issue, run_id=args.run_id).wrap_up(approval)
         elif args.action == "detached-worktree":
-            with repository_lock(args.repo):
-                result = {"sha": detached_worktree(args.repo, args.path, args.sha)}
+            harness = Harness(args.repo, root_issue=args.root_issue, run_id=args.run_id)
+            started = harness.clock()
+            with repository_lock(args.repo, blocking=bool(harness.selection)) as waited:
+                result = {"sha": detached_worktree(args.repo, args.path, args.sha),
+                          "artifact_wait": harness.wait_receipt(started, waited) if harness.selection else None}
         else:
             import sys
             payload = json.load(sys.stdin) if args.payload == "-" else json.loads(Path(args.payload).read_text())
