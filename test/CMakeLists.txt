@@ -183,7 +183,7 @@ if(FOSSILIZE_CLI AND (WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Linux"))
     target_link_libraries(replay-controller-test PRIVATE fossilize cli-utils)
     target_compile_options(replay-controller-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
     set_target_properties(replay-controller-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
-    foreach(case clean zero lost lost-progress mixed-success-first mixed-loss-first recover
+    foreach(case clean zero empty-archive lost lost-progress mixed-success-first mixed-loss-first recover
                  skip-graphics skip-compute skip-raytracing skip-graphics-final skip-compute-final
                  skip-raytracing-final skip-graphics-progress skip-graphics-final-progress
                  partial loss-after-retry held-sibling signal status-error outcome-state)

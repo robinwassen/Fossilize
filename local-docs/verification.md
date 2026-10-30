@@ -421,11 +421,14 @@ a skipped culprit remains unsuccessful even when its tail completes. Cancelled
 required work is unresolved and unsuccessful; existing child termination
 mechanisms remain in use.
 
-`replay-controller-{clean,zero,lost,lost-progress,mixed-success-first,mixed-loss-first,
+`replay-controller-{clean,zero,empty-archive,lost,lost-progress,mixed-success-first,mixed-loss-first,
 recover,skip-graphics,skip-compute,skip-raytracing,skip-graphics-final,
 skip-compute-final,skip-raytracing-final,skip-graphics-progress,
 skip-graphics-final-progress,partial,loss-after-retry,held-sibling,
 signal,status-error,outcome-state}` use explicit checks active under `NDEBUG`.
+`zero` preserves empty selected ranges on the populated known-hash fixture;
+`empty-archive` additionally reads back zero resources for every tag in a valid
+empty FOZ and runs that archive through the production master.
 The dedicated test executable includes the production controller with adapters
 compiled only in its translation unit. Actual fork/CreateProcess, pipes,
 epoll/native waits, shutdown parsing, restarts and cleanup remain in use.

@@ -249,6 +249,21 @@ static bool fixture(const char *path)
 	recorder.tear_down_recording_thread();
 	return true;
 }
+static bool empty_fixture(const char *path)
+{
+	{
+		std::unique_ptr<DatabaseInterface> db(create_database(path, DatabaseMode::OverWrite));
+		if (!db || !db->prepare()) return false;
+	}
+	std::unique_ptr<DatabaseInterface> db(create_database(path, DatabaseMode::ReadOnly));
+	if (!db || !db->prepare()) return false;
+	for (unsigned tag = 0; tag < RESOURCE_COUNT; tag++)
+	{
+		size_t count = 1;
+		if (!db->get_hash_list_for_resource_tag(ResourceTag(tag), &count, nullptr) || count != 0) return false;
+	}
+	return true;
+}
 static bool malformed_fixture(const char *path)
 {
 	{
@@ -272,14 +287,15 @@ static std::string read_marker(unsigned worker, unsigned attempt)
 }
 static void validate(int result, unsigned workers, bool zero)
 {
-	bool success = scenario == "clean" || scenario == "zero" || scenario == "recover";
+	bool empty_archive = scenario == "empty-archive";
+	bool success = scenario == "clean" || scenario == "zero" || empty_archive || scenario == "recover";
 	checks.require(result == (success ? 0 : 1), "controller/direct-return-status");
 	checks.require(observed == workers, "controller/retained-workers");
 	for (unsigned i = 0; i < retained.size(); i++)
 	{
 		const auto &r = retained[i];
-		unsigned begin = zero ? 2 : 2 + i * 4 / workers;
-		unsigned end = zero ? 2 : 2 + (i + 1) * 4 / workers;
+		unsigned begin = empty_archive ? 0 : zero ? 2 : 2 + i * 4 / workers;
+		unsigned end = empty_archive ? 0 : zero ? 2 : 2 + (i + 1) * 4 / workers;
 		for (unsigned kind = 0; kind < 3; kind++)
 		{
 			checks.require(r.assigned[kind].begin == begin && r.assigned[kind].end == end,
@@ -416,6 +432,7 @@ int main(int argc, char **argv)
 		return 0;
 #endif
 	}
+	if (argc == 3 && std::string(argv[1]) == "--empty") return empty_fixture(argv[2]) ? 0 : 1;
 	if (argc == 3 && std::string(argv[1]) == "--malformed") return malformed_fixture(argv[2]) ? 0 : 1;
 	if (argc == 3 && std::string(argv[1]) == "--fixture") return fixture(argv[2]) ? 0 : 1;
 	if (argc < 4 || std::string(argv[1]) != "--controller") return 2;
