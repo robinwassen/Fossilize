@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/issue-13/issue13-20261030/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793394767.879799,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/13",
       "worker_id": "/root/planner13"
     }
@@ -69,11 +70,15 @@
       {
         "started": 1793394899.1223736,
         "wait_seconds": 144.45961774501484
+      },
+      {
+        "started": 1793395155.106545,
+        "wait_seconds": 141.8426739369752
       }
     ],
     "command_timeout": 600,
     "commands": [],
-    "deadline": 1793409369.901134,
+    "deadline": 1793409511.743808,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {},
@@ -81,8 +86,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -94,9 +99,865 @@
     "output_directory": "/tmp/fossilize-13/output",
     "source_worktree": "/home/robin/dev/fossilize-issue-13"
   },
-  "phase": "planning",
-  "plan": null,
-  "provenance": [],
+  "phase": "implementing",
+  "plan": {
+    "assumptions_and_boundaries": [
+      "Planner input/base/source is 451aabbafeb4b590aa936b7d5e3e38c306626955; canonical coordinator is sole state writer. Original AC1 is copied directly from the immutable planner input, not retyped or narrowed.",
+      "Live gh reads on 2026-10-30 confirmed issue 13 open, node I_kwDOVZpjbc8AAAABamKJEQ, shared parent issue 8 open; no declared prerequisite for issue 13. Live issue snapshots must be rechecked at checker/publication boundaries.",
+      "Inspection found both shutdown methods return false for clean and unrecoverable exits and both masters return EXIT_SUCCESS after their loops. Windows additionally initializes code=0 before a failing GetExitCodeProcess, which must not imply clean completion.",
+      "Current crash messages advance current_*_index past the active culprit; nonzero hashes identify skipped required work. Zero-hash retries do not by themselves prove a skipped item. Failed-attempt history alone must not poison a later verified full completion.",
+      "The richer support/persistence/accounting tasks remain open. This issue only promises authoritative failure for unresolved controller assignments and preserves honest unknown state.",
+      "Immediate failure and mixed-worker ordering are tested together: barriers allow both children to reach actual terminal states, independent completion markers prove the clean worker succeeded, then a test-only wait-selection adapter presents success-first or loss-first to the real controller. A separate held-sibling case verifies immediate failure cleanup of a still-live sibling. No requirement to continue useful work after unrecoverable loss is invented."
+    ],
+    "cases": [
+      {
+        "assertions": [
+          "Clean populated assignments across graphics/compute/ray-tracing and zero-work assignments return zero; no unresolved/skipped flag is retained.",
+          "Actual fossilize-replay --null-device normal, --master-process and --progress --quiet-slave successful invocations return zero on a dependency-complete known-hash fixture. Requested ranges and worker counts remain compatible."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixture": "Known-hash valid FOZ with shader/layout dependencies; at least two required items per pipeline kind for partition tests; empty FOZ control.",
+        "id": "R13-CLEAN",
+        "location": "test/replay_controller_test.cpp; test/replay_controller_cli.cmake",
+        "notes": "",
+        "runner_registration": "replay-controller-clean and replay-controller-cli-clean (or exact documented equivalent IDs)."
+      },
+      {
+        "assertions": [
+          "Worker exits nonzero or is killed before any progress marker; real controller subprocess returns EXIT_FAILURE independently of stderr and shared progress.",
+          "Production retained state contains the immutable assigned half-open ranges, worker index, unknown exact resource identity and explicitly unknown/unresolved remainder. It never reports zero work or an invented exact failed count.",
+          "No restart is attempted when no safe progress identity exists; cleanup is bounded."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixture": "Test-only worker launch adapter exits before progress; nonzero starts and multiple pipeline kinds prevent vacuous default-range assertions.",
+        "id": "R13-LOST",
+        "location": "test/replay_controller_test.cpp",
+        "notes": "",
+        "runner_registration": "replay-controller-lost-before-progress, run with no shared block and with optional progress/quiet child where applicable."
+      },
+      {
+        "assertions": [
+          "One worker succeeds and one worker is lost before progress; both success-first and loss-first terminal harvesting return EXIT_FAILURE.",
+          "Barrier/completion records prove the successful worker actually completed its required assignment in each order; failure state and original lost assignment are identical regardless of harvest order.",
+          "An unrelated clean worker never overwrites retained failure, including with progress disabled."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixture": "Real two-child run; synchronization events/barriers hold controller harvesting until both terminal states exist, then test-only OS-wait selection orders their observation.",
+        "id": "R13-ORDER",
+        "location": "test/replay_controller_test.cpp",
+        "notes": "",
+        "runner_registration": "replay-controller-mixed-success-first and replay-controller-mixed-loss-first."
+      },
+      {
+        "assertions": [
+          "First attempt returns failure after reporting safe zero-hash resume positions that do not advance beyond an uncompleted required item; retry completes every required item.",
+          "Actual controller returns zero; retained final state covers the original assignment, has no unresolved/skipped required work, and records the failed attempt separately.",
+          "The restarted worker receives precisely the expected retained required start/end ranges; evidence verifies required items completed rather than merely seeing a clean retry exit."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixture": "Controlled failed-attempt/retry sequence, per-item completion bitmap or markers in isolated fixture, attempt and range records.",
+        "id": "R13-RECOVER",
+        "location": "test/replay_controller_test.cpp",
+        "notes": "",
+        "runner_registration": "replay-controller-recovered-complete."
+      },
+      {
+        "assertions": [
+          "For graphics, compute and ray-tracing, a nonzero culprit hash with advanced progress is retained independently of optional shared progress.",
+          "A later clean retry completes the tail but controller returns EXIT_FAILURE because the required culprit was skipped.",
+          "Last-required-item culprit with progress at end and no remaining restart also returns EXIT_FAILURE; mutated retry starts do not erase original assigned range or culprit index."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixture": "Current protocol messages with known nonzero hashes, beginning/middle and last-item positions; clean-tail and no-tail controls.",
+        "id": "R13-SKIP",
+        "location": "test/replay_controller_test.cpp",
+        "notes": "",
+        "runner_registration": "replay-controller-skipped-graphics, replay-controller-skipped-compute and replay-controller-skipped-raytracing, each covering final-item boundary."
+      },
+      {
+        "assertions": [
+          "Missing one pipeline-kind progress marker leaves required coverage unresolved; partial evidence cannot permit success.",
+          "Retained assigned ranges survive one or more retry-start updates followed by worker loss; unknown remainder is explicit, and any independently known completed prefix is not invented or erased.",
+          "Zero-work kinds do not create fake required work; the nonempty unresolved kind still causes failure."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixture": "Partial protocol reports and loss after a prior retry on nonzero range offsets.",
+        "id": "R13-PARTIAL",
+        "location": "test/replay_controller_test.cpp",
+        "notes": "",
+        "runner_registration": "replay-controller-partial-progress and replay-controller-loss-after-retry."
+      },
+      {
+        "assertions": [
+          "Unrecoverable loss returns unsuccessfully without waiting for a held sibling to finish required work; cleanup terminates and reaps that sibling under a watchdog.",
+          "No child remains live and no zombie/unclosed tracked child handle remains after the controller subprocess terminates.",
+          "Linux unhandled-signal loss remains unsuccessful, and expected parent cleanup termination is not counted as completion."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixture": "Sibling held on controllable IPC barrier; child process identity/handle retained by test supervisor; no fragile timing sleeps.",
+        "id": "R13-LIFECYCLE",
+        "location": "test/replay_controller_test.cpp",
+        "notes": "",
+        "runner_registration": "replay-controller-loss-cleanup and replay-controller-unhandled-termination (native platform equivalent)."
+      },
+      {
+        "assertions": [
+          "Each production shutdown disposition distinguishes clean, retry and unrecoverable work; retained outcome drives every master shutdown caller.",
+          "Native Linux exercised failure paths do not claim complete coverage; portable/common state tests cover unknown status and failed termination-status query as unsuccessful.",
+          "Windows source/registration review confirms WaitForSingleObject/GetExitCodeProcess failures cannot use initialized code=0 as success, handle closure preserves prior error, and timeout shutdown uses the same retained outcome."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixture": "Focused assertions invoke actual production shutdown/state logic and controlled OS adapter failures; native Windows executions remain waived/unverified.",
+        "id": "R13-STATE-REAP",
+        "location": "test/replay_controller_test.cpp",
+        "notes": "",
+        "runner_registration": "replay-controller-outcome-state on Linux; same target/cases registered for native Windows. Source review is not reported as Windows execution."
+      },
+      {
+        "assertions": [
+          "Actual unmodified production fossilize-replay --null-device --master-process with a valid outer FOZ containing selected malformed compute {} returns nonzero.",
+          "The same actual CLI failure with --progress --quiet-slave returns nonzero; status oracle does not parse Cannot continue or depend on progress counters.",
+          "Baseline Debug executable returns its observed false-success zero on the same E5/E6 fixtures; candidate failure assertions pass. Release assertions must remain active, while deterministic loss tests supply the configuration-independent oracle if the malformed record follows a different release failure path."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixture": "Dedicated valid outer FOZ failure fixture from historical E5/E6; fixture identity checked by readback before invoking actual executables; no original captures used.",
+        "id": "R13-E5-E6",
+        "location": "test/replay_controller_cli.cmake; test fixture generator",
+        "notes": "",
+        "runner_registration": "replay-controller-cli-e5 and replay-controller-cli-e6; runner accepts separately supplied baseline executable for original-defect evidence."
+      },
+      {
+        "assertions": [
+          "Caller compiled using base public headers links/runs against candidate libraries with ExternalReplayer Options{}, start(), wait() and is_process_complete(); repeated wait/query returns the same cached status.",
+          "Preserved success invocation returns zero; controller failure reaches the caller as nonzero without an API signature/layout change.",
+          "Known graphics/compute/ray-tracing current worker messages retain their existing grammar/index/hash semantics and optional progress forwarding; SharedControlBlock wire layout/version is unchanged.",
+          "Existing known-hash FOZ/readback and ordinary successful null-device CLI compatibility assertions still pass. Document intentional formerly-false-success exit change."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "fixture": "Source-compatible old-caller fixture compiled against 451aabb headers; fixed legacy message literals and dependency-complete FOZ; no binary-ABI claim.",
+        "id": "R13-COMPAT",
+        "location": "test/replay_controller_compatibility_test.cpp; existing diagnostic compatibility fixture",
+        "notes": "",
+        "runner_registration": "replay-controller-compatibility and diagnostic-compatibility-test (plus explicit external baseline-header compile/run command)."
+      }
+    ],
+    "execution_protocol": "Every build/probe/test command first requires coordinator-published command-intent with unique intent_id and exact child argv/cwd. Execute through python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ABSOLUTE_ACTIVE_WORKTREE --timeout 600 --receipt UNIQUE_RECEIPT --intent-id UNIQUE_INTENT_ID -- COMMAND; no nested wrappers. Coordinator settles measured contention before its next budget gate. Each child has a 600-second real deadline.",
+    "gates": [
+      {
+        "commands": [
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/home/robin/dev/fossilize-issue-13",
+            "-B",
+            "/tmp/fossilize-13/build/debug-off",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-13/build/debug-off",
+            "--parallel",
+            "2"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/debug-off",
+            "-N"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/debug-off",
+            "--output-on-failure"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/debug-off",
+            "--output-on-failure",
+            "-R",
+            "^replay-controller-",
+            "--repeat",
+            "until-fail:3"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/home/robin/dev/fossilize-issue-13",
+            "-B",
+            "/tmp/fossilize-13/build/debug-on",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-13/build/debug-on",
+            "--parallel",
+            "2"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/debug-on",
+            "-N"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/debug-on",
+            "--output-on-failure"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/debug-on",
+            "--output-on-failure",
+            "-R",
+            "^replay-controller-",
+            "--repeat",
+            "until-fail:3"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/home/robin/dev/fossilize-issue-13",
+            "-B",
+            "/tmp/fossilize-13/build/release-off",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Release",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-13/build/release-off",
+            "--parallel",
+            "2"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/release-off",
+            "-N"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/release-off",
+            "--output-on-failure"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/release-off",
+            "--output-on-failure",
+            "-R",
+            "^replay-controller-",
+            "--repeat",
+            "until-fail:3"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/home/robin/dev/fossilize-issue-13",
+            "-B",
+            "/tmp/fossilize-13/build/release-on",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Release",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-13/build/release-on",
+            "--parallel",
+            "2"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/release-on",
+            "-N"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/release-on",
+            "--output-on-failure"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/release-on",
+            "--output-on-failure",
+            "-R",
+            "^replay-controller-",
+            "--repeat",
+            "until-fail:3"
+          ]
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-13",
+        "expected": [
+          "All discovered CTests execute and pass in Debug/Release with exceptions OFF/ON; compare exact discovery/execution IDs, configuration flags and real statuses.",
+          "Every planned case maps to executed assertion-bearing test IDs; no mandatory skips/empty suite, no NDEBUG-disabled assertions.",
+          "Both platform implementations and timeout/process shutdown callers are reviewed against the same outcome contract; native Windows is explicitly unverified."
+        ],
+        "id": "R13-LINUX-MATRIX",
+        "kind": "both",
+        "method": "Configure, build and execute full nonempty Linux CTest suite and all new controller cases in four isolated configurations; independently repeat new deterministic process cases. Full CTest includes existing diagnostics and utility parser regressions.",
+        "prerequisites": [
+          "Initialized recursive submodules, compatible CMake/Ninja/GCC/Python, Every build/probe/test command first requires coordinator-published command-intent with unique intent_id and exact child argv/cwd. Execute through python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ABSOLUTE_ACTIVE_WORKTREE --timeout 600 --receipt UNIQUE_RECEIPT --intent-id UNIQUE_INTENT_ID -- COMMAND; no nested wrappers. Coordinator settles measured contention before its next budget gate. Each child has a 600-second real deadline.",
+          "Tools supplied by coordinator at /tmp/fossilize-10/tools/cmake/data/bin/cmake and /tmp/fossilize-10/tools/bin/ninja; builds under /tmp/fossilize-13/build only."
+        ]
+      },
+      {
+        "commands": [
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/tmp/fossilize-13/planner",
+            "-B",
+            "/tmp/fossilize-13/build/baseline-debug-off",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_TESTS=OFF",
+            "-DFOSSILIZE_VULKAN_LAYER=OFF"
+          ],
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-13/build/baseline-debug-off",
+            "--target",
+            "fossilize-replay",
+            "--parallel",
+            "2"
+          ],
+          "Run the committed replay_controller_cli.cmake E5/E6 cases with BASELINE_REPLAY=/tmp/fossilize-13/build/baseline-debug-off/cli/fossilize-replay and REPLAY=/tmp/fossilize-13/build/debug-off/cli/fossilize-replay; helper/WORK arguments use exact built target paths. Implementer records final exact argv."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-13",
+        "expected": [
+          "Baseline actual master and progress/quiet return zero despite lost required worker; the candidate status assertions return nonzero and pass.",
+          "Original-defect evidence is a specific assertion difference, not arbitrary build failure, timeout, or stderr substring.",
+          "No test-only production hook is needed to expose baseline E5/E6."
+        ],
+        "id": "R13-ORIGINAL-DEFECT",
+        "kind": "both",
+        "method": "Build unchanged 451aabb Debug baseline replay, generate/check same E5/E6 fixtures with candidate helper, invoke baseline and candidate via the committed override-capable regression runner. Preserve raw subprocess status and expected-assertion mismatch.",
+        "prerequisites": [
+          "Baseline detached source worktree at exact base SHA with initialized dependencies; baseline build under /tmp/fossilize-13/build/baseline-debug-off.",
+          "Candidate fixture/helper and real replay binaries built; isolated /tmp/fossilize-13/output/ROLE-ATTEMPT/baseline directory.",
+          "Every build/probe/test command first requires coordinator-published command-intent with unique intent_id and exact child argv/cwd. Execute through python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ABSOLUTE_ACTIVE_WORKTREE --timeout 600 --receipt UNIQUE_RECEIPT --intent-id UNIQUE_INTENT_ID -- COMMAND; no nested wrappers. Coordinator settles measured contention before its next budget gate. Each child has a 600-second real deadline."
+        ]
+      },
+      {
+        "commands": [
+          [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-13/build/debug-off",
+            "--output-on-failure",
+            "-R",
+            "replay-controller-compatibility|diagnostic-compatibility-test"
+          ],
+          "Compile committed source compatibility caller with -I/tmp/fossilize-13/planner before candidate include paths, link the candidate fossilize/cli-utils/volk/miniz dependencies, then run with candidate test and real replay paths. Record exact compiler/link argv."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-13",
+        "expected": [
+          "No public header/API, SharedControlBlock version/layout or worker message grammar change unless routed back to planning.",
+          "Baseline-header source caller runs clean and failed-controller results and cached status queries. No general binary ABI is claimed.",
+          "Success flags and FOZ semantics preserved; intentionally changed unresolved-worker exit described in verification documentation."
+        ],
+        "id": "R13-COMPATIBILITY",
+        "kind": "both",
+        "method": "Review base-to-candidate public-boundary diff and compile/run the baseline-header ExternalReplayer source fixture linked to candidate libraries; execute existing and new protocol/CLI success compatibility controls.",
+        "prerequisites": [
+          "Baseline headers available from detached 451aabb worktree; candidate static libraries and helper paths from selected configuration.",
+          "Keep caller source/object/build output outside source; use actual candidate compile/link flags from CMake export or verbose build.",
+          "Every build/probe/test command first requires coordinator-published command-intent with unique intent_id and exact child argv/cwd. Execute through python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ABSOLUTE_ACTIVE_WORKTREE --timeout 600 --receipt UNIQUE_RECEIPT --intent-id UNIQUE_INTENT_ID -- COMMAND; no nested wrappers. Coordinator settles measured contention before its next budget gate. Each child has a 600-second real deadline."
+        ]
+      },
+      {
+        "commands": [
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--inventory",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-test_harness_artifacts",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/regression-test_harness_artifacts.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-test_harness_closeout",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/regression-test_harness_closeout.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-test_harness_issue_artifacts",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/regression-test_harness_issue_artifacts.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-test_harness_issue_closeout",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/regression-test_harness_issue_closeout.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-test_harness_migration",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/regression-test_harness_migration.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-test_harness_state",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/regression-test_harness_state.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-test_issue_guidance",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/regression-test_issue_guidance.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-test_issue_migration",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/regression-test_issue_migration.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-test_issue_source",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/regression-test_issue_source.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "delivery-ordinary",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/delivery-ordinary.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "delivery-w09",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/delivery-w09.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "delivery-w11-0",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/delivery-w11-0.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "delivery-w11-1",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/delivery-w11-1.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "delivery-w11-2",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/delivery-w11-2.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "delivery-w11-3",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/delivery-w11-3.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-extra",
+            "--inventory",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/inventory.json",
+            "--output",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness/regression-extra.json"
+          ],
+          [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--verify-results",
+            "/tmp/fossilize-13/output/ROLE-ATTEMPT/harness"
+          ],
+          [
+            "python3",
+            "/home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+            ".agents/skills/implement-change-harness"
+          ]
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-13",
+        "expected": [
+          "Every discovered unittest ID and explicit scenario has exactly one executed passing owner in the bounded group union.",
+          "Inventory/execution/scenario coverage digest and candidate identities match; no skipped, failed, stale, duplicate, unfinished or omitted results.",
+          "quick_validate succeeds; report this Python evidence separately from C++ controller behavior."
+        ],
+        "id": "R13-FULL-HARNESS",
+        "kind": "both",
+        "method": "Execute the verification.md mandatory full discovered Python harness suite in all bounded groups, exact-union verifier, and installed skill validator from the exact committed candidate. This requirement applies even though the production change is C++.",
+        "prerequisites": [
+          "Fresh evidence directory outside source for each candidate/role/attempt; use actual ROLE-ATTEMPT replacement.",
+          "Python3, Git, gh fake-service fixture prerequisites and validator PyYAML available.",
+          "Every build/probe/test command first requires coordinator-published command-intent with unique intent_id and exact child argv/cwd. Execute through python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ABSOLUTE_ACTIVE_WORKTREE --timeout 600 --receipt UNIQUE_RECEIPT --intent-id UNIQUE_INTENT_ID -- COMMAND; no nested wrappers. Coordinator settles measured contention before its next budget gate. Each child has a 600-second real deadline."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-13",
+        "expected": [
+          "Only independent checker can accept; no missing/incomplete planned assertions or lifecycle cleanup gaps.",
+          "Windows execution waiver remains explicit, same production behavior and portable tests registered; Windows is unverified, not passed.",
+          "Immediate failure, both report orders, known skipped culprit, unknown remainder and fully recovered success controls are asserted through production integration.",
+          "Final candidate/source and original requirements unchanged; only issue13 is eligible for a closing reference, parent issue8 stays open."
+        ],
+        "id": "R13-INDEPENDENT-REVIEW",
+        "kind": "both",
+        "method": "Fresh checker reads exact original AC1/shared issue8, current issue material, full diff and committed test source before implementer claims. Confirm actual planned-gate execution and test mappings. At final gate recheck candidate/base/plan/task identity, readiness targets and no unresolved findings.",
+        "prerequisites": [
+          "Fresh detached exact-candidate worktree; current canonical report tuple; coordinator verified live issue material.",
+          "All required gate logs and raw statuses available with nonzero discovered/executed IDs."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-13",
+        "expected": [
+          "Status remains waived/unverified in reports and PR limits; do not manufacture execution or count source review as native Windows coverage.",
+          "When later run, same clean/loss/order/recovery/skip/reap/cleanup/protocol cases must pass under native process/IPC APIs."
+        ],
+        "id": "R13-WINDOWS-EXECUTION",
+        "kind": "optional",
+        "method": "Native Windows Debug/Release CMake builds and controller subprocess matrix, exception settings as supported; deferred solely by explicit human waiver recorded in /tmp/fossilize-13/waiver.json.",
+        "prerequisites": [
+          "A prepared native Windows compiler/CMake/Ninja host would be required; unavailable execution is expressly waived for this run."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-13",
+        "expected": [
+          "PR uses mandated sections, exact Closes https://github.com/robinwassen/Fossilize/issues/13 only, explicit Windows waiver/unverified limits, evidence and intentional exit behavior change.",
+          "Non-force pushed source SHA and actual PR head/base/open/draft/closing references match; issue evidence and artifact attachment read back; no merge."
+        ],
+        "id": "R13-PUBLICATION",
+        "kind": "publication",
+        "method": "Coordinator re-reads material issue input and target master, verifies accepted exact candidate/base/plan with all findings resolved, then publishes and attaches one non-draft PR through the harness journal.",
+        "prerequisites": [
+          "Separate final checker acceptance for unchanged exact candidate; managed readiness comments/readback; unchanged target master or explicit renewed verification."
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "design": "Introduce an internal explicit shutdown/restart disposition (for example complete/retry/unrecoverable) and retained outcome independent of it. Keep assigned ranges immutable across restarts, separate from mutable next-attempt starts. Clean exit establishes completion only for the attempted range; it cannot clear an earlier skipped culprit or unresolved required prefix. Keep per-attempt recovery history separate from final required-work outcome. The exact type names are implementer choices; avoid a duplicate disconnected model.",
+        "paths": [
+          "cli/fossilize_replay_linux.hpp",
+          "cli/fossilize_replay_windows.hpp",
+          "optional small internal cli replay outcome header"
+        ],
+        "step": 1
+      },
+      {
+        "design": "Record nonzero culprit hashes and affected index before optional shared-progress forwarding; the authoritative decision must work with control_block=nullptr and quiet-slave. Retain missing/partial progress as unknown remainder over the known assignment. Classify unhandled Linux signals and unqueryable Windows status as unsuccessful, never default-success. Windows WaitForSingleObject/GetExitCodeProcess errors must preserve unresolved outcome and native error before handle cleanup; no code=0 fallback. Continue useful recoverable retries under existing policy; a zero-hash retry from an unchanged required position is allowed to reach verified full success. A hash-bearing advanced cursor indicates a skipped culprit, including the last item where no restart remains.",
+        "paths": [
+          "cli/fossilize_replay_linux.hpp:ProcessProgress::parse/process_shutdown/start_child_process/poll_children_process_states/run_master_process",
+          "cli/fossilize_replay_windows.hpp:ProcessProgress::parse/process_shutdown/start_child_process/run_master_process"
+        ],
+        "step": 2
+      },
+      {
+        "design": "Propagate terminal unresolved outcomes from every shutdown caller, including Windows timeout termination, into immediate EXIT_FAILURE. Preserve the outcome before restart/cleanup. Stop launching more work after unrecoverable loss. Use bounded scoped cleanup to terminate and reap live children and close controller/IPC handles; do not leave siblings running or zombies when returning early. Expected parent-requested termination must not masquerade as successful completion of required ranges. Keep established CLI self-signal conventions. Successful zero-work/clean paths remain EXIT_SUCCESS. Retain human failure diagnostics with assigned ranges and unknown remainder, without making prose the status oracle.",
+        "paths": [
+          "cli/fossilize_replay_linux.hpp:poll_children_process_states/run_master_process",
+          "cli/fossilize_replay_windows.hpp:master process and timer-handle branches"
+        ],
+        "step": 3
+      },
+      {
+        "design": "Build a GPU-independent dedicated controller regression target on Linux/Windows using the existing test pattern of including production replay .cpp with main renamed, or a small internal injectable launch adapter with production defaults. Exercise actual master loops, real worker processes, production shutdown/parser logic and OS IPC. Keep deterministic worker selection/failure behavior exclusively in the test target. A compile-time-only adapter enabled by that target is acceptable; a shipping runtime environment hook is not. Do not substitute the entire controller with a fake. Linux must retain real fork/pipes/epoll/wait and Windows real CreateProcess/named pipes/Wait. Test workers produce the preserved current messages and controlled exits; no Vulkan device is required. Barriers/events and test-only wait-selection adapters control terminal order, not sleeps or SIMULATE_UNSTABLE_DRIVER. Include real null-device CLI invocations as separate coverage.",
+        "paths": [
+          "test/replay_controller_test.cpp (new, or clearly equivalent test files)",
+          "test/replay_controller_cli.cmake (new)",
+          "test/CMakeLists.txt"
+        ],
+        "step": 4
+      },
+      {
+        "design": "Register individually identifiable controller cases with CTest, process timeouts and separate working directories; explicit assertions must survive NDEBUG and inherit exception/sanitizer flags. Provide fixture/runner overrides for a baseline fossilize-replay executable, so the E5/E6 failure assertions can demonstrate original false success against unchanged base code. Print stable executed case IDs and preserve child completion/attempt/range evidence in isolated test artifacts; do not parse logs to decide returned result. Tests inspect production retained state/disposition plus real subprocess return status, rather than only a duplicate state class.",
+        "paths": [
+          "test/replay_controller_test.cpp",
+          "test/replay_controller_cli.cmake",
+          "test/CMakeLists.txt"
+        ],
+        "step": 5
+      },
+      {
+        "design": "Keep existing successful recorder/database/CLI compatibility fixtures and add a small baseline-header ExternalReplayer caller using Options{}, start, wait and is_process_complete with cached return status. Compile this caller against base headers and link candidate libraries; exercise clean success and injected controller failure without changing API declarations. Preserve old worker-message/progress layout fixtures and successful CLI flags. Document intentional behavioral change: unresolved robust worker work now returns EXIT_FAILURE, including through the external-replayer wait result; a completed retry without a skip can still return zero. Document retained-scope limits and exact current test inventory/platform coverage. Do not claim a new general ABI or protocol guarantee.",
+        "paths": [
+          "test/replay_controller_compatibility_test.cpp (new or extend existing compatibility fixture)",
+          "test/diagnostic_compatibility_test.cpp",
+          "local-docs/verification.md"
+        ],
+        "step": 6
+      }
+    ],
+    "non_goals": [
+      "No new public result API, stable result schema, worker protocol version, SharedControlBlock layout, full logical-item ledger, stale-message reconciliation, persistence/durability guarantee, or whole observability-standard compliance.",
+      "No redesign of worker timeout/cancellation policies, Steam integration, driver compilation/cache warming, capture/layer behavior, parser validation, shader support policy, or unrelated utility exit results.",
+      "No public C++ binary ABI guarantee, hardware/GPU claim, or Apple/Android robust-worker support. NO_ROBUST_REPLAYER paths remain outside the changed controller contract.",
+      "No split tasks, new GitHub issues, source backlog/ledger, merge, or production test-injection environment variables."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n"
+      }
+    ],
+    "risks_and_remaining_uncertainty": [
+      "No builds/tests/probes were run by planner; this report is design, not acceptance or verification evidence. Source inspection and live task reads only.",
+      "Native Windows build/runtime evidence remains unverified under explicit user waiver, even if portable source and registration look correct. This is an execution exception for the run, not a rewrite of AC1.",
+      "Current protocol progress is crash-resume information, not an independent complete per-item ledger. Never reinterpret an advanced hash-bearing position as proof the culprit succeeded. Tests need explicit required-item completion fixtures for the fully recovered control.",
+      "Actual malformed E5/E6 behavior can differ under Release because assertions compile out; deterministic process adapters must remain the primary configuration-independent loss oracle. Keep actual CLI E5/E6 coverage and report any divergent path honestly.",
+      "Test-only launch and wait adapters must not remove the production controller, parser, shutdown, restart or aggregation logic under test. Checker should reject a simulated controller or a state-only model with no actual process/IPC path.",
+      "Cleanup must be bounded and must preserve original outcome/native errors. Avoid killing unrelated process groups/handles. Pending terminal-order fixtures and a still-live sibling fixture exercise different obligations.",
+      "No hardware compilation, driver caches, durable output, general ABI, complete observability compliance or Apple/Android robust controllers is verified by this plan.",
+      "All command examples are child commands pending coordinator intent/wrapper execution; implementation/fresh checker source paths differ and must use their actual exact candidate worktrees. Build time may require bounded target partitions rather than extending the fixed 600-second child deadline."
+    ],
+    "scope": [
+      "One coherent unsplit implementation of issue https://github.com/robinwassen/Fossilize/issues/13; shared acceptance from https://github.com/robinwassen/Fossilize/issues/8 applies to this slice. work_units=[] delegates the single root-issue work unit to the harness.",
+      "Separate restart disposition from the authoritative retained worker outcome on Linux and Windows. Return EXIT_FAILURE immediately when a terminal worker observation leaves required work unresolved, while cleaning up/reaping remaining child processes. A clean sibling, optional progress reporting, retry, or report order cannot erase unresolved work.",
+      "Retain immutable originally assigned half-open graphics, compute and ray-tracing ranges, worker index, observed termination, known skipped required culprit when available, and an explicit unknown remainder when completion evidence is lost. Do not infer an exact failed-item count or root cause from a missing report.",
+      "Preserve success for clean completion and a recoverable attempt whose retry demonstrably completes all assigned required items without skipping a culprit. Existing restart-after-culprit behavior can continue processing useful remaining work, but cannot yield success while the required culprit was skipped.",
+      "Implement the same production behavior and portable CTest registration for Windows. The human user explicitly waived native Windows verification for this run: {\"authorization\":\"Waive the windows verification plz\",\"scope\":\"User explicitly waived Windows verification for issue #13 in this conversation on 2026-10-30. Implement Windows behavior and register tests; native Windows build/runtime execution is waived for this run, remains unverified and must be reported as such. Preserve original issue acceptance verbatim.\"}. Preserve original AC1 verbatim and disclose Windows unverified; never label native Windows execution passed."
+    ],
+    "version": 1,
+    "work_units": []
+  },
+  "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/13"
+        ],
+        "digest": "dddf16fc9a899dbed7d3a32eddde7dc124c6cbe8f1883749d4864515e2f69c88",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/13": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n",
+            "children": [],
+            "id": 6079809809,
+            "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
+            "number": 13,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "FOS-000004 \u2014 Retain unrecoverable child loss in the controller",
+            "url": "https://github.com/robinwassen/Fossilize/issues/13"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/13"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    }
+  ],
   "publishing": {
     "ci_policy": "local",
     "stage": "none"
@@ -112,7 +973,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 4,
+  "revision": 5,
   "root_issue": {
     "id": 6079809809,
     "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
@@ -122,9 +983,17 @@
   },
   "run_id": "issue13-20261030",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-13",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/13",
   "verification": [],
-  "work_units": []
+  "work_units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/13",
+      "key": "https://github.com/robinwassen/Fossilize/issues/13",
+      "status": "ready"
+    }
+  ]
 }
