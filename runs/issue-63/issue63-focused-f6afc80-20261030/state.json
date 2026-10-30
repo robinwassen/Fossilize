@@ -1,0 +1,86 @@
+{
+  "active_work_unit": "https://github.com/robinwassen/Fossilize/issues/63",
+  "attempts": [],
+  "final_acceptance": null,
+  "findings": [],
+  "issue_snapshot": {
+    "deliverables": [
+      "https://github.com/robinwassen/Fossilize/issues/63"
+    ],
+    "digest": "fe875963791f710b0e6dd85dbf7c5b6c32b68ecb40451f121df5608e70c20ece",
+    "nodes": {
+      "https://github.com/robinwassen/Fossilize/issues/63": {
+        "blocked_by": [],
+        "body": "## Problem and outcome\n\nAllow multiple harnesses to work on this codebase at the same time. Planning and editing can overlap; builds and verification wait for a shared lock and continue automatically when it is released. Some idle time is acceptable. Prefer a small, practical implementation over comprehensive orchestration.\n\nThis is an explicitly narrower alternative to https://github.com/robinwassen/Fossilize/issues/62 and https://github.com/robinwassen/Fossilize/issues/40. Their broader requirements are not inherited. Leave both tickets unchanged.\n\n## Scope\n\nLinux, one host, one common Git repository with separate worktrees. Ordinary live execution only. Crash recovery is out of scope.\n\n## Acceptance criteria\n\n1. Each harness has explicitly selected, independent run state, a source worktree, build directory and output paths. Initializing or completing one run does not replace another run's state. Preserve existing independent planner/implementer/checker roles and candidate-bound acceptance.\n2. Shared artifact updates use a short repository lock. Reload the latest artifact tree under the lock and change only the selected run. Routine updates from another run must not cause manual divergent-state reconciliation. Reuse existing artifact storage/publication rather than introduce another store; keep publication serialized and preserve its existing checks.\n3. Encapsulate blocking `fcntl.flock()` in a small reusable Python module/script under the harness hierarchy. All harness builds and verification commands use the same stable lock path outside individual worktrees. Planning and editing remain concurrent. The interface can move with the harness without changing lock identity. Never unlink a live lock file.\n4. A live waiting harness proceeds automatically when the lock is freed, without a user prompt, another chat message or an explicit retry. Lock waiting is outside the command execution timeout and does not spend repair attempts. Adjust ordinary-wait deadline handling explicitly so contention alone does not require a budget approval. The existing live coordinator continues the workflow after the command returns; no new agent backend is required.\n5. Document the small supported invocation and integrate it into the existing role workflow. Reuse the verification entry point from https://github.com/robinwassen/Fossilize/issues/43 if available; do not make its implementation a prerequisite or duplicate its manifest/test-selection work.\n\n## Verification\n\nUse a few focused tests with disposable repositories and bounded independent processes:\n\n- Two runs can remain active; interleaved state updates and completion retain the other run's records.\n- Two commands using the Python wrapper cannot execute their protected sections together. Releasing the first lock lets the second proceed automatically. Assert the command result is returned correctly.\n- A run waiting for verification can continue after another run updates artifact state.\n- Separate worktrees resolve to the same lock identity, including when the wrapper is invoked from a different package path.\n\nRun relevant existing harness checks. No crash-injection suite or new orchestration framework is required.\n\n## Explicit non-goals\n\nNo supervisor/service, durable execution queue, automatic restart/reboot recovery, crash/descendant recovery, timestamp expiry/leases, distributed coordination, multiple-host support, resource scheduling, new sandbox, or unattended Steam restoration. Do not expand implementation to solve these cases. Run IDs/timestamps may be diagnostic metadata, but are not needed for lock ownership.\n\nParent: https://github.com/robinwassen/Fossilize/issues/9. This filing requests only this narrow implementation; it does not start a harness run, close another issue or modify #62.\n\n<!-- harness-followup:simple-parallel-flock-v1 -->\n",
+        "children": [],
+        "id": 6113633132,
+        "node_id": "I_kwDOVZpjbc8AAAABbGajbA",
+        "number": 63,
+        "parent": "https://github.com/robinwassen/Fossilize/issues/9",
+        "repository": "robinwassen/Fossilize",
+        "state": "open",
+        "state_reason": null,
+        "title": "Allow parallel harness runs with independent state and a simple Python verification lock",
+        "url": "https://github.com/robinwassen/Fossilize/issues/63"
+      }
+    },
+    "root": "https://github.com/robinwassen/Fossilize/issues/63"
+  },
+  "limits": {
+    "command_timeout": 600,
+    "commands": [],
+    "deadline": 1793397734.5078313,
+    "exhausted": false,
+    "extensions": [],
+    "implementation_counts": {},
+    "repairs": 3,
+    "replan_count": 0,
+    "replans": 1
+  },
+  "next_action": "dispatch fresh planner",
+  "operation": "plan",
+  "original": [
+    {
+      "id": "AC1",
+      "requirement": "## Problem and outcome\n\nAllow multiple harnesses to work on this codebase at the same time. Planning and editing can overlap; builds and verification wait for a shared lock and continue automatically when it is released. Some idle time is acceptable. Prefer a small, practical implementation over comprehensive orchestration.\n\nThis is an explicitly narrower alternative to https://github.com/robinwassen/Fossilize/issues/62 and https://github.com/robinwassen/Fossilize/issues/40. Their broader requirements are not inherited. Leave both tickets unchanged.\n\n## Scope\n\nLinux, one host, one common Git repository with separate worktrees. Ordinary live execution only. Crash recovery is out of scope.\n\n## Acceptance criteria\n\n1. Each harness has explicitly selected, independent run state, a source worktree, build directory and output paths. Initializing or completing one run does not replace another run's state. Preserve existing independent planner/implementer/checker roles and candidate-bound acceptance.\n2. Shared artifact updates use a short repository lock. Reload the latest artifact tree under the lock and change only the selected run. Routine updates from another run must not cause manual divergent-state reconciliation. Reuse existing artifact storage/publication rather than introduce another store; keep publication serialized and preserve its existing checks.\n3. Encapsulate blocking `fcntl.flock()` in a small reusable Python module/script under the harness hierarchy. All harness builds and verification commands use the same stable lock path outside individual worktrees. Planning and editing remain concurrent. The interface can move with the harness without changing lock identity. Never unlink a live lock file.\n4. A live waiting harness proceeds automatically when the lock is freed, without a user prompt, another chat message or an explicit retry. Lock waiting is outside the command execution timeout and does not spend repair attempts. Adjust ordinary-wait deadline handling explicitly so contention alone does not require a budget approval. The existing live coordinator continues the workflow after the command returns; no new agent backend is required.\n5. Document the small supported invocation and integrate it into the existing role workflow. Reuse the verification entry point from https://github.com/robinwassen/Fossilize/issues/43 if available; do not make its implementation a prerequisite or duplicate its manifest/test-selection work.\n\n## Verification\n\nUse a few focused tests with disposable repositories and bounded independent processes:\n\n- Two runs can remain active; interleaved state updates and completion retain the other run's records.\n- Two commands using the Python wrapper cannot execute their protected sections together. Releasing the first lock lets the second proceed automatically. Assert the command result is returned correctly.\n- A run waiting for verification can continue after another run updates artifact state.\n- Separate worktrees resolve to the same lock identity, including when the wrapper is invoked from a different package path.\n\nRun relevant existing harness checks. No crash-injection suite or new orchestration framework is required.\n\n## Explicit non-goals\n\nNo supervisor/service, durable execution queue, automatic restart/reboot recovery, crash/descendant recovery, timestamp expiry/leases, distributed coordination, multiple-host support, resource scheduling, new sandbox, or unattended Steam restoration. Do not expand implementation to solve these cases. Run IDs/timestamps may be diagnostic metadata, but are not needed for lock ownership.\n\nParent: https://github.com/robinwassen/Fossilize/issues/9. This filing requests only this narrow implementation; it does not start a harness run, close another issue or modify #62.\n\n<!-- harness-followup:simple-parallel-flock-v1 -->\n"
+    }
+  ],
+  "paths": {
+    "build_directory": "/tmp/fossilize-63/renewal/build",
+    "output_directory": "/tmp/fossilize-63/renewal/output",
+    "source_worktree": "/home/robin/.codex/worktrees/2b55/fossilize"
+  },
+  "phase": "planning",
+  "plan": null,
+  "provenance": [],
+  "publishing": {
+    "ci_policy": "local",
+    "stage": "none"
+  },
+  "repository": {
+    "base_sha": "2ffeaae69e4e127dcb0bfb3bf6319c6599509546",
+    "branch": "codex/issue-63-parallel-flock",
+    "candidate_sha": null,
+    "common_dir": "/home/robin/dev/fossilize/.git",
+    "implementation_worktree": "/home/robin/.codex/worktrees/2b55/fossilize",
+    "input_sha": "f6afc80fbd993fcc3b2c148ca13f15cfe6c6de9f",
+    "target_branch": "master",
+    "target_remote": "origin",
+    "target_repository": "robinwassen/Fossilize"
+  },
+  "revision": 1,
+  "root_issue": {
+    "id": 6113633132,
+    "node_id": "I_kwDOVZpjbc8AAAABbGajbA",
+    "number": 63,
+    "repository": "robinwassen/Fossilize",
+    "url": "https://github.com/robinwassen/Fossilize/issues/63"
+  },
+  "run_id": "issue63-focused-f6afc80-20261030",
+  "schema_version": 3,
+  "status": "ready",
+  "task_key": "issue-63",
+  "task_location": "https://github.com/robinwassen/Fossilize/issues/63",
+  "verification": [],
+  "work_units": []
+}
