@@ -1,0 +1,57 @@
+{
+  "custody": {
+    "finished": 1793330742.9062603,
+    "id": "893787aa85dd46ffadc4fcad9849500f",
+    "invocation": "e40374bd31c14f99a248885ba8be84be",
+    "package": "239131760df29b1df5de8053e6199255c639fa27c58e744d98beebe64308266c",
+    "protocol": 1,
+    "quiescence": {
+      "ActiveState": "inactive",
+      "ControlGroup": "",
+      "Description": "fossilize-harness-893787aa85dd46ffadc4fcad9849500f.service",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "InvocationID": "",
+      "LoadState": "not-found",
+      "Result": "success",
+      "SubState": "dead",
+      "owned_cgroup": "",
+      "owned_invocation": "e40374bd31c14f99a248885ba8be84be",
+      "stop_confirmed": true
+    },
+    "result": {
+      "exit_code": 0,
+      "finished": 1793330742.6764681,
+      "id": "893787aa85dd46ffadc4fcad9849500f",
+      "reason": "exit",
+      "started": 1793330678.399145,
+      "stderr": "/tmp/fossilize-62/verify-2283820/runtime/jobs/893787aa85dd46ffadc4fcad9849500f/stderr.log",
+      "stdout": "/tmp/fossilize-62/verify-2283820/runtime/jobs/893787aa85dd46ffadc4fcad9849500f/stdout.log"
+    },
+    "sequence": 26,
+    "source": {
+      "dirty_digest": "babe0bd7574f61c53f6526444d77af7a60091226dde5f2e7bfbbfcb2e7e08f91",
+      "sha": "051c1cde44d575612841c9e7ce2cc2a8af014542"
+    },
+    "started": 1793330678.2828393,
+    "status": "passed",
+    "timeout": 120.0,
+    "unit": "fossilize-harness-893787aa85dd46ffadc4fcad9849500f"
+  },
+  "observed": {
+    "after_release_status": "failed",
+    "before_release_status": "failed",
+    "elapsed": 60.03798495000228,
+    "job_timeout": 120,
+    "launched": false,
+    "marker": false,
+    "owned_local_lock_seconds": 63,
+    "reason": "repository harness lock is held; transaction deadline; retry saved action",
+    "remaining_run_budget": 14336.0924077034
+  },
+  "probe_source": "import json,multiprocessing,time,sys\nfrom pathlib import Path\nsys.path.insert(0,\"/tmp/fossilize-62/final-051c1cd/.agents/skills/implement-change-harness/scripts\")\nfrom test_harness_serial_state import SerialStateTests\nfrom test_harness_serial_executor import ProcessFixture\nfrom harness_serial import Runtime,context,read\nfrom harness_state import repository_lock\n\ndef owner(repo,ready):\n    with repository_lock(repo):\n        ready.set();time.sleep(63)\n\ncase=SerialStateTests(\"test_C03_transaction_lock_waits_without_failed_run\");case.setUp()\nprocess=None\ntry:\n    case.now=time.time();case.migrate(live=True)\n    ctx=context(case.source,\"run-1\")\n    runtime=Runtime(case.root/\"probe-runtime\",ProcessFixture())\n    marker=case.root/\"executed\"\n    job=runtime.submit([sys.executable,\"-B\",\"-c\",\"from pathlib import Path;Path(\"+repr(str(marker))+\").write_text('executed')\"],case.source,ctx,120)\n    ready=multiprocessing.Event();process=multiprocessing.Process(target=owner,args=(str(case.source),ready));process.start();assert ready.wait(10)\n    started=time.monotonic();runtime.run(once=True);elapsed=time.monotonic()-started\n    before=read(runtime.folder(job)/\"record.json\")\n    process.join(10);assert process.exitcode==0\n    runtime.run(once=True);after=read(runtime.folder(job)/\"record.json\")\n    result={\"elapsed\":elapsed,\"before_release_status\":before[\"status\"],\"after_release_status\":after[\"status\"],\"reason\":after.get(\"reason\"),\"launched\":job[\"unit\"] in runtime.driver.units,\"marker\":marker.exists(),\"remaining_run_budget\":ctx[\"deadline\"]-time.time(),\"owned_local_lock_seconds\":63,\"job_timeout\":job[\"timeout\"]}\n    Path(\"/tmp/fossilize-62/final-051c1cd-evidence/long-contention-result.json\").write_text(json.dumps(result,indent=2));print(json.dumps(result))\n    assert before[\"status\"]==after[\"status\"]==\"failed\" and not result[\"launched\"] and not result[\"marker\"] and result[\"remaining_run_budget\"]>0\nfinally:\n    if process and process.is_alive():process.kill();process.join(5)\n    case.doCleanups()\n",
+  "status": "reproduced_failure",
+  "stderr": "",
+  "stdout": "{\"elapsed\": 60.03798495000228, \"before_release_status\": \"failed\", \"after_release_status\": \"failed\", \"reason\": \"repository harness lock is held; transaction deadline; retry saved action\", \"launched\": false, \"marker\": false, \"remaining_run_budget\": 14336.0924077034, \"owned_local_lock_seconds\": 63, \"job_timeout\": 120}\n",
+  "test_id": "R62-counterexample-long-transaction-contention"
+}
