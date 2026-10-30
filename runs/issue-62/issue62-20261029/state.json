@@ -234,6 +234,7 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/62",
+      "attempt_id": "checker-3",
       "evidence": {
         "cause": "repository_lock raises generic Invalid after60s; Runtime.tick converts every prelaunch Invalid into terminalfailed. Subsequent ticks select only queued jobs. Lock release therefore never retries the same accepted job.",
         "control": "Owned disposable LiveFixture repository and ProcessFixture inner executor, executed inside existing shared outer systemd lane; a separate process held the actual common repository_lock for63s. No production mutation.",
@@ -255,9 +256,15 @@
       "id": "R62-F02-long-transaction-contention",
       "location": ".agents/skills/implement-change-harness/scripts/harness_serial.py:352-354; harness_state.py:67-75",
       "priority": "P2",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/62",
+        "evidence": "runs/issue-62/issue62-20261029/evidence/checker-3-f02-resolution.json",
+        "finding_id": "R62-F02-long-transaction-contention",
+        "observation": "All30 fresh G1 assertions passed. The real common repository lock is held by an owned process for63 seconds: after61 seconds the accepted job remains queued, unstarted and absent from launcher units, with no blocked.json; after release the same continuously running supervisor automatically records passed with exit0 and child duration below its original0.2-second timeout. Canonical fixture run state is byte-equivalent to its saved state, preserving attempts/repair/deadline. Workflow acquisition-only failure controls retry dispatch, acknowledgement and report and finish one role/one attempt. Completed-job continuation stays pending on RepositoryBusy then enqueues exactly once; Invalid selected-run drift blocks instead. Pre-admission retries only RepositoryBusy, retains first observed committed deadline, rejects expired/missing state and other invalid contexts. Source-drift F01 regressions also passed independently."
+      },
       "requested_change": "Treat refreshable local transaction-lock contention as waiting for the same accepted job/workflow action and retry automatically within the unchanged overall deadline. Preserve fail-closed handling for stale bindings, unconfirmed publication and unknown process custody. Add assertion-bearing long-contention/release coverage proving no failed result, no command-timeout/repair consumption and one eventual launch/continuation.",
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Keep accepted jobs queued across retryable repository-lock contention"
     }
   ],
@@ -6987,7 +6994,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 190,
+  "revision": 191,
   "root_issue": {
     "id": 6107403434,
     "node_id": "I_kwDOVZpjbc8AAAABbAeUqg",
