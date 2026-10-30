@@ -5475,6 +5475,53 @@
           "delivery-w11-1"
         ],
         "timeout": 600
+      },
+      {
+        "candidate_sha": "051c1cde44d575612841c9e7ce2cc2a8af014542",
+        "command": [
+          "/usr/bin/python3",
+          "-B",
+          "/tmp/fossilize-62/verify-2283820/runtime/packages/239131760df29b1df5de8053e6199255c639fa27c58e744d98beebe64308266c/harness_serial.py",
+          "--runtime",
+          "/tmp/fossilize-62/verify-2283820/runtime",
+          "exec",
+          "--repo",
+          "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+          "--run",
+          "issue62-20261029",
+          "--cwd",
+          "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+          "--timeout",
+          "600",
+          "--",
+          "/usr/bin/timeout",
+          "--signal=TERM",
+          "--kill-after=5s",
+          "590s",
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "/usr/bin/python3",
+          "-B",
+          "/tmp/fossilize-62/bounded-batch.py",
+          "--spec",
+          "/tmp/fossilize-62/verify-repair2/batches/batch-03.json",
+          "--spec-sha256",
+          "a4510332f2fa8f4a1c946d9b133f30e9f7994967559bbe582c6a22486fa39e14",
+          "--driver-sha256",
+          "bd552695e02e34dad90bf33f39098b33c87c6b73ad6b39f31af366a95d1d5d86"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+        "evidence": "/tmp/fossilize-62/verify-repair2",
+        "gate": "batch-03",
+        "started": 1793320460.8216069,
+        "steps": [
+          "delivery-w11-2",
+          "delivery-w11-3",
+          "verify-results",
+          "skill-validator",
+          "native-custody"
+        ],
+        "timeout": 600
       }
     ],
     "deadline": 1793322581.555903,
@@ -5831,7 +5878,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 151,
+  "revision": 152,
   "root_issue": {
     "id": 6107403434,
     "node_id": "I_kwDOVZpjbc8AAAABbAeUqg",
