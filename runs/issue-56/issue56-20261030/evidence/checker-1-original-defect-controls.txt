@@ -1,0 +1,166 @@
+Baseline source audit: compared 183 tracked candidate blobs; exactly one differs: cli/fossilize_replay_linux.hpp, byte-identical to immutable base header. Dependencies use recorded pinned detached-candidate paths.
+Disposable committed-candidate git archive with only production cli/fossilize_replay_linux.hpp replaced by immutable base bytes. Pinned dependencies reuse detached candidate submodule paths. All three original-header fault controls intentionally fail actual assertions; all have one reached injection, forbidden controller fallthrough/worker-fork and incorrect worker status. No config/build/deadline failure is counted as defect detection. Both healthy controls pass. Candidate identical assertions pass in all four configurations and decisive repeat.
+[
+  {
+    "site": "sigmask",
+    "expected_exit_code": 8,
+    "actual_exit_code": 8,
+    "actual_test_exit_code": 1,
+    "intended_injections": 1,
+    "log": "UpdateCTestConfiguration  from :/tmp/fossilize-56/build/checker-baseline/DartConfiguration.tcl\nTest project /tmp/fossilize-56/build/checker-baseline\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 97\n    Start 97: fork-child-initial-first-sigmask\n\n97: Test command: /tmp/fossilize-56/build/checker-baseline/test/fork-child-setup-test \"initial-first-sigmask\"\n97: Working Directory: /tmp/fossilize-56/build/checker-baseline/test/fork-child-initial-first-sigmask\n97: Test timeout computed to be: 30\n97: Fossilize INFO: Not using control_fd.\n97: Fossilize ERROR: Child process 1831387 terminated before we could receive progress. Cannot continue.\n97: FAIL no-controller-fallthrough-or-worker-fork\n97: FAIL exact-worker-exit-status\n97: Executed fork-child-initial-first-sigmask: births=2 injections=1 normal-workers=1 failures=2\n1/1 Test #97: fork-child-initial-first-sigmask ...***Failed    0.01 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =   0.01 sec\n\nThe following tests FAILED:\n\t 97 - fork-child-initial-first-sigmask (Failed)\nErrors while running CTest\nOutput from these tests are in: /tmp/fossilize-56/build/checker-baseline/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n"
+  },
+  {
+    "site": "stdout-dup2",
+    "expected_exit_code": 8,
+    "actual_exit_code": 8,
+    "actual_test_exit_code": 1,
+    "intended_injections": 1,
+    "log": "UpdateCTestConfiguration  from :/tmp/fossilize-56/build/checker-baseline/DartConfiguration.tcl\nTest project /tmp/fossilize-56/build/checker-baseline\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 100\n    Start 100: fork-child-initial-first-stdout-dup2\n\n100: Test command: /tmp/fossilize-56/build/checker-baseline/test/fork-child-setup-test \"initial-first-stdout-dup2\"\n100: Working Directory: /tmp/fossilize-56/build/checker-baseline/test/fork-child-initial-first-stdout-dup2\n100: Test timeout computed to be: 30\n100: Fossilize INFO: Not using control_fd.\n100: Fossilize ERROR: Child process 1831397 terminated before we could receive progress. Cannot continue.\n100: FAIL no-controller-fallthrough-or-worker-fork\n100: FAIL exact-worker-exit-status\n100: Executed fork-child-initial-first-stdout-dup2: births=2 injections=1 normal-workers=1 failures=2\n1/1 Test #100: fork-child-initial-first-stdout-dup2 ...***Failed    0.01 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =   0.01 sec\n\nThe following tests FAILED:\n\t100 - fork-child-initial-first-stdout-dup2 (Failed)\nErrors while running CTest\nOutput from these tests are in: /tmp/fossilize-56/build/checker-baseline/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n"
+  },
+  {
+    "site": "stdin-dup2",
+    "expected_exit_code": 8,
+    "actual_exit_code": 8,
+    "actual_test_exit_code": 1,
+    "intended_injections": 1,
+    "log": "UpdateCTestConfiguration  from :/tmp/fossilize-56/build/checker-baseline/DartConfiguration.tcl\nTest project /tmp/fossilize-56/build/checker-baseline\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 103\n    Start 103: fork-child-initial-first-stdin-dup2\n\n103: Test command: /tmp/fossilize-56/build/checker-baseline/test/fork-child-setup-test \"initial-first-stdin-dup2\"\n103: Working Directory: /tmp/fossilize-56/build/checker-baseline/test/fork-child-initial-first-stdin-dup2\n103: Test timeout computed to be: 30\n103: Fossilize INFO: Not using control_fd.\n103: Fossilize ERROR: Child process 1831675 terminated before we could receive progress. Cannot continue.\n103: FAIL no-controller-fallthrough-or-worker-fork\n103: FAIL exact-worker-exit-status\n103: Executed fork-child-initial-first-stdin-dup2: births=2 injections=1 normal-workers=1 failures=2\n1/1 Test #103: fork-child-initial-first-stdin-dup2 ...***Failed    0.01 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =   0.01 sec\n\nThe following tests FAILED:\n\t103 - fork-child-initial-first-stdin-dup2 (Failed)\nErrors while running CTest\nOutput from these tests are in: /tmp/fossilize-56/build/checker-baseline/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n"
+  }
+]
+Healthy controls:
+Test project /tmp/fossilize-56/build/checker-baseline
+    Start 92: fork-child-healthy
+1/2 Test #92: fork-child-healthy ...............   Passed    0.00 sec
+    Start 93: fork-child-healthy-recovery
+2/2 Test #93: fork-child-healthy-recovery ......   Passed    0.00 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   0.01 sec
+
+Receipts:
+[
+  {
+    "intent_id": "ck1-baseline-configure",
+    "command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+      "-S",
+      "/tmp/fossilize-56/checker-baseline",
+      "-B",
+      "/tmp/fossilize-56/build/checker-baseline",
+      "-DCMAKE_BUILD_TYPE=Debug",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+    ],
+    "cwd": "/tmp/fossilize-56/checker-1",
+    "timeout": 600.0,
+    "started": 1793401385.2089248,
+    "acquired": 1793401385.2113605,
+    "wait_seconds": 0.0,
+    "finished": 1793401387.1291246,
+    "exit_code": 0,
+    "timed_out": false
+  },
+  {
+    "intent_id": "ck1-baseline-build",
+    "command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+      "--build",
+      "/tmp/fossilize-56/build/checker-baseline",
+      "--target",
+      "fork-child-setup-test",
+      "--parallel",
+      "4"
+    ],
+    "cwd": "/tmp/fossilize-56/checker-1",
+    "timeout": 600.0,
+    "started": 1793401387.269957,
+    "acquired": 1793401390.9059622,
+    "wait_seconds": 3.633375257020816,
+    "finished": 1793401409.609637,
+    "exit_code": 0,
+    "timed_out": false
+  },
+  {
+    "intent_id": "ck1-baseline-sigmask",
+    "command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-56/build/checker-baseline",
+      "-V",
+      "--no-tests=error",
+      "-R",
+      "^fork-child-initial-first-sigmask$"
+    ],
+    "cwd": "/tmp/fossilize-56/checker-1",
+    "timeout": 600.0,
+    "started": 1793401409.6651344,
+    "acquired": 1793401485.9628358,
+    "wait_seconds": 76.29525624401867,
+    "finished": 1793401485.978692,
+    "exit_code": 8,
+    "timed_out": false
+  },
+  {
+    "intent_id": "ck1-baseline-stdout-dup2",
+    "command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-56/build/checker-baseline",
+      "-V",
+      "--no-tests=error",
+      "-R",
+      "^fork-child-initial-first-stdout-dup2$"
+    ],
+    "cwd": "/tmp/fossilize-56/checker-1",
+    "timeout": 600.0,
+    "started": 1793401486.024587,
+    "acquired": 1793401486.0268328,
+    "wait_seconds": 0.0,
+    "finished": 1793401486.0425422,
+    "exit_code": 8,
+    "timed_out": false
+  },
+  {
+    "intent_id": "ck1-baseline-stdin-dup2",
+    "command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-56/build/checker-baseline",
+      "-V",
+      "--no-tests=error",
+      "-R",
+      "^fork-child-initial-first-stdin-dup2$"
+    ],
+    "cwd": "/tmp/fossilize-56/checker-1",
+    "timeout": 600.0,
+    "started": 1793401486.094032,
+    "acquired": 1793401501.9469159,
+    "wait_seconds": 15.850693905027583,
+    "finished": 1793401501.9631042,
+    "exit_code": 8,
+    "timed_out": false
+  },
+  {
+    "intent_id": "ck1-baseline-controls",
+    "command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-56/build/checker-baseline",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^fork-child-healthy(-recovery)?$"
+    ],
+    "cwd": "/tmp/fossilize-56/checker-1",
+    "timeout": 600.0,
+    "started": 1793401502.0146947,
+    "acquired": 1793401502.0171726,
+    "wait_seconds": 0.0,
+    "finished": 1793401502.0490458,
+    "exit_code": 0,
+    "timed_out": false
+  }
+]
