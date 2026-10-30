@@ -1,0 +1,233 @@
+{
+  "candidate_controls": "identical tests passed in all four candidate configurations",
+  "commands": [
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-56/final-baseline-source",
+        "-B",
+        "/tmp/fossilize-56/build/final-baseline",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+      ],
+      "cwd": "/tmp/fossilize-56/checker-final",
+      "exit_code": 0,
+      "intent_id": "fn1-baseline-configure",
+      "log": "runs/issue-56/issue56-20261030/evidence/final-baseline-configure.json",
+      "receipt": {
+        "acquired": 1793403644.0505662,
+        "command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "-S",
+          "/tmp/fossilize-56/final-baseline-source",
+          "-B",
+          "/tmp/fossilize-56/build/final-baseline",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+          "-DFOSSILIZE_TESTS=ON",
+          "-DFOSSILIZE_CLI=ON",
+          "-DFOSSILIZE_VULKAN_LAYER=ON",
+          "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+        ],
+        "cwd": "/tmp/fossilize-56/checker-final",
+        "exit_code": 0,
+        "finished": 1793403645.9692216,
+        "intent_id": "fn1-baseline-configure",
+        "started": 1793403483.8276896,
+        "timed_out": false,
+        "timeout": 600.0,
+        "wait_seconds": 160.22100276406854
+      },
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-56/build/final-baseline",
+        "--target",
+        "fork-child-setup-test",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-56/checker-final",
+      "exit_code": 0,
+      "intent_id": "fn1-baseline-build",
+      "log": "runs/issue-56/issue56-20261030/evidence/final-baseline-build.json",
+      "receipt": {
+        "acquired": 1793404574.8207533,
+        "command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "--build",
+          "/tmp/fossilize-56/build/final-baseline",
+          "--target",
+          "fork-child-setup-test",
+          "--parallel",
+          "4"
+        ],
+        "cwd": "/tmp/fossilize-56/checker-final",
+        "exit_code": 0,
+        "finished": 1793404592.6223714,
+        "intent_id": "fn1-baseline-build",
+        "started": 1793403661.929559,
+        "timed_out": false,
+        "timeout": 600.0,
+        "wait_seconds": 912.8891243219841
+      },
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56/build/final-baseline",
+        "-V",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-initial-first-sigmask$"
+      ],
+      "cwd": "/tmp/fossilize-56/checker-final",
+      "exit_code": 8,
+      "intent_id": "fn1-baseline-sigmask",
+      "log": "runs/issue-56/issue56-20261030/evidence/final-baseline-sigmask.json",
+      "receipt": {
+        "acquired": 1793404686.221352,
+        "command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56/build/final-baseline",
+          "-V",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-initial-first-sigmask$"
+        ],
+        "cwd": "/tmp/fossilize-56/checker-final",
+        "exit_code": 8,
+        "finished": 1793404686.2373402,
+        "intent_id": "fn1-baseline-sigmask",
+        "started": 1793404607.8858366,
+        "timed_out": false,
+        "timeout": 600.0,
+        "wait_seconds": 78.33199292398058
+      },
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56/build/final-baseline",
+        "-V",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-initial-first-stdout-dup2$"
+      ],
+      "cwd": "/tmp/fossilize-56/checker-final",
+      "exit_code": 8,
+      "intent_id": "fn1-baseline-stdout-dup2",
+      "log": "runs/issue-56/issue56-20261030/evidence/final-baseline-stdout-dup2.json",
+      "receipt": {
+        "acquired": 1793404689.381936,
+        "command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56/build/final-baseline",
+          "-V",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-initial-first-stdout-dup2$"
+        ],
+        "cwd": "/tmp/fossilize-56/checker-final",
+        "exit_code": 8,
+        "finished": 1793404689.4142232,
+        "intent_id": "fn1-baseline-stdout-dup2",
+        "started": 1793404607.8927097,
+        "timed_out": false,
+        "timeout": 600.0,
+        "wait_seconds": 81.48710228700656
+      },
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56/build/final-baseline",
+        "-V",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-initial-first-stdin-dup2$"
+      ],
+      "cwd": "/tmp/fossilize-56/checker-final",
+      "exit_code": 8,
+      "intent_id": "fn1-baseline-stdin-dup2",
+      "log": "runs/issue-56/issue56-20261030/evidence/final-baseline-stdin-dup2.json",
+      "receipt": {
+        "acquired": 1793404689.4145222,
+        "command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56/build/final-baseline",
+          "-V",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-initial-first-stdin-dup2$"
+        ],
+        "cwd": "/tmp/fossilize-56/checker-final",
+        "exit_code": 8,
+        "finished": 1793404689.4305122,
+        "intent_id": "fn1-baseline-stdin-dup2",
+        "started": 1793404607.9000425,
+        "timed_out": false,
+        "timeout": 600.0,
+        "wait_seconds": 81.51230483001564
+      },
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56/build/final-baseline",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-healthy(-recovery)?$"
+      ],
+      "cwd": "/tmp/fossilize-56/checker-final",
+      "exit_code": 0,
+      "intent_id": "fn1-baseline-healthy",
+      "log": "runs/issue-56/issue56-20261030/evidence/final-baseline-healthy.json",
+      "receipt": {
+        "acquired": 1793404689.4308105,
+        "command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56/build/final-baseline",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-healthy(-recovery)?$"
+        ],
+        "cwd": "/tmp/fossilize-56/checker-final",
+        "exit_code": 0,
+        "finished": 1793404689.4629009,
+        "intent_id": "fn1-baseline-healthy",
+        "started": 1793404607.9007838,
+        "timed_out": false,
+        "timeout": 600.0,
+        "wait_seconds": 81.52798635105137
+      },
+      "timeout": 600
+    }
+  ],
+  "healthy_controls": "healthy and healthy-recovery both passed",
+  "original_header_only": true,
+  "provenance_record": "runs/issue-56/issue56-20261030/evidence/final-baseline-provenance.json",
+  "three_faults": "Each intended injection reached once; all three failed specifically no-controller-fallthrough-or-worker-fork and exact-worker-exit-status assertions; CTest exit8 expected. No timeout/build failure treated as defect evidence."
+}
