@@ -1,0 +1,86 @@
+{
+  "active_work_unit": "https://github.com/robinwassen/Fossilize/issues/13",
+  "attempts": [],
+  "final_acceptance": null,
+  "findings": [],
+  "issue_snapshot": {
+    "deliverables": [
+      "https://github.com/robinwassen/Fossilize/issues/13"
+    ],
+    "digest": "dddf16fc9a899dbed7d3a32eddde7dc124c6cbe8f1883749d4864515e2f69c88",
+    "nodes": {
+      "https://github.com/robinwassen/Fossilize/issues/13": {
+        "blocked_by": [],
+        "body": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n",
+        "children": [],
+        "id": 6079809809,
+        "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
+        "number": 13,
+        "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+        "repository": "robinwassen/Fossilize",
+        "state": "open",
+        "state_reason": null,
+        "title": "FOS-000004 \u2014 Retain unrecoverable child loss in the controller",
+        "url": "https://github.com/robinwassen/Fossilize/issues/13"
+      }
+    },
+    "root": "https://github.com/robinwassen/Fossilize/issues/13"
+  },
+  "limits": {
+    "command_timeout": 600,
+    "commands": [],
+    "deadline": 1793409156.2568934,
+    "exhausted": false,
+    "extensions": [],
+    "implementation_counts": {},
+    "repairs": 3,
+    "replan_count": 0,
+    "replans": 1
+  },
+  "next_action": "dispatch fresh planner",
+  "operation": "plan",
+  "original": [
+    {
+      "id": "AC1",
+      "requirement": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n"
+    }
+  ],
+  "paths": {
+    "build_directory": "/tmp/fossilize-13/build",
+    "output_directory": "/tmp/fossilize-13/output",
+    "source_worktree": "/home/robin/dev/fossilize-issue-13"
+  },
+  "phase": "planning",
+  "plan": null,
+  "provenance": [],
+  "publishing": {
+    "ci_policy": "local",
+    "stage": "none"
+  },
+  "repository": {
+    "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
+    "branch": "codex/issue-13-retain-child-loss",
+    "candidate_sha": null,
+    "common_dir": "/home/robin/dev/fossilize/.git",
+    "implementation_worktree": "/home/robin/dev/fossilize-issue-13",
+    "input_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
+    "target_branch": "master",
+    "target_remote": "origin",
+    "target_repository": "robinwassen/Fossilize"
+  },
+  "revision": 1,
+  "root_issue": {
+    "id": 6079809809,
+    "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
+    "number": 13,
+    "repository": "robinwassen/Fossilize",
+    "url": "https://github.com/robinwassen/Fossilize/issues/13"
+  },
+  "run_id": "issue13-20261030",
+  "schema_version": 3,
+  "status": "ready",
+  "task_key": "issue-13",
+  "task_location": "https://github.com/robinwassen/Fossilize/issues/13",
+  "verification": [],
+  "work_units": []
+}
