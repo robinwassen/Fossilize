@@ -192,13 +192,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "ee8c4c5deddcb709bef3dc08a156852d151c1246741ed64edc28bb268be77ea6",
+      "report": "runs/issue-62/issue62-20261029/reports/checker-3.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793333853.3692403,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/62",
       "worker_id": "/root/checker_62_3"
     }
@@ -266,6 +268,23 @@
       "route": "implementation",
       "status": "resolved",
       "title": "Keep accepted jobs queued across retryable repository-lock contention"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/62",
+      "evidence": {
+        "cause": "handoff() treats all terminal jobs as drained and only checks existing workflows, omitting a passed command whose continuation is still pending before workflow enqueue.",
+        "impact": "An accepted pending workflow crosses a package activation boundary without being drained. A new same-protocol package can interpret and dispatch the old accepted continuation instead of the pinned executor; this is an inference from the observed successful package switch and later tick path.",
+        "observed": "A quiescent passed command retained its accepted continuation with no continued marker and no workflow row after acquisition-only RepositoryBusy. The changed copied package CLI handoff exited0 and switched executor.json to the changed package digest while that pending contract remained unchanged. The copy differs only by a harmless comment, isolating the missing version fence; no real production mutation occurred.",
+        "record": "runs/issue-62/issue62-20261029/evidence/checker-3-6194c55-pending-handoff.json",
+        "requirement": "Original numbered criterion6 and planned R62-C08 require pinned accepted work and safe drain/handoff. serial-execution.md:195-199 explicitly refuses pending work."
+      },
+      "id": "R62-F03-pending-continuation-handoff",
+      "location": ".agents/skills/implement-change-harness/scripts/harness_serial.py:420-426",
+      "priority": "P2",
+      "requested_change": "Include unconsumed command continuations in the drain fence. Refuse changed-package handoff until pending continuation is durably enqueued and its workflow drained or explicitly reconciled. Add a regression for the passed-command/RepositoryBusy gap and preserve completed/quiescent positive handoff controls.",
+      "route": "implementation",
+      "status": "open",
+      "title": "Refuse executor handoff while a completed command still owns pending continuation"
     }
   ],
   "issue_snapshot": {
@@ -6660,15 +6679,15 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Resolve R62-F03 through the existing bounded repair policy. Check remaining repair and absolute-deadline limits before any further implementation. No new attempt or budget is authorized by this report. Renew fresh independent full gates after any changed candidate.",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
       "requirement": "## Problem\n\nIndependent harness runs should be able to plan and edit concurrently, while builds and verification wait their turn and continue automatically when execution becomes available. Some idle time is acceptable; simplicity, reliable continuation and preserved independent verification matter more than maximum throughput.\n\nThis is a deliberately narrower replacement proposal for https://github.com/robinwassen/Fossilize/issues/40. The user reports that its implementation attempt has run for eight hours and intends to shut it down. Do not inherit #40's general resource scheduler or cross-machine requirements. Filing this issue neither closes #40 nor terminates its running work.\n\n## Required outcome\n\nSupport Linux, one host and one common Git repository with isolated worktrees. Reuse the existing Git-backed harness records and artifact publication. Provide a small, movable execution entry point backed by one supervised runner and one serial lane for heavy commands. Planning, reasoning and source editing may overlap; all roles' builds, tests, benchmarks and exploratory heavy executions use the serial lane.\n\nExample interface (spelling is illustrative):\n\n```sh\nharness-exec --run RUN_ID --cwd BUILD_DIR -- ctest --output-on-failure\n```\n\nThe entry point submits, waits for and returns the actual job result. A waiting agent/chat need not remain alive for an accepted job and its workflow to continue. Persisted JSON alone is not autonomous execution.\n\n## Acceptance criteria\n\n1. **Independent run records.** Replace implicit singleton selection with explicit run identity. Preserve isolated source/build/output paths, one owner for the same issue/deliverable, existing role independence, candidate/plan/attempt binding, bounded repair and publication gates. Completing one run cannot clear another. Preserve existing history and live work during migration; reconcile any partial #40 implementation before changing it.\n\n2. **Reuse state and publication.** Retain one artifact branch and a short repository transaction lock. Reload its latest tree, validate the selected run's revision, and update only that run. Another run's ordinary checkpoint is refreshable contention, not a failed run. Serialize checkpoint/publication and preserve exact publication confirmation and uncertain-write recovery. Do not merge arbitrary state JSON or replay external effects blindly.\n\n3. **Encapsulated serial execution.** Keep the entry point, runner, tests and detailed documentation within the harness hierarchy or its established successor. Callers do not implement their own flock logic. Use one stable host-wide lock and a simple ordered queue derived from durable job records; no resource graph or capacity scheduler. Record run/role/attempt, source identity, command/cwd and execution limits before launch. Waiting consumes neither command timeout nor repair allowance; explicitly reconcile the existing overall deadline policy rather than silently extending an active run.\n\n4. **Real autonomous continuation.** Ordinary contention causes waiting, followed by automatic execution and continuation through the next authorized workflow action, without prompts or another chat message. Use an actual supported agent-launch adapter, such as a validated noninteractive CLI backend, and preserve fresh role contexts and independent checks. Confirm required tools/report interfaces work through that backend. A service wrapping the state helper alone is insufficient. Supervise the runner with restart enabled; reconstruct pending work and reconcile in-flight work before new admission. Document restart, logout and reboot behavior precisely.\n\n5. **Safe process ownership.** One runner controls admission. A killed wrapper must not release the next job while old descendants can still act. Use managed process containment and cleanup, with a durable in-flight marker; establish quiescence before admitting another job after failure/restart. Preserve interrupted/failure evidence. Retry only reconciled, repeatable operations; reconcile PR/comment mutations through authoritative lookup. Unknown cleanup blocks the lane with an accurate reason, never a fabricated pass.\n\n6. **Movable, versioned interface.** Script/package paths may move without changing the shared lock/queue identity or losing waiting work. Runtime storage lives outside source/build checkouts. Never unlink a live lock. Pin the executor/protocol for accepted jobs; activate incompatible updates only through a documented drain/handoff between jobs. A harness self-update cannot start a second executor over the same resource or silently change another run's rules.\n\n## Required verification\n\nUse disposable repositories, bounded processes and assertion-bearing tests:\n\n- Two runs overlap planning/editing, retain independent state, and complete without report/approval crossover; same-issue starts admit one owner.\n- Builds/tests from every role never overlap. A queued job executes and its workflow advances automatically when the lane is freed.\n- Another run advances artifact history while a job waits; the waiting run continues without manual reconciliation.\n- Restart while waiting and while running; include a killed wrapper with a surviving grandchild. No successor starts before cleanup/reconciliation.\n- Interrupt after execution but before result recording, and around artifact/PR publication. Preserve evidence without inventing success or duplicating external effects.\n- Move the harness entry point with waiting/running jobs; stable lock/queue identity prevents overlap and stranded jobs.\n- Exercise the actual agent backend end to end, including independent verification and the permitted publication outcome. Mock process fixtures alone do not establish autonomous agent continuation.\n\nRun the relevant existing harness regressions. Report unsupported, failed and incomplete checks honestly. Research probes confirmed blocking-flock handoff and reproduced premature release after wrapper death; they do not prove the proposed runner exists.\n\n## Scope and relationships\n\nParent: https://github.com/robinwassen/Fossilize/issues/9. Narrow replacement proposal for https://github.com/robinwassen/Fossilize/issues/40; do not copy all its acceptance criteria or make it a prerequisite. Related https://github.com/robinwassen/Fossilize/issues/43 owns change-scoped verification/evidence execution: integrate at the execution boundary and avoid duplicating its manifest/test-selection logic.\n\nOut of scope: multiple hosts or independent clone writers, distributed leases, databases, hierarchical/capacity scheduling, sandbox infrastructure, automatic merge, and unattended live Steam restoration. Existing unsupported mandatory gates remain incomplete; exclusions do not authorize skipping them. No live Steam/GPU experiments, service installation or new implementation run are authorized merely by this filing.\n\n<!-- harness-followup:lean-durable-parallel-executor-v1 -->\n"
     }
   ],
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "assumptions": [
       "Host preflight 2026-10-29: codex-cli 0.154.0 at /home/robin/.local/bin/codex; authenticated using ChatGPT; exec exposes --json, --output-schema, --output-last-message, fresh execution and resume. This is capability discovery, not an actual model execution pass.",
@@ -7029,7 +7048,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 192,
+  "revision": 193,
   "root_issue": {
     "id": 6107403434,
     "node_id": "I_kwDOVZpjbc8AAAABbAeUqg",
@@ -7039,7 +7058,7 @@
   },
   "run_id": "issue62-20261029",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-62",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/62",
   "verification": [
