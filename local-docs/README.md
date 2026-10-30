@@ -8,6 +8,7 @@
 - [Observability applicability review and worker evidence](specs/observability-validation.md)
 - [Observability adversarial review](specs/observability-adversarial-review.md)
 - [Issue workflow](issue-workflow.md)
+- [Changelog writing guideline](changelog-guidelines.md)
 - [Canonical tasks](https://github.com/robinwassen/Fossilize/issues)
 - [Historical observability sweep](reviews/observability-sweep.md)
 - [Change harness design rationale](specs/basic-change-harness-plan.md)
