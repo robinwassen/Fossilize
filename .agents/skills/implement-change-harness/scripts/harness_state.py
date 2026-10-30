@@ -706,6 +706,9 @@ class Harness:
         return self.publication_result(tip, records, state, publication, **extra)
 
     def selected_state(self, state):
+        # Pre-issue historical states have no issue identity to select.
+        if state.get("schema_version") in (1, 2):
+            return False
         return self.selection == (root_identity(state), state["run_id"])
 
     def select_pointer(self, records):

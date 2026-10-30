@@ -23,6 +23,37 @@ from github_issues import IssueError
 WRAPPER = Path(vl.__file__).resolve()
 
 
+class SelectedHistoryTests(unittest.TestCase):
+    def setUp(self):
+        self.harness = Harness.__new__(Harness)
+        self.harness.selection = ('https://github.com/robinwassen/Fossilize/issues/63', 'completed')
+        self.current = {'schema_version':3, 'root_issue':{'url':self.harness.selection[0]},
+                        'run_id':'completed', 'phase':'complete'}
+        self.records = {
+            'active.json':encoded(None),
+            'runs/FOS-000025/old/state.json':encoded({'schema_version':1, 'run_id':'old', 'phase':'complete'}),
+            'runs/FOS-000026/old/state.json':encoded({'schema_version':2, 'run_id':'old', 'phase':'complete'}),
+            'runs/issue-63/completed/state.json':encoded(self.current),
+        }
+
+    def test_completed_selection_ignores_pre_issue_history(self):
+        for active in (None, {'version':2, 'runs':{}}):
+            with self.subTest(active=active):
+                self.records['active.json'] = encoded(active)
+                self.assertEqual(self.harness.selected_record(self.records), self.current)
+
+    def test_absent_selection_with_pre_issue_history_returns_none(self):
+        del self.records['runs/issue-63/completed/state.json']
+        self.assertIsNone(self.harness.selected_record(self.records))
+
+    def test_malformed_issue_state_is_not_hidden(self):
+        malformed = dict(self.current)
+        del malformed['root_issue']
+        self.records['runs/issue-63/completed/state.json'] = encoded(malformed)
+        with self.assertRaises(KeyError):
+            self.harness.selected_record(self.records)
+
+
 class ParallelTests(LiveFixture, unittest.TestCase):
     actual_pr_evidence = closeout.IssueCloseoutTests.actual_pr_evidence
 
