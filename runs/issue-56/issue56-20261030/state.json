@@ -1,0 +1,86 @@
+{
+  "active_work_unit": "https://github.com/robinwassen/Fossilize/issues/56",
+  "attempts": [],
+  "final_acceptance": null,
+  "findings": [],
+  "issue_snapshot": {
+    "deliverables": [
+      "https://github.com/robinwassen/Fossilize/issues/56"
+    ],
+    "digest": "1393d94eb5e43fa11f8f13dde913d0691cc8ae797ff42567e317b5b5f1fe82f5",
+    "nodes": {
+      "https://github.com/robinwassen/Fossilize/issues/56": {
+        "blocked_by": [],
+        "body": "## Problem\n\nIn the fork-child branch of bool ProcessProgress::start_child_process, failed pthread_sigmask or dup2 returns EXIT_FAILURE. On the audited platform EXIT_FAILURE is 1, converted to true. The failed child can return into controller code after closing its controller descriptors instead of terminating.\n\n## Evidence level\n\nIndependently checked source-proven conditional branch. No actual pthread_sigmask/dup2 failure was injected during the audit; the consequences depend on the failing call and remaining slots.\n\n## Reproduction / verification status\n\nSource inspection: follow the return statements at Linux controller lines 576\u2013578 and 605\u2013609 back to the initial/recovery Boolean callers. Proposed regression: inject each child-only setup failure, assert child exit, no controller fallthrough and no child-created extra workers. That injection has not yet been run.\n\n## Required outcome and acceptance\n\n- Every post-fork fatal child setup error takes a terminal child-exit path, never a Boolean return into parent/controller execution.\n- Inject each covered failure and assert process tree, cleanup/reaping, parent status and absence of unintended worker spawning.\n- Audit neighboring child-return branches and use child-safe termination semantics. Keep rare fault branches distinct from ordinary launch behavior.\n\n## Scope and references\n\nFix/investigate the lifecycle boundary described above, including its regression coverage. Do not expand this into Steam scheduling policy, automatic deployment, a general scheduler rewrite or unrelated Vulkan behavior.\n\n[cli/fossilize_replay_linux.hpp:506](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L506) \u00b7 [cli/fossilize_replay_linux.hpp:576](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L576)\n\n## Shared acceptance and evidence\n\nThis is a child of the worker lifecycle epic through GitHub's native hierarchy. Its shared verification/compatibility gates apply. Add deterministic assertion-bearing regression coverage that fails before the fix where feasible; retain healthy controls. These research probes expose defects and are not passing product tests.\n\nAudit source: `556da9ff7d7616704dda515756219ab1dab693ec`; local audit baseline `2325a40846cceb9e053cc5b26aad4c030e07e1a2`. The relevant platform supervisor/owner headers remain unchanged in fork master `5eb2c496dde819c868fa3d7d1e52c51047d9adb8`. No claim is made about Steam's installed version, report frequency, or hardware cache behavior.\n\n[Checked audit](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit.md) \u00b7 [Evidence and independent checker reports](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/README.md)\n\n<!-- fossilize-worker-lifecycle-audit-2026-10-29:child-setup-return -->\n",
+        "children": [],
+        "id": 6099038316,
+        "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
+        "number": 56,
+        "parent": "https://github.com/robinwassen/Fossilize/issues/46",
+        "repository": "robinwassen/Fossilize",
+        "state": "open",
+        "state_reason": null,
+        "title": "Terminate the fork child on setup failure instead of returning Boolean success",
+        "url": "https://github.com/robinwassen/Fossilize/issues/56"
+      }
+    },
+    "root": "https://github.com/robinwassen/Fossilize/issues/56"
+  },
+  "limits": {
+    "command_timeout": 600,
+    "commands": [],
+    "deadline": 1793409450.6136463,
+    "exhausted": false,
+    "extensions": [],
+    "implementation_counts": {},
+    "repairs": 3,
+    "replan_count": 0,
+    "replans": 1
+  },
+  "next_action": "dispatch fresh planner",
+  "operation": "plan",
+  "original": [
+    {
+      "id": "AC1",
+      "requirement": "## Problem\n\nIn the fork-child branch of bool ProcessProgress::start_child_process, failed pthread_sigmask or dup2 returns EXIT_FAILURE. On the audited platform EXIT_FAILURE is 1, converted to true. The failed child can return into controller code after closing its controller descriptors instead of terminating.\n\n## Evidence level\n\nIndependently checked source-proven conditional branch. No actual pthread_sigmask/dup2 failure was injected during the audit; the consequences depend on the failing call and remaining slots.\n\n## Reproduction / verification status\n\nSource inspection: follow the return statements at Linux controller lines 576\u2013578 and 605\u2013609 back to the initial/recovery Boolean callers. Proposed regression: inject each child-only setup failure, assert child exit, no controller fallthrough and no child-created extra workers. That injection has not yet been run.\n\n## Required outcome and acceptance\n\n- Every post-fork fatal child setup error takes a terminal child-exit path, never a Boolean return into parent/controller execution.\n- Inject each covered failure and assert process tree, cleanup/reaping, parent status and absence of unintended worker spawning.\n- Audit neighboring child-return branches and use child-safe termination semantics. Keep rare fault branches distinct from ordinary launch behavior.\n\n## Scope and references\n\nFix/investigate the lifecycle boundary described above, including its regression coverage. Do not expand this into Steam scheduling policy, automatic deployment, a general scheduler rewrite or unrelated Vulkan behavior.\n\n[cli/fossilize_replay_linux.hpp:506](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L506) \u00b7 [cli/fossilize_replay_linux.hpp:576](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L576)\n\n## Shared acceptance and evidence\n\nThis is a child of the worker lifecycle epic through GitHub's native hierarchy. Its shared verification/compatibility gates apply. Add deterministic assertion-bearing regression coverage that fails before the fix where feasible; retain healthy controls. These research probes expose defects and are not passing product tests.\n\nAudit source: `556da9ff7d7616704dda515756219ab1dab693ec`; local audit baseline `2325a40846cceb9e053cc5b26aad4c030e07e1a2`. The relevant platform supervisor/owner headers remain unchanged in fork master `5eb2c496dde819c868fa3d7d1e52c51047d9adb8`. No claim is made about Steam's installed version, report frequency, or hardware cache behavior.\n\n[Checked audit](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit.md) \u00b7 [Evidence and independent checker reports](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/README.md)\n\n<!-- fossilize-worker-lifecycle-audit-2026-10-29:child-setup-return -->\n"
+    }
+  ],
+  "paths": {
+    "build_directory": "/tmp/fossilize-56/build",
+    "output_directory": "/tmp/fossilize-56/output",
+    "source_worktree": "/home/robin/dev/fossilize-issue-56"
+  },
+  "phase": "planning",
+  "plan": null,
+  "provenance": [],
+  "publishing": {
+    "ci_policy": "local",
+    "stage": "none"
+  },
+  "repository": {
+    "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
+    "branch": "codex/issue-56-child-setup",
+    "candidate_sha": null,
+    "common_dir": "/home/robin/dev/fossilize/.git",
+    "implementation_worktree": "/home/robin/dev/fossilize-issue-56",
+    "input_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
+    "target_branch": "master",
+    "target_remote": "origin",
+    "target_repository": "robinwassen/Fossilize"
+  },
+  "revision": 1,
+  "root_issue": {
+    "id": 6099038316,
+    "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
+    "number": 56,
+    "repository": "robinwassen/Fossilize",
+    "url": "https://github.com/robinwassen/Fossilize/issues/56"
+  },
+  "run_id": "issue56-20261030",
+  "schema_version": 3,
+  "status": "ready",
+  "task_key": "issue-56",
+  "task_location": "https://github.com/robinwassen/Fossilize/issues/56",
+  "verification": [],
+  "work_units": []
+}
