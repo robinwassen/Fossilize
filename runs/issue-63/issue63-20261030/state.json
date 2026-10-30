@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/issue-63/issue63-20261030/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793337756.7211149,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/63",
       "worker_id": "/root/planner63"
     }
@@ -65,17 +66,194 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
       "requirement": "## Problem and outcome\n\nAllow multiple harnesses to work on this codebase at the same time. Planning and editing can overlap; builds and verification wait for a shared lock and continue automatically when it is released. Some idle time is acceptable. Prefer a small, practical implementation over comprehensive orchestration.\n\nThis is an explicitly narrower alternative to https://github.com/robinwassen/Fossilize/issues/62 and https://github.com/robinwassen/Fossilize/issues/40. Their broader requirements are not inherited. Leave both tickets unchanged.\n\n## Scope\n\nLinux, one host, one common Git repository with separate worktrees. Ordinary live execution only. Crash recovery is out of scope.\n\n## Acceptance criteria\n\n1. Each harness has explicitly selected, independent run state, a source worktree, build directory and output paths. Initializing or completing one run does not replace another run's state. Preserve existing independent planner/implementer/checker roles and candidate-bound acceptance.\n2. Shared artifact updates use a short repository lock. Reload the latest artifact tree under the lock and change only the selected run. Routine updates from another run must not cause manual divergent-state reconciliation. Reuse existing artifact storage/publication rather than introduce another store; keep publication serialized and preserve its existing checks.\n3. Encapsulate blocking `fcntl.flock()` in a small reusable Python module/script under the harness hierarchy. All harness builds and verification commands use the same stable lock path outside individual worktrees. Planning and editing remain concurrent. The interface can move with the harness without changing lock identity. Never unlink a live lock file.\n4. A live waiting harness proceeds automatically when the lock is freed, without a user prompt, another chat message or an explicit retry. Lock waiting is outside the command execution timeout and does not spend repair attempts. Adjust ordinary-wait deadline handling explicitly so contention alone does not require a budget approval. The existing live coordinator continues the workflow after the command returns; no new agent backend is required.\n5. Document the small supported invocation and integrate it into the existing role workflow. Reuse the verification entry point from https://github.com/robinwassen/Fossilize/issues/43 if available; do not make its implementation a prerequisite or duplicate its manifest/test-selection work.\n\n## Verification\n\nUse a few focused tests with disposable repositories and bounded independent processes:\n\n- Two runs can remain active; interleaved state updates and completion retain the other run's records.\n- Two commands using the Python wrapper cannot execute their protected sections together. Releasing the first lock lets the second proceed automatically. Assert the command result is returned correctly.\n- A run waiting for verification can continue after another run updates artifact state.\n- Separate worktrees resolve to the same lock identity, including when the wrapper is invoked from a different package path.\n\nRun relevant existing harness checks. No crash-injection suite or new orchestration framework is required.\n\n## Explicit non-goals\n\nNo supervisor/service, durable execution queue, automatic restart/reboot recovery, crash/descendant recovery, timestamp expiry/leases, distributed coordination, multiple-host support, resource scheduling, new sandbox, or unattended Steam restoration. Do not expand implementation to solve these cases. Run IDs/timestamps may be diagnostic metadata, but are not needed for lock ownership.\n\nParent: https://github.com/robinwassen/Fossilize/issues/9. This filing requests only this narrow implementation; it does not start a harness run, close another issue or modify #62.\n\n<!-- harness-followup:simple-parallel-flock-v1 -->\n"
     }
   ],
-  "phase": "planning",
-  "plan": null,
-  "provenance": [],
+  "phase": "implementing",
+  "plan": {
+    "assumptions": [
+      "The required issue43 bounded runner is already present in the baseline and remains the single manifest/selection authority.",
+      "Supported concurrency is ordinary cooperative local execution in separate worktrees sharing one canonical common Git directory. A live coordinator waits for wrapper completion and resumes its existing workflow.",
+      "A trusted coordinator reports measured runtime facts; this is procedural coordination, not security isolation from a hostile coordinator.",
+      "Compatibility may retain the old fail-fast/no-selector interfaces for historical fixture assertions while explicit live selected-run paths block and support parallelism. Do not weaken old tests merely to avoid implementation work."
+    ],
+    "cases": [
+      {
+        "assertions": [
+          "In two separate worktrees, initialize two explicitly selected runs with distinct source/build/output paths and retain both active entries. Interleave state actions and finish one run through the normal fixture workflow; its completion and retry leave the other state/report/evidence bytes and active entry intact. Output sentinels remain isolated.",
+          "An attempted conflicting live writable path is rejected. Selected reports still require exact role/worker/candidate/base/plan tuples and an independent final checker; cross-run and stale same-run reports cannot accept."
+        ],
+        "id": "P01",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_parallel.py::ParallelTests.test_P01_selected_runs_interleave_and_complete"
+      },
+      {
+        "assertions": [
+          "A process observed before another run advances the artifact tip can update its unchanged selected run afterward without manual reconciliation. The resulting checkpoint descends from the latest artifact tip and retains every unrelated record.",
+          "Same-run stale revision/state, divergent or unrelated expected tip, overwritten evidence and changed publication policy still fail with no ref mutation. Existing remote exact-tip/destination/dirty-view checks continue passing."
+        ],
+        "id": "P02",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_parallel.py::ParallelTests.test_P02_unrelated_artifact_updates_reload_without_lost_records"
+      },
+      {
+        "assertions": [
+          "Two independent wrapper processes cannot enter the protected section together. Use readiness/release events or pipes and bounded waits; prove the second is waiting before releasing the first, then observe automatic entry/completion without another invocation.",
+          "Return the child success and an intentional nonzero status correctly. Wait longer than a short child execution timeout, then release and run a fast child successfully; a genuinely slow child times out after acquisition. Keep outer fixture watchdogs finite."
+        ],
+        "id": "P03",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_parallel.py::ParallelTests.test_P03_blocking_wrapper_serializes_and_preserves_results"
+      },
+      {
+        "assertions": [
+          "While run A waits for verification, run B publishes an artifact update through the ordinary selected-run path, proving A does not hold the artifact lock. Release the verification lock and let A continue automatically at the current tree.",
+          "Measured wait alone may cross A original wall deadline without requiring approval or consuming repairs; execution timeout begins after acquisition. Selected-run deadline accounting is single-use and limited to observed wait; unrelated run budgets remain unchanged. Genuine pre-existing exhaustion/execution timeout is not forgiven.",
+          "Two worktrees and a copied/moved package invocation resolve the identical common-directory verification lock and contend on its same inode. The file remains present after release."
+        ],
+        "id": "P04",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_parallel.py::ParallelTests.test_P04_wait_reloads_run_and_excludes_only_contention"
+      },
+      {
+        "assertions": [
+          "Candidate historical readers accept singleton/null pointers and version2 empty/nonempty indexes in disposable ancestor histories, including complete failed abandoned history. Initializing/advancing/completing a new selected run preserves historical blob IDs and ancestry. Abandoned work never produces workflow_complete=true.",
+          "The new tests are discovered exactly once in regression-extra by run_harness_tests.py; inventory and union assertions remain intact. Documentation points to the supported wrapper and selected-run API without package-relative lock identity."
+        ],
+        "id": "P05",
+        "location": ".agents/skills/implement-change-harness/scripts/test_harness_parallel.py::ParallelTests.test_P05_retained_history_and_workflow_integration"
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Exact committed implementation/checker/final candidate repository root",
+        "expected": "Every discovered test and every existing scenario executes exactly once with passing status, all group results and union.json pass at the exact candidate/attempt. No skip, stale report, empty substitute, removed method or reduced W09/W11 coverage. New P01-P05 assertions pass. Full group list: regression-test_harness_artifacts, regression-test_harness_closeout, regression-test_harness_issue_artifacts, regression-test_harness_issue_closeout, regression-test_harness_migration, regression-test_harness_state, regression-test_issue_guidance, regression-test_issue_migration, regression-test_issue_source, delivery-ordinary, delivery-w09, delivery-w11-0, delivery-w11-1, delivery-w11-2, delivery-w11-3, regression-extra.",
+        "id": "full-bounded-suite",
+        "kind": "both",
+        "method": "From the exact committed candidate, use a new evidence directory outside source for each implementer/checker/final attempt. Submit command-intent payloads first. Through the verification wrapper run run_harness_tests.py --inventory --output <evidence>/inventory.json; then every group listed below with --run-group GROUP --inventory <evidence>/inventory.json --output <evidence>/GROUP.json; then --verify-results <evidence>. Each child has its own real 600-second execution deadline after lock acquisition; environment PYTHONDONTWRITEBYTECODE=1, python3 -B. All groups are mandatory, including regression-extra containing P01-P05. Distinct wrapper invocations serialize safely; do not parallelize protected work outside the wrapper. Record exact commands, timing, exit status, nonzero discovered/executed IDs, inventory digest, group/scenario union and P01-P05 mapping.",
+        "prerequisites": "Linux Python3 standard library, Git, fcntl.flock; executable fake gh fixtures; available run_harness_tests.py from issue43 already in baseline; fresh isolated evidence directory; published command intents."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Exact committed candidate repository root",
+        "expected": "Exit0 and valid skill package; missing mandatory validator/environment is unable-to-verify, not a waiver.",
+        "id": "skill-validator",
+        "kind": "both",
+        "method": "Through the same verification wrapper, run python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness with a 600-second child deadline after acquisition, after coordinator publication of its command intent.",
+        "prerequisites": "Installed skill-creator validator and its PyYAML dependency; published command intent."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Disposable control repositories outside source, using immutable baseline/candidate modules",
+        "expected": "Controls identify the intended original defect with concrete assertions/diagnostics; candidate passes equivalent behavior. Import failure alone is not proof of behavior. Genuine stale selected-run acceptance and missing exclusion remain detected.",
+        "id": "defect-controls",
+        "kind": "both",
+        "method": "Run small disposable-process controls comparing baseline 2ffeaae69e4e127dcb0bfb3bf6319c6599509546 with the candidate, or a temporary deliberately faulty copy when a new interface cannot run against baseline. Preserve baseline and candidate SHA plus exact commands/status in a small log. Submit command intents before execution; all probes use the wrapper and finite child deadlines. At minimum demonstrate the baseline second-live-run rejection and unchanged-selected-run stale-global-tip rejection, and a credible negative lock control (baseline fail-fast repository lock or no-op flock temporary copy) where the assertion detects missing blocking/exclusion. This is a handful of probes, not a crash matrix.",
+        "prerequisites": "Git and bounded Python subprocess fixtures; baseline available; no production mutation."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Disposable clone/copy or explicit read-only candidate inspection of the bound repository",
+        "expected": "Historical index/abandoned records validate, every old blob and ancestry is unchanged, new current run remains selected correctly, abandonment remains incomplete/failed, and candidate is suitable for subsequent coordinator use. Report any unexercised self-application boundary explicitly.",
+        "id": "retained-history-self-application",
+        "kind": "both",
+        "method": "Exercise the candidate historical validation/selected-run read path against a read-only or disposable copy of the actual retained harness-artifacts ancestry, including ancestor eaf2714 with version2 empty index and issue62 state blob e6e86faa5717414f1e390b8b8e2670d5e340c381. Include the current issue63 selected run where appropriate. Use the candidate reader and all-ancestor validation without production writes, source surgery, history rewriting or changing the bound destination. Record the tested artifact tip, selected root/run, historical blob identities and exit status. The coordinator continues using its pinned compatible bootstrap helper during this run until candidate compatibility is independently established; only the coordinator may adopt a candidate helper afterward.",
+        "prerequisites": "Actual retained artifact objects; candidate reader; independent checker; published command intent and safe read-only probe."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Fresh detached checker worktree at exact candidate; repeat in a separate fresh final checker worktree",
+        "expected": "All five numbered issue requirements and four requested verification bullets are covered under AC1, original acceptance unchanged, #62/#40 unchanged, no framework/queue/backend scope creep, no stale or cross-run acceptance and no mandatory assertion removed. Exact candidate/base/plan bound work-unit and separate final acceptance.",
+        "id": "source-and-requirement-review",
+        "kind": "both",
+        "method": "Fresh checker derives expectations from exact original AC1 and current gh issue view 63 --repo robinwassen/Fossilize, reviews complete base-to-candidate diff, all P01-P05 assertions/registration and documentation against runtime behavior. Inspect build/verification command paths, common lock identity, lock scope and order, wait accounting, selected-run CAS/publication guards, legacy compatibility, role/acceptance bindings and out-of-scope effects. Record semantic review alongside actual executed test IDs; do not substitute review for runtime gates.",
+        "prerequisites": "Clean exact candidate, unchanged original/live issue snapshot, full diff, independently produced gate evidence; no unresolved findings."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/2b55/fossilize",
+        "expected": "One actual attached PR for issue63; other runs/history unaffected; complete means this selected run publication succeeds, not that all active runs ended or abandoned work succeeded.",
+        "id": "publication",
+        "kind": "publication",
+        "method": "Coordinator uses the existing checked journal/readiness/final/publish workflow with explicit selected run if using candidate helper, otherwise the pinned compatible helper. Re-read live issue inputs and target master, preserve history, publish artifacts exactly, push source without force, reconcile/create one PR, verify its head/base/eligible full-URL closing reference, journal actual PR evidence and attach it. No merge without bound human approval.",
+        "prerequisites": "Independent work-unit and separate final acceptance, all required gates passing, unchanged source/base/input/plan, current artifact publication confirmed."
+      }
+    ],
+    "implementation": [
+      "Add a small reusable Python flock module and command wrapper under the harness scripts (suggested verification_lock.py; final naming may differ). Derive canonical lock identity from git rev-parse --path-format=absolute --git-common-dir and realpath, never script/package/worktree location. Use a distinct persistent verification/build lock file in that common directory; never unlink it. Blocking fcntl.flock(LOCK_EX) waits synchronously and automatically. All build and verification commands enter this wrapper; planning/editing do not. Keep the short artifact/publication lock separate, so a waiting or executing verification command does not hold the artifact lock.",
+      "Introduce explicit root-issue plus run-id selection for normal API/CLI access. Store independent run states in the existing runs/<storage>/<run>/state.json paths and use an active-run index in active.json. Initializing/completing the selected run adds/removes only its index entry. Persist independent source worktree, build directory and output/evidence paths for each run and document their selection; reject conflicting live writable paths rather than silently share them. Preserve legacy no-selector singleton behavior where needed for existing callers/tests; reject ambiguous selection. Keep exact worker tuples, role ownership, revision checks, source/base/plan guards and separate final checking intact.",
+      "Under the short common repository/artifact lock, reload the latest artifact ref/tree, resolve the selected run and apply only that run transaction plus necessary shared index/publication metadata. Accept a stale expected global artifact tip when it is an ancestor and the selected-run state and relevant shared identity/policy facts are unchanged; retain strict selected-run expected revision/predecessor, append-only evidence, history validation and Git update-ref CAS against the actual reloaded tip. Same-run stale state, divergent/nonancestor tips, malformed records or destination changes must still fail. Serialize existing artifact publication and exact-tip confirmation under the artifact lock. Do not hold this lock while waiting for or running builds/tests. Audit show/publication retry/records-only, issue journal, terminal completion and supported delivery entry points for singleton assumptions, preserving their current safety checks and unrelated runs.",
+      "The wrapper executes argv directly after lock acquisition with a real child timeout no greater than command_timeout (normally 600 seconds), preserving the command exit result and documented timeout failure. Do not put a 600-second outer timeout around the waiting wrapper. Use the existing command-intent/selected-run bookkeeping to record the measured ordinary contention wait and exclude only that wait from the selected run deadline; settle wait accounting once before the normal expired-budget check, including when the wall deadline passed during that live wait. Waiting does not dispatch/retry workers or increment implementation/repair counters. An already exhausted non-contention budget, genuine execution overrun and failed command remain failures/decisions under existing rules. No crash recovery state machine is needed. The live coordinator simply resumes after the wrapper returns and reloads selected-run state rather than replaying stale global CAS.",
+      "Reuse run_harness_tests.py unchanged in purpose: inventory, all bounded groups and exact-union verification remain the entry point. The new test module is automatically owned by regression-extra. Preserve the original 113-method compatibility mapping, W09/W11 scenarios and every existing test assertion. Adapt only genuinely superseded caller setup or add explicit selectors; retaining legacy/no-selector compatibility is preferred to weakening old controls.",
+      "Support retained artifact history from before this source baseline: singleton/null active pointers, version2 active indexes including {version:2,runs:{}}, and the issue62 complete/failed/abandoned historical run. Validate these as historical evidence without treating abandonment as successful workflow completion or task authority. Preserve every historical state/report/evidence byte and ancestor, including original acceptance and deadlines. No schema-history rewrite/deletion or adoption of the abandoned implementation is allowed. New normal runs use the small new interface.",
+      "Update tracked SKILL.md, references/state.md, references/roles.md and local-docs/verification.md with selected-run invocations, isolated paths, wrapper usage for every build/verification command, stable common-directory identity, automatic live waiting and measured wait-only budget handling. Keep fresh planner/implementer/checker roles and actual current candidate acceptance explicit. If delivery/journal entry points require a selector, document it without expanding their responsibilities.",
+      "Implement the five focused tests below using disposable Git repositories, a fake gh service and independently bounded processes. Commit implementation/tests before required acceptance verification. Before executing any required verification command, submit its exact command-intent payload list to the coordinator and wait for published intents. Provide commands/cwd/timeout/log paths and planned-case-to-test mappings in the implementer report; the coordinator alone writes canonical state."
+    ],
+    "non_goals": [
+      "Do not inherit requirements or source implementation from issues 62 or 40; leave both tickets unchanged.",
+      "No supervisor/service, durable queue, agent backend, restart/reboot/crash/descendant recovery, expiry/leases, distributed or multiple-host coordination, resource orchestration, sandbox, or Steam restoration.",
+      "No new artifact store, force publication, acceptance bypass, rewritten/deleted history, shortened mandatory suite or new test-manifest system.",
+      "No C++/Vulkan behavior change; CMake/CTest, GPU and Steam runs are outside the verification scope of this Python harness-only change."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "## Problem and outcome\n\nAllow multiple harnesses to work on this codebase at the same time. Planning and editing can overlap; builds and verification wait for a shared lock and continue automatically when it is released. Some idle time is acceptable. Prefer a small, practical implementation over comprehensive orchestration.\n\nThis is an explicitly narrower alternative to https://github.com/robinwassen/Fossilize/issues/62 and https://github.com/robinwassen/Fossilize/issues/40. Their broader requirements are not inherited. Leave both tickets unchanged.\n\n## Scope\n\nLinux, one host, one common Git repository with separate worktrees. Ordinary live execution only. Crash recovery is out of scope.\n\n## Acceptance criteria\n\n1. Each harness has explicitly selected, independent run state, a source worktree, build directory and output paths. Initializing or completing one run does not replace another run's state. Preserve existing independent planner/implementer/checker roles and candidate-bound acceptance.\n2. Shared artifact updates use a short repository lock. Reload the latest artifact tree under the lock and change only the selected run. Routine updates from another run must not cause manual divergent-state reconciliation. Reuse existing artifact storage/publication rather than introduce another store; keep publication serialized and preserve its existing checks.\n3. Encapsulate blocking `fcntl.flock()` in a small reusable Python module/script under the harness hierarchy. All harness builds and verification commands use the same stable lock path outside individual worktrees. Planning and editing remain concurrent. The interface can move with the harness without changing lock identity. Never unlink a live lock file.\n4. A live waiting harness proceeds automatically when the lock is freed, without a user prompt, another chat message or an explicit retry. Lock waiting is outside the command execution timeout and does not spend repair attempts. Adjust ordinary-wait deadline handling explicitly so contention alone does not require a budget approval. The existing live coordinator continues the workflow after the command returns; no new agent backend is required.\n5. Document the small supported invocation and integrate it into the existing role workflow. Reuse the verification entry point from https://github.com/robinwassen/Fossilize/issues/43 if available; do not make its implementation a prerequisite or duplicate its manifest/test-selection work.\n\n## Verification\n\nUse a few focused tests with disposable repositories and bounded independent processes:\n\n- Two runs can remain active; interleaved state updates and completion retain the other run's records.\n- Two commands using the Python wrapper cannot execute their protected sections together. Releasing the first lock lets the second proceed automatically. Assert the command result is returned correctly.\n- A run waiting for verification can continue after another run updates artifact state.\n- Separate worktrees resolve to the same lock identity, including when the wrapper is invoked from a different package path.\n\nRun relevant existing harness checks. No crash-injection suite or new orchestration framework is required.\n\n## Explicit non-goals\n\nNo supervisor/service, durable execution queue, automatic restart/reboot recovery, crash/descendant recovery, timestamp expiry/leases, distributed coordination, multiple-host support, resource scheduling, new sandbox, or unattended Steam restoration. Do not expand implementation to solve these cases. Run IDs/timestamps may be diagnostic metadata, but are not needed for lock ownership.\n\nParent: https://github.com/robinwassen/Fossilize/issues/9. This filing requests only this narrow implementation; it does not start a harness run, close another issue or modify #62.\n\n<!-- harness-followup:simple-parallel-flock-v1 -->\n"
+      }
+    ],
+    "risks": [
+      "Nested verification against the same common Git directory can deadlock; wrapper concurrency tests must use disposable repositories, and command workflows must avoid recursively wrapping the same protected execution. Never wait for the verification lock while holding the artifact lock.",
+      "Global artifact-tip advancement must only bypass CAS for unrelated changes; stale same-run bytes/revisions or changed shared policy still require rejection. Reload and update against actual latest tip under lock.",
+      "The retained issue62 history contains extra abandoned-run fields and version2 indexes absent from baseline source. Read compatibility is necessary; it confers no implementation or acceptance authority and must not convert failed abandoned completion to success.",
+      "Exclude only measured ordinary lock wait from the four-hour budget, once. Do not reset repair limits/deadlines wholesale or forgive real execution time. Crash-window recovery is intentionally unsupported.",
+      "Full bounded suite is mandatory and may be lengthy. Missing tools, actual failures, skipped groups or unfinished results block acceptance. No C++/GPU/Steam guarantee follows from these Python checks."
+    ],
+    "scope": "Implement issue 63 from master 2ffeaae69e4e127dcb0bfb3bf6319c6599509546 as one unsplit change: Linux, one host, separate worktrees sharing a common Git directory; explicitly selected independent live harness runs and a small blocking verification command wrapper. Preserve the existing finite independent-role workflow, candidate-bound acceptance, artifact store and publication checks. All original requirements remain under AC1 exactly as snapshotted.",
+    "version": 1,
+    "work_units": []
+  },
+  "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/63"
+        ],
+        "digest": "fe875963791f710b0e6dd85dbf7c5b6c32b68ecb40451f121df5608e70c20ece",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/63": {
+            "blocked_by": [],
+            "body": "## Problem and outcome\n\nAllow multiple harnesses to work on this codebase at the same time. Planning and editing can overlap; builds and verification wait for a shared lock and continue automatically when it is released. Some idle time is acceptable. Prefer a small, practical implementation over comprehensive orchestration.\n\nThis is an explicitly narrower alternative to https://github.com/robinwassen/Fossilize/issues/62 and https://github.com/robinwassen/Fossilize/issues/40. Their broader requirements are not inherited. Leave both tickets unchanged.\n\n## Scope\n\nLinux, one host, one common Git repository with separate worktrees. Ordinary live execution only. Crash recovery is out of scope.\n\n## Acceptance criteria\n\n1. Each harness has explicitly selected, independent run state, a source worktree, build directory and output paths. Initializing or completing one run does not replace another run's state. Preserve existing independent planner/implementer/checker roles and candidate-bound acceptance.\n2. Shared artifact updates use a short repository lock. Reload the latest artifact tree under the lock and change only the selected run. Routine updates from another run must not cause manual divergent-state reconciliation. Reuse existing artifact storage/publication rather than introduce another store; keep publication serialized and preserve its existing checks.\n3. Encapsulate blocking `fcntl.flock()` in a small reusable Python module/script under the harness hierarchy. All harness builds and verification commands use the same stable lock path outside individual worktrees. Planning and editing remain concurrent. The interface can move with the harness without changing lock identity. Never unlink a live lock file.\n4. A live waiting harness proceeds automatically when the lock is freed, without a user prompt, another chat message or an explicit retry. Lock waiting is outside the command execution timeout and does not spend repair attempts. Adjust ordinary-wait deadline handling explicitly so contention alone does not require a budget approval. The existing live coordinator continues the workflow after the command returns; no new agent backend is required.\n5. Document the small supported invocation and integrate it into the existing role workflow. Reuse the verification entry point from https://github.com/robinwassen/Fossilize/issues/43 if available; do not make its implementation a prerequisite or duplicate its manifest/test-selection work.\n\n## Verification\n\nUse a few focused tests with disposable repositories and bounded independent processes:\n\n- Two runs can remain active; interleaved state updates and completion retain the other run's records.\n- Two commands using the Python wrapper cannot execute their protected sections together. Releasing the first lock lets the second proceed automatically. Assert the command result is returned correctly.\n- A run waiting for verification can continue after another run updates artifact state.\n- Separate worktrees resolve to the same lock identity, including when the wrapper is invoked from a different package path.\n\nRun relevant existing harness checks. No crash-injection suite or new orchestration framework is required.\n\n## Explicit non-goals\n\nNo supervisor/service, durable execution queue, automatic restart/reboot recovery, crash/descendant recovery, timestamp expiry/leases, distributed coordination, multiple-host support, resource scheduling, new sandbox, or unattended Steam restoration. Do not expand implementation to solve these cases. Run IDs/timestamps may be diagnostic metadata, but are not needed for lock ownership.\n\nParent: https://github.com/robinwassen/Fossilize/issues/9. This filing requests only this narrow implementation; it does not start a harness run, close another issue or modify #62.\n\n<!-- harness-followup:simple-parallel-flock-v1 -->\n",
+            "children": [],
+            "id": 6113633132,
+            "node_id": "I_kwDOVZpjbc8AAAABbGajbA",
+            "number": 63,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/9",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "Allow parallel harness runs with independent state and a simple Python verification lock",
+            "url": "https://github.com/robinwassen/Fossilize/issues/63"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/63"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    }
+  ],
   "publishing": {
     "ci_policy": "local",
     "stage": "none"
@@ -91,7 +269,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 3,
+  "revision": 4,
   "root_issue": {
     "id": 6113633132,
     "node_id": "I_kwDOVZpjbc8AAAABbGajbA",
@@ -101,9 +279,17 @@
   },
   "run_id": "issue63-20261030",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-63",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/63",
   "verification": [],
-  "work_units": []
+  "work_units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/63",
+      "key": "https://github.com/robinwassen/Fossilize/issues/63",
+      "status": "ready"
+    }
+  ]
 }
