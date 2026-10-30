@@ -100,6 +100,10 @@
       {
         "started": 1793395875.2814937,
         "wait_seconds": 4.56640917097684
+      },
+      {
+        "started": 1793395885.1394958,
+        "wait_seconds": 4.804012598935515
       }
     ],
     "command_timeout": 600,
@@ -279,9 +283,30 @@
         "intent_id": "imp61-G61-regression-test_harness_state",
         "started": 1793395880.7978508,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_issue_guidance",
+          "--inventory",
+          "/tmp/fossilize-61/output/implementer-1/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/implementer-1/regression-test_issue_guidance.json"
+        ],
+        "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_guidance --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-test_issue_guidance.json",
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "eligible_deadline": 1793409923.7700658,
+        "intent_id": "imp61-G61-regression-test_issue_guidance",
+        "started": 1793395890.9125228,
+        "timeout": 600
       }
     ],
-    "deadline": 1793409918.9660532,
+    "deadline": 1793409923.7700658,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -1168,7 +1193,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 15,
+  "revision": 16,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
