@@ -6243,6 +6243,49 @@
         "gate": "long-contention-counterexample",
         "started": 1793330226.2398763,
         "timeout": 120
+      },
+      {
+        "candidate_sha": "development-repair-from-051c1cde44d575612841c9e7ce2cc2a8af014542",
+        "command": [
+          "/usr/bin/python3",
+          "-B",
+          "/tmp/fossilize-62/verify-2283820/runtime/packages/239131760df29b1df5de8053e6199255c639fa27c58e744d98beebe64308266c/harness_serial.py",
+          "--runtime",
+          "/tmp/fossilize-62/verify-2283820/runtime",
+          "exec",
+          "--repo",
+          "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+          "--run",
+          "issue62-20261029",
+          "--cwd",
+          "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+          "--timeout",
+          "180",
+          "--",
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "PYTHONPATH=/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize/.agents/skills/implement-change-harness/scripts",
+          "/usr/bin/python3",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "test_harness_serial_state.SerialStateTests.test_C03_long_transaction_contention_retries_automatically",
+          "test_harness_serial_state.SerialStateTests.test_C05_workflow_transaction_contention_retains_next_action",
+          "test_harness_serial_executor.SerialExecutorTests.test_C05_transaction_busy_continuation_retries_but_invalid_blocks",
+          "test_harness_serial_executor.SerialExecutorTests.test_C03_repository_busy_is_only_the_acquisition_deadline"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+        "evidence": "/tmp/fossilize-62/repair3-development",
+        "gate": "repair3-targeted-contention-controls",
+        "started": 1793331241.0332162,
+        "steps": [
+          "real63s-common-lock-automatic-retry",
+          "workflow-dispatch-ack-report-busy-retry",
+          "completed-continuation-busy-retry",
+          "typed-acquisition-only-boundary"
+        ],
+        "timeout": 180
       }
     ],
     "deadline": 1793334803.5108716,
@@ -6630,7 +6673,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 180,
+  "revision": 181,
   "root_issue": {
     "id": 6107403434,
     "node_id": "I_kwDOVZpjbc8AAAABbAeUqg",
