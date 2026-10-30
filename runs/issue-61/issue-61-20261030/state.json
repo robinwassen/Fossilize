@@ -237,6 +237,10 @@
       {
         "started": 1793401577.4438434,
         "wait_seconds": 5.139380197040737
+      },
+      {
+        "started": 1793401602.717006,
+        "wait_seconds": 10.976783907040954
       }
     ],
     "command_timeout": 600,
@@ -1543,7 +1547,31 @@
         "eligible_deadline": 1793414234.7904582,
         "intent_id": "check61-G61-regression-test_harness_migration",
         "started": 1793401049.5587115,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793401575.7455366,
+          "command": [
+            "env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "python3",
+            "-B",
+            ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+            "--run-group",
+            "regression-test_harness_migration",
+            "--inventory",
+            "/tmp/fossilize-61/output/checker-1/inventory.json",
+            "--output",
+            "/tmp/fossilize-61/output/checker-1/regression-test_harness_migration.json"
+          ],
+          "cwd": "/tmp/fossilize-61/checker-1",
+          "exit_code": 0,
+          "finished": 1793401600.4546673,
+          "intent_id": "check61-G61-regression-test_harness_migration",
+          "started": 1793401512.900594,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 62.84230599296279
+        }
       },
       {
         "child_command": [
@@ -1886,7 +1914,7 @@
         "timeout": 600
       }
     ],
-    "deadline": 1793414886.1113007,
+    "deadline": 1793414959.9303906,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -2773,7 +2801,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 91,
+  "revision": 92,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
