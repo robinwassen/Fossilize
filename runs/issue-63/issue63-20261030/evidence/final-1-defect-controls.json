@@ -1,0 +1,14 @@
+{
+  "command": {
+    "command": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-63/final-1-9c7a807 --timeout 600 -- env PYTHONDONTWRITEBYTECODE=1 python3 -B /tmp/fossilize-63/defect_controls.py --candidate /tmp/fossilize-63/final-1-9c7a807",
+    "cwd": "/tmp/fossilize-63/final-1-9c7a807",
+    "duration_seconds": 3.225703001022339,
+    "exit_code": 0,
+    "finished": 1793365144.3499792,
+    "log": "/tmp/fossilize-63/final-1-evidence/defect-controls.log",
+    "name": "defect-controls",
+    "started": 1793365141.1242762,
+    "timeout": 600
+  },
+  "stdout_stderr": "test_second_live_run (__main__.Controls.test_second_live_run) ... ok\ntest_stale_global_tip (__main__.Controls.test_stale_global_tip) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.968s\n\nOK\nbaseline second-live-run defect: another run is active\nbaseline unchanged-selected-run stale-global-tip defect: artifact tip changed\ntest_second_live_run (__main__.Controls.test_second_live_run) ... ok\ntest_stale_global_tip (__main__.Controls.test_stale_global_tip) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 1.415s\n\nOK\ncandidate second-live-run accepted; both indexed\ncandidate unchanged-selected-run ancestor observation accepted\nnegative no-op flock detected: protected sections overlapped\n{\"baseline_sha\": \"2ffeaae69e4e127dcb0bfb3bf6319c6599509546\", \"candidate_sha\": \"9c7a80776afe25676dd9d87ac55ef43a8b256f67\", \"result\": \"passed\", \"controls\": [\"baseline second-live-run rejection\", \"baseline stale-global-tip rejection\", \"candidate equivalent successes\", \"negative no-op flock overlap detection\"]}\n"
+}
