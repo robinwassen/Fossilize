@@ -196,7 +196,7 @@ class ParallelTests(LiveFixture, unittest.TestCase):
 
     def test_P04_wait_reloads_run_and_excludes_only_contention(self):
         self.now = time.time()
-        self.payload['limits'] = {'deadline':self.now+3}
+        self.payload['limits'] = {'deadline':self.now+10}
         self.act('initialize', self.payload)
         other, other_result, payload, issue = self.second()
         b_limits = copy.deepcopy(other_result['state']['limits'])
@@ -272,6 +272,21 @@ class ParallelTests(LiveFixture, unittest.TestCase):
                 with self.assertRaisesRegex(Invalid,'already accounted'):
                     self.act('artifact-wait',receipt_artifact)
             self.assertFalse(self.state['limits']['exhausted'])
+        # Give this independent journal subsection its own original fixture
+        # budget, measured immediately after initialization rather than consumed
+        # by the preceding deadline-crossing experiments.
+        journal_issue = self.create('Journal wait')
+        journal_source = self.root/'source-journal'
+        git(self.source,'worktree','add','-b','codex/journal',str(journal_source),self.base)
+        journal_payload = copy.deepcopy(self.payload); journal_payload.pop('original',None)
+        self.now = time.time()
+        journal_payload.update(root_issue=journal_issue['html_url'],run_id='journal',paths=self.paths(journal_source,'journal'),limits={'deadline':self.now+10})
+        journal_payload['repository'].update(branch='codex/journal',implementation_worktree=str(journal_source))
+        self.harness = self.selected(journal_source,journal_issue,'journal')
+        initialized = self.harness.apply('initialize',journal_payload,self.harness.store.tip(),0)
+        self.root_issue,self.source,self.payload = journal_issue,journal_source,journal_payload
+        self.tip,self.state = initialized['tip'],initialized['state']
+        self.assertGreater(self.state['limits']['deadline']-time.time(),5,'journal fixture setup consumed its fresh execution budget')
         # The coordinator settles Journal waits outside the short lock, then the
         # same live dispatch reacquires/reloads and proceeds without another call.
         settled, effects = [], []
@@ -284,11 +299,11 @@ class ParallelTests(LiveFixture, unittest.TestCase):
             result = self.harness.apply('artifact-wait',receipt,tip,selected['revision'])
             self.tip,self.state = result['tip'],result['state']
             settled.append(receipt)
-        journal = Journal(self.source,root_issue=self.root_issue['html_url'],run_id='run-1',settle_wait=settle)
+        journal = Journal(self.source,root_issue=self.root_issue['html_url'],run_id=self.state['run_id'],settle_wait=settle)
         journal.dispatch(lambda: effects.append('uncontended'))
         self.assertEqual(settled,[])  # No microsecond settle/reacquire loop.
         with self.assertRaisesRegex(IssueError,'settle_wait callback'):
-            Journal(self.source,root_issue=self.root_issue['html_url'],run_id='run-1').dispatch(lambda: effects.append('missing callback'))
+            Journal(self.source,root_issue=self.root_issue['html_url'],run_id=self.state['run_id']).dispatch(lambda: effects.append('missing callback'))
         self.assertEqual(effects,['uncontended']); effects.clear()
         ready,released = self.root/'journal-ready',self.root/'journal-release'
         holder_code = "import sys,time;sys.path.insert(0,%r);from verification_lock import file_lock;from pathlib import Path\nwith file_lock(%r):\n Path(%r).touch()\n end=time.monotonic()+15\n while not Path(%r).exists() and time.monotonic()<end:time.sleep(.01)" % (scripts,str(hs.common_dir(self.source)/'harness-run.lock'),str(ready),str(released))
