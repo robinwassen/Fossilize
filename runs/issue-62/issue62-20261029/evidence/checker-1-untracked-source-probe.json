@@ -1,0 +1,100 @@
+{
+  "actual_result": {
+    "accepted_source": "VALUE=1",
+    "actual_stdout": "2",
+    "executed_source": "VALUE=2",
+    "job_source": {
+      "dirty_digest": "c0d96175c629003289e2fc2b2bca27d10c782916a8d6a07d1249774088803fc7",
+      "sha": "c04dcc374fb93b09bfc1c9fcb47be3e329c2688c"
+    },
+    "queued_validation": "accepted changed untracked content",
+    "result_status": "passed"
+  },
+  "control_id": "R62-checker-untracked-source-drift",
+  "interpretation": "The control exit0 confirms reproduction of the implementation defect, not source-identity correctness.",
+  "outer_job": {
+    "accepted": 1793319393.2543907,
+    "context": {
+      "deadline": 1793322581.555903,
+      "envelope": {
+        "attempt_id": "checker-1",
+        "base_sha": "2ffeaae69e4e127dcb0bfb3bf6319c6599509546",
+        "candidate_sha": "09c8f885e0467a285283afe12089d4054ae5cf1e",
+        "input_revision": 135,
+        "input_sha": "09c8f885e0467a285283afe12089d4054ae5cf1e",
+        "operation": "work_unit",
+        "plan_version": 1,
+        "role": "checker",
+        "work_unit": "https://github.com/robinwassen/Fossilize/issues/62",
+        "worker_id": "/root/checker_62"
+      },
+      "issue_digest": "bb2635911b26bd12d49ac4aeef488d24e2fad53948623ca1d9117cb863dc1628",
+      "max_timeout": 600,
+      "repo": "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+      "root_issue": "https://github.com/robinwassen/Fossilize/issues/62",
+      "run_id": "issue62-20261029"
+    },
+    "finished": 1793319686.6833532,
+    "id": "8b84b62feebf41f586dffc898db451ac",
+    "invocation": "0b33910778a341e1b3846f85e0f818ab",
+    "quiescence": {
+      "ActiveState": "inactive",
+      "ControlGroup": "",
+      "Description": "fossilize-harness-8b84b62feebf41f586dffc898db451ac.service",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "InvocationID": "",
+      "LoadState": "not-found",
+      "Result": "success",
+      "SubState": "dead",
+      "owned_cgroup": "",
+      "owned_invocation": "0b33910778a341e1b3846f85e0f818ab",
+      "stop_confirmed": true
+    },
+    "result": {
+      "exit_code": 0,
+      "finished": 1793319686.630318,
+      "id": "8b84b62feebf41f586dffc898db451ac",
+      "reason": "exit",
+      "started": 1793319685.0131142,
+      "stderr": "/tmp/fossilize-62/verify-2283820/runtime/jobs/8b84b62feebf41f586dffc898db451ac/stderr.log",
+      "stdout": "/tmp/fossilize-62/verify-2283820/runtime/jobs/8b84b62feebf41f586dffc898db451ac/stdout.log"
+    },
+    "sequence": 11,
+    "source": {
+      "dirty_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha": "09c8f885e0467a285283afe12089d4054ae5cf1e"
+    },
+    "started": 1793319684.8843555,
+    "status": "passed",
+    "timeout": 60.0,
+    "unit": "fossilize-harness-8b84b62feebf41f586dffc898db451ac"
+  },
+  "probe_command": [
+    "/usr/bin/python3",
+    "-B",
+    "/tmp/fossilize-62/verify-2283820/runtime/packages/d17741dc47a705e768725c20d65f6d48035e9bc27c888f256ef7a66653d9e550/harness_serial.py",
+    "--runtime",
+    "/tmp/fossilize-62/verify-2283820/runtime",
+    "exec",
+    "--repo",
+    "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+    "--run",
+    "issue62-20261029",
+    "--cwd",
+    "/tmp/fossilize-62/checker-1-09c8f88",
+    "--timeout",
+    "60",
+    "--",
+    "/usr/bin/timeout",
+    "--signal=TERM",
+    "--kill-after=5s",
+    "55s",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "/usr/bin/python3",
+    "-B",
+    "/tmp/fossilize-62/checker-1-untracked-probe.py"
+  ],
+  "script": "import sys,time,json\nfrom pathlib import Path\nsys.dont_write_bytecode=True\nsys.path.insert(0,\"/tmp/fossilize-62/checker-1-09c8f88/.agents/skills/implement-change-harness/scripts\")\nfrom test_harness_serial_state import SerialStateTests\nfrom test_harness_serial_executor import ProcessFixture\nfrom harness_state import Harness\nfrom harness_serial import Runtime,context,read\nf=SerialStateTests();f.setUp()\ntry:\n f.now=time.time();f.act(\"initialize\",f.payload);f.launch(\"planner\");f.act(\"migrate-runs\",{\"from_tip\":f.tip,\"observation\":\"disposable checker untracked source control\"})\n f.harness=Harness(f.source,run=\"run-1\")\n source=f.source/\"new_source.py\";source.write_text(\"VALUE=1\\n\")\n driver=ProcessFixture();runtime=Runtime(f.root/\"probe-runtime\",driver);ctx=context(f.source,\"run-1\")\n job=runtime.submit([sys.executable,\"-B\",\"-c\",\"import new_source;print(new_source.VALUE)\"],f.source,ctx,10)\n source.write_text(\"VALUE=2\\n\")\n runtime.validate(job)\n for _ in range(100):\n  runtime.run(once=True)\n  result=read(runtime.folder(job)/\"record.json\")\n  if result[\"status\"] in (\"passed\",\"failed\",\"expired\",\"blocked\",\"interrupted\"):break\n  time.sleep(.05)\n output=Path(result[\"result\"][\"stdout\"]).read_text().strip()\n print(json.dumps({\"accepted_source\":\"VALUE=1\",\"executed_source\":\"VALUE=2\",\"queued_validation\":\"accepted changed untracked content\",\"result_status\":result[\"status\"],\"actual_stdout\":output,\"job_source\":job[\"source\"]}))\n assert result[\"status\"]==\"passed\" and output==\"2\"\nfinally:f.doCleanups()\n"
+}

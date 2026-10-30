@@ -1,0 +1,34 @@
+{
+  "command": {
+    "artifact_log": "runs/issue-62/issue62-20261029/evidence/checker-1-regression-test_harness_migration.json",
+    "batch": "batch-00",
+    "candidate_sha": "09c8f885e0467a285283afe12089d4054ae5cf1e",
+    "command": [
+      "/usr/bin/timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "550s",
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "/usr/bin/python3",
+      "-B",
+      ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+      "--run-group",
+      "regression-test_harness_migration",
+      "--inventory",
+      "/tmp/fossilize-62/checker-1-09c8f88-evidence/regression/inventory.json",
+      "--output",
+      "/tmp/fossilize-62/checker-1-09c8f88-evidence/regression/regression-test_harness_migration.json"
+    ],
+    "cwd": "/tmp/fossilize-62/checker-1-09c8f88",
+    "exit_code": 0,
+    "finished": 1793319324.8565683,
+    "gate": "regression-test_harness_migration",
+    "started": 1793319298.4969616,
+    "stderr": "/tmp/fossilize-62/checker-1-09c8f88-evidence/regression-test_harness_migration.stderr.log",
+    "stdout": "/tmp/fossilize-62/checker-1-09c8f88-evidence/regression-test_harness_migration.stdout.log",
+    "timeout": 550
+  },
+  "stderr": "test_V01_legacy_mutation_api_is_fixture_only (test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only) ... ok\ntest_V01_schema1_import_worker_reconciliation_then_source_free_issue_state (test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state) ... ok\ntest_R01_live_split_dependency_order_scoped_findings_and_child_drift (test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift) ... ok\ntest_R01_stale_report_fenced_required_evidence_final_gate_and_budget (test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget) ... ok\ntest_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable (test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable) ... ok\ntest_S02_split_requires_native_parent_and_complete_criteria (test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria) ... ok\ntest_S02_unsplit_issue_initialization_and_snapshot_authority (test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority) ... ok\ntest_S03_live_drift_reconciliation_invalidates_acceptances (test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances) ... ok\ntest_S03_planner_cannot_silently_adopt_requirement_changes (test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes) ... ok\ntest_V01_conflicting_original_mapping_or_active_checker_reject_atomically (test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically) ... ok\ntest_V01_idle_migration_retains_history_allocations_original_deadline (test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline) ... ok\ntest_V02_active_exact_bridge_once_original_report_bytes (test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes) ... ok\ntest_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind (test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind) ... ok\ntest_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token (test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 26.058s\n\nOK\n",
+  "stdout": "{\"candidate_sha\": \"09c8f885e0467a285283afe12089d4054ae5cf1e\", \"outcome\": \"recorded\", \"output\": \"/tmp/fossilize-62/checker-1-09c8f88-evidence/regression/regression-test_harness_migration.json\"}\n"
+}
