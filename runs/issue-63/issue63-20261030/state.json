@@ -1071,7 +1071,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -1261,6 +1261,10 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793365503.0443187,
+      "event": "create-dispatched"
+    },
     "intent": {
       "base_sha": "2ffeaae69e4e127dcb0bfb3bf6319c6599509546",
       "branch": "codex/issue-63-parallel-flock",
@@ -1280,10 +1284,13 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "event": "create-dispatched"
       }
     ],
     "remote_sha": "9c7a80776afe25676dd9d87ac55ef43a8b256f67",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "2ffeaae69e4e127dcb0bfb3bf6319c6599509546",
@@ -1296,7 +1303,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 170,
+  "revision": 171,
   "root_issue": {
     "id": 6113633132,
     "node_id": "I_kwDOVZpjbc8AAAABbGajbA",
