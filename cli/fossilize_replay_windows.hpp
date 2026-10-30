@@ -96,6 +96,7 @@ struct ProcessProgress
 	bool kick_overlapped_io();
 
 	uint32_t index = 0;
+	bool expect_kill = false;
 
 	char module_uuid_path[2 * VK_UUID_SIZE + 1] = {};
 };
@@ -336,9 +337,9 @@ WorkerDisposition ProcessProgress::process_shutdown()
 		LOGE("  New compute range (%u, %u)\n", start_compute_index, end_compute_index);
 		LOGE("  New raytracing range (%u, %u)\n", start_raytracing_index, end_raytracing_index);
 	}
-	if (observed && code != 0 && Global::control_block)
+	if (terminated && (!observed || code != 0) && !expect_kill && Global::control_block)
 	{
-		if (disposition == WorkerDisposition::Retry)
+		if (observed && graphics_progress >= 0 && compute_progress >= 0 && raytracing_progress >= 0)
 			Global::control_block->clean_process_deaths.fetch_add(1, std::memory_order_relaxed);
 		else Global::control_block->dirty_process_deaths.fetch_add(1, std::memory_order_relaxed);
 	}
@@ -756,7 +757,7 @@ struct ControllerChildrenCleanup
 	~ControllerChildrenCleanup()
 	{
 		for (auto &child : children)
-			if (child.process) TerminateProcess(child.process, 3);
+			if (child.process) { child.expect_kill = true; TerminateProcess(child.process, 3); }
 		for (auto &child : children)
 		{
 			if (child.process)

@@ -365,9 +365,12 @@ WorkerDisposition ProcessProgress::process_shutdown(int wstatus)
 	                 (WTERMSIG(wstatus) == SIGKILL || WTERMSIG(wstatus) == SIGSEGV));
 	if (expect_kill) can_retry = false;
 	auto disposition = outcome.finish(clean, can_retry, graphics_progress, compute_progress, raytracing_progress);
-	if (!clean && Global::control_block)
+	// Legacy counters describe the crash protocol, independently of required
+	// work completeness. A progressed final crash is still a clean crash, and
+	// a parent-requested cleanup death is not an additional crash.
+	if (!clean && !expect_kill && Global::control_block)
 	{
-		if (disposition == WorkerDisposition::Retry)
+		if (can_retry && graphics_progress >= 0 && compute_progress >= 0 && raytracing_progress >= 0)
 			Global::control_block->clean_process_deaths.fetch_add(1, std::memory_order_relaxed);
 		else
 			Global::control_block->dirty_process_deaths.fetch_add(1, std::memory_order_relaxed);
@@ -963,7 +966,7 @@ static bool poll_children_process_states(vector<ProcessProgress> &child_processe
 	pid_t pid = 0;
 	int wstatus = 0;
 
-	#ifdef FOSSILIZE_REPLAY_TEST_BEFORE_HARVEST
+#ifdef FOSSILIZE_REPLAY_TEST_BEFORE_HARVEST
 	FOSSILIZE_REPLAY_TEST_BEFORE_HARVEST(child_processes);
 #endif
 	while ((pid =

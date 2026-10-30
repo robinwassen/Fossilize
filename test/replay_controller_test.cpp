@@ -10,6 +10,7 @@
 #include <windows.h>
 #else
 #include <sys/wait.h>
+#include <sys/resource.h>
 #include <signal.h>
 #include <errno.h>
 #endif
@@ -318,6 +319,8 @@ static void validate(int result, unsigned workers, bool zero)
 	{
 		checks.require(lost.attempts == 2 && lost.failed_attempts == 1, "recover/attempt-history");
 		std::string marker = read_marker(0, 2);
+		for (unsigned kind = 0; kind < 3; kind++) checks.contains(marker,
+			"range " + std::to_string(kind) + " 2 6", "recover/exact-retry-assignment");
 		for (unsigned kind = 0; kind < 3; kind++)
 			for (unsigned i = 2; i < 6; i++) checks.contains(marker,
 				"complete " + std::to_string(kind) + " " + std::to_string(i), "recover/every-required-item");
@@ -326,6 +329,8 @@ static void validate(int result, unsigned workers, bool zero)
 	{
 		checks.require(lost.attempts == 2, "partial/second-attempt-lost");
 		for (const auto &range : lost.assigned) checks.require(range.confirmed_end == 3, "partial/known-prefix-retained");
+		for (unsigned kind = 0; kind < 3; kind++) checks.contains(read_marker(0, 2),
+			"range " + std::to_string(kind) + " 3 6", "partial/exact-retry-assignment");
 	}
 	if (scenario.find("skip-") == 0)
 	{
@@ -387,6 +392,10 @@ static int state_and_protocol()
 
 int main(int argc, char **argv)
 {
+#ifndef _WIN32
+	struct rlimit core_limit = {};
+	setrlimit(RLIMIT_CORE, &core_limit);
+#endif
 #ifdef _WIN32
 	if (argc == 12 && std::string(argv[1]) == "--test-worker")
 	{
@@ -422,8 +431,19 @@ int main(int argc, char **argv)
 #endif
 	}
 	std::vector<const char *> databases{argv[3]};
-	SharedControlBlock optional_progress = {};
-	if (scenario == "lost-progress") Global::control_block = &optional_progress;
+	struct ProgressMemory { SharedControlBlock control; char ring[4096]; } memory = {};
+	auto &optional_progress = memory.control;
+	bool use_progress = scenario == "lost-progress" || scenario == "held-sibling" ||
+	                    scenario == "skip-graphics-progress" || scenario == "skip-graphics-final-progress";
+	if (use_progress)
+	{
+		optional_progress.ring_buffer_offset = unsigned(offsetof(ProgressMemory, ring));
+		optional_progress.ring_buffer_size = sizeof(memory.ring);
+		Global::control_block = &optional_progress;
+#ifdef _WIN32
+		Global::shared_mutex = CreateMutexA(nullptr, FALSE, nullptr);
+#endif
+	}
 	int result;
 #ifdef _WIN32
 	result = run_master_process(device_opts, opts, databases, nullptr, 0, true, nullptr, nullptr);
@@ -431,12 +451,21 @@ int main(int argc, char **argv)
 	result = run_master_process(device_opts, opts, databases, nullptr, 0, true, -1, -1);
 #endif
 	validate(result, opts.num_threads, scenario == "zero");
-	if (scenario == "lost-progress")
+	if (scenario == "lost-progress" || scenario == "held-sibling")
 	{
-		checks.require(optional_progress.dirty_process_deaths.load() == 1, "progress/dirty-worker-retained");
+		checks.require(optional_progress.clean_process_deaths.load() == 0, "progress/loss-is-not-clean-recovery");
+		checks.require(optional_progress.dirty_process_deaths.load() == 1, "progress/only-primary-dirty-worker-counted");
 		checks.require(optional_progress.progress_complete.load() == 0, "progress/incomplete-on-terminal-loss");
 	}
+	if (scenario == "skip-graphics-progress" || scenario == "skip-graphics-final-progress")
+	{
+		checks.require(optional_progress.clean_process_deaths.load() == 1 && optional_progress.dirty_process_deaths.load() == 0,
+		               "progress/preserved-clean-crash-counter-independent-of-unresolved-required-work");
+	}
 	Global::control_block = nullptr;
+#ifdef _WIN32
+	if (use_progress) { CloseHandle(Global::shared_mutex); Global::shared_mutex = nullptr; }
+#endif
 	if (scenario == "held-sibling")
 	{
 #ifdef _WIN32

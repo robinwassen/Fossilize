@@ -423,7 +423,8 @@ mechanisms remain in use.
 
 `replay-controller-{clean,zero,lost,lost-progress,mixed-success-first,mixed-loss-first,
 recover,skip-graphics,skip-compute,skip-raytracing,skip-graphics-final,
-skip-compute-final,skip-raytracing-final,partial,loss-after-retry,held-sibling,
+skip-compute-final,skip-raytracing-final,skip-graphics-progress,
+skip-graphics-final-progress,partial,loss-after-retry,held-sibling,
 signal,status-error,outcome-state}` use explicit checks active under `NDEBUG`.
 The dedicated test executable includes the production controller with adapters
 compiled only in its translation unit. Actual fork/CreateProcess, pipes,
@@ -431,7 +432,9 @@ epoll/native waits, shutdown parsing, restarts and cleanup remain in use.
 Barriers select both terminal report orders and hold a still-live sibling;
 process status and retained state are the oracle. Per-attempt artifacts record
 ranges and item completions, and kernel checks establish reaping/termination.
-The state/protocol case also verifies unchanged current message literals and
+Progress-enabled controls preserve the legacy clean/dirty crash-counter meanings
+independently of final required-work failure; expected sibling cleanup is not
+counted as another crash. The state/protocol case also verifies unchanged current message literals and
 shared-ring forwarding, unknown native status, and empty-kind recovery.
 
 `replay-controller-cli-{normal,master,progress}` preserve successful null-device
