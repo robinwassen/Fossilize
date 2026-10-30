@@ -116,6 +116,10 @@
       {
         "started": 1793395913.1991513,
         "wait_seconds": 4.676012523006648
+      },
+      {
+        "started": 1793395922.5788155,
+        "wait_seconds": 4.603412354947068
       }
     ],
     "command_timeout": 600,
@@ -379,9 +383,30 @@
         "intent_id": "imp61-G61-delivery-ordinary",
         "started": 1793395918.8861387,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "delivery-w09",
+          "--inventory",
+          "/tmp/fossilize-61/output/implementer-1/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/implementer-1/delivery-w09.json"
+        ],
+        "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w09 --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/delivery-w09.json",
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "eligible_deadline": 1793409942.1987822,
+        "intent_id": "imp61-G61-delivery-w09",
+        "started": 1793395928.1767285,
+        "timeout": 600
       }
     ],
-    "deadline": 1793409937.5953698,
+    "deadline": 1793409942.1987822,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -1268,7 +1293,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 19,
+  "revision": 20,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
