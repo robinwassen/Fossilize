@@ -30,6 +30,20 @@ timeout --signal=TERM --kill-after=5s 600s env PYTHONDONTWRITEBYTECODE=1 python3
 timeout --signal=TERM --kill-after=5s 600s python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness
 ```
 
+For parallel harness work, explicitly select `--root-issue URL --run-id RUN` in
+harness_state.py and retain separate source/build/output paths. Every command in
+the block above (and every build/probe) is a child of the package's
+`scripts/verification_lock.py --repo /absolute/worktree --timeout 600 -- COMMAND`.
+The wrapper replaces the outer timeout in these examples: lock waiting is outside
+the child's600-second deadline. It uses one persistent common-Git-directory lock,
+independent of package/worktree location. The live coordinator waits and continues
+automatically. Never nest wrappers on the same common directory. Publish command
+intents first; use unique intent_id/child_command argv and wrapper receipt paths,
+then coordinator command-wait records measured contention once before the next
+budget gate. Execution time and repair limits are unchanged. Artifact updates use
+a separate short lock and reload only the selected run transaction against the
+latest tree. See the skill's references/state.md for receipt settlement.
+
 Inventory uses actual full `unittest` discovery of `test_*.py`, without running
 fixtures. Every discovered ID has exactly one owner, including a catch-all for
 new modules. Four distinct W11 unittest IDs partition the complete explicit

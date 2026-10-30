@@ -83,3 +83,23 @@ rejection invalidate stale readiness and require superseding evidence/new checks
 Only explicitly approved, bound wrap-up may merge. Accepted units, completed
 runs, ready PRs and merged task delivery remain distinct. Checkers are read-only on production records/services;
 use isolated fixtures for mutations and counterexamples.
+
+## Live parallel runs and verification
+
+Every role retains the supplied --root-issue and --run-id selection and its own
+source worktree, build directory and output directory. Workers do not write the
+selected state. Planning and editing may overlap other runs. Every build, probe
+and verification command uses `scripts/verification_lock.py --repo /absolute/worktree
+--timeout 600 -- COMMAND`, including every bounded run_harness_tests.py group.
+The lock lives in the real common Git directory, independently of package path.
+Never recursively wrap a command already holding that repository's verification
+lock. Concurrency fixtures use disposable repositories with different common dirs.
+
+Submit exact command-intent payloads to the coordinator before execution. The
+coordinator can publish a batch with unique intent_id and child_command argv;
+wrapper --receipt outputs measured wait for command-wait settlement exactly once.
+Waiting is outside each child's real timeout. Return receipt/log/status to the
+live coordinator; it settles wait and continues the existing workflow automatically.
+Only flock wait is excluded from the four-hour run budget. Real execution time,
+pre-existing exhaustion, repair/replan limits and candidate-bound independent
+acceptance are unchanged. No crash/restart/descendant recovery is provided.

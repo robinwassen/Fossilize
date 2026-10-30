@@ -89,7 +89,7 @@ class DeliveryTests(LiveFixture, unittest.TestCase):
         # command, and its candidate tree differs materially from target base.
         helper = self.source / '.agents/skills/implement-change-harness/scripts'
         helper.mkdir(parents=True)
-        for filename in ('harness_state.py', 'github_issues.py', 'delivery_wrapup.py'):
+        for filename in ('harness_state.py', 'github_issues.py', 'delivery_wrapup.py', 'verification_lock.py'):
             shutil.copy2(Path(__file__).with_name(filename), helper / filename)
         self.parent = self.create('Incomplete parent', 'Other required obligations remain open')
         self.gh.api(f"issues/{self.parent['number']}/sub_issues", 'POST', {'sub_issue_id': self.root_issue['id']})
