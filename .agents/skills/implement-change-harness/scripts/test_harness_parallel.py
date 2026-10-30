@@ -51,6 +51,22 @@ class ParallelTests(LiveFixture, unittest.TestCase):
     def command(self, name='probe', **extra):
         return dict(dict(command='fixture assertion ' + name, cwd=str(self.source), timeout=600), **extra)
 
+    def complete_selected_run(self):
+        candidate, target = self.prepare()
+        self.accepted()
+        intent = {k:self.state['repository'][k] for k in ('target_remote','target_repository','target_branch','branch')}
+        self.act('publish-intent', intent); git(self.source, 'push', 'origin', intent['branch'])
+        self.act('publish-observation', {'event':'push','remote_sha':candidate})
+        pr = dict(intent, state='open', draft=False, url='https://github.com/robinwassen/Fossilize/pull/99')
+        self.update(prs={'99':{'url':pr['url'],'state':'OPEN','isDraft':False,'baseRefName':'master','headRefName':intent['branch'],'headRefOid':candidate,'body':'Closes '+self.root_issue['html_url'],'closingIssuesReferences':[{'url':self.root_issue['html_url']}]}})
+        self.act('publish-observation', {'event':'lookup','all_states':True,'unambiguous':True,'matches':[pr]})
+        self.actual_pr_evidence(pr)
+        done = self.act('publish-observation', {'event':'attachment','url':pr['url'],'success':True})
+        self.assertTrue(done['workflow_complete'])
+        retry = self.harness.apply('publish-artifacts', {}, self.tip, self.state['revision'])
+        self.assertTrue(retry['workflow_complete'])
+        return candidate
+
     def test_P01_selected_runs_interleave_and_complete(self):
         self.act('initialize', self.payload)
         other, result, payload, issue = self.second()
@@ -72,19 +88,7 @@ class ParallelTests(LiveFixture, unittest.TestCase):
         # Existing independent-role workflow all the way to attached PR, with B live.
         before = self.harness.store.records(self.harness.store.tip())
         saved = {p:v for p,v in before.items() if p.startswith(other_path.rsplit('/', 1)[0] + '/')}
-        candidate, target = self.prepare()
-        self.accepted()
-        intent = {k:self.state['repository'][k] for k in ('target_remote','target_repository','target_branch','branch')}
-        self.act('publish-intent', intent); git(self.source, 'push', 'origin', 'codex/test')
-        self.act('publish-observation', {'event':'push','remote_sha':candidate})
-        pr = dict(intent, state='open', draft=False, url='https://github.com/robinwassen/Fossilize/pull/99')
-        self.update(prs={'99':{'url':pr['url'],'state':'OPEN','isDraft':False,'baseRefName':'master','headRefName':'codex/test','headRefOid':candidate,'body':'Closes '+self.root_issue['html_url'],'closingIssuesReferences':[{'url':self.root_issue['html_url']}]}})
-        self.act('publish-observation', {'event':'lookup','all_states':True,'unambiguous':True,'matches':[pr]})
-        self.actual_pr_evidence(pr)
-        done = self.act('publish-observation', {'event':'attachment','url':pr['url'],'success':True})
-        self.assertTrue(done['workflow_complete'])
-        retry = self.harness.apply('publish-artifacts', {}, self.tip, self.state['revision'])
-        self.assertTrue(retry['workflow_complete'])
+        candidate = self.complete_selected_run()
         after = self.harness.store.records(self.tip)
         self.assertTrue(all(after[p] == value for p,value in saved.items()))
         self.assertEqual(list(self.harness.show()['active_runs']), [other_path])
@@ -249,6 +253,8 @@ class ParallelTests(LiveFixture, unittest.TestCase):
             else:
                 self.assertEqual(observed['state'],self.state)
                 receipt_artifact = observed['artifact_wait']
+                with self.assertRaisesRegex(Invalid,'another selected run'):
+                    other.apply('artifact-wait',receipt_artifact,other.store.tip(),other.show()['state']['revision'])
                 self.act('artifact-wait',receipt_artifact)
                 with self.assertRaisesRegex(Invalid,'already accounted'):
                     self.act('artifact-wait',receipt_artifact)
@@ -263,6 +269,7 @@ class ParallelTests(LiveFixture, unittest.TestCase):
         self.act('initialize', self.payload)
         records = self.harness.store.records(self.tip)
         path = state_path(self.state['task_key'],self.state['run_id'])
+        original_live_state = copy.deepcopy(self.state)
         historical = copy.deepcopy(self.state)
         historical.update(phase='complete',status='failed',operation='abandoned',abandonment={'success':False})
         records[path] = encoded(historical)
@@ -278,14 +285,19 @@ class ParallelTests(LiveFixture, unittest.TestCase):
         retained_blobs = git(self.source,'ls-tree','-r',retained_tip).decode()
         self.assertEqual(self.harness.artifact_sync(self.tip,records,push=True)['status'],'confirmed')
         other, result, payload, issue = self.second()
-        other.apply('command-intent',self.command(),result['tip'],result['state']['revision'])
+        self.harness = other
+        self.source = Path(payload['repository']['implementation_worktree'])
+        self.root_issue,self.payload,self.tip,self.state = issue,payload,result['tip'],result['state']
+        self.original = copy.deepcopy(self.state['original'])
+        self.act('command-intent',self.command())
+        self.complete_selected_run()
         final = self.harness.store.records(self.harness.store.tip())
         self.assertEqual(final[path], records[path]); self.assertEqual(final[report_path],records[report_path])
         self.assertIn(retained_tip,git(self.source,'rev-list',self.harness.store.tip()).decode().splitlines())
         self.assertEqual(git(self.source,'ls-tree','-r',retained_tip).decode(),retained_blobs)
         self.harness.remote_history(self.harness.store.tip(),final,self.harness.artifact_policy(final),preserve=False)
         for active in (pointer, {'version':2,'runs':{'historical-key':pointer}}):
-            live = dict(records); live[path] = encoded(self.state); live['active.json'] = encoded(active)
+            live = dict(records); live[path] = encoded(original_live_state); live['active.json'] = encoded(active)
             self.harness.validate_run_records(live,active)
         import run_harness_tests as runner
         discovered, spec = runner.specification()

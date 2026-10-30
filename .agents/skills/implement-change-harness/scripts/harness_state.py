@@ -1249,12 +1249,14 @@ class Harness:
             require(path not in records, "records are append-only")
             records[path] = content.encode() if isinstance(content, str) else encoded(content)
 
-    @staticmethod
-    def wait_receipt(started, waited):
-        return {'wait_id':uuid.uuid4().hex, 'started':started, 'wait_seconds':waited} if waited else None
+    def wait_receipt(self, started, waited):
+        return {'wait_id':uuid.uuid4().hex, 'selection':list(self.selection) if self.selection else None,
+                'common_dir':str(common_dir(self.repo)), 'started':started, 'wait_seconds':waited} if waited else None
 
     def settle_artifact_wait(self, state, receipt):
         import math
+        require(receipt.get('selection') == [root_identity(state),state['run_id']] and
+                receipt.get('common_dir') == str(common_dir(self.repo)), 'artifact wait belongs to another selected run')
         waits = state['limits'].setdefault('artifact_waits', [])
         require(TOKEN.fullmatch(receipt.get('wait_id', '')) and not any(w.get('wait_id') == receipt['wait_id'] for w in waits), "artifact wait already accounted/invalid identity")
         require(all(isinstance(receipt.get(f),(int,float)) and math.isfinite(receipt[f]) for f in ('started','wait_seconds')), "invalid artifact wait receipt")
