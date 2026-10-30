@@ -236,6 +236,24 @@
         "intent_id": "checker-focused-1",
         "started": 1793383958.946622,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--inventory",
+          "--output",
+          "/tmp/fossilize-63/renewal/output/checker/inventory.json"
+        ],
+        "command": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-63/renewal/checker-worktree --timeout 600 --intent-id checker-inventory-1 --receipt /tmp/fossilize-63/renewal/output/checker/inventory-receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --inventory --output /tmp/fossilize-63/renewal/output/checker/inventory.json",
+        "cwd": "/tmp/fossilize-63/renewal/checker-worktree",
+        "eligible_deadline": 1793397734.5078313,
+        "intent_id": "checker-inventory-1",
+        "started": 1793383963.4413638,
+        "timeout": 600
       }
     ],
     "deadline": 1793397734.5078313,
@@ -440,7 +458,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 16,
+  "revision": 17,
   "root_issue": {
     "id": 6113633132,
     "node_id": "I_kwDOVZpjbc8AAAABbGajbA",
