@@ -1,0 +1,2946 @@
+{
+  "attempt_id": "implementer-1",
+  "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
+  "candidate_sha": null,
+  "commands": [
+    {
+      "child_command": [
+        "git",
+        "diff",
+        "451aabbafeb4b590aa936b7d5e3e38c306626955...HEAD",
+        "--",
+        "CHANGELOG.md",
+        "AGENTS.md",
+        "local-docs",
+        ".agents/skills/implement-change-harness"
+      ],
+      "command": "git diff 451aabbafeb4b590aa936b7d5e3e38c306626955...HEAD -- CHANGELOG.md AGENTS.md local-docs .agents/skills/implement-change-harness",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 0.007742404937744141,
+      "environment": {},
+      "exit_code": 0,
+      "intent_id": "imp61-G61-doc-review",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-doc-review.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-doc-review.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-doc-review.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 0.0
+    },
+    {
+      "child_command": [
+        "git",
+        "diff",
+        "--check",
+        "451aabbafeb4b590aa936b7d5e3e38c306626955...HEAD"
+      ],
+      "command": "git diff --check 451aabbafeb4b590aa936b7d5e3e38c306626955...HEAD",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 0.008285999298095703,
+      "environment": {},
+      "exit_code": 0,
+      "intent_id": "imp61-G61-whitespace",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-whitespace.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-whitespace.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-whitespace.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 1.1208653240464628
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--inventory",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --inventory --output /tmp/fossilize-61/output/implementer-1/inventory.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 0.31528759002685547,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-inventory",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-inventory.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-inventory.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-inventory.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 241.9953594369581
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "regression-test_harness_artifacts",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/regression-test_harness_artifacts.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_artifacts --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-test_harness_artifacts.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 20.85170578956604,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-regression-test_harness_artifacts",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_artifacts.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_artifacts.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_artifacts.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 393.3890680089826
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "regression-test_harness_closeout",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/regression-test_harness_closeout.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_closeout --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-test_harness_closeout.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 45.44487261772156,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-regression-test_harness_closeout",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_closeout.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_closeout.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_closeout.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 0.0
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "regression-test_harness_issue_artifacts",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/regression-test_harness_issue_artifacts.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_artifacts --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-test_harness_issue_artifacts.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 5.42418360710144,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-regression-test_harness_issue_artifacts",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_issue_artifacts.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_issue_artifacts.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_issue_artifacts.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 0.0
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "regression-test_harness_issue_closeout",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/regression-test_harness_issue_closeout.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_closeout --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-test_harness_issue_closeout.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 57.92325186729431,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-regression-test_harness_issue_closeout",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_issue_closeout.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_issue_closeout.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_issue_closeout.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 0.0
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "regression-test_harness_migration",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/regression-test_harness_migration.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_migration --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-test_harness_migration.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 26.263697147369385,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-regression-test_harness_migration",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_migration.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_migration.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_migration.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 250.4672456110129
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "regression-test_harness_state",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/regression-test_harness_state.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_state --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-test_harness_state.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 88.42572832107544,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-regression-test_harness_state",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_state.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_state.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_state.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 1.4027094860794023
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "regression-test_issue_guidance",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/regression-test_issue_guidance.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_guidance --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-test_issue_guidance.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 0.31487321853637695,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-regression-test_issue_guidance",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_guidance.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_guidance.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_guidance.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 232.60056824202184
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "regression-test_issue_migration",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/regression-test_issue_migration.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_migration --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-test_issue_migration.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 36.68883991241455,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-regression-test_issue_migration",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_migration.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_migration.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_migration.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 259.843538580928
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "regression-test_issue_source",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/regression-test_issue_source.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_source --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-test_issue_source.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 4.876418352127075,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-regression-test_issue_source",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_source.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_source.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_source.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 451.6489554059226
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "delivery-ordinary",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/delivery-ordinary.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-ordinary --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/delivery-ordinary.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 328.8797941207886,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-delivery-ordinary",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-ordinary.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-ordinary.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-ordinary.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 7.337479259935208
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "delivery-w09",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/delivery-w09.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w09 --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/delivery-w09.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 163.9283299446106,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-delivery-w09",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w09.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w09.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w09.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 10.962455876055174
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "delivery-w11-0",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/delivery-w11-0.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-0 --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/delivery-w11-0.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 87.98027014732361,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-delivery-w11-0",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-0.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-0.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-0.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 0.0
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "delivery-w11-1",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/delivery-w11-1.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-1 --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/delivery-w11-1.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 85.37303233146667,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-delivery-w11-1",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-1.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-1.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-1.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 3.5065327269257978
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "delivery-w11-2",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/delivery-w11-2.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-2 --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/delivery-w11-2.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 81.11366653442383,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-delivery-w11-2",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-2.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-2.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-2.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 0.8499862950993702
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "delivery-w11-3",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/delivery-w11-3.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-3 --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/delivery-w11-3.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 86.3788549900055,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-delivery-w11-3",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-3.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-3.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-3.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 421.66664181195665
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--run-group",
+        "regression-extra",
+        "--inventory",
+        "/tmp/fossilize-61/output/implementer-1/inventory.json",
+        "--output",
+        "/tmp/fossilize-61/output/implementer-1/regression-extra.json"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-extra --inventory /tmp/fossilize-61/output/implementer-1/inventory.json --output /tmp/fossilize-61/output/implementer-1/regression-extra.json",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 58.544808864593506,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-regression-extra",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-extra.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-extra.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-extra.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 242.81972516095266
+    },
+    {
+      "child_command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-B",
+        ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "--verify-results",
+        "/tmp/fossilize-61/output/implementer-1"
+      ],
+      "command": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --verify-results /tmp/fossilize-61/output/implementer-1",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 0.3149073123931885,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "intent_id": "imp61-G61-results",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-results.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-results.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-results.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 477.5975229309406
+    },
+    {
+      "child_command": [
+        "python3",
+        "/home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+        ".agents/skills/implement-change-harness"
+      ],
+      "command": "python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 0.06471133232116699,
+      "environment": {},
+      "exit_code": 0,
+      "intent_id": "imp61-G61-skill",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-G61-skill.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-G61-skill.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-G61-skill.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 351.99017285590526
+    },
+    {
+      "child_command": [
+        "gh",
+        "issue",
+        "view",
+        "61",
+        "--repo",
+        "robinwassen/Fossilize",
+        "--json",
+        "number,url,title,body,state,stateReason,closedAt"
+      ],
+      "command": "gh issue view 61 --repo robinwassen/Fossilize --json number,url,title,body,state,stateReason,closedAt",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 0.4657154083251953,
+      "environment": {},
+      "exit_code": 0,
+      "intent_id": "imp61-live-issue",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-live-issue.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-live-issue.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-live-issue.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 352.05530223890673
+    },
+    {
+      "child_command": [
+        "python3",
+        "-B",
+        "/tmp/fossilize-61/render_candidate.py"
+      ],
+      "command": "python3 -B /tmp/fossilize-61/render_candidate.py",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 2.420786142349243,
+      "environment": {},
+      "exit_code": 0,
+      "intent_id": "imp61-render",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-render.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-render.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-render.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 253.626384620904
+    },
+    {
+      "child_command": [
+        "/opt/google/chrome/chrome",
+        "--version"
+      ],
+      "command": "/opt/google/chrome/chrome --version",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 0.2690317630767822,
+      "environment": {},
+      "exit_code": 0,
+      "intent_id": "imp61-chrome-version",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-chrome-version.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-chrome-version.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-chrome-version.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 210.81230922206305
+    },
+    {
+      "child_command": [
+        "python3",
+        "-B",
+        "/tmp/fossilize-61/screenshot_candidate.py"
+      ],
+      "command": "python3 -B /tmp/fossilize-61/screenshot_candidate.py",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "elapsed_seconds": 6.029811859130859,
+      "environment": {},
+      "exit_code": 0,
+      "intent_id": "imp61-screenshots",
+      "log": "/tmp/fossilize-61/output/implementer-1/imp61-screenshots.log",
+      "receipt": "/tmp/fossilize-61/output/implementer-1/imp61-screenshots.receipt.json",
+      "settled_marker": "/tmp/fossilize-61/output/implementer-1/imp61-screenshots.receipt.json.settled",
+      "status": "passed",
+      "timeout": 600,
+      "wait_seconds": 6.999521442921832
+    }
+  ],
+  "discovered": [
+    "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+    "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery",
+    "test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects",
+    "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch",
+    "test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection",
+    "test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct",
+    "test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile",
+    "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved",
+    "test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs",
+    "test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts",
+    "test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved",
+    "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery",
+    "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment",
+    "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries",
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_inventory_and_rejection",
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0",
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1",
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2",
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3",
+    "test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery",
+    "test_delivery_wrapup.DeliveryTests.test_W12_compact_result_cache_integrity_and_finite_deadlines",
+    "test_delivery_wrapup.DeliveryTests.test_W14_ambiguous_published_dispatch_never_blindly_resends",
+    "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once",
+    "test_delivery_wrapup.DeliveryTests.test_W14_successful_comment_lost_response_delayed_and_failed_readback",
+    "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone",
+    "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes",
+    "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root",
+    "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+    "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending",
+    "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery",
+    "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication",
+    "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+    "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations",
+    "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation",
+    "test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge",
+    "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation",
+    "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+    "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+    "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+    "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+    "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion",
+    "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+    "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+    "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+    "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+    "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+    "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+    "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_incomplete_epic_child_prevents_closing_reference",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readback_requires_exact_base_plan_input_binding",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readiness_without_source_edit_then_separate_final_acceptance",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_split_units_renew_at_combined_candidate_without_new_implementation",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D02_real_remote_one_pr_response_loss_open_until_user_merge",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry",
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only",
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state",
+    "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift",
+    "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget",
+    "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable",
+    "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria",
+    "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority",
+    "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances",
+    "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes",
+    "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically",
+    "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline",
+    "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes",
+    "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind",
+    "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token",
+    "test_harness_parallel.ParallelTests.test_P01_selected_runs_interleave_and_complete",
+    "test_harness_parallel.ParallelTests.test_P02_unrelated_artifact_updates_reload_without_lost_records",
+    "test_harness_parallel.ParallelTests.test_P03_blocking_wrapper_serializes_and_preserves_results",
+    "test_harness_parallel.ParallelTests.test_P04_wait_reloads_run_and_excludes_only_contention",
+    "test_harness_parallel.ParallelTests.test_P05_retained_history_and_workflow_integration",
+    "test_harness_parallel.SelectedHistoryTests.test_absent_selection_with_pre_issue_history_returns_none",
+    "test_harness_parallel.SelectedHistoryTests.test_completed_selection_ignores_pre_issue_history",
+    "test_harness_parallel.SelectedHistoryTests.test_malformed_issue_state_is_not_hidden",
+    "test_harness_runner.RunnerTests.test_W15_actual_result_records_skip_failure_duplicate_and_success",
+    "test_harness_runner.RunnerTests.test_W15_exclusive_output_rejects_stale_results_and_guidance_lists_all_groups",
+    "test_harness_runner.RunnerTests.test_W15_real_full_discovery_has_unique_ownership_without_fixtures",
+    "test_harness_runner.RunnerTests.test_W15_union_success_and_all_hostile_result_controls",
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+    "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+    "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+    "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+    "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+    "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan",
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+    "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+    "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+    "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair",
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+    "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts",
+    "test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror",
+    "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit",
+    "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected",
+    "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch",
+    "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates",
+    "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates",
+    "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion",
+    "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile",
+    "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent",
+    "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation",
+    "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved",
+    "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union",
+    "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock",
+    "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication",
+    "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch",
+    "test_issue_source.IssueSourceTests.test_S01_url_numeric_full_identity_paginated_snapshot",
+    "test_issue_source.IssueSourceTests.test_S01_wrong_repo_pr_auth_and_cycle_fail_closed",
+    "test_issue_source.IssueSourceTests.test_S03_parent_membership_is_not_blocking",
+    "test_issue_source.IssueSourceTests.test_S03_transitive_cancelled_readiness_and_material_drift"
+  ],
+  "executed": [
+    "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+    "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery",
+    "test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects",
+    "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch",
+    "test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection",
+    "test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct",
+    "test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile",
+    "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved",
+    "test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs",
+    "test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts",
+    "test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved",
+    "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery",
+    "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment",
+    "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries",
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_inventory_and_rejection",
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0",
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1",
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2",
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3",
+    "test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery",
+    "test_delivery_wrapup.DeliveryTests.test_W12_compact_result_cache_integrity_and_finite_deadlines",
+    "test_delivery_wrapup.DeliveryTests.test_W14_ambiguous_published_dispatch_never_blindly_resends",
+    "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once",
+    "test_delivery_wrapup.DeliveryTests.test_W14_successful_comment_lost_response_delayed_and_failed_readback",
+    "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone",
+    "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes",
+    "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root",
+    "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+    "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending",
+    "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery",
+    "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication",
+    "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+    "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations",
+    "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation",
+    "test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge",
+    "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation",
+    "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+    "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+    "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+    "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+    "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion",
+    "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+    "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+    "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+    "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+    "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+    "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+    "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_incomplete_epic_child_prevents_closing_reference",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readback_requires_exact_base_plan_input_binding",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readiness_without_source_edit_then_separate_final_acceptance",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_split_units_renew_at_combined_candidate_without_new_implementation",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D02_real_remote_one_pr_response_loss_open_until_user_merge",
+    "test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry",
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only",
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state",
+    "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift",
+    "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget",
+    "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable",
+    "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria",
+    "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority",
+    "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances",
+    "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes",
+    "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically",
+    "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline",
+    "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes",
+    "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind",
+    "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token",
+    "test_harness_parallel.ParallelTests.test_P01_selected_runs_interleave_and_complete",
+    "test_harness_parallel.ParallelTests.test_P02_unrelated_artifact_updates_reload_without_lost_records",
+    "test_harness_parallel.ParallelTests.test_P03_blocking_wrapper_serializes_and_preserves_results",
+    "test_harness_parallel.ParallelTests.test_P04_wait_reloads_run_and_excludes_only_contention",
+    "test_harness_parallel.ParallelTests.test_P05_retained_history_and_workflow_integration",
+    "test_harness_parallel.SelectedHistoryTests.test_absent_selection_with_pre_issue_history_returns_none",
+    "test_harness_parallel.SelectedHistoryTests.test_completed_selection_ignores_pre_issue_history",
+    "test_harness_parallel.SelectedHistoryTests.test_malformed_issue_state_is_not_hidden",
+    "test_harness_runner.RunnerTests.test_W15_actual_result_records_skip_failure_duplicate_and_success",
+    "test_harness_runner.RunnerTests.test_W15_exclusive_output_rejects_stale_results_and_guidance_lists_all_groups",
+    "test_harness_runner.RunnerTests.test_W15_real_full_discovery_has_unique_ownership_without_fixtures",
+    "test_harness_runner.RunnerTests.test_W15_union_success_and_all_hostile_result_controls",
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+    "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+    "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+    "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+    "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+    "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan",
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+    "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+    "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+    "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair",
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+    "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts",
+    "test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror",
+    "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit",
+    "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected",
+    "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch",
+    "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates",
+    "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates",
+    "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion",
+    "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile",
+    "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent",
+    "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation",
+    "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved",
+    "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union",
+    "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock",
+    "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication",
+    "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch",
+    "test_issue_source.IssueSourceTests.test_S01_url_numeric_full_identity_paginated_snapshot",
+    "test_issue_source.IssueSourceTests.test_S01_wrong_repo_pr_auth_and_cycle_fail_closed",
+    "test_issue_source.IssueSourceTests.test_S03_parent_membership_is_not_blocking",
+    "test_issue_source.IssueSourceTests.test_S03_transitive_cancelled_readiness_and_material_drift"
+  ],
+  "groups": [
+    {
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+        "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery",
+        "test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects",
+        "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch",
+        "test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection",
+        "test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct",
+        "test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile",
+        "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved",
+        "test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs",
+        "test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts",
+        "test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved",
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment",
+        "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries",
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_inventory_and_rejection",
+        "test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery",
+        "test_delivery_wrapup.DeliveryTests.test_W12_compact_result_cache_integrity_and_finite_deadlines",
+        "test_delivery_wrapup.DeliveryTests.test_W14_ambiguous_published_dispatch_never_blindly_resends",
+        "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once",
+        "test_delivery_wrapup.DeliveryTests.test_W14_successful_comment_lost_response_delayed_and_failed_readback"
+      ],
+      "group": "delivery-ordinary",
+      "result": "/tmp/fossilize-61/output/implementer-1/delivery-ordinary.json",
+      "scenarios": [
+        {
+          "id": "W09:approval:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries"
+        },
+        {
+          "id": "W09:approval:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries"
+        },
+        {
+          "id": "W09:complete:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries"
+        },
+        {
+          "id": "W09:complete:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries"
+        },
+        {
+          "id": "W14:merge:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once"
+        },
+        {
+          "id": "W14:merge:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once"
+        },
+        {
+          "id": "W14:ticket-comment-8:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once"
+        },
+        {
+          "id": "W14:ticket-comment-8:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once"
+        }
+      ],
+      "seconds": 328.57878398895264,
+      "selected": [
+        "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+        "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery",
+        "test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects",
+        "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch",
+        "test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection",
+        "test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct",
+        "test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile",
+        "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved",
+        "test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs",
+        "test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts",
+        "test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved",
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment",
+        "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries",
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_inventory_and_rejection",
+        "test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery",
+        "test_delivery_wrapup.DeliveryTests.test_W12_compact_result_cache_integrity_and_finite_deadlines",
+        "test_delivery_wrapup.DeliveryTests.test_W14_ambiguous_published_dispatch_never_blindly_resends",
+        "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once",
+        "test_delivery_wrapup.DeliveryTests.test_W14_successful_comment_lost_response_delayed_and_failed_readback"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+      ],
+      "group": "delivery-w09",
+      "result": "/tmp/fossilize-61/output/implementer-1/delivery-w09.json",
+      "scenarios": [
+        {
+          "id": "W09:merge:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge-verification:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge-verification:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge-verification:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge-verification:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:merge-verification:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:detach:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:detach:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:detach:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:detach:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:detach:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:remote-delete:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:remote-delete:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:remote-delete:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:remote-delete:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:remote-delete:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:local-delete:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:local-delete:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:local-delete:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:local-delete:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:local-delete:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-close-8:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-close-8:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-close-8:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-close-8:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-close-8:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-comment-8:before-intent",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-comment-8:before-dispatch",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-comment-8:after-effect",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-comment-8:after-returned",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        },
+        {
+          "id": "W09:ticket-comment-8:after-readback",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+        }
+      ],
+      "seconds": 163.614004611969,
+      "selected": [
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+      ],
+      "group": "delivery-w11-0",
+      "result": "/tmp/fossilize-61/output/implementer-1/delivery-w11-0.json",
+      "scenarios": [
+        {
+          "id": "W11:approval:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:merge:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:merge:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:merge-verification:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:merge-verification:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:detach:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:detach:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:remote-delete:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:remote-delete:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:local-delete:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:local-delete:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:ticket-close-8:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:ticket-close-8:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:ticket-comment-8:dispatch:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        },
+        {
+          "id": "W11:ticket-comment-8:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+        }
+      ],
+      "seconds": 87.70469331741333,
+      "selected": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+      ],
+      "group": "delivery-w11-1",
+      "result": "/tmp/fossilize-61/output/implementer-1/delivery-w11-1.json",
+      "scenarios": [
+        {
+          "id": "W11:approval:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:merge:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:merge:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:merge-verification:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:merge-verification:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:detach:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:detach:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:remote-delete:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:remote-delete:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:local-delete:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:local-delete:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:ticket-close-8:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:ticket-close-8:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:ticket-comment-8:dispatch:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        },
+        {
+          "id": "W11:ticket-comment-8:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+        }
+      ],
+      "seconds": 85.09663724899292,
+      "selected": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+      ],
+      "group": "delivery-w11-2",
+      "result": "/tmp/fossilize-61/output/implementer-1/delivery-w11-2.json",
+      "scenarios": [
+        {
+          "id": "W11:merge:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:merge:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:merge-verification:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:merge-verification:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:detach:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:detach:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:remote-delete:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:remote-delete:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:local-delete:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:local-delete:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:ticket-close-8:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:ticket-close-8:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:ticket-comment-8:intent:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:ticket-comment-8:returned:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        },
+        {
+          "id": "W11:complete:readback:before-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+        }
+      ],
+      "seconds": 80.8209445476532,
+      "selected": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+      ],
+      "group": "delivery-w11-3",
+      "result": "/tmp/fossilize-61/output/implementer-1/delivery-w11-3.json",
+      "scenarios": [
+        {
+          "id": "W11:merge:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:merge:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:merge-verification:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:merge-verification:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:detach:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:detach:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:remote-delete:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:remote-delete:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:local-delete:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:local-delete:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:ticket-close-8:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:ticket-close-8:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:ticket-comment-8:intent:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:ticket-comment-8:returned:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        },
+        {
+          "id": "W11:complete:readback:after-push",
+          "status": "passed",
+          "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+        }
+      ],
+      "seconds": 86.06235480308533,
+      "selected": [
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_harness_parallel.ParallelTests.test_P01_selected_runs_interleave_and_complete",
+        "test_harness_parallel.ParallelTests.test_P02_unrelated_artifact_updates_reload_without_lost_records",
+        "test_harness_parallel.ParallelTests.test_P03_blocking_wrapper_serializes_and_preserves_results",
+        "test_harness_parallel.ParallelTests.test_P04_wait_reloads_run_and_excludes_only_contention",
+        "test_harness_parallel.ParallelTests.test_P05_retained_history_and_workflow_integration",
+        "test_harness_parallel.SelectedHistoryTests.test_absent_selection_with_pre_issue_history_returns_none",
+        "test_harness_parallel.SelectedHistoryTests.test_completed_selection_ignores_pre_issue_history",
+        "test_harness_parallel.SelectedHistoryTests.test_malformed_issue_state_is_not_hidden",
+        "test_harness_runner.RunnerTests.test_W15_actual_result_records_skip_failure_duplicate_and_success",
+        "test_harness_runner.RunnerTests.test_W15_exclusive_output_rejects_stale_results_and_guidance_lists_all_groups",
+        "test_harness_runner.RunnerTests.test_W15_real_full_discovery_has_unique_ownership_without_fixtures",
+        "test_harness_runner.RunnerTests.test_W15_union_success_and_all_hostile_result_controls"
+      ],
+      "group": "regression-extra",
+      "result": "/tmp/fossilize-61/output/implementer-1/regression-extra.json",
+      "scenarios": [],
+      "seconds": 58.26920199394226,
+      "selected": [
+        "test_harness_parallel.ParallelTests.test_P01_selected_runs_interleave_and_complete",
+        "test_harness_parallel.ParallelTests.test_P02_unrelated_artifact_updates_reload_without_lost_records",
+        "test_harness_parallel.ParallelTests.test_P03_blocking_wrapper_serializes_and_preserves_results",
+        "test_harness_parallel.ParallelTests.test_P04_wait_reloads_run_and_excludes_only_contention",
+        "test_harness_parallel.ParallelTests.test_P05_retained_history_and_workflow_integration",
+        "test_harness_parallel.SelectedHistoryTests.test_absent_selection_with_pre_issue_history_returns_none",
+        "test_harness_parallel.SelectedHistoryTests.test_completed_selection_ignores_pre_issue_history",
+        "test_harness_parallel.SelectedHistoryTests.test_malformed_issue_state_is_not_hidden",
+        "test_harness_runner.RunnerTests.test_W15_actual_result_records_skip_failure_duplicate_and_success",
+        "test_harness_runner.RunnerTests.test_W15_exclusive_output_rejects_stale_results_and_guidance_lists_all_groups",
+        "test_harness_runner.RunnerTests.test_W15_real_full_discovery_has_unique_ownership_without_fixtures",
+        "test_harness_runner.RunnerTests.test_W15_union_success_and_all_hostile_result_controls"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone",
+        "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes",
+        "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root",
+        "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+        "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending",
+        "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery",
+        "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication",
+        "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+        "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations",
+        "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation",
+        "test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge",
+        "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation",
+        "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+        "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+        "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion"
+      ],
+      "group": "regression-test_harness_artifacts",
+      "result": "/tmp/fossilize-61/output/implementer-1/regression-test_harness_artifacts.json",
+      "scenarios": [],
+      "seconds": 20.57300114631653,
+      "selected": [
+        "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone",
+        "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes",
+        "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root",
+        "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+        "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending",
+        "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery",
+        "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication",
+        "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+        "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations",
+        "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation",
+        "test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge",
+        "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation",
+        "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+        "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+        "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+        "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+        "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+        "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+        "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+        "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+        "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record"
+      ],
+      "group": "regression-test_harness_closeout",
+      "result": "/tmp/fossilize-61/output/implementer-1/regression-test_harness_closeout.json",
+      "scenarios": [],
+      "seconds": 45.10834789276123,
+      "selected": [
+        "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+        "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+        "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+        "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+        "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+        "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+        "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha"
+      ],
+      "group": "regression-test_harness_issue_artifacts",
+      "result": "/tmp/fossilize-61/output/implementer-1/regression-test_harness_issue_artifacts.json",
+      "scenarios": [],
+      "seconds": 5.102343797683716,
+      "selected": [
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_incomplete_epic_child_prevents_closing_reference",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readback_requires_exact_base_plan_input_binding",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readiness_without_source_edit_then_separate_final_acceptance",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_split_units_renew_at_combined_candidate_without_new_implementation",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D02_real_remote_one_pr_response_loss_open_until_user_merge",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry"
+      ],
+      "group": "regression-test_harness_issue_closeout",
+      "result": "/tmp/fossilize-61/output/implementer-1/regression-test_harness_issue_closeout.json",
+      "scenarios": [],
+      "seconds": 57.619959592819214,
+      "selected": [
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_incomplete_epic_child_prevents_closing_reference",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readback_requires_exact_base_plan_input_binding",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readiness_without_source_edit_then_separate_final_acceptance",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_split_units_renew_at_combined_candidate_without_new_implementation",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D02_real_remote_one_pr_response_loss_open_until_user_merge",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only",
+        "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state",
+        "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift",
+        "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget",
+        "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable",
+        "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria",
+        "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority",
+        "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances",
+        "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes",
+        "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically",
+        "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline",
+        "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes",
+        "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind",
+        "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token"
+      ],
+      "group": "regression-test_harness_migration",
+      "result": "/tmp/fossilize-61/output/implementer-1/regression-test_harness_migration.json",
+      "scenarios": [],
+      "seconds": 25.963741064071655,
+      "selected": [
+        "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only",
+        "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state",
+        "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift",
+        "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget",
+        "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable",
+        "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria",
+        "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority",
+        "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances",
+        "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes",
+        "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically",
+        "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline",
+        "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes",
+        "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind",
+        "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+        "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+        "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+        "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+        "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+        "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+        "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+        "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+        "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+        "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+        "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+        "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+        "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+        "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+        "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+        "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan",
+        "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+        "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+        "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+        "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+        "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+        "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair",
+        "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+        "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+        "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+        "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+        "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+      ],
+      "group": "regression-test_harness_state",
+      "result": "/tmp/fossilize-61/output/implementer-1/regression-test_harness_state.json",
+      "scenarios": [],
+      "seconds": 88.13917303085327,
+      "selected": [
+        "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+        "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+        "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+        "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+        "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+        "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+        "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+        "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+        "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+        "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+        "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+        "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+        "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+        "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+        "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+        "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan",
+        "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+        "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+        "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+        "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+        "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+        "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair",
+        "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+        "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+        "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+        "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+        "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror"
+      ],
+      "group": "regression-test_issue_guidance",
+      "result": "/tmp/fossilize-61/output/implementer-1/regression-test_issue_guidance.json",
+      "scenarios": [],
+      "seconds": 0.01741933822631836,
+      "selected": [
+        "test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit",
+        "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected",
+        "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch",
+        "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates",
+        "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates",
+        "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion",
+        "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile",
+        "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent",
+        "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation",
+        "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved",
+        "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union",
+        "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock",
+        "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication",
+        "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch"
+      ],
+      "group": "regression-test_issue_migration",
+      "result": "/tmp/fossilize-61/output/implementer-1/regression-test_issue_migration.json",
+      "scenarios": [],
+      "seconds": 36.40471315383911,
+      "selected": [
+        "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit",
+        "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected",
+        "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch",
+        "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates",
+        "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates",
+        "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion",
+        "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile",
+        "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent",
+        "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation",
+        "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved",
+        "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union",
+        "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock",
+        "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication",
+        "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch"
+      ],
+      "successful": true
+    },
+    {
+      "executed": [
+        "test_issue_source.IssueSourceTests.test_S01_url_numeric_full_identity_paginated_snapshot",
+        "test_issue_source.IssueSourceTests.test_S01_wrong_repo_pr_auth_and_cycle_fail_closed",
+        "test_issue_source.IssueSourceTests.test_S03_parent_membership_is_not_blocking",
+        "test_issue_source.IssueSourceTests.test_S03_transitive_cancelled_readiness_and_material_drift"
+      ],
+      "group": "regression-test_issue_source",
+      "result": "/tmp/fossilize-61/output/implementer-1/regression-test_issue_source.json",
+      "scenarios": [],
+      "seconds": 4.5606629848480225,
+      "selected": [
+        "test_issue_source.IssueSourceTests.test_S01_url_numeric_full_identity_paginated_snapshot",
+        "test_issue_source.IssueSourceTests.test_S01_wrong_repo_pr_auth_and_cycle_fail_closed",
+        "test_issue_source.IssueSourceTests.test_S03_parent_membership_is_not_blocking",
+        "test_issue_source.IssueSourceTests.test_S03_transitive_cancelled_readiness_and_material_drift"
+      ],
+      "successful": true
+    }
+  ],
+  "harness_test_mapping": {
+    "W01": [
+      "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+      "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery"
+    ],
+    "W02": [
+      "test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects"
+    ],
+    "W03": [
+      "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch",
+      "test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection",
+      "test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct"
+    ],
+    "W04": [
+      "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+      "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch",
+      "test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile"
+    ],
+    "W05": [
+      "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved",
+      "test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs"
+    ],
+    "W06": [
+      "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved"
+    ],
+    "W07": [
+      "test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts"
+    ],
+    "W08": [
+      "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+      "test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved"
+    ],
+    "W09": [
+      "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery",
+      "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment",
+      "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries"
+    ],
+    "W10": [
+      "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+      "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery",
+      "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment"
+    ],
+    "W11": [
+      "test_delivery_wrapup.DeliveryTests.test_W11_publication_inventory_and_rejection",
+      "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0",
+      "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1",
+      "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2",
+      "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3",
+      "test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery"
+    ],
+    "W12": [
+      "test_delivery_wrapup.DeliveryTests.test_W12_compact_result_cache_integrity_and_finite_deadlines"
+    ],
+    "W13": [
+      "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery"
+    ],
+    "W14": [
+      "test_delivery_wrapup.DeliveryTests.test_W14_ambiguous_published_dispatch_never_blindly_resends",
+      "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once",
+      "test_delivery_wrapup.DeliveryTests.test_W14_successful_comment_lost_response_delayed_and_failed_readback"
+    ],
+    "W15": [
+      "test_harness_runner.RunnerTests.test_W15_actual_result_records_skip_failure_duplicate_and_success",
+      "test_harness_runner.RunnerTests.test_W15_exclusive_output_rejects_stale_results_and_guidance_lists_all_groups",
+      "test_harness_runner.RunnerTests.test_W15_real_full_discovery_has_unique_ownership_without_fixtures",
+      "test_harness_runner.RunnerTests.test_W15_union_success_and_all_hostile_result_controls"
+    ]
+  },
+  "historical_evidence": [
+    {
+      "evidence_source": "coordinator-prefetched live gh readback; independently interpreted issue and PR bodies",
+      "issue": "https://github.com/robinwassen/Fossilize/issues/10",
+      "merge_sha": "36b78637e847463c4f58758a907b33ce5bf07ce5",
+      "pr": "https://github.com/robinwassen/Fossilize/pull/42",
+      "pr_state": "MERGED",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED"
+    },
+    {
+      "evidence_source": "coordinator-prefetched live gh readback; independently interpreted issue and PR bodies",
+      "issue": "https://github.com/robinwassen/Fossilize/issues/11",
+      "merge_sha": "a97dfec075a52e69a6ad517071c08b2b292983e5",
+      "pr": "https://github.com/robinwassen/Fossilize/pull/44",
+      "pr_state": "MERGED",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED"
+    },
+    {
+      "evidence_source": "coordinator-prefetched live gh readback; independently interpreted issue and PR bodies",
+      "issue": "https://github.com/robinwassen/Fossilize/issues/12",
+      "merge_sha": "5eb2c496dde819c868fa3d7d1e52c51047d9adb8",
+      "pr": "https://github.com/robinwassen/Fossilize/pull/45",
+      "pr_state": "MERGED",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED"
+    },
+    {
+      "evidence_source": "coordinator-prefetched live gh readback; independently interpreted issue and PR bodies",
+      "issue": "https://github.com/robinwassen/Fossilize/issues/34",
+      "merge_sha": "35a72926c8e313a11c8de5ce61c1356cbfa4eccd",
+      "pr": "https://github.com/robinwassen/Fossilize/pull/2",
+      "pr_state": "MERGED",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED"
+    },
+    {
+      "evidence_source": "coordinator-prefetched live gh readback; independently interpreted issue and PR bodies",
+      "issue": "https://github.com/robinwassen/Fossilize/issues/35",
+      "merge_sha": "fe0e26518e50f27a072c8bfe5f5062e4c81b4273",
+      "pr": "https://github.com/robinwassen/Fossilize/pull/5",
+      "pr_state": "MERGED",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED"
+    },
+    {
+      "evidence_source": "coordinator-prefetched live gh readback; independently interpreted issue and PR bodies",
+      "issue": "https://github.com/robinwassen/Fossilize/issues/36",
+      "merge_sha": "7217f91b0cd961178b61071f3647ca3023ab1da9",
+      "pr": "https://github.com/robinwassen/Fossilize/pull/6",
+      "pr_state": "MERGED",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED"
+    },
+    {
+      "evidence_source": "coordinator-prefetched live gh readback; independently interpreted issue and PR bodies",
+      "issue": "https://github.com/robinwassen/Fossilize/issues/37",
+      "merge_sha": "796bba75ab32c13e1b50ee01fd7d067f17112cdf",
+      "pr": "https://github.com/robinwassen/Fossilize/pull/38",
+      "pr_state": "MERGED",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED"
+    },
+    {
+      "evidence_source": "coordinator-prefetched live gh readback; independently interpreted issue and PR bodies",
+      "issue": "https://github.com/robinwassen/Fossilize/issues/39",
+      "merge_sha": "b42b22c2e73bcfed731ee17752c244e2be7e737f",
+      "pr": "https://github.com/robinwassen/Fossilize/pull/41",
+      "pr_state": "MERGED",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED"
+    }
+  ],
+  "input_revision": 4,
+  "input_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
+  "limitations": [
+    "Documentation and harness instructions only; no C++/Vulkan/CLI runtime or test code changed.",
+    "No product, GPU, Steam, native Windows or hardware verification claimed.",
+    "No original-defect executable control is appropriate for prose-only change; content omission/scope counterexamples are checked by semantic review.",
+    "Installed package backup/synchronization/equality is coordinator-owned publication gate, not performed by implementer.",
+    "No issue closure, acceptance or canonical-state changes performed by implementer.",
+    "No browser click navigation is claimed: generated rendered link destinations and tracked relative paths were reviewed semantically; live associated issues/PRs supplied authoritative historical identities.",
+    "CUA surface inventory was unavailable; actual visual review used locally generated headless Chrome screenshots instead.",
+    "Incidental local preview server was not run because actual browser screenshots satisfied the render requirement."
+  ],
+  "logs": [
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-doc-review.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-whitespace.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-inventory.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_artifacts.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_closeout.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_issue_artifacts.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_issue_closeout.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_migration.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_harness_state.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_guidance.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_migration.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-test_issue_source.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-ordinary.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w09.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-0.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-1.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-2.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-delivery-w11-3.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-regression-extra.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-results.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-G61-skill.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-live-issue.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-render.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-chrome-version.log",
+    "/tmp/fossilize-61/output/implementer-1/imp61-screenshots.log",
+    "/tmp/fossilize-61/output/implementer-1/inventory.json",
+    "/tmp/fossilize-61/output/implementer-1/union.json"
+  ],
+  "not_run": [
+    {
+      "intent_id": "imp61-preview",
+      "reason": "Incidental localhost preview replaced by successful headless Chrome rendering/screenshots; not a required gate."
+    }
+  ],
+  "operation": "implement",
+  "original_method_mapping": {
+    "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition": [
+      "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery": [
+      "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects": [
+      "test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch": [
+      "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection": [
+      "test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct": [
+      "test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile": [
+      "test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved": [
+      "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs": [
+      "test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts": [
+      "test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved": [
+      "test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery": [
+      "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment": [
+      "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries": [
+      "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W11_every_checkpoint_publication_response_loss_and_rejection": [
+      "test_delivery_wrapup.DeliveryTests.test_W11_publication_inventory_and_rejection",
+      "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0",
+      "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1",
+      "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2",
+      "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery": [
+      "test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W12_compact_result_cache_integrity_and_finite_deadlines": [
+      "test_delivery_wrapup.DeliveryTests.test_W12_compact_result_cache_integrity_and_finite_deadlines"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone": [
+      "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes": [
+      "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root": [
+      "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved": [
+      "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending": [
+      "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery": [
+      "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication": [
+      "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return": [
+      "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations": [
+      "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation": [
+      "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge": [
+      "test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation": [
+      "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint": [
+      "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish": [
+      "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication": [
+      "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha": [
+      "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha"
+    ],
+    "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion": [
+      "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion"
+    ],
+    "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal": [
+      "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal"
+    ],
+    "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved": [
+      "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved"
+    ],
+    "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done": [
+      "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done"
+    ],
+    "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup": [
+      "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup"
+    ],
+    "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault": [
+      "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault"
+    ],
+    "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge": [
+      "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge"
+    ],
+    "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record": [
+      "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record"
+    ],
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry": [
+      "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry"
+    ],
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state": [
+      "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state"
+    ],
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence": [
+      "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence"
+    ],
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route": [
+      "test_harness_issue_closeout.IssueCloseoutTests.test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route"
+    ],
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_incomplete_epic_child_prevents_closing_reference": [
+      "test_harness_issue_closeout.IssueCloseoutTests.test_D01_incomplete_epic_child_prevents_closing_reference"
+    ],
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readback_requires_exact_base_plan_input_binding": [
+      "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readback_requires_exact_base_plan_input_binding"
+    ],
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readiness_without_source_edit_then_separate_final_acceptance": [
+      "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readiness_without_source_edit_then_separate_final_acceptance"
+    ],
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments": [
+      "test_harness_issue_closeout.IssueCloseoutTests.test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments"
+    ],
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_split_units_renew_at_combined_candidate_without_new_implementation": [
+      "test_harness_issue_closeout.IssueCloseoutTests.test_D01_split_units_renew_at_combined_candidate_without_new_implementation"
+    ],
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession": [
+      "test_harness_issue_closeout.IssueCloseoutTests.test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession"
+    ],
+    "test_harness_issue_closeout.IssueCloseoutTests.test_D02_real_remote_one_pr_response_loss_open_until_user_merge": [
+      "test_harness_issue_closeout.IssueCloseoutTests.test_D02_real_remote_one_pr_response_loss_open_until_user_merge"
+    ],
+    "test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry": [
+      "test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry"
+    ],
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only": [
+      "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only"
+    ],
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state": [
+      "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state"
+    ],
+    "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift": [
+      "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift"
+    ],
+    "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget": [
+      "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget"
+    ],
+    "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable": [
+      "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable"
+    ],
+    "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria": [
+      "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria"
+    ],
+    "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority": [
+      "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority"
+    ],
+    "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances": [
+      "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances"
+    ],
+    "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes": [
+      "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes"
+    ],
+    "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically": [
+      "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically"
+    ],
+    "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline": [
+      "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline"
+    ],
+    "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes": [
+      "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes"
+    ],
+    "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind": [
+      "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind"
+    ],
+    "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token": [
+      "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token"
+    ],
+    "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation": [
+      "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation"
+    ],
+    "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser": [
+      "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser"
+    ],
+    "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption": [
+      "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption"
+    ],
+    "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid": [
+      "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid"
+    ],
+    "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run": [
+      "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run"
+    ],
+    "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts": [
+      "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts"
+    ],
+    "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate": [
+      "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate"
+    ],
+    "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence": [
+      "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence"
+    ],
+    "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported": [
+      "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported"
+    ],
+    "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension": [
+      "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension"
+    ],
+    "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early": [
+      "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early"
+    ],
+    "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension": [
+      "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension"
+    ],
+    "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report": [
+      "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report"
+    ],
+    "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable": [
+      "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable"
+    ],
+    "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers": [
+      "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers"
+    ],
+    "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan": [
+      "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan"
+    ],
+    "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding": [
+      "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding"
+    ],
+    "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance": [
+      "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance"
+    ],
+    "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression": [
+      "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression"
+    ],
+    "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness": [
+      "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness"
+    ],
+    "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks": [
+      "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks"
+    ],
+    "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair": [
+      "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair"
+    ],
+    "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived": [
+      "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived"
+    ],
+    "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict": [
+      "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict"
+    ],
+    "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage": [
+      "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage"
+    ],
+    "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry": [
+      "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry"
+    ],
+    "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts": [
+      "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts"
+    ],
+    "test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror": [
+      "test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror"
+    ],
+    "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit": [
+      "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit"
+    ],
+    "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected": [
+      "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected"
+    ],
+    "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch": [
+      "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch"
+    ],
+    "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates": [
+      "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates"
+    ],
+    "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates": [
+      "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates"
+    ],
+    "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion": [
+      "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion"
+    ],
+    "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile": [
+      "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile"
+    ],
+    "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent": [
+      "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent"
+    ],
+    "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation": [
+      "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation"
+    ],
+    "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved": [
+      "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved"
+    ],
+    "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union": [
+      "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union"
+    ],
+    "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock": [
+      "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock"
+    ],
+    "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication": [
+      "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication"
+    ],
+    "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch": [
+      "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch"
+    ],
+    "test_issue_source.IssueSourceTests.test_S01_url_numeric_full_identity_paginated_snapshot": [
+      "test_issue_source.IssueSourceTests.test_S01_url_numeric_full_identity_paginated_snapshot"
+    ],
+    "test_issue_source.IssueSourceTests.test_S01_wrong_repo_pr_auth_and_cycle_fail_closed": [
+      "test_issue_source.IssueSourceTests.test_S01_wrong_repo_pr_auth_and_cycle_fail_closed"
+    ],
+    "test_issue_source.IssueSourceTests.test_S03_parent_membership_is_not_blocking": [
+      "test_issue_source.IssueSourceTests.test_S03_parent_membership_is_not_blocking"
+    ],
+    "test_issue_source.IssueSourceTests.test_S03_transitive_cancelled_readiness_and_material_drift": [
+      "test_issue_source.IssueSourceTests.test_S03_transitive_cancelled_readiness_and_material_drift"
+    ]
+  },
+  "plan_version": 1,
+  "rendered_review": {
+    "browser": "Google Chrome 156.0.8078.79 headless; 1400x4400 screenshots; disposable outside-source profile",
+    "candidate_sha": "168cd322d8742ae2d2a801bce4c527f5495bf3aa",
+    "files": [
+      {
+        "file": "CHANGELOG.md",
+        "html": "/tmp/fossilize-61/output/implementer-1/rendered/0.html",
+        "screenshot": "/tmp/fossilize-61/output/implementer-1/rendered/0.png"
+      },
+      {
+        "file": "local-docs/changelog-guidelines.md",
+        "html": "/tmp/fossilize-61/output/implementer-1/rendered/1.html",
+        "screenshot": "/tmp/fossilize-61/output/implementer-1/rendered/1.png"
+      },
+      {
+        "file": "AGENTS.md",
+        "html": "/tmp/fossilize-61/output/implementer-1/rendered/2.html",
+        "screenshot": "/tmp/fossilize-61/output/implementer-1/rendered/2.png"
+      },
+      {
+        "file": "local-docs/README.md",
+        "html": "/tmp/fossilize-61/output/implementer-1/rendered/3.html",
+        "screenshot": "/tmp/fossilize-61/output/implementer-1/rendered/3.png"
+      },
+      {
+        "file": ".agents/skills/implement-change-harness/SKILL.md",
+        "html": "/tmp/fossilize-61/output/implementer-1/rendered/4.html",
+        "screenshot": "/tmp/fossilize-61/output/implementer-1/rendered/4.png"
+      },
+      {
+        "file": ".agents/skills/implement-change-harness/references/roles.md",
+        "html": "/tmp/fossilize-61/output/implementer-1/rendered/5.html",
+        "screenshot": "/tmp/fossilize-61/output/implementer-1/rendered/5.png"
+      }
+    ],
+    "inspection": "All six actual PNGs viewed with view_image(detail=original). Full changed sections and document ends fit; headings/list numbering/bullets/links/bold topic tags/code formatting readable, no clipped sections or malformed changed Markdown. Skill frontmatter is visible as metadata-like text in raw API rendering; its unchanged content passes separate metadata validator.",
+    "renderer": "GitHub REST markdown API, mode=gfm, context=robinwassen/Fossilize"
+  },
+  "result_candidate_sha": "168cd322d8742ae2d2a801bce4c527f5495bf3aa",
+  "role": "implementer",
+  "scenario_mapping": {
+    "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery": [
+      "W09:merge:before-intent",
+      "W09:merge:before-dispatch",
+      "W09:merge:after-effect",
+      "W09:merge:after-returned",
+      "W09:merge:after-readback",
+      "W09:merge-verification:before-intent",
+      "W09:merge-verification:before-dispatch",
+      "W09:merge-verification:after-effect",
+      "W09:merge-verification:after-returned",
+      "W09:merge-verification:after-readback",
+      "W09:detach:before-intent",
+      "W09:detach:before-dispatch",
+      "W09:detach:after-effect",
+      "W09:detach:after-returned",
+      "W09:detach:after-readback",
+      "W09:remote-delete:before-intent",
+      "W09:remote-delete:before-dispatch",
+      "W09:remote-delete:after-effect",
+      "W09:remote-delete:after-returned",
+      "W09:remote-delete:after-readback",
+      "W09:local-delete:before-intent",
+      "W09:local-delete:before-dispatch",
+      "W09:local-delete:after-effect",
+      "W09:local-delete:after-returned",
+      "W09:local-delete:after-readback",
+      "W09:ticket-close-8:before-intent",
+      "W09:ticket-close-8:before-dispatch",
+      "W09:ticket-close-8:after-effect",
+      "W09:ticket-close-8:after-returned",
+      "W09:ticket-close-8:after-readback",
+      "W09:ticket-comment-8:before-intent",
+      "W09:ticket-comment-8:before-dispatch",
+      "W09:ticket-comment-8:after-effect",
+      "W09:ticket-comment-8:after-returned",
+      "W09:ticket-comment-8:after-readback"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries": [
+      "W09:approval:before-intent",
+      "W09:approval:after-readback",
+      "W09:complete:before-intent",
+      "W09:complete:after-readback"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0": [
+      "W11:approval:intent:before-push",
+      "W11:merge:dispatch:before-push",
+      "W11:merge:readback:before-push",
+      "W11:merge-verification:dispatch:before-push",
+      "W11:merge-verification:readback:before-push",
+      "W11:detach:dispatch:before-push",
+      "W11:detach:readback:before-push",
+      "W11:remote-delete:dispatch:before-push",
+      "W11:remote-delete:readback:before-push",
+      "W11:local-delete:dispatch:before-push",
+      "W11:local-delete:readback:before-push",
+      "W11:ticket-close-8:dispatch:before-push",
+      "W11:ticket-close-8:readback:before-push",
+      "W11:ticket-comment-8:dispatch:before-push",
+      "W11:ticket-comment-8:readback:before-push"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1": [
+      "W11:approval:intent:after-push",
+      "W11:merge:dispatch:after-push",
+      "W11:merge:readback:after-push",
+      "W11:merge-verification:dispatch:after-push",
+      "W11:merge-verification:readback:after-push",
+      "W11:detach:dispatch:after-push",
+      "W11:detach:readback:after-push",
+      "W11:remote-delete:dispatch:after-push",
+      "W11:remote-delete:readback:after-push",
+      "W11:local-delete:dispatch:after-push",
+      "W11:local-delete:readback:after-push",
+      "W11:ticket-close-8:dispatch:after-push",
+      "W11:ticket-close-8:readback:after-push",
+      "W11:ticket-comment-8:dispatch:after-push",
+      "W11:ticket-comment-8:readback:after-push"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2": [
+      "W11:merge:intent:before-push",
+      "W11:merge:returned:before-push",
+      "W11:merge-verification:intent:before-push",
+      "W11:merge-verification:returned:before-push",
+      "W11:detach:intent:before-push",
+      "W11:detach:returned:before-push",
+      "W11:remote-delete:intent:before-push",
+      "W11:remote-delete:returned:before-push",
+      "W11:local-delete:intent:before-push",
+      "W11:local-delete:returned:before-push",
+      "W11:ticket-close-8:intent:before-push",
+      "W11:ticket-close-8:returned:before-push",
+      "W11:ticket-comment-8:intent:before-push",
+      "W11:ticket-comment-8:returned:before-push",
+      "W11:complete:readback:before-push"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3": [
+      "W11:merge:intent:after-push",
+      "W11:merge:returned:after-push",
+      "W11:merge-verification:intent:after-push",
+      "W11:merge-verification:returned:after-push",
+      "W11:detach:intent:after-push",
+      "W11:detach:returned:after-push",
+      "W11:remote-delete:intent:after-push",
+      "W11:remote-delete:returned:after-push",
+      "W11:local-delete:intent:after-push",
+      "W11:local-delete:returned:after-push",
+      "W11:ticket-close-8:intent:after-push",
+      "W11:ticket-close-8:returned:after-push",
+      "W11:ticket-comment-8:intent:after-push",
+      "W11:ticket-comment-8:returned:after-push",
+      "W11:complete:readback:after-push"
+    ],
+    "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once": [
+      "W14:merge:before-push",
+      "W14:merge:after-push",
+      "W14:ticket-comment-8:before-push",
+      "W14:ticket-comment-8:after-push"
+    ]
+  },
+  "semantic_review": {
+    "C61-01": "All eight exact user-reviewed sentences and full fork issue links are preserved. Completed issue/merged PR state and scope support each; diagnostics are initial context, parser behavior names only list/rehash/prune, file completion makes no durability claim.",
+    "C61-02": "Completed changes grouped by topic and earlier first within topic; no invented versions/dates. Separate explicit note says #35 backlog mechanism is historical and replaced by #37 GitHub tracking.",
+    "C61-03": "Dedicated guideline preserves approved full rule and sentence pattern, optional meaningful epic topic, issue traceability, factual scope, review revision and historical role. Unreleased distinguishes open candidate from merged delivery.",
+    "C61-04": "AGENTS has two-line update direction and one guideline link. Changelog and index link same tracked guideline. Guideline ../CHANGELOG.md and issue-workflow.md resolve to existing candidate files; no new anchors.",
+    "C61-05": "SKILL step4 and implementer role require entry in same committed candidate; step5 and checker require independent accuracy, scope, benefit, topic, one sentence, issue link and review changes; step6/final checker includes combined changelog. Existing safety contracts retained.",
+    "C61-06": "Actual Chrome screenshots show all six documents and all changed sections readable and complete. Tags, one-sentence entries, link styles, headings and ordered harness steps render correctly. AGENTS changelog section stays brief; guideline and index links are visible.",
+    "C61-07": "Complete wrapped base-to-candidate diff contains only six intended Markdown/instruction files. Own #61 entry in Unreleased states shared changelog/required entry review benefit without false completed-issue claim.",
+    "C61-08": "Fresh supported discovery owns all138 IDs once across16 groups; all138 executed passing with103 scenarios and113 original-method mappings. Fresh --verify-results passed exact disjoint unions at matching candidate/attempt/digest.",
+    "C61-09": "Tracked metadata validator passed. Installed-package backup/sync/equality is explicitly deferred to coordinator publication gate as planned.",
+    "C61-10": "Wrapped live root issue readback retained OPEN state and unchanged material body/title versus immutable original. Readiness/final acceptance/publication/attachment remain coordinator/final-checker obligations; #9 is not a closing target."
+  },
+  "skipped": [],
+  "summary": "Implemented six-file changelog/guidance/role-contract change; 138/138 tests, 103/103 scenarios, all 16 groups and exact union passed; metadata, whitespace, historical/live reconciliation and actual rendered review passed. Independent acceptance and coordinator publication gates remain separate.",
+  "test_mapping": [
+    {
+      "case": "C61-01",
+      "evidence": "All eight exact user-reviewed sentences and full fork issue links are preserved. Completed issue/merged PR state and scope support each; diagnostics are initial context, parser behavior names only list/rehash/prune, file completion makes no durability claim.",
+      "method": "manual semantic/source and historical evidence review"
+    },
+    {
+      "case": "C61-02",
+      "evidence": "Completed changes grouped by topic and earlier first within topic; no invented versions/dates. Separate explicit note says #35 backlog mechanism is historical and replaced by #37 GitHub tracking.",
+      "method": "manual semantic/source and historical evidence review"
+    },
+    {
+      "case": "C61-03",
+      "evidence": "Dedicated guideline preserves approved full rule and sentence pattern, optional meaningful epic topic, issue traceability, factual scope, review revision and historical role. Unreleased distinguishes open candidate from merged delivery.",
+      "method": "manual semantic/source and historical evidence review"
+    },
+    {
+      "case": "C61-04",
+      "evidence": "AGENTS has two-line update direction and one guideline link. Changelog and index link same tracked guideline. Guideline ../CHANGELOG.md and issue-workflow.md resolve to existing candidate files; no new anchors.",
+      "method": "manual semantic/source and historical evidence review"
+    },
+    {
+      "case": "C61-05",
+      "evidence": "SKILL step4 and implementer role require entry in same committed candidate; step5 and checker require independent accuracy, scope, benefit, topic, one sentence, issue link and review changes; step6/final checker includes combined changelog. Existing safety contracts retained.",
+      "method": "manual semantic/source and historical evidence review"
+    },
+    {
+      "case": "C61-06",
+      "evidence": "Actual Chrome screenshots show all six documents and all changed sections readable and complete. Tags, one-sentence entries, link styles, headings and ordered harness steps render correctly. AGENTS changelog section stays brief; guideline and index links are visible.",
+      "method": "GitHub GFM generation and actual Chrome PNG visual inspection"
+    },
+    {
+      "case": "C61-07",
+      "evidence": "Complete wrapped base-to-candidate diff contains only six intended Markdown/instruction files. Own #61 entry in Unreleased states shared changelog/required entry review benefit without false completed-issue claim.",
+      "method": "manual semantic/source and historical evidence review"
+    },
+    {
+      "case": "C61-08",
+      "evidence": "Fresh supported discovery owns all138 IDs once across16 groups; all138 executed passing with103 scenarios and113 original-method mappings. Fresh --verify-results passed exact disjoint unions at matching candidate/attempt/digest.",
+      "method": "all16 supported assertion-bearing groups plus fresh discovery/exact union"
+    },
+    {
+      "case": "C61-09",
+      "evidence": "Tracked metadata validator passed. Installed-package backup/sync/equality is explicitly deferred to coordinator publication gate as planned.",
+      "method": "quick_validate metadata; coordinator owns installed gate"
+    },
+    {
+      "case": "C61-10",
+      "evidence": "Wrapped live root issue readback retained OPEN state and unchanged material body/title versus immutable original. Readiness/final acceptance/publication/attachment remain coordinator/final-checker obligations; #9 is not a closing target.",
+      "method": "manual semantic/source and historical evidence review"
+    },
+    {
+      "case": "C61-08-all-test-ids",
+      "result": "passed",
+      "scenarios": {
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery": [
+          "W09:merge:before-intent",
+          "W09:merge:before-dispatch",
+          "W09:merge:after-effect",
+          "W09:merge:after-returned",
+          "W09:merge:after-readback",
+          "W09:merge-verification:before-intent",
+          "W09:merge-verification:before-dispatch",
+          "W09:merge-verification:after-effect",
+          "W09:merge-verification:after-returned",
+          "W09:merge-verification:after-readback",
+          "W09:detach:before-intent",
+          "W09:detach:before-dispatch",
+          "W09:detach:after-effect",
+          "W09:detach:after-returned",
+          "W09:detach:after-readback",
+          "W09:remote-delete:before-intent",
+          "W09:remote-delete:before-dispatch",
+          "W09:remote-delete:after-effect",
+          "W09:remote-delete:after-returned",
+          "W09:remote-delete:after-readback",
+          "W09:local-delete:before-intent",
+          "W09:local-delete:before-dispatch",
+          "W09:local-delete:after-effect",
+          "W09:local-delete:after-returned",
+          "W09:local-delete:after-readback",
+          "W09:ticket-close-8:before-intent",
+          "W09:ticket-close-8:before-dispatch",
+          "W09:ticket-close-8:after-effect",
+          "W09:ticket-close-8:after-returned",
+          "W09:ticket-close-8:after-readback",
+          "W09:ticket-comment-8:before-intent",
+          "W09:ticket-comment-8:before-dispatch",
+          "W09:ticket-comment-8:after-effect",
+          "W09:ticket-comment-8:after-returned",
+          "W09:ticket-comment-8:after-readback"
+        ],
+        "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries": [
+          "W09:approval:before-intent",
+          "W09:approval:after-readback",
+          "W09:complete:before-intent",
+          "W09:complete:after-readback"
+        ],
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0": [
+          "W11:approval:intent:before-push",
+          "W11:merge:dispatch:before-push",
+          "W11:merge:readback:before-push",
+          "W11:merge-verification:dispatch:before-push",
+          "W11:merge-verification:readback:before-push",
+          "W11:detach:dispatch:before-push",
+          "W11:detach:readback:before-push",
+          "W11:remote-delete:dispatch:before-push",
+          "W11:remote-delete:readback:before-push",
+          "W11:local-delete:dispatch:before-push",
+          "W11:local-delete:readback:before-push",
+          "W11:ticket-close-8:dispatch:before-push",
+          "W11:ticket-close-8:readback:before-push",
+          "W11:ticket-comment-8:dispatch:before-push",
+          "W11:ticket-comment-8:readback:before-push"
+        ],
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1": [
+          "W11:approval:intent:after-push",
+          "W11:merge:dispatch:after-push",
+          "W11:merge:readback:after-push",
+          "W11:merge-verification:dispatch:after-push",
+          "W11:merge-verification:readback:after-push",
+          "W11:detach:dispatch:after-push",
+          "W11:detach:readback:after-push",
+          "W11:remote-delete:dispatch:after-push",
+          "W11:remote-delete:readback:after-push",
+          "W11:local-delete:dispatch:after-push",
+          "W11:local-delete:readback:after-push",
+          "W11:ticket-close-8:dispatch:after-push",
+          "W11:ticket-close-8:readback:after-push",
+          "W11:ticket-comment-8:dispatch:after-push",
+          "W11:ticket-comment-8:readback:after-push"
+        ],
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2": [
+          "W11:merge:intent:before-push",
+          "W11:merge:returned:before-push",
+          "W11:merge-verification:intent:before-push",
+          "W11:merge-verification:returned:before-push",
+          "W11:detach:intent:before-push",
+          "W11:detach:returned:before-push",
+          "W11:remote-delete:intent:before-push",
+          "W11:remote-delete:returned:before-push",
+          "W11:local-delete:intent:before-push",
+          "W11:local-delete:returned:before-push",
+          "W11:ticket-close-8:intent:before-push",
+          "W11:ticket-close-8:returned:before-push",
+          "W11:ticket-comment-8:intent:before-push",
+          "W11:ticket-comment-8:returned:before-push",
+          "W11:complete:readback:before-push"
+        ],
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3": [
+          "W11:merge:intent:after-push",
+          "W11:merge:returned:after-push",
+          "W11:merge-verification:intent:after-push",
+          "W11:merge-verification:returned:after-push",
+          "W11:detach:intent:after-push",
+          "W11:detach:returned:after-push",
+          "W11:remote-delete:intent:after-push",
+          "W11:remote-delete:returned:after-push",
+          "W11:local-delete:intent:after-push",
+          "W11:local-delete:returned:after-push",
+          "W11:ticket-close-8:intent:after-push",
+          "W11:ticket-close-8:returned:after-push",
+          "W11:ticket-comment-8:intent:after-push",
+          "W11:ticket-comment-8:returned:after-push",
+          "W11:complete:readback:after-push"
+        ],
+        "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once": [
+          "W14:merge:before-push",
+          "W14:merge:after-push",
+          "W14:ticket-comment-8:before-push",
+          "W14:ticket-comment-8:after-push"
+        ]
+      },
+      "tests": [
+        "test_delivery_wrapup.DeliveryTests.test_W01_W04_W08_W10_one_subprocess_command_real_squash_terminal_transition",
+        "test_delivery_wrapup.DeliveryTests.test_W01_W13_guidance_one_approval_handoff_and_supported_recovery",
+        "test_delivery_wrapup.DeliveryTests.test_W02_approval_scope_and_acceptance_fences_zero_effects",
+        "test_delivery_wrapup.DeliveryTests.test_W03_W04_post_merge_requirements_and_checks_drift_preserves_branch",
+        "test_delivery_wrapup.DeliveryTests.test_W03_live_preflight_drift_and_merge_rejection",
+        "test_delivery_wrapup.DeliveryTests.test_W03_zero_total_zero_required_and_failed_lookup_are_distinct",
+        "test_delivery_wrapup.DeliveryTests.test_W04_incompatible_squash_and_already_merged_reconcile",
+        "test_delivery_wrapup.DeliveryTests.test_W05_W06_dirty_changed_occupied_and_unrelated_work_preserved",
+        "test_delivery_wrapup.DeliveryTests.test_W05_conditional_delete_races_preserve_advanced_refs",
+        "test_delivery_wrapup.DeliveryTests.test_W07_auto_closed_completed_cancelled_and_comment_conflicts",
+        "test_delivery_wrapup.DeliveryTests.test_W08_another_active_run_is_preserved",
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_every_effect_boundary_process_death_and_recovery",
+        "test_delivery_wrapup.DeliveryTests.test_W09_W10_service_response_loss_no_duplicate_merge_or_comment",
+        "test_delivery_wrapup.DeliveryTests.test_W09_observational_and_terminal_boundaries",
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_inventory_and_rejection",
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_0",
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1",
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_2",
+        "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_3",
+        "test_delivery_wrapup.DeliveryTests.test_W11_terminal_publication_failure_is_not_delivery",
+        "test_delivery_wrapup.DeliveryTests.test_W12_compact_result_cache_integrity_and_finite_deadlines",
+        "test_delivery_wrapup.DeliveryTests.test_W14_ambiguous_published_dispatch_never_blindly_resends",
+        "test_delivery_wrapup.DeliveryTests.test_W14_known_unsent_dispatch_publication_recovers_exactly_once",
+        "test_delivery_wrapup.DeliveryTests.test_W14_successful_comment_lost_response_delayed_and_failed_readback",
+        "test_harness_artifacts.ArtifactTests.test_P01_initial_orphan_exact_nonforce_destination_and_fresh_clone",
+        "test_harness_artifacts.ArtifactTests.test_P02_every_mutation_class_cumulative_remote_bytes",
+        "test_harness_artifacts.ArtifactTests.test_P03_explicit_existing_history_adoption_schema1_and_empty_root",
+        "test_harness_artifacts.ArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+        "test_harness_artifacts.ArtifactTests.test_P05_idempotent_status_retry_and_ancestor_pending",
+        "test_harness_artifacts.ArtifactTests.test_P06_rejection_network_failure_barrier_safety_report_and_recovery",
+        "test_harness_artifacts.ArtifactTests.test_P06b_safety_facts_retained_behind_pending_publication",
+        "test_harness_artifacts.ArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+        "test_harness_artifacts.ArtifactTests.test_P08_second_clone_descendant_adoption_then_divergent_allocations",
+        "test_harness_artifacts.ArtifactTests.test_P08b_evolved_remote_worker_budget_state_requires_reconciliation",
+        "test_harness_artifacts.ArtifactTests.test_P08c_historical_allocations_survive_every_parent_edge",
+        "test_harness_artifacts.ArtifactTests.test_P09_invalid_remote_history_destination_and_upstream_preservation",
+        "test_harness_artifacts.ArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_artifacts.ArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_artifacts.ArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+        "test_harness_artifacts.ArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+        "test_harness_artifacts.ArtifactTests.test_P11_terminal_null_active_failure_restart_and_finite_completion",
+        "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+        "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+        "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+        "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+        "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+        "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+        "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+        "test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_R01_final_planner_rejection_cleanup_preserves_replan_route",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_incomplete_epic_child_prevents_closing_reference",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readback_requires_exact_base_plan_input_binding",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_readiness_without_source_edit_then_separate_final_acceptance",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_same_candidate_renewed_generation_restart_replay_preserves_comments",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_split_units_renew_at_combined_candidate_without_new_implementation",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D01_stale_candidate_invalidates_issue_readiness_and_requires_supersession",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_D02_real_remote_one_pr_response_loss_open_until_user_merge",
+        "test_harness_issue_closeout.IssueCloseoutTests.test_P11_live_terminal_null_active_failure_restart_and_retry",
+        "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only",
+        "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state",
+        "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift",
+        "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget",
+        "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable",
+        "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria",
+        "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority",
+        "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances",
+        "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes",
+        "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically",
+        "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline",
+        "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes",
+        "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind",
+        "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token",
+        "test_harness_parallel.ParallelTests.test_P01_selected_runs_interleave_and_complete",
+        "test_harness_parallel.ParallelTests.test_P02_unrelated_artifact_updates_reload_without_lost_records",
+        "test_harness_parallel.ParallelTests.test_P03_blocking_wrapper_serializes_and_preserves_results",
+        "test_harness_parallel.ParallelTests.test_P04_wait_reloads_run_and_excludes_only_contention",
+        "test_harness_parallel.ParallelTests.test_P05_retained_history_and_workflow_integration",
+        "test_harness_parallel.SelectedHistoryTests.test_absent_selection_with_pre_issue_history_returns_none",
+        "test_harness_parallel.SelectedHistoryTests.test_completed_selection_ignores_pre_issue_history",
+        "test_harness_parallel.SelectedHistoryTests.test_malformed_issue_state_is_not_hidden",
+        "test_harness_runner.RunnerTests.test_W15_actual_result_records_skip_failure_duplicate_and_success",
+        "test_harness_runner.RunnerTests.test_W15_exclusive_output_rejects_stale_results_and_guidance_lists_all_groups",
+        "test_harness_runner.RunnerTests.test_W15_real_full_discovery_has_unique_ownership_without_fixtures",
+        "test_harness_runner.RunnerTests.test_W15_union_success_and_all_hostile_result_controls",
+        "test_harness_state.HarnessTests.test_T01_happy_path_real_checkpoint_and_source_preservation",
+        "test_harness_state.HarnessTests.test_T02_failure_boundaries_and_real_cas_loser",
+        "test_harness_state.HarnessTests.test_T03_invalid_state_paths_schema_and_source_branch_adoption",
+        "test_harness_state.HarnessTests.test_T03b_duplicate_durable_finding_identity_is_invalid",
+        "test_harness_state.HarnessTests.test_T04_process_worktree_lock_and_single_active_run",
+        "test_harness_state.HarnessTests.test_T05_dynamic_registry_reservations_archives_conflicts",
+        "test_harness_state.HarnessTests.test_T06_detached_exact_views_dirty_source_and_changed_candidate",
+        "test_harness_state.HarnessTests.test_T07_dispatch_ack_loss_live_unknown_and_termination_fence",
+        "test_harness_state.HarnessTests.test_T08_each_stale_tuple_field_rejected_ack_revision_supported",
+        "test_harness_state.HarnessTests.test_T09_models_fallback_deadline_repair_replan_and_extension",
+        "test_harness_state.HarnessTests.test_T09b_repeated_unchanged_rejection_stops_early",
+        "test_harness_state.HarnessTests.test_T09c_late_final_report_retained_but_requires_extension",
+        "test_harness_state.HarnessTests.test_T09d_expired_command_pauses_live_attempt_and_preserves_late_report",
+        "test_harness_state.HarnessTests.test_T10_required_evidence_completeness_and_optional_unavailable",
+        "test_harness_state.HarnessTests.test_T10b_same_report_duplicate_findings_rejected_and_resolution_recovers",
+        "test_harness_state.HarnessTests.test_T10c_finding_scope_validation_dependency_branch_and_replan",
+        "test_harness_state.HarnessTests.test_T11_real_faulty_reproducer_and_weakened_test_finding",
+        "test_harness_state.HarnessTests.test_T12_repair_versus_replan_and_no_implementer_acceptance",
+        "test_harness_state.HarnessTests.test_T13_sequential_split_dependency_validation_final_regression",
+        "test_harness_state.HarnessTests.test_T13b_non_topological_plan_replan_reset_and_dispatch_readiness",
+        "test_harness_state.HarnessTests.test_T13c_unsplit_final_rejection_repairs_and_renews_both_checks",
+        "test_harness_state.HarnessTests.test_T13d_later_unit_final_finding_allows_scoped_prerequisite_repair",
+        "test_harness_state.HarnessTests.test_T14_required_environment_unavailable_cannot_be_waived",
+        "test_harness_state.HarnessTests.test_T15_publication_order_wrong_tuple_moving_base_push_conflict",
+        "test_harness_state.HarnessTests.test_T15b_deadline_stops_publication_at_every_stage",
+        "test_harness_state.HarnessTests.test_T16_idempotent_pr_response_loss_ambiguity_and_attachment_retry",
+        "test_harness_state.HarnessTests.test_T17_explicit_bootstrap_import_history_uncertainty_and_conflicts",
+        "test_issue_guidance.IssueGuidanceTests.test_G01_source_has_policy_without_task_registry_or_mirror",
+        "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit",
+        "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected",
+        "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch",
+        "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates",
+        "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates",
+        "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion",
+        "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile",
+        "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent",
+        "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation",
+        "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved",
+        "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union",
+        "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock",
+        "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication",
+        "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch",
+        "test_issue_source.IssueSourceTests.test_S01_url_numeric_full_identity_paginated_snapshot",
+        "test_issue_source.IssueSourceTests.test_S01_wrong_repo_pr_auth_and_cycle_fail_closed",
+        "test_issue_source.IssueSourceTests.test_S03_parent_membership_is_not_blocking",
+        "test_issue_source.IssueSourceTests.test_S03_transitive_cancelled_readiness_and_material_drift"
+      ]
+    }
+  ],
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/61",
+  "worker_id": "/root/implementer61"
+}
