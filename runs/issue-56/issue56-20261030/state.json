@@ -116,6 +116,10 @@
       {
         "started": 1793395889.9486315,
         "wait_seconds": 4.6182985219638795
+      },
+      {
+        "started": 1793395899.1028755,
+        "wait_seconds": 4.685792795964517
       }
     ],
     "command_timeout": 600,
@@ -313,9 +317,30 @@
         "receipt": "/tmp/fossilize-56/impl-debug-exceptions-off-tests-receipt.json",
         "started": 1793395895.5316808,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56/build/implementer-debug-exceptions-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-",
+          "--repeat",
+          "until-fail:3"
+        ],
+        "command": "[\"/tmp/fossilize-10/tools/cmake/data/bin/ctest\",\"--test-dir\",\"/tmp/fossilize-56/build/implementer-debug-exceptions-off\",\"--output-on-failure\",\"--no-tests=error\",\"-R\",\"^fork-child-\",\"--repeat\",\"until-fail:3\"]",
+        "cwd": "/home/robin/dev/fossilize-issue-56",
+        "eligible_deadline": 1793409651.6358032,
+        "intent_id": "impl-fork-repeat",
+        "log": "/tmp/fossilize-56/output/impl-fork-repeat.log",
+        "receipt": "/tmp/fossilize-56/impl-fork-repeat-receipt.json",
+        "started": 1793395904.7313964,
+        "timeout": 600
       }
     ],
-    "deadline": 1793409646.9500105,
+    "deadline": 1793409651.6358032,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -886,7 +911,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 16,
+  "revision": 17,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
