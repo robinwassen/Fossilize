@@ -5257,6 +5257,45 @@
           "counterexample-untracked-content"
         ],
         "timeout": 60
+      },
+      {
+        "candidate_sha": "development-repair-from-09c8f885e0467a285283afe12089d4054ae5cf1e",
+        "command": [
+          "/usr/bin/python3",
+          "-B",
+          "/tmp/fossilize-62/verify-2283820/runtime/packages/d17741dc47a705e768725c20d65f6d48035e9bc27c888f256ef7a66653d9e550/harness_serial.py",
+          "--runtime",
+          "/tmp/fossilize-62/verify-2283820/runtime",
+          "exec",
+          "--repo",
+          "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+          "--run",
+          "issue62-20261029",
+          "--cwd",
+          "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+          "--timeout",
+          "180",
+          "--",
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "PYTHONPATH=/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize/.agents/skills/implement-change-harness/scripts",
+          "/usr/bin/python3",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "test_harness_serial_executor.SerialExecutorTests.test_C10_source_fingerprint_binds_untracked_and_binary_contents",
+          "test_harness_serial_executor.SerialExecutorTests.test_C11_systemd_command_deadline_has_cleanup_grace"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/issue-62-serial-executor/fossilize",
+        "evidence": "/tmp/fossilize-62/verify-09c8f88",
+        "gate": "repair1-targeted-controls",
+        "started": 1793319970.2885804,
+        "steps": [
+          "untracked-binary-source-fingerprint",
+          "maximum-command-cleanup-grace"
+        ],
+        "timeout": 180
       }
     ],
     "deadline": 1793322581.555903,
@@ -5613,7 +5652,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 146,
+  "revision": 147,
   "root_issue": {
     "id": 6107403434,
     "node_id": "I_kwDOVZpjbc8AAAABbAeUqg",
