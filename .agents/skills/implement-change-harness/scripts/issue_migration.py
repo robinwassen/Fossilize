@@ -12,7 +12,7 @@ import re
 import sys
 import time
 from github_issues import GitHub, IssueError, digest, need
-from harness_state import Harness, Store, historical_inventory, encoded, git, require, repository_lock
+from harness_state import Harness, Store, historical_inventory, encoded, git, require, repository_lock, state_path
 
 MARKER = '<!-- fossilize-migration-v1:'
 
@@ -156,14 +156,15 @@ def mapping_context(inv, mapping):
 
 class Journal:
     """Only records-only evidence API is granted to the migration worker."""
-    def __init__(self, repo, expected_run=None):
-        self.harness = Harness(repo)
+    def __init__(self, repo, expected_run=None, root_issue=None, run_id=None, settle_wait=None):
+        self.harness = Harness(repo, root_issue=root_issue, run_id=run_id)
         self.expected_run = expected_run
+        self.settle_wait = settle_wait
 
     def records(self):
         tip = self.harness.store.tip()
         records = self.harness.store.records(tip)
-        active = json.loads(records['active.json'])
+        active = self.harness.select_pointer(records)
         need(active is not None,'migration needs active run')
         need(self.expected_run is None or active==self.expected_run,'migration belongs to another run; reconcile before any external write')
         state = json.loads(records[active['state']])
@@ -179,16 +180,26 @@ class Journal:
         need(not state['limits']['exhausted'] and time.time()<state['limits']['deadline'], 'run budget exhausted; retain facts and ask coordinator for authorized extension')
         need(self.harness.artifact_sync(tip,records,adopt=True)['status']=='confirmed', 'external dispatch requires exact confirmed artifact tip')
 
+    def guarded(self, action):
+        # Only the live coordinator supplies this callback. Never call it while
+        # holding the artifact lock: it owns the canonical settlement transaction.
+        selected = bool(self.harness.selection)
+        need(not selected or callable(self.settle_wait), 'selected journal requires coordinator settle_wait callback before external dispatch')
+        while True:
+            started = time.time()
+            with repository_lock(self.harness.repo, blocking=selected) as waited:
+                if not selected or not waited:
+                    self._authorize_locked()
+                    return action()
+                receipt = self.harness.wait_receipt(started, waited)
+            self.settle_wait(receipt)
+            # Reload latest selected records and exact publication on reacquire.
+
     def authorize(self):
-        with repository_lock(self.harness.repo):
-            self._authorize_locked()
+        return self.guarded(lambda: None)
 
     def dispatch(self, action):
-        # Hold the same lock through the bounded external request; no canonical
-        # writer can interleave between exact confirmation and dispatch.
-        with repository_lock(self.harness.repo):
-            self._authorize_locked()
-            return action()
+        return self.guarded(action)
 
     def append(self, name, value):
         tip,records,state = self.records()
@@ -202,13 +213,16 @@ class Journal:
         result = self.harness.apply('records-only',{'records':{path:value}},tip,state['revision'])
         need(result['artifact_publication']['status']=='confirmed','intent/observation publication incomplete; exact retry: '+json.dumps(result['artifact_publication']['retry'],sort_keys=True))
         after = self.harness.store.records(result['tip'])
-        need(all(after[path]==content for path,content in before.items()),'restricted journal changed canonical bytes')
+        need(all(after[path]==content for path,content in before.items() if not self.harness.selection or path == state_path(state['task_key'],state['run_id']) or path == 'allocations.json'),'restricted journal changed canonical bytes')
+        if result.get('artifact_wait'):
+            need(callable(self.settle_wait), 'selected journal wait requires coordinator settlement before dispatch')
+            self.settle_wait(result['artifact_wait'])
 
 
 class Migration:
-    def __init__(self, repo, evidence, gh=None, journal=None):
+    def __init__(self, repo, evidence, gh=None, journal=None, settle_wait=None):
         self.repo,self.inventory = repo,evidence
-        self.gh,self.journal = gh or GitHub(),journal or Journal(repo,evidence.get('execution_run'))
+        self.gh,self.journal = gh or GitHub(),journal or Journal(repo,evidence.get('execution_run'),evidence.get('root_issue'),evidence.get('run_id'),settle_wait)
         self.mapping = {}
         self.rows = {}
 

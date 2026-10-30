@@ -11,6 +11,7 @@ import re
 import subprocess
 import tempfile
 import time
+import uuid
 from urllib.parse import urlsplit
 from github_issues import GitHub, IssueError, digest
 
@@ -51,21 +52,35 @@ def common_dir(repo):
 
 
 @contextmanager
-def repository_lock(repo):
+def repository_lock(repo, blocking=False):
     try:
-        import fcntl
+        from verification_lock import file_lock
+        with file_lock(common_dir(repo) / 'harness-run.lock', blocking=blocking) as waited:
+            yield waited
+    except BlockingIOError as error:
+        raise Invalid("repository harness lock is held; reconcile its owner") from error
     except ImportError as error:
         raise Invalid("unsupported platform: POSIX flock is required") from error
-    # Never unlink this file: different inodes would admit two writers.
-    with (common_dir(repo) / "harness-run.lock").open("a+") as handle:
-        try:
-            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as error:
-            raise Invalid("repository harness lock is held; reconcile its owner") from error
-        try:
-            yield
-        finally:
-            fcntl.flock(handle, fcntl.LOCK_UN)
+
+
+def active_pointers(active):
+    """Read historical singleton/null and the shared version2 active-run index."""
+    if active is None:
+        return {}
+    require(isinstance(active, dict), "invalid active index")
+    if active.get("version") == 2:
+        require(set(active) == {"version", "runs"} and isinstance(active["runs"], dict), "invalid active index")
+        require(all(isinstance(pointer, dict) and key == pointer.get("state") for key,pointer in active["runs"].items()), "active index key differs from state path")
+        pointers = list(active["runs"].values())
+    else:
+        pointers = [active]
+    result = {}
+    for pointer in pointers:
+        require(isinstance(pointer, dict) and set(pointer) == {"task_key", "run_id", "state"}, "invalid active pointer")
+        path = state_path(pointer["task_key"], pointer["run_id"])
+        require(pointer["state"] == path and path not in result, "active pointer identity conflict")
+        result[path] = pointer
+    return result
 
 
 def state_path(key, run):
@@ -419,11 +434,16 @@ def normalize_live(value, mapping):
 
 
 class Harness:
-    def __init__(self, repo, clock=time.time, fail=None):
+    def __init__(self, repo, clock=time.time, fail=None, root_issue=None, run_id=None):
+        require((root_issue is None) == (run_id is None), "select both root issue and run id")
+        self.selection = (f"https://github.com/robinwassen/Fossilize/issues/{GitHub().number(root_issue)}", run_id) if root_issue is not None else None
+        if run_id is not None:
+            require(TOKEN.fullmatch(run_id), "invalid selected run id")
         self.repo = Path(repo).resolve()
         self.store = Store(repo, fail)
         self.clock = clock
         self.validated_artifact_history = set()
+        self.pending_artifact_wait = None
 
     def artifact_policy(self, records):
         return json.loads(records.get("allocations.json", b"{}" )).get(POLICY)
@@ -466,8 +486,8 @@ class Harness:
                 continue  # Historical orphan bootstrap root accepted by Store.
             rows = self.store.records(commit)
             active = json.loads(rows["active.json"])
-            require(active is None or (isinstance(active, dict) and active.get("state") in rows),
-                    "remote active pointer lacks a state record")
+            pointers = active_pointers(active)
+            require(all(path in rows for path in pointers), "remote active pointer lacks a state record")
             self.validate_run_records(rows, active)
             journal = json.loads(rows["allocations.json"])
             require(isinstance(journal.get("high_water"), int) and journal["high_water"] >= 0
@@ -491,8 +511,8 @@ class Harness:
                         historical = copy.deepcopy(state)
                         historical['repository']['common_dir'] = str(common_dir(self.repo))
                         legacy_state.validate_state(historical, self.repo)
-                    if active and active["state"] == path:
-                        self.validate_pointer(active, state)
+                    if path in pointers:
+                        self.validate_pointer(pointers[path], state)
             # Permanent reservations survive every ancestry edge, including each
             # merge parent. Comparing only final local/remote journals misses an
             # intermediate issue followed by removal, rewriting or high-water loss.
@@ -546,7 +566,7 @@ class Harness:
                 for key in ("task_key", "run_id", "original", "task_location"):
                     require(new.get(key) == old.get(key), "remote changes immutable run identity")
                 require(new["revision"] >= old["revision"], "remote state revision regressed")
-                require(content == remote_records[path],
+                require(content == remote_records[path] or (self.selection and not self.selected_state(old)),
                         "remote run state changed; preserve both tips and coordinate explicit reconciliation before adoption")
                 if old.get("phase") == "complete":
                     require(content == remote_records[path], "remote rewrites completed run")
@@ -685,41 +705,113 @@ class Harness:
         publication = self.artifact_sync(tip, records, push=push, adopt=push)
         return self.publication_result(tip, records, state, publication, **extra)
 
+    def selected_state(self, state):
+        # Pre-issue historical states have no issue identity to select.
+        if state.get("schema_version") in (1, 2):
+            return False
+        return self.selection == (root_identity(state), state["run_id"])
+
+    def select_pointer(self, records):
+        pointers = active_pointers(json.loads(records.get("active.json", b"null")))
+        if self.selection:
+            matches = [pointer for path, pointer in pointers.items()
+                       if self.selected_state(json.loads(records[path]))]
+            require(len(matches) <= 1, "ambiguous selected run")
+            return matches[0] if matches else None
+        require(len(pointers) <= 1, "multiple active runs; select --root-issue and --run-id")
+        return next(iter(pointers.values()), None)
+
+    def selected_record(self, records):
+        pointer = self.select_pointer(records)
+        if pointer:
+            return json.loads(records[pointer["state"]])
+        if self.selection:
+            matches = [json.loads(value) for path, value in records.items()
+                       if path.endswith('/state.json') and self.selected_state(json.loads(value))]
+            require(len(matches) <= 1, "ambiguous selected history")
+            return matches[0] if matches else None
+        return None
+
+    def check_predecessor(self, expected, tip, records):
+        if expected == tip:
+            return
+        require(self.selection and expected and tip and expected in git(self.repo, "rev-list", tip).decode().splitlines(), "artifact tip changed")
+        prior = self.store.records(expected)
+        require(prior.get("allocations.json") == records.get("allocations.json"), "shared artifact policy changed")
+        before, after = self.selected_record(prior), self.selected_record(records)
+        require(before == after, "selected run changed since expected tip")
+        if before:
+            prefix = state_path(before['task_key'], before['run_id']).rsplit('/', 1)[0] + '/'
+            require({p:v for p,v in prior.items() if p.startswith(prefix)} ==
+                    {p:v for p,v in records.items() if p.startswith(prefix)}, "selected run records changed")
+        old_pointer, new_pointer = self.select_pointer(prior), self.select_pointer(records)
+        require(old_pointer == new_pointer, "selected run active identity changed")
+
     def publication_result(self, tip, records, state, publication, **extra):
         actual_tip = self.store.tip()
         if actual_tip != tip:
             records = self.store.records(actual_tip)
-            active = json.loads(records["active.json"])
-            state = json.loads(records[active["state"]]) if active else None
+            state = self.selected_record(records)
         publication["retry"] = {"action": "publish-artifacts", "expected_tip": actual_tip,
-                                "expected_revision": state["revision"] if state and json.loads(records["active.json"]) else 0, "payload": {}}
+                                "expected_revision": state["revision"] if state else 0, "payload": {}}
+        if self.selection:
+            publication['retry'].update(root_issue=self.selection[0], run_id=self.selection[1])
         if publication.get("outcome") == "policy-adoption-required":
             publication["retry"].update(action="adopt-artifacts", payload={"reviewed_tip": actual_tip},
                                         required_payload=["review_summary", "repository if active pointer is null"])
-        terminal = bool(records) and json.loads(records["active.json"]) is None
+        terminal = (state is not None and state.get('phase') == 'complete' and state.get('status') == 'complete'
+                    and state.get('publishing', {}).get('stage') == 'done' and not state.get('abandonment'))
+        # A historical abandoned/failed terminal record never certifies success.
+        if not self.selection and state is None:
+            terminal = bool(records) and not active_pointers(json.loads(records.get('active.json', b'null')))
+            terminal = terminal and not any(json.loads(v).get('abandonment') for p,v in records.items() if p.endswith('/state.json'))
+        extra.setdefault("artifact_wait", self.pending_artifact_wait)
         return dict(tip=actual_tip, state=state, artifact_publication=publication,
                     workflow_complete=terminal and publication["status"] == "confirmed", **extra)
 
     def show(self):
-        tip = self.store.tip()
-        records = self.store.records(tip)
-        active = json.loads(records.get("active.json", b"null"))
-        state = json.loads(records[active["state"]]) if active else None
-        self.validate_run_records(records, active)
-        if state:
-            self.normalize_closeout(state)
-            validate_state(state, self.repo)
-            self.validate_pointer(active, state)
-        return dict(self.artifact_result(tip, records, state, push=False), active=active) if tip else {"tip": tip, "active": active, "state": state}
+        lock_started = self.clock()
+        with repository_lock(self.repo, blocking=bool(self.selection)) as lock_wait:
+            tip = self.store.tip()
+            records = self.store.records(tip)
+            index = json.loads(records.get("active.json", b"null"))
+            active = self.select_pointer(records)
+            state = self.selected_record(records)
+            self.validate_run_records(records, index)
+            if state:
+                self.normalize_closeout(state)
+                validate_state(state, self.repo)
+                if active:
+                    self.validate_pointer(active, state)
+            return dict(self.artifact_result(tip, records, state, push=False), active=active, active_runs=active_pointers(index), artifact_wait=self.wait_receipt(lock_started, lock_wait)) if tip else {"tip": tip, "active": active, "state": state}
 
     @staticmethod
     def validate_run_records(records, active):
+        pointers = active_pointers(active)
+        require(all(path in records for path in pointers), "active pointer lacks state record")
         for path, content in records.items():
             if path.endswith("/state.json"):
                 record = json.loads(content)
                 require(path == state_path(record["task_key"], record["run_id"]), "state path identity conflict")
-                require((active is not None and path == active["state"]) or record.get("phase") == "complete",
-                        "orphan unfinished run in existing artifact tree")
+                require(path in pointers or record.get("phase") == "complete", "orphan unfinished run in existing artifact tree")
+                if path in pointers:
+                    Harness.validate_pointer(pointers[path], record)
+
+    def validate_paths(self, state, records):
+        paths = state['paths']
+        require(set(paths) == {'source_worktree', 'build_directory', 'output_directory'}, "explicit isolated paths required")
+        resolved = [str(Path(value).resolve()) for value in paths.values()]
+        require(all(Path(value).is_absolute() for value in paths.values()) and len(set(resolved)) == 3, "paths must be absolute and distinct")
+        require(resolved[0] == str(Path(state['repository']['implementation_worktree']).resolve()), "source path differs from implementation worktree")
+        require(common_dir(paths['source_worktree']) == common_dir(self.repo), "source worktree belongs to another repository")
+        def overlaps(a, b):
+            return a == b or a in b.parents or b in a.parents
+        for pointer in active_pointers(json.loads(records.get('active.json', b'null'))).values():
+            other = json.loads(records[pointer['state']])
+            if (other['task_key'], other['run_id']) == (state['task_key'], state['run_id']):
+                continue
+            other_paths = other.get('paths', {'source_worktree': other['repository']['implementation_worktree']})
+            require(not any(overlaps(Path(a).resolve(), Path(b).resolve()) for a in paths.values() for b in other_paths.values()), "conflicting live writable path")
 
     @staticmethod
     def validate_pointer(active, state):
@@ -736,11 +828,14 @@ class Harness:
                 return legacy_state.Harness(self.repo, clock=self.clock).apply(action,payload,expected_tip,expected_revision)
             except legacy_state.Invalid as error:
                 raise Invalid(str(error)) from error
-        with repository_lock(self.repo):
+        lock_started = self.clock()
+        with repository_lock(self.repo, blocking=bool(self.selection)) as lock_wait:
+            self.pending_artifact_wait = self.wait_receipt(lock_started, lock_wait) if self.selection else None
             tip = self.store.tip()
-            require(tip == expected_tip, "artifact tip changed")
             records = self.store.records(tip)
-            active = json.loads(records.get("active.json", b"null"))
+            self.check_predecessor(expected_tip, tip, records)
+            index = json.loads(records.get("active.json", b"null"))
+            active = self.select_pointer(records)
             journal = json.loads(records.get("allocations.json", b'{"high_water":0,"issued":[]}'))
             state = json.loads(records[active["state"]]) if active else None
             if action == "records-only":
@@ -756,7 +851,7 @@ class Harness:
                     require(path.startswith(prefix) and path not in records, "append-only active-run evidence required")
                     records[path] = value.encode() if isinstance(value, str) else encoded(value)
                 tip = self.store.checkpoint(records, tip, "Append external-operation evidence; canonical state unchanged")
-                return self.artifact_result(tip, records, state)
+                return self.artifact_result(tip, records, state, artifact_wait=self.wait_receipt(lock_started, lock_wait))
             if action == "migrate-state":
                 require(state is not None and state["revision"] == expected_revision, "wrong migration revision")
                 publication = self.artifact_sync(tip, records, adopt=True)
@@ -779,6 +874,8 @@ class Harness:
                 tip = self.store.checkpoint(records, tip, "Explicit execution-location rebind")
                 return self.artifact_result(tip, records, state)
             if action in ("publish-artifacts", "adopt-artifacts"):
+                if self.selection:
+                    state = self.selected_record(records)
                 require((state["revision"] if state else 0) == expected_revision, "wrong expected revision")
                 if action == "adopt-artifacts":
                     require(not journal.get(POLICY), "artifact policy already bound")
@@ -806,13 +903,14 @@ class Harness:
                 self.normalize_closeout(state)
                 validate_state(state, self.repo)
                 self.validate_pointer(active, state)
-            self.validate_run_records(records, active)
+            self.validate_run_records(records, index)
             if action == "initialize":
                 payload = copy.deepcopy(payload)
                 require(payload['repository']['target_repository']=='robinwassen/Fossilize', 'explicit fork publication destination required')
                 number = GitHub().number(payload["root_issue"])
                 payload["task_key"] = "issue-" + str(number)
                 payload["task_location"] = f"https://github.com/robinwassen/Fossilize/issues/{number}"
+                require(not self.selection or self.selection == (payload["task_location"], payload["run_id"]), "initialization differs from selected root/run")
                 if state:
                     require((root_identity(state), state["run_id"]) == (payload["task_location"], payload["run_id"]), "another run is active")
                     require(state["revision"] == expected_revision, "wrong expected revision")
@@ -840,6 +938,10 @@ class Harness:
                 require('original' not in payload or payload['original'] == derived, 'new run original must be exact issue body snapshot')
                 payload['original'] = derived
                 state = initial_state(self.repo, payload, self.clock())
+                self.pending_artifact_wait = None  # Initial budget starts after acquisition.
+                if self.selection:
+                    state["paths"] = copy.deepcopy(payload.get("paths", {}))
+                    self.validate_paths(state, records)
                 if not journal.get(POLICY):
                     journal[POLICY] = artifact_destination(self.repo, state["repository"])
                     journal[POLICY].update(reviewed_tip=None, review_summary="New orphan records; no prior history")
@@ -847,17 +949,35 @@ class Harness:
                 state.update(root_issue={k: root[k] for k in ('url','id','node_id','repository','number')},
                              issue_snapshot=snapshot, task_location=root['url'], active_work_unit=root['url'])
             else:
-                require(state is not None, "no active run")
+                require(state is not None and active is not None, "no active run")
                 require(state["revision"] == expected_revision, "wrong expected revision")
                 state = copy.deepcopy(state)
+                if action == 'command-wait':
+                    self.command_wait(state, payload)
+                elif action == 'artifact-wait':
+                    self.settle_artifact_wait(state, payload)
+                if self.selection and lock_wait and not state['limits']['exhausted'] and lock_started < state['limits']['deadline']:
+                    state['limits']['deadline'] += lock_wait
+                    state['limits'].setdefault('artifact_waits', []).append({'started':lock_started,'wait_seconds':lock_wait})
+                    self.pending_artifact_wait = None
                 state["revision"] += 1
-                self.reduce(state, action, payload, journal, records)
+                self.reduce(state, action, payload, journal, records, wait_settled=action in ('command-wait','artifact-wait'))
             validate_state(state, self.repo)
             path = state_path(state["task_key"], state["run_id"])
             records[path] = encoded(state)
             records["allocations.json"] = encoded(journal)
-            records["active.json"] = encoded(None if state["phase"] == "complete" else
-                                             {"task_key": state["task_key"], "run_id": state["run_id"], "state": path})
+            pointer = {"task_key": state["task_key"], "run_id": state["run_id"], "state": path}
+            if self.selection or (isinstance(index, dict) and index.get('version') == 2):
+                pointers = copy.deepcopy(index['runs']) if isinstance(index, dict) and index.get('version') == 2 else active_pointers(index)
+                selected_keys = [key for key,value in pointers.items() if value['state'] == path]
+                selected_key = selected_keys[0] if selected_keys else path
+                for key in selected_keys:
+                    del pointers[key]
+                if state['phase'] != 'complete':
+                    pointers[selected_key] = pointer
+                records['active.json'] = encoded({'version': 2, 'runs': pointers})
+            else:
+                records['active.json'] = encoded(None if state['phase'] == 'complete' else pointer)
             new_tip = self.store.checkpoint(records, tip, f"{state['task_key']} {action} revision {state['revision']}")
             return self.artifact_result(new_tip, records, state)
 
@@ -1013,8 +1133,13 @@ class Harness:
             operation = c.get('resume_operation', 'replan' if phase == 'planning' else 'repair')
             state.update(phase=phase,operation=operation,next_action='dispatch fresh planner after supersession' if phase == 'planning' else 'fresh implementation/checks after invalidating stale readiness')
 
-    def reduce(self, state, action, p, journal, records):
+    def reduce(self, state, action, p, journal, records, wait_settled=False):
         repository = state["repository"]
+        if not wait_settled:
+            if action == 'command-wait':
+                self.command_wait(state, p)
+            elif action == 'artifact-wait':
+                self.settle_artifact_wait(state, p)
         expired = self.clock() >= state["limits"]["deadline"]
         # Reports and worker observations are facts worth preserving after expiry.
         # Forward work/publication pauses before its side effect or authorization.
@@ -1095,9 +1220,13 @@ class Harness:
             require(not state["attempts"] or state["attempts"][-1]["status"] == "complete", "worker must be reconciled first")
             state["provenance"].append({"decision": p})
             state.update(status="ready", next_action=p["next_action"])
+        elif action in ("command-wait", "artifact-wait"):
+            pass
         elif action == "command-intent":
             require(p.get("command") and p.get("cwd") and 0 < p["timeout"] <= state["limits"]["command_timeout"], "invalid command deadline")
-            state["limits"]["commands"].append(dict(p, started=self.clock()))
+            if p.get('intent_id'):
+                require(TOKEN.fullmatch(p['intent_id']) and not any(c.get('intent_id') == p['intent_id'] for c in state['limits']['commands']), "duplicate/invalid command intent")
+            state["limits"]["commands"].append(dict(p, started=self.clock(), eligible_deadline=state['limits']['deadline']))
         elif action == "observe-source":
             require(state["status"] != "running", "cannot change source tuple during worker execution")
             candidate = normalize_sha(self.repo, p["candidate_sha"])
@@ -1133,6 +1262,42 @@ class Harness:
             require(path.startswith(prefix + "reports/") or path.startswith(prefix + "evidence/"), "cannot overwrite canonical state")
             require(path not in records, "records are append-only")
             records[path] = content.encode() if isinstance(content, str) else encoded(content)
+
+    def wait_receipt(self, started, waited):
+        return {'wait_id':uuid.uuid4().hex, 'selection':list(self.selection) if self.selection else None,
+                'common_dir':str(common_dir(self.repo)), 'started':started, 'wait_seconds':waited} if waited else None
+
+    def settle_artifact_wait(self, state, receipt):
+        import math
+        require(receipt.get('selection') == [root_identity(state),state['run_id']] and
+                receipt.get('common_dir') == str(common_dir(self.repo)), 'artifact wait belongs to another selected run')
+        waits = state['limits'].setdefault('artifact_waits', [])
+        require(TOKEN.fullmatch(receipt.get('wait_id', '')) and not any(w.get('wait_id') == receipt['wait_id'] for w in waits), "artifact wait already accounted/invalid identity")
+        require(all(isinstance(receipt.get(f),(int,float)) and math.isfinite(receipt[f]) for f in ('started','wait_seconds')), "invalid artifact wait receipt")
+        require(not state['limits']['exhausted'] and receipt['started'] < state['limits']['deadline'] and
+                0 <= receipt['wait_seconds'] <= self.clock() - receipt['started'] + .1, "artifact wait cannot forgive pre-existing exhaustion")
+        state['limits']['deadline'] += receipt['wait_seconds']
+        waits.append(copy.deepcopy(receipt))
+
+    def command_wait(self, state, receipt):
+        """Credit a trusted live coordinator's wrapper receipt once, only for flock wait."""
+        import math
+        commands = state['limits']['commands']
+        matches = [command for command in commands if command.get('intent_id') == receipt.get('intent_id') and command.get('intent_id')]
+        require(len(matches) == 1, "receipt requires one published command intent")
+        command = matches[0]
+        require('wait_receipt' not in command, "command wait already accounted")
+        require(not state['limits']['exhausted'] and command['started'] < command['eligible_deadline'], "pre-existing budget exhaustion cannot be forgiven")
+        fields = ('started', 'acquired', 'finished', 'wait_seconds')
+        require(all(isinstance(receipt.get(f), (int, float)) and math.isfinite(receipt[f]) for f in fields), "invalid measured wait receipt")
+        require(command['started'] <= receipt['started'] < state['limits']['deadline'] and
+                receipt['started'] <= receipt['acquired'] <= receipt['finished'] <= self.clock() + 1 and
+                0 <= receipt['wait_seconds'] <= receipt['acquired'] - receipt['started'] + 0.1,
+                "receipt wait is outside eligible execution")
+        require(receipt.get('timeout') == command['timeout'] and receipt.get('cwd') == str(Path(command['cwd']).resolve()) and receipt.get('command'), "receipt command identity mismatch")
+        require(command.get('child_command') == receipt['command'], "receipt must match published child argv")
+        state['limits']['deadline'] += receipt['wait_seconds']
+        command['wait_receipt'] = copy.deepcopy(receipt)
 
     def dispatch(self, state, p):
         require(state["status"] == "ready", "worker is live/ambiguous or run needs decision")
@@ -1410,6 +1575,8 @@ def detached_worktree(repo, path, sha):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", default=".")
+    parser.add_argument("--root-issue", help="explicit selected live root issue")
+    parser.add_argument("--run-id", help="explicit selected live run")
     sub = parser.add_subparsers(dest="action", required=True)
     sub.add_parser("show")
     delivery = sub.add_parser("wrap-up", help="resume one explicitly approved squash delivery")
@@ -1420,7 +1587,7 @@ def main():
     worktree = sub.add_parser("detached-worktree")
     worktree.add_argument("path")
     worktree.add_argument("sha")
-    for action in ("records-only", "migrate-state", "rebind-execution", "reconcile-input", "publish-artifacts", "adopt-artifacts", "initialize", "import-bootstrap", "dispatch", "acknowledge", "reconcile", "report", "resolve-finding", "budget-extension", "resume", "command-intent", "observe-source", "publish-intent", "publish-observation", "closeout-intent", "closeout-record", "closeout-cleanup"):
+    for action in ("records-only", "migrate-state", "rebind-execution", "reconcile-input", "publish-artifacts", "adopt-artifacts", "initialize", "import-bootstrap", "dispatch", "acknowledge", "reconcile", "report", "resolve-finding", "budget-extension", "resume", "command-intent", "command-wait", "artifact-wait", "observe-source", "publish-intent", "publish-observation", "closeout-intent", "closeout-record", "closeout-cleanup"):
         command = sub.add_parser(action)
         command.add_argument("--payload", required=True, help="JSON file; use - for stdin")
         command.add_argument("--expected-tip", required=True, help="full artifact commit or none")
@@ -1428,19 +1595,22 @@ def main():
     args = parser.parse_args()
     try:
         if args.action == "show":
-            result = Harness(args.repo).show()
+            result = Harness(args.repo, root_issue=args.root_issue, run_id=args.run_id).show()
         elif args.action == "wrap-up":
             approval = {"approved": args.approve, "root_issue": args.root_issue, "run_id": args.run_id,
                         "repository": args.approved_repository, "pr": args.approved_pr,
                         "head": args.approved_head, "accepted_revision": args.accepted_revision}
-            result = Harness(args.repo).wrap_up(approval)
+            result = Harness(args.repo, root_issue=args.root_issue, run_id=args.run_id).wrap_up(approval)
         elif args.action == "detached-worktree":
-            with repository_lock(args.repo):
-                result = {"sha": detached_worktree(args.repo, args.path, args.sha)}
+            harness = Harness(args.repo, root_issue=args.root_issue, run_id=args.run_id)
+            started = harness.clock()
+            with repository_lock(args.repo, blocking=bool(harness.selection)) as waited:
+                result = {"sha": detached_worktree(args.repo, args.path, args.sha),
+                          "artifact_wait": harness.wait_receipt(started, waited) if harness.selection else None}
         else:
             import sys
             payload = json.load(sys.stdin) if args.payload == "-" else json.loads(Path(args.payload).read_text())
-            result = Harness(args.repo).apply(args.action, payload, None if args.expected_tip == "none" else args.expected_tip, args.expected_revision)
+            result = Harness(args.repo, root_issue=args.root_issue, run_id=args.run_id).apply(args.action, payload, None if args.expected_tip == "none" else args.expected_tip, args.expected_revision)
         if args.action == "wrap-up":
             print(json.dumps(result, sort_keys=True, separators=(",", ":")))
             if result["outcome"] != "delivered":

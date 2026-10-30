@@ -391,12 +391,14 @@ class Delivery:
 
     def run(self):
         try:
-            with repository_lock(self.h.repo):
+            with repository_lock(self.h.repo, blocking=bool(self.h.selection)):
+                if self.h.selection:
+                    self.deadline = time.monotonic() + 600
                 self.tip = self.h.store.tip()
                 self.records = self.h.store.records(self.tip)
                 active = json.loads(self.records.get('active.json', b'null'))
                 self.h.validate_run_records(self.records, active)
-                require(active is None, 'another active run exists; finish it before terminal delivery')
+                require(self.h.select_pointer(self.records) is None if self.h.selection else active is None, 'another active run exists; finish it before terminal delivery')
                 matches = [(path, json.loads(content)) for path, content in self.records.items() if path.endswith('/state.json') and json.loads(content).get('root_issue', {}).get('url') == self.approval.get('root_issue') and json.loads(content).get('run_id') == self.approval.get('run_id')]
                 require(len(matches) == 1, 'exact terminal root/run not found')
                 self.path, self.state = matches[0]

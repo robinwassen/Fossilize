@@ -5,8 +5,9 @@
 Python3 standard library, Git, gh and POSIX flock are required. Run the helper
 from the implementation worktree, or pass --repo. Every mutation uses a JSON
 payload, exact artifact tip and expected state revision from the previous result.
-The common Git directory's harness-run.lock coordinates every local worktree;
-never delete the lock or bypass a live owner. Worker liveness is separate.
+The common Git directory's harness-run.lock serializes short artifact updates
+and publication across local worktrees. Selected live invocations block until it
+is released. Never delete either lock file or bypass a live owner. Worker liveness is separate.
 
 ```sh
 python3 -B .agents/skills/implement-change-harness/scripts/harness_state.py --repo /absolute/implementation show
@@ -15,9 +16,20 @@ python3 -B .agents/skills/implement-change-harness/scripts/harness_state.py --re
 python3 -B .agents/skills/implement-change-harness/scripts/harness_state.py --repo /absolute/implementation detached-worktree /tmp/new-checker FULL_CANDIDATE_SHA
 ```
 
-Harness(repo).apply(action,payload,expected_tip,expected_revision) is equivalent.
-show reads committed records and never adopts dirty inspection files. A stale
-CAS/revision fails without changing the ref. detached_worktree creates a new path
+For supported parallel live work select --root-issue URL --run-id RUN before
+the subcommand. `Harness(repo, root_issue=URL, run_id=RUN).apply(...)` is equivalent.
+The old no-selector singleton interface remains for compatibility and rejects an
+ambiguous multi-run index. New initialization must also include absolute paths:
+`paths={source_worktree, build_directory, output_directory}`. The source path must
+match repository.implementation_worktree and share the common Git directory;
+reject any writable path overlapping another live run's selected paths.
+
+Harness(repo).apply(action,payload,expected_tip,expected_revision) is the historical singleton equivalent.
+show reads committed records and never adopts dirty inspection files. A stale same-run revision/record or changed shared allocation/publication policy
+fails without changing the ref. With explicit selection an ancestor expected tip
+is accepted only if the selected state, its entire record prefix and active
+identity remain unchanged. Reload the current artifact tree under the lock and
+checkpoint on that actual latest parent, preserving all unrelated records. detached_worktree creates a new path
 only; it never resets an existing worktree. The coordinator is the sole canonical
 state writer. A worker needs explicit permission for the restricted records-only
 interface, which appends active-run evidence and byte-preserves every state.json,
@@ -64,8 +76,9 @@ ordinary comments are not readiness authority.
 Re-read material snapshots before checker dispatch and each publication boundary.
 reconcile-input takes exact live snapshot plus concrete observation, preserves the
 old snapshot as provenance, clears approvals and requires renewed work/checks.
-Never silently adopt changed requirements. The same active root/run resumes;
-another root/run or reused completed storage identity is rejected.
+Never silently adopt changed requirements. The same selected root/run resumes; another explicitly selected root/run can
+initialize independently with isolated paths. Reused completed storage identity
+is rejected.
 
 ## Schema3 and artifact records
 
@@ -77,7 +90,7 @@ and provenance. A new storage token is issue-N. A migrated legacy token stays
 unchanged; it is a storage path, never future task allocation authority.
 
 Phases are planning, implementing, checking, closing, publishing and complete
-(plus initializing); status is distinct. Artifact records are active.json,
+(plus initializing); status is distinct. Artifact records are active.json (version2 runs index for selected live runs),
 allocations.json and runs/<storage>/<run>/state.json, reports/<name>.json or
 evidence/<name>.json|txt|log. allocations.json preserves historical permanent
 legacy allocation/publication facts; current workflows allocate no FOS keys.
@@ -216,7 +229,7 @@ candidate/base/plan. Then use a normal non-force source push and publish-observa
 Each observation rechecks accepted source/base/head and live task input. Ref races
 remain observable facts, not a distributed transaction. Reconcile the same PR
 identity rather than creating another. After attachment/required CI, terminal
-state and active.json=null commit atomically, then exact artifact publication
+state and removal of only its active index entry commit atomically, then exact artifact publication
 must confirm before workflow_complete=true.
 
 ## Approved delivery after PR publication
@@ -358,3 +371,70 @@ requires exact root_issue/run_id/old_common_dir and candidate_sha. It validates 
 same logical repository/destination/run/task while explicitly updating local
 common-dir/worktree location, retaining prior location as provenance. Ordinary
 show/mutations never silently disable execution identity checks.
+
+## Blocking verification invocation and measured waiting
+
+Use the existing run_harness_tests.py selection/inventory unchanged. Wrap every
+build/verification invocation separately; the wrapper does not select tests:
+
+```sh
+python3 -B scripts/verification_lock.py --repo /absolute/worktree --timeout 600 --intent-id check-1 --receipt /tmp/fresh-receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B scripts/run_harness_tests.py --inventory --output /tmp/evidence/inventory.json
+```
+
+Resolve scripts relative to the harness package. The wrapper can be copied or
+installed elsewhere: `git rev-parse --path-format=absolute --git-common-dir` plus
+realpath determines the persistent harness-verification.lock identity. Both
+artifact and verification blocking flock calls use verification_lock.file_lock;
+the locks are separate and are never unlinked. Never acquire the verification
+lock while holding the artifact lock. Child commands have a real timeout of at
+most600 seconds starting after acquisition. A waiting live invocation wakes and
+executes automatically after release; the current coordinator continues after
+return. No service, queue, scheduler or restart handling is added.
+
+Publish command-intent with unique intent_id, exact command/cwd/timeout and
+child_command argv before starting the wrapper. After return the coordinator
+passes its receipt unchanged to command-wait. The receipt binds argv, cwd and
+timeout, and records start/acquisition/finish plus monotonic wait_seconds. This
+trusted runtime evidence credits only observed flock contention, once per intent,
+to the selected run's deadline. Eligibility uses the current deadline, including
+earlier settled waits for prepublished batches. It rejects a start after budget
+expiry, pre-existing exhaustion, mismatched/duplicate receipts and excessive wait.
+Time executing the child is not credited; genuine elapsed execution can exhaust
+the run and a child timeout remains a failure. No repair/replan count is renewed.
+Do not run another budget-gated action between waiting and receipt settlement.
+
+Selected canonical mutations automatically credit measured artifact-lock waiting
+when acquisition began before expiry. show/records-only remain read-only on
+canonical bytes and return artifact_wait when contended. The coordinator settles
+that receipt via artifact-wait before its next budget gate; duplicate wait_id or
+pre-existing exhaustion fails. No crash-window replay is supported. Do not credit
+a receipt already automatically settled by a canonical mutation.
+
+Historical singleton/null pointers, empty/nonempty version2 indexes and complete
+failed abandoned states are read compatibility, not successful delivery or live
+task authority. Selected completion/retry certifies only its successful run, even
+while another remains active. Retain all historical states/reports/evidence bytes
+and ancestry. Journal(repo, root_issue=URL, run_id=RUN, settle_wait=callback) selects
+records-only external operation evidence. The live coordinator supplies callback;
+it receives one measured artifact-wait receipt and settles it with selected
+Harness.apply('artifact-wait', receipt, current_tip, current_revision). Obtain the
+current selected revision from committed Store records. The callback must return
+only after exact publication succeeds. It is invoked outside the artifact lock;
+Journal itself retains records-only authority. authorize/dispatch then reacquire,
+reload and recheck before the external effect in the same live invocation. An
+uncontended acquisition produces no callback. A missing callback fails before
+selected external dispatch; genuine pre-existing budget exhaustion remains a
+failure. append checks canonical byte preservation before any coordinator
+settlement. Migration accepts settle_wait or a configured Journal. Workers never
+supply their own canonical writer; the live coordinator owns this invocation. Approved wrap-up accepts the same explicit selection and never
+requires unrelated active runs to finish. Its existing approval/publication checks
+still apply.
+
+Ordinary non-mutating selected initialize-resume and publish-artifacts results also
+return artifact_wait on contention. Settle it through the same coordinator action
+before the next run budget gate. Initial creation starts its original budget only
+after artifact-lock acquisition. Completed-run confirmation has no forward run
+budget gate. Selected approved delivery starts its separate600-second progression
+timer after acquisition; its execution bounds and approval checks remain intact.
+Version2 active index keys equal each pointer's state path; malformed keys fail
+without normalizing or mutating the shared tree.
