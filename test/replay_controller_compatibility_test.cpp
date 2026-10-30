@@ -12,6 +12,28 @@ int main(int argc, char **argv)
 {
 	if (argc != 4) return 2;
 	DiagnosticChecks checks;
+	if (std::string(argv[1]) == "--parser-rejection")
+	{
+		Fossilize::ExternalReplayer replay;
+		Fossilize::ExternalReplayer::Options opts = {};
+		const char *db[] = {argv[3]};
+		opts.external_replayer_path = argv[2];
+		opts.databases = db; opts.num_databases = 1;
+		opts.num_threads = 1; opts.null_device = true; opts.quiet = true;
+		checks.require(replay.start(opts), "parser-rejection/start");
+		checks.require(replay.wait() == 0, "parser-rejection/current-clean-worker-exit-boundary");
+		Fossilize::ExternalReplayer::Progress progress = {};
+		checks.require(replay.poll_progress(progress) == Fossilize::ExternalReplayer::PollResult::Complete,
+		               "parser-rejection/process-progress-complete");
+		checks.require(progress.clean_crashes == 0 && progress.dirty_crashes == 0,
+		               "parser-rejection/no-worker-death-exercised");
+		checks.require(progress.total_compute_pipeline_blobs == 1 && progress.compute.parsed_fail == 1 &&
+		               progress.compute.completed == 0 && progress.compute.skipped == 1,
+		               "parser-rejection/required-pipeline-not-replayed-despite-current-zero-exit");
+		printf("Executed R13/Release-parser-rejection-boundary; worker-deaths=%u/%u; parsed-fail=%u; completed=%u; failures=%d\n",
+		       progress.clean_crashes, progress.dirty_crashes, progress.compute.parsed_fail, progress.compute.completed, checks.failures);
+		return checks.failures ? 1 : 0;
+	}
 	for (unsigned failed = 0; failed < 2; failed++)
 	for (unsigned mode = 0; mode < 3; mode++)
 	{

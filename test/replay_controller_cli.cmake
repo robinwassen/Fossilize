@@ -28,8 +28,30 @@ execute_process(COMMAND "${REPLAY}" ${arguments} "${WORK}/fixture.foz"
 file(WRITE "${WORK}/cli.stdout" "${output}")
 file(WRITE "${WORK}/cli.stderr" "${errors}")
 if(CASE STREQUAL "e5" OR CASE STREQUAL "e6")
-    if(NOT status STREQUAL "1")
-        message(FATAL_ERROR "R13/${CASE}: required unsuccessful controller status 1; observed ${status}\n${errors}")
+    execute_process(COMMAND "${GENERATOR}" --assertions-enabled RESULT_VARIABLE assertions_disabled TIMEOUT 10)
+    if(assertions_disabled STREQUAL "0")
+        set(expected 1)
+        set(boundary "Debug-worker-loss")
+    elseif(assertions_disabled STREQUAL "1")
+        # This historical fixture rejects at the version boundary in Release;
+        # it does not lose a worker. Its zero exit is a preserved parser-policy
+        # limitation, not proof that the required pipeline was replayed.
+        set(expected 0)
+        set(boundary "Release-parser-rejection-no-worker-loss")
+        execute_process(COMMAND "${CALLER}" --parser-rejection "${REPLAY}" "${WORK}/fixture.foz"
+            RESULT_VARIABLE rejection_status OUTPUT_VARIABLE rejection_output ERROR_VARIABLE rejection_errors
+            TIMEOUT 30 WORKING_DIRECTORY "${WORK}")
+        file(WRITE "${WORK}/parser-rejection.stdout" "${rejection_output}")
+        file(WRITE "${WORK}/parser-rejection.stderr" "${rejection_errors}")
+        if(NOT rejection_status STREQUAL "0")
+            message(FATAL_ERROR "Structured parser-rejection/no-worker-loss control failed: ${rejection_status}\n${rejection_output}")
+        endif()
+        message(STATUS "${rejection_output}")
+    else()
+        message(FATAL_ERROR "Could not identify compiled assertion boundary: ${assertions_disabled}")
+    endif()
+    if(NOT status STREQUAL "${expected}")
+        message(FATAL_ERROR "R13/${CASE}/${boundary}: expected status ${expected}; observed ${status}\n${errors}")
     endif()
     if(DEFINED BASELINE_REPLAY)
         execute_process(COMMAND "${BASELINE_REPLAY}" ${arguments} "${WORK}/fixture.foz"
@@ -47,4 +69,4 @@ else()
         message(FATAL_ERROR "Preserved successful invocation failed: ${status}\n${errors}")
     endif()
 endif()
-message(STATUS "Executed R13/CLI/${CASE}; status=${status}")
+message(STATUS "Executed R13/CLI/${CASE}; boundary=${boundary}; status=${status}")

@@ -439,13 +439,19 @@ shared-ring forwarding, unknown native status, and empty-kind recovery.
 
 `replay-controller-cli-{normal,master,progress}` preserve successful null-device
 invocations on a dependency-complete known-hash fixture. `replay-controller-cli-
-{e5,e6}` use a readback-checked FOZ containing compute `{}` and require the actual
-CLI's unsuccessful exit, including `--progress --quiet-slave`. To reproduce the
+{e5,e6}` use a readback-checked FOZ containing compute `{}`. Debug requires the
+actual CLI's unsuccessful exit, including `--progress --quiet-slave`. To reproduce the
 original defect, invoke `test/replay_controller_cli.cmake` with `GENERATOR`,
 `REPLAY`, `WORK`, `CASE=e5` (then `e6`) and `BASELINE_REPLAY` set to an unchanged
 input Debug executable. The runner checks baseline false-success zero separately
-from candidate status one. Release also runs these checks; deterministic worker
-loss tests remain the configuration-independent control.
+from candidate status one. Release exercises the historical fixture's distinct
+parser-rejection boundary: it currently exits zero without losing a worker.
+An `ExternalReplayer::Progress` control requires exactly one compute parse
+failure and skip, zero completed compute pipelines and zero clean/dirty worker
+deaths. This zero exit is a current parser-policy limitation, **not successful
+required replay** and not evidence of the child-loss fix. Mandatory deterministic
+real-controller loss cases require status one in every configuration. The E5/E6
+worker-loss defect and baseline contrast are established by Debug evidence.
 
 `replay-controller-cli-compatibility` exercises `ExternalReplayer::Options{}`,
 `start`, `wait`, `is_process_complete`, and cached status for clean and failed

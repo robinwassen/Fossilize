@@ -408,6 +408,14 @@ int main(int argc, char **argv)
 		return test_worker(unsigned(atoi(argv[3])), unsigned(atoi(argv[4])), opts);
 	}
 #endif
+	if (argc == 2 && std::string(argv[1]) == "--assertions-enabled")
+	{
+#ifdef NDEBUG
+		return 1;
+#else
+		return 0;
+#endif
+	}
 	if (argc == 3 && std::string(argv[1]) == "--malformed") return malformed_fixture(argv[2]) ? 0 : 1;
 	if (argc == 3 && std::string(argv[1]) == "--fixture") return fixture(argv[2]) ? 0 : 1;
 	if (argc < 4 || std::string(argv[1]) != "--controller") return 2;
