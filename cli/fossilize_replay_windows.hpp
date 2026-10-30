@@ -325,7 +325,7 @@ WorkerDisposition ProcessProgress::process_shutdown()
 	}
 
 	outcome.termination = code;
-	auto disposition = outcome.finish(observed && code == 0, observed,
+	auto disposition = outcome.finish(observed && code == 0, observed && !expect_kill,
 	                                  graphics_progress, compute_progress, raytracing_progress);
 	if (disposition == WorkerDisposition::Retry)
 	{
