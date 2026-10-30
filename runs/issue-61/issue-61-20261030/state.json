@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/issue-61/issue-61-20261030/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793395505.9379163,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/61",
       "worker_id": "/root/planner61"
     }
@@ -65,8 +66,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -78,9 +79,855 @@
     "output_directory": "/tmp/fossilize-61/output",
     "source_worktree": "/home/robin/dev/fossilize-issue-61"
   },
-  "phase": "planning",
-  "plan": null,
-  "provenance": [],
+  "phase": "implementing",
+  "plan": {
+    "cases": [
+      {
+        "assertions": [
+          "All eight reviewed entries and full associated issue links exist; every issue is completed rather than cancelled and every paired implementation PR is actually merged with identified merge commit.",
+          "Entry claims fit actual merged PR scope; #10 remains initial diagnostics, #11 list/rehash/prune, #12 stdio/OS write completion without stronger durability; no unsupported product claim."
+        ],
+        "id": "C61-01",
+        "location": "CHANGELOG.md; live issues #10/#11/#12/#34/#35/#36/#37/#39 and PRs #42/#44/#45/#2/#5/#6/#38/#41"
+      },
+      {
+        "assertions": [
+          "Ordering/grouping is understandable without fabricated release version/date.",
+          "#35 is explicitly historical and superseded by issue #37, which introduced GitHub task authority; historical backlog wording is not current contributor guidance."
+        ],
+        "id": "C61-02",
+        "location": "CHANGELOG.md historical structure"
+      },
+      {
+        "assertions": [
+          "The full approved guideline and suggested pattern are preserved in one authoritative tracked document.",
+          "Entries use one short clear change-and-specific-benefit sentence, meaningful optional topic tags and issue links; [Observability]/[Harness] match their epics.",
+          "Final-scope revisions and accurate pending/delivered status prohibit presenting unsupported, failed or incomplete work as completed; no second backlog is created."
+        ],
+        "id": "C61-03",
+        "location": "local-docs/changelog-guidelines.md; CHANGELOG.md"
+      },
+      {
+        "assertions": [
+          "AGENTS.md contains only a short mandatory changelog-update direction plus guideline link, without detailed rules/examples.",
+          "Documentation index and changelog expose the authoritative guideline; all newly introduced local links resolve within tracked candidate files, anchors if used resolve, and GitHub issue URLs identify the correct explicit fork."
+        ],
+        "id": "C61-04",
+        "location": "AGENTS.md; local-docs/README.md; CHANGELOG.md"
+      },
+      {
+        "assertions": [
+          "Implementer must add/revise changelog alongside implementation in the reviewed candidate.",
+          "Independent unit checker explicitly verifies accuracy, topic, brevity, issue traceability and inclusion; separate final checker explicitly covers the combined changelog.",
+          "Scope changes during review trigger entry revision and renewed affected checking; original role and publication safeguards are retained."
+        ],
+        "id": "C61-05",
+        "location": ".agents/skills/implement-change-harness/SKILL.md; .agents/skills/implement-change-harness/references/roles.md"
+      },
+      {
+        "assertions": [
+          "An actual Markdown renderer/browser preview shows readable headings/lists, one-sentence entries, usable links and no malformed tag/link/code formatting; inspect complete changed sections, not only source text.",
+          "Record renderer/browser identity, exact candidate, reviewed file/section list and visual observations; screenshots or rendered HTML remain outside source."
+        ],
+        "id": "C61-06",
+        "location": "Rendered candidate Markdown for CHANGELOG.md, guideline, AGENTS.md, index and changed skill/role documents"
+      },
+      {
+        "assertions": [
+          "The diff stays within intended tracked documentation and instruction changes; no product/runtime/test semantics change.",
+          "This PR includes its own truthful concise changelog entry describing the final reviewed scope; no open issue is falsely labelled completed.",
+          "Whitespace check passes."
+        ],
+        "id": "C61-07",
+        "location": "Full base-to-candidate diff; CHANGELOG.md entry linked to #61"
+      },
+      {
+        "assertions": [
+          "Fresh actual discovery assigns every discovered unittest ID exactly one owner and accounts for original compatibility methods.",
+          "All 16 documented bounded groups complete and pass with zero skips, including test_issue_guidance, full W09 effect matrix and four W11 scenario shards.",
+          "Fresh verify-results requires exact disjoint discovered/executed and scenario unions, every group, current candidate/attempt/digest and completed passing status; inventory-only or partial runs cannot pass."
+        ],
+        "id": "C61-08",
+        "location": ".agents/skills/implement-change-harness/scripts/run_harness_tests.py and discovered test_*.py suite"
+      },
+      {
+        "assertions": [
+          "The authoritative tracked skill passes installed skill-creator quick_validate.py.",
+          "A full installed-package backup outside source predates synchronization, and installed package file paths/contents equal the committed authoritative tracked package afterward; private configuration stays outside source.",
+          "Detached unit/final checks use their exact committed candidate package regardless of installed package location."
+        ],
+        "id": "C61-09",
+        "location": ".agents/skills/implement-change-harness skill metadata; installed package and outside-source backup"
+      },
+      {
+        "assertions": [
+          "Live material requirements remain reconciled to immutable acceptance and exact accepted candidate/base/plan at final/publication boundaries.",
+          "Only fully satisfied #61 is a closing target; unfinished parent #9 remains open.",
+          "Actual source/PR head and base, readiness evidence, issue-linked actual PR URL and attachment meet existing harness publication gates; product checks not run are labelled as such."
+        ],
+        "id": "C61-10",
+        "location": "Live issue snapshot; managed issue evidence; implementation PR and attachment"
+      }
+    ],
+    "gates": [
+      {
+        "cases": [
+          "C61-01",
+          "C61-02"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "All eight completion/merged identities and scoped entry claims pass; #35 supersession explicit.",
+        "id": "G61-historical",
+        "kind": "both",
+        "method": "Read live gh issue and PR records with explicit robinwassen/Fossilize destination for the eight pairs; inspect actual bodies/diffs as needed and record an assertion row per historical entry. Coordinator may prefetch bounded live records, but each checker independently interprets authoritative readback. Commands: gh issue view N --repo robinwassen/Fossilize --json number,url,title,body,state,stateReason,closedAt; gh pr view P --repo robinwassen/Fossilize --json number,url,title,body,state,mergedAt,mergeCommit,closingIssuesReferences.",
+        "prerequisites": [
+          "Authenticated read-only gh; network; exact candidate and original snapshot"
+        ]
+      },
+      {
+        "cases": [
+          "C61-01",
+          "C61-02",
+          "C61-03",
+          "C61-04",
+          "C61-05",
+          "C61-06",
+          "C61-07"
+        ],
+        "command": [
+          "git",
+          "diff",
+          "451aabbafeb4b590aa936b7d5e3e38c306626955...HEAD",
+          "--",
+          "CHANGELOG.md",
+          "AGENTS.md",
+          "local-docs",
+          ".agents/skills/implement-change-harness"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "All stated content, links, one-sentence/topic/benefit, short AGENTS, role obligations, rendering and final-scope assertions pass; no broken links or unrequested runtime edits.",
+        "id": "G61-doc-review",
+        "kind": "both",
+        "method": "Independently inspect the complete base-to-candidate diff and changed Markdown against C61-01 through C61-07; record assertion IDs and concrete file/section evidence. Render changed documents with an available Markdown renderer (prefer existing local GFM support; GitHub markdown render endpoint is an acceptable non-record-mutating fallback) and inspect actual browser/native rendered output. Record exact renderer generation commands/UI calls, browser identity and reviewed sections in the evidence; this semantic/render gate is not replaced by substring checks. All shell rendering/probe commands still require intents/wrapper.",
+        "prerequisites": [
+          "Committed exact candidate; authoritative guideline; actual Markdown rendering/browser preview available"
+        ]
+      },
+      {
+        "cases": [
+          "C61-07"
+        ],
+        "command": [
+          "git",
+          "diff",
+          "--check",
+          "451aabbafeb4b590aa936b7d5e3e38c306626955...HEAD"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Exit zero; no whitespace errors.",
+        "id": "G61-whitespace",
+        "kind": "both",
+        "method": "Execute git diff --check from exact candidate against bound base.",
+        "prerequisites": [
+          "Exact committed candidate/base"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--inventory",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Fresh inventory created for this exact committed candidate; all discovered test IDs owned exactly once.",
+        "id": "G61-inventory",
+        "kind": "both",
+        "method": "Execute supported actual-discovery inventory into a fresh outside-source per-role/attempt evidence directory; retain nonzero discovered IDs and ownership/compatibility manifest.",
+        "prerequisites": [
+          "Python3 standard library; Git/gh/POSIX flock; fresh /tmp/fossilize-61/output/ROLE-ATTEMPT directory; documented runner prerequisites"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_harness_artifacts",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/regression-test_harness_artifacts.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-regression-test_harness_artifacts",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_harness_closeout",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/regression-test_harness_closeout.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-regression-test_harness_closeout",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_harness_issue_artifacts",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/regression-test_harness_issue_artifacts.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-regression-test_harness_issue_artifacts",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_harness_issue_closeout",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/regression-test_harness_issue_closeout.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-regression-test_harness_issue_closeout",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_harness_migration",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/regression-test_harness_migration.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-regression-test_harness_migration",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_harness_state",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/regression-test_harness_state.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-regression-test_harness_state",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_issue_guidance",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/regression-test_issue_guidance.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-regression-test_issue_guidance",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_issue_migration",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/regression-test_issue_migration.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-regression-test_issue_migration",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_issue_source",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/regression-test_issue_source.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-regression-test_issue_source",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "delivery-ordinary",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/delivery-ordinary.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-delivery-ordinary",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "delivery-w09",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/delivery-w09.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-delivery-w09",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "delivery-w11-0",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/delivery-w11-0.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-delivery-w11-0",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "delivery-w11-1",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/delivery-w11-1.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-delivery-w11-1",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "delivery-w11-2",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/delivery-w11-2.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-delivery-w11-2",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "delivery-w11-3",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/delivery-w11-3.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-delivery-w11-3",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-extra",
+          "--inventory",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/inventory.json",
+          "--output",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT/regression-extra.json"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Every group test and scenario completes with passing status, zero skips; actual ownership set retained.",
+        "id": "G61-regression-extra",
+        "kind": "both",
+        "method": "Execute this complete registered bounded group through the supported runner; capture actual discovered/executed IDs, scenario IDs, status and log.",
+        "prerequisites": [
+          "G61-inventory from same candidate/attempt; isolated temporary repositories/services; no nested wrappers"
+        ]
+      },
+      {
+        "cases": [
+          "C61-08"
+        ],
+        "command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--verify-results",
+          "/tmp/fossilize-61/output/ROLE-ATTEMPT"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Verifier exits zero and proves exact disjoint full test/scenario unions and current candidate/attempt/digests; missing/failed/skipped/stale/duplicate/unfinished results rejected.",
+        "id": "G61-results",
+        "kind": "both",
+        "method": "Run supported fresh-discovery exact-union verifier after all 16 bounded group results exist.",
+        "prerequisites": [
+          "All 16 G61 regression/delivery group gates; same fresh evidence directory"
+        ]
+      },
+      {
+        "cases": [
+          "C61-09"
+        ],
+        "command": [
+          "python3",
+          "/home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+          ".agents/skills/implement-change-harness"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Validator exits zero and reports valid skill metadata.",
+        "id": "G61-skill",
+        "kind": "both",
+        "method": "Execute the host skill-creator metadata validator on the exact committed tracked package.",
+        "prerequisites": [
+          "Python3 and validator PyYAML dependency available; resolve host validator only if path changed"
+        ]
+      },
+      {
+        "cases": [
+          "C61-09"
+        ],
+        "command": [
+          "diff",
+          "-r",
+          "--no-dereference",
+          "/home/robin/dev/fossilize-issue-61/.agents/skills/implement-change-harness",
+          "/home/robin/.codex/skills/implement-change-harness"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "Installed package equals the exact accepted tracked package; backup retained outside source and no unexpected source/config edits.",
+        "id": "G61-installed",
+        "kind": "publication",
+        "method": "Coordinator preserves the installed package backup outside source before sync, installs from the accepted authoritative tracked package, then executes diff -r --no-dereference TRACKED_ABSOLUTE INSTALLED_ABSOLUTE (or an equivalently strict full path/content equality audit) and records the backup identity/path. This is a separately evidenced shared-configuration gate, not a requirement that detached checkers mutate installed configuration.",
+        "prerequisites": [
+          "Accepted unchanged candidate; outside-source full pre-sync backup; coordinator ownership of shared local configuration"
+        ]
+      },
+      {
+        "cases": [
+          "C61-10"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "No material unreconciled drift, unresolved finding or mandatory incomplete gate; final scope and changelog match accepted combined candidate.",
+        "id": "G61-final-authority",
+        "kind": "final",
+        "method": "Fresh final checker re-reads live root/material issue inputs and managed readiness, independently covers all planned cases and both gates at exact candidate/base/plan, and verifies eligible Closes target #61 while parent #9 remains unfinished/open.",
+        "prerequisites": [
+          "All accepted units; prepared managed readiness; unchanged candidate/base/plan; live gh readback"
+        ]
+      },
+      {
+        "cases": [
+          "C61-10"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-61",
+        "expected": "One actual open ready-for-review PR in robinwassen/Fossilize targets master at accepted head; #61 closing reference only; parent #9 remains open; issue actual-PR evidence and attachment confirmed; exact terminal artifact checkpoint confirmed.",
+        "id": "G61-publication",
+        "kind": "publication",
+        "method": "Coordinator uses existing exact-tip non-force source/artifact publication, PR readback, eligible closing references, actual-PR issue evidence and attach_artifact verification; read current task inputs at publication boundary.",
+        "prerequisites": [
+          "Separate final acceptance; no candidate/base/plan/input drift; existing journal/lock/CAS safeguards; all mandated local checks passed"
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "action": "Re-read live root requirements through gh with explicit --repo robinwassen/Fossilize; preserve original acceptance and unsplit root work-unit identity. Read project guidance and the current authoritative tracked package. Reconcile the eight historical issues against live CLOSED/COMPLETED states and actual MERGED PR identity, merge SHA and delivered scope, retaining concise sanitized evidence outside source.",
+        "historical_pairs": {
+          "10": 42,
+          "11": 44,
+          "12": 45,
+          "34": 2,
+          "35": 5,
+          "36": 6,
+          "37": 38,
+          "39": 41
+        },
+        "step": 1
+      },
+      {
+        "action": "Create CHANGELOG.md and the dedicated writing guideline. Seed all eight approved sentences and issue links. A historical heading plus explicit note identifying #35 as superseded by #37 may preserve its reviewed wording without misleading current readers. Explain historical ordering rather than inventing releases. Add this PR's concise [Harness] change-and-benefit entry linked to #61 in a clearly pending/unreleased section; it must describe reviewed candidate scope and must not label the still-open issue delivered. Do not claim all existing harness behavior or platform coverage was reverified by this entry.",
+        "step": 2
+      },
+      {
+        "action": "The guideline owns the full approved one-sentence rule and suggested pattern, meaningful optional epic-derived tags, issue link requirement, delivered scope/benefit and revision after review. State that GitHub owns future work and task status, while the changelog records historical changes. Link the guideline from changelog and local-docs/README.md. Add a short AGENTS.md instruction requiring relevant changelog updates and pointing to this single guideline; keep examples/details in the guideline.",
+        "step": 3
+      },
+      {
+        "action": "Update tracked harness instructions and role contracts coherently: implementer adds or revises the relevant changelog entry with the change in the same candidate; unit checker independently checks entry presence, factual scope, accurate practical benefit, appropriate/optional topic, one short sentence, issue link and final-scope revision; separate final checker reviews the changelog across the combined exact candidate before publication. Link to the one authoritative guideline rather than duplicating its rules. Preserve original acceptance, role separation, stale-approval invalidation and publication/merge obligations.",
+        "step": 4
+      },
+      {
+        "action": "Coordinate installed package synchronization per local-docs/issue-workflow.md: preserve a full backup of /home/robin/.codex/skills/implement-change-harness outside all source worktrees, replace/sync it from the authoritative committed package, and separately verify path/content equality. Preserve unrelated configuration. Detached checker tests execute the detached candidate package; local installed equality is a separately evidenced shared-configuration check, not a substitute for candidate verification.",
+        "step": 5
+      },
+      {
+        "action": "Commit the candidate; execute all selected checks with unique per-role/attempt evidence directories. Every build/probe/verification shell command requires coordinator-published intent first and the verification_lock.py wrapper with --repo the executing detached/implementation worktree --timeout 600 --intent-id unique --receipt fresh absolute path -- child argv; never nest wrappers. Return receipts/logs for coordinator settlement before further budget gates. Independent unit and separate final checkers execute the mandatory both gates at their exact unchanged candidate. Record all actually discovered/executed test IDs, scenarios, case mappings, command/cwd/environment/status/timing and sanitized logs. Unavailable required checks block acceptance.",
+        "step": 6
+      },
+      {
+        "action": "Before publication re-read current issue inputs and exact candidate/base/plan, verify only issue #61 is eligible for a Closes full URL, keep #9 open, verify exact remote source/PR identity, issue evidence and attachment according to the existing harness. No merge approval is inferred.",
+        "step": 7
+      }
+    ],
+    "non_goals": [
+      "No C++/Vulkan/CLI behavior, public interface, data format, harness Python runtime/state/schema, release automation, new task ledger or general historical backfill beyond the requested eight entries.",
+      "No automatic merge, new issue/sub-issue creation or completion of the open Harness parent #9; publication/merge rules remain unchanged.",
+      "No prose-matching regression tests for this reversible instruction-only change. Existing mandatory regression coverage remains required; changes to runtime or tests require scope reassessment and renewed design/checking.",
+      "No product/GPU/Steam/native-platform behavior claims follow from the documentation or Python harness checks."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "## Problem\n\nCompleted changes have no shared changelog or established writing guideline, and the change harness does not require a changelog entry in the implementation PR. Readers need a concise account of what changed and why it matters.\n\n## Required outcome\n\nCreate `CHANGELOG.md` with the already solved issues below, document the approved writing guideline separately, and make changelog maintenance part of the harness's implementation and review workflow. Add only a short instruction and guideline reference to `AGENTS.md`.\n\n## Approved changelog guideline\n\n> Write each changelog entry as one short, clear sentence stating what changed and the specific problem it fixes or benefit it provides. Prefix the entry with a topic tag, using the associated epic's name where applicable; omit the tag when no meaningful topic fits. Describe delivered behavior and avoid unsupported claims.\n\nSuggested pattern: **[Topic] [Changed what] so [practical benefit].** Use plain language and name the affected behavior or component. Describe the delivered behavior rather than simply rephrasing the issue title, and keep the benefit within the change's actual scope. Topic tags are useful grouping, not mandatory invented categories; use concise epic-derived names such as **[Observability]** and **[Harness]**. Include a link to the associated issue for traceability.\n\n## Initial entries reviewed with the user\n\n- **[Observability]** Improved Vulkan and cache error logs to preserve error codes and affected resources so failures are easier to diagnose. ([#10](https://github.com/robinwassen/Fossilize/issues/10))\n- **[Observability]** Fixed list, rehash and prune commands to report failure when resource parsing fails so incomplete processing cannot appear successful. ([#11](https://github.com/robinwassen/Fossilize/issues/11))\n- **[Observability]** Fixed file write helpers to report write, flush and close errors so callers can detect incomplete output. ([#12](https://github.com/robinwassen/Fossilize/issues/12))\n- **[Harness]** Added a resumable change workflow with independent checks so interrupted implementation work can continue with its progress and review evidence preserved. ([#34](https://github.com/robinwassen/Fossilize/issues/34))\n- **[Harness]** Included verified backlog completion in implementation PRs so merged changes update task status without a separate follow-up. ([#35](https://github.com/robinwassen/Fossilize/issues/35))\n- **[Harness]** Added remote publication of change workflow records so plans, reports and recovery checkpoints remain available beyond the local checkout. ([#36](https://github.com/robinwassen/Fossilize/issues/36))\n- **[Harness]** Moved task tracking to GitHub Issues so contributors can find requirements, progress and blocking dependencies in one place. ([#37](https://github.com/robinwassen/Fossilize/issues/37))\n- **[Harness]** Added one-command delivery after explicit approval so merging, branch cleanup and task closeout can resume after interruptions. ([#39](https://github.com/robinwassen/Fossilize/issues/39))\n\nThese describe delivered changes, checked in this conversation against merged PRs #42, #44, #45, #2, #5, #6, #38 and #41 respectively. Entry #35 is historical behavior subsequently replaced by GitHub issue tracking in #37; preserve that distinction rather than presenting the old backlog mechanism as current behavior. Recheck completion and delivery evidence during implementation; closed-but-not-planned or incomplete work must not be represented as delivered.\n\n## Acceptance criteria\n\n1. Add root `CHANGELOG.md`, seeded with all eight reviewed entries and their issue links; use an understandable historical ordering/grouping without inventing release versions or release dates.\n2. Store the full guideline in a dedicated tracked document, preferably `local-docs/changelog-guidelines.md`, and link it from the documentation index and changelog as appropriate. Include the approved sentence pattern, optional topic tags, accurate scope and issue traceability.\n3. Update the tracked harness instructions so each implementation PR includes the relevant changelog entry alongside the change. Ensure implementers add or revise the entry and independent checkers verify its accuracy, topic, brevity and inclusion in the reviewed candidate; final review covers the changelog too. Follow any existing installed-skill synchronization policy where applicable.\n4. Add a short `AGENTS.md` instruction requiring changelog updates with changes and linking to the dedicated guideline. Keep detailed writing rules and examples out of `AGENTS.md`.\n5. Changelog wording follows the final delivered scope if implementation changes during review, and does not claim unsupported, failed or incomplete work as completed. Maintain GitHub Issues as task authority; the changelog is a historical change record, not a second backlog.\n\n## Verification expectations\n\n- Reconcile the eight initial entries with completed issue state and actual merged PR evidence; verify issue links and historical scope, especially #35 versus #37.\n- Review Markdown rendering, links, topic consistency and the one-sentence change-and-benefit format.\n- Check the harness instructions cover implementation, independent checking and final review, with `AGENTS.md` pointing to one authoritative guideline.\n- Run applicable documentation/skill validation and whitespace checks under `local-docs/verification.md`; run meaningful harness regression checks if runtime behavior changes. Report actual checks and limitations without claiming product verification for documentation changes.\n\n## Scope\n\nChangelog creation and backfill, contributor guidance and harness instructions. This issue files the requested work; it does not implement it. No C++/Vulkan behavior changes or new release automation are requested. Related parent: https://github.com/robinwassen/Fossilize/issues/9.\n\n<!-- fossilize-changelog-guideline-v1 -->\n"
+      }
+    ],
+    "scope": [
+      "One unsplit documentation and harness-instruction change for https://github.com/robinwassen/Fossilize/issues/61; GitHub remains task authority.",
+      "Root CHANGELOG.md, local-docs/changelog-guidelines.md, local-docs/README.md, a short AGENTS.md instruction, and tracked harness SKILL.md/references/roles.md as needed. Include this change itself in the implementation PR changelog, with accurate candidate/release status.",
+      "Preserve all eight user-reviewed historical entry sentences and issue traceability, while explicitly identifying #35 as historical and superseded by #37. Use clear historical grouping/order without invented release versions/dates.",
+      "Install the authoritative tracked harness package with an outside-repository backup and verify equality, coordinated by the sole canonical state writer because installed configuration is shared."
+    ],
+    "verification_policy": {
+      "evidence": "Map all C61 cases to actually executed test IDs or explicit manual-review assertion IDs, and publish small sanitized logs with exact candidate/base/plan/attempt. Report passed, failed, unsupported, skipped/unavailable and incomplete separately. Manual documentation and Python checks do not establish live role conduct or Fossilize product behavior.",
+      "execution": "All required executable gates run at the exact committed implementation candidate and are independently rerun by the fresh work-unit and fresh final checker. Replace WORKTREE/ROLE-ATTEMPT placeholders with each executing worktree and unique fresh directory before coordinator intent publication. PYTHONDONTWRITEBYTECODE=1; Python -B. Each command is separately wrapped with verification_lock.py --repo ABS_WORKTREE --timeout 600 --intent-id UNIQUE --receipt FRESH_PATH -- COMMAND; lock waiting is settled by coordinator receipt. Failed/retried candidate/attempt uses a fresh inventory/results directory.",
+      "justification": "The change is documentation/instruction-only, so no CMake/CTest, GPU, Steam or native-platform matrix is applicable and no new prose-matching tests are warranted. The project verification guide explicitly mandates the complete harness discovered suite for the repository skill; retain all bounded groups and the union verifier despite no Python runtime change. Existing test_issue_guidance supplies relevant source-authority regression checks, while historical/factual/visual requirements need explicit human-style assertion-bearing review.",
+      "limits": "Four-hour selected-run deadline; maximum three implementation repairs and one replan; real 600-second deadline per child command, without nested same-repository lock wrappers. No unavailable mandatory prerequisite is quietly downgraded."
+    },
+    "version": 1,
+    "work_units": []
+  },
+  "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/61"
+        ],
+        "digest": "4aacb72190640bf4c3277839f5c07ac9857d50d49c297ea2672b5a6cd302af2f",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/61": {
+            "blocked_by": [],
+            "body": "## Problem\n\nCompleted changes have no shared changelog or established writing guideline, and the change harness does not require a changelog entry in the implementation PR. Readers need a concise account of what changed and why it matters.\n\n## Required outcome\n\nCreate `CHANGELOG.md` with the already solved issues below, document the approved writing guideline separately, and make changelog maintenance part of the harness's implementation and review workflow. Add only a short instruction and guideline reference to `AGENTS.md`.\n\n## Approved changelog guideline\n\n> Write each changelog entry as one short, clear sentence stating what changed and the specific problem it fixes or benefit it provides. Prefix the entry with a topic tag, using the associated epic's name where applicable; omit the tag when no meaningful topic fits. Describe delivered behavior and avoid unsupported claims.\n\nSuggested pattern: **[Topic] [Changed what] so [practical benefit].** Use plain language and name the affected behavior or component. Describe the delivered behavior rather than simply rephrasing the issue title, and keep the benefit within the change's actual scope. Topic tags are useful grouping, not mandatory invented categories; use concise epic-derived names such as **[Observability]** and **[Harness]**. Include a link to the associated issue for traceability.\n\n## Initial entries reviewed with the user\n\n- **[Observability]** Improved Vulkan and cache error logs to preserve error codes and affected resources so failures are easier to diagnose. ([#10](https://github.com/robinwassen/Fossilize/issues/10))\n- **[Observability]** Fixed list, rehash and prune commands to report failure when resource parsing fails so incomplete processing cannot appear successful. ([#11](https://github.com/robinwassen/Fossilize/issues/11))\n- **[Observability]** Fixed file write helpers to report write, flush and close errors so callers can detect incomplete output. ([#12](https://github.com/robinwassen/Fossilize/issues/12))\n- **[Harness]** Added a resumable change workflow with independent checks so interrupted implementation work can continue with its progress and review evidence preserved. ([#34](https://github.com/robinwassen/Fossilize/issues/34))\n- **[Harness]** Included verified backlog completion in implementation PRs so merged changes update task status without a separate follow-up. ([#35](https://github.com/robinwassen/Fossilize/issues/35))\n- **[Harness]** Added remote publication of change workflow records so plans, reports and recovery checkpoints remain available beyond the local checkout. ([#36](https://github.com/robinwassen/Fossilize/issues/36))\n- **[Harness]** Moved task tracking to GitHub Issues so contributors can find requirements, progress and blocking dependencies in one place. ([#37](https://github.com/robinwassen/Fossilize/issues/37))\n- **[Harness]** Added one-command delivery after explicit approval so merging, branch cleanup and task closeout can resume after interruptions. ([#39](https://github.com/robinwassen/Fossilize/issues/39))\n\nThese describe delivered changes, checked in this conversation against merged PRs #42, #44, #45, #2, #5, #6, #38 and #41 respectively. Entry #35 is historical behavior subsequently replaced by GitHub issue tracking in #37; preserve that distinction rather than presenting the old backlog mechanism as current behavior. Recheck completion and delivery evidence during implementation; closed-but-not-planned or incomplete work must not be represented as delivered.\n\n## Acceptance criteria\n\n1. Add root `CHANGELOG.md`, seeded with all eight reviewed entries and their issue links; use an understandable historical ordering/grouping without inventing release versions or release dates.\n2. Store the full guideline in a dedicated tracked document, preferably `local-docs/changelog-guidelines.md`, and link it from the documentation index and changelog as appropriate. Include the approved sentence pattern, optional topic tags, accurate scope and issue traceability.\n3. Update the tracked harness instructions so each implementation PR includes the relevant changelog entry alongside the change. Ensure implementers add or revise the entry and independent checkers verify its accuracy, topic, brevity and inclusion in the reviewed candidate; final review covers the changelog too. Follow any existing installed-skill synchronization policy where applicable.\n4. Add a short `AGENTS.md` instruction requiring changelog updates with changes and linking to the dedicated guideline. Keep detailed writing rules and examples out of `AGENTS.md`.\n5. Changelog wording follows the final delivered scope if implementation changes during review, and does not claim unsupported, failed or incomplete work as completed. Maintain GitHub Issues as task authority; the changelog is a historical change record, not a second backlog.\n\n## Verification expectations\n\n- Reconcile the eight initial entries with completed issue state and actual merged PR evidence; verify issue links and historical scope, especially #35 versus #37.\n- Review Markdown rendering, links, topic consistency and the one-sentence change-and-benefit format.\n- Check the harness instructions cover implementation, independent checking and final review, with `AGENTS.md` pointing to one authoritative guideline.\n- Run applicable documentation/skill validation and whitespace checks under `local-docs/verification.md`; run meaningful harness regression checks if runtime behavior changes. Report actual checks and limitations without claiming product verification for documentation changes.\n\n## Scope\n\nChangelog creation and backfill, contributor guidance and harness instructions. This issue files the requested work; it does not implement it. No C++/Vulkan behavior changes or new release automation are requested. Related parent: https://github.com/robinwassen/Fossilize/issues/9.\n\n<!-- fossilize-changelog-guideline-v1 -->\n",
+            "children": [],
+            "id": 6103641122,
+            "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
+            "number": 61,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/9",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "Add a project changelog and require updates in implementation PRs",
+            "url": "https://github.com/robinwassen/Fossilize/issues/61"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/61"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    }
+  ],
   "publishing": {
     "ci_policy": "local",
     "stage": "none"
@@ -96,7 +943,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 3,
+  "revision": 4,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
@@ -106,9 +953,17 @@
   },
   "run_id": "issue-61-20261030",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-61",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/61",
   "verification": [],
-  "work_units": []
+  "work_units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/61",
+      "key": "https://github.com/robinwassen/Fossilize/issues/61",
+      "status": "ready"
+    }
+  ]
 }
