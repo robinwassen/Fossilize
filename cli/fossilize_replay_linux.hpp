@@ -40,6 +40,7 @@
 #include "path.hpp"
 #include "platform/futex_wrapper_linux.hpp"
 #include <inttypes.h>
+#include "replay_worker_outcome.hpp"
 
 static bool write_all(int fd, const char *str)
 {
@@ -76,9 +77,9 @@ static bool target_running_processes_dirty_pages = true;
 static ThreadedReplayer::Options base_replayer_options;
 static vector<const char *> databases;
 static sigset_t old_mask;
-static int signal_fd;
-static int timer_fd;
-static int epoll_fd;
+static int signal_fd = -1;
+static int timer_fd = -1;
+static int epoll_fd = -1;
 static VulkanDevice::Options device_options;
 static bool quiet_slave;
 static bool control_fd_is_sentinel;
@@ -107,6 +108,7 @@ static void close_and_remove_epoll_entry(int &fd)
 
 struct ProcessProgress
 {
+	ReplayWorkerOutcome outcome;
 	unsigned start_graphics_index = 0u;
 	unsigned start_compute_index = 0u;
 	unsigned start_raytracing_index = 0u;
@@ -124,7 +126,7 @@ struct ProcessProgress
 	int raytracing_progress = -1;
 
 	bool process_once();
-	bool process_shutdown(int wstatus);
+	WorkerDisposition process_shutdown(int wstatus);
 	bool start_child_process(vector<ProcessProgress> &siblings);
 	void parse_raw(const char *str);
 	void parse(const char *cmd);
@@ -199,6 +201,7 @@ void ProcessProgress::parse(const char *cmd)
 		if (end)
 		{
 			Hash graphics_pipeline = strtoull(end, nullptr, 16);
+			outcome.culprit(0, graphics_progress, graphics_pipeline);
 			// graphics_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && graphics_progress > 0 && graphics_pipeline != 0)
 			{
@@ -217,6 +220,7 @@ void ProcessProgress::parse(const char *cmd)
 		if (end)
 		{
 			Hash raytracing_pipeline = strtoull(end, nullptr, 16);
+			outcome.culprit(2, raytracing_progress, raytracing_pipeline);
 			// raytracing_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && raytracing_progress > 0 && raytracing_pipeline != 0)
 			{
@@ -235,6 +239,7 @@ void ProcessProgress::parse(const char *cmd)
 		if (end)
 		{
 			Hash compute_pipeline = strtoull(end, nullptr, 16);
+			outcome.culprit(1, compute_progress, compute_pipeline);
 			// compute_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && compute_progress > 0 && compute_pipeline)
 			{
@@ -332,7 +337,7 @@ void ProcessProgress::heartbeat()
 	}
 }
 
-bool ProcessProgress::process_shutdown(int wstatus)
+WorkerDisposition ProcessProgress::process_shutdown(int wstatus)
 {
 	// Flush out all messages we got.
 	while (process_once());
@@ -349,68 +354,42 @@ bool ProcessProgress::process_shutdown(int wstatus)
 	auto wait_pid = pid;
 	pid = -1;
 
-	// If application exited in normal manner, we are done.
-	if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 0)
-		return false;
-
-	if (WIFSIGNALED(wstatus) && WTERMSIG(wstatus) == SIGKILL && expect_kill)
+	outcome.termination = uint64_t(wstatus);
+	if (WIFSIGNALED(wstatus))
+		LOGE("Worker %u (PID: %d) terminated by signal %d%s.\n", index, wait_pid,
+		     WTERMSIG(wstatus), expect_kill ? " (parent-requested cleanup)" : "");
+	else if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != 0)
+		LOGE("Worker %u (PID: %d) exited with status %d.\n", index, wait_pid, WEXITSTATUS(wstatus));
+	bool clean = WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 0;
+	bool can_retry = WIFEXITED(wstatus) || (WIFSIGNALED(wstatus) &&
+	                 (WTERMSIG(wstatus) == SIGKILL || WTERMSIG(wstatus) == SIGSEGV));
+	if (expect_kill) can_retry = false;
+	auto disposition = outcome.finish(clean, can_retry, graphics_progress, compute_progress, raytracing_progress);
+	if (!clean && Global::control_block)
 	{
-		LOGI("Parent process is shutting down. Expected SIGKILL.\n");
-		return false;
-	}
-
-	if (WIFSIGNALED(wstatus) && WTERMSIG(wstatus) == SIGKILL)
-	{
-		// We had to kill the process early. Log this for debugging.
-		LOGE("Process index %u (PID: %d) failed and it had to be killed in timeout with SIGKILL.\n",
-		     index, wait_pid);
-	}
-
-	// If the child did not exit in a normal manner, we failed to catch any crashing signal.
-	// Do not try any further.
-	if (!WIFEXITED(wstatus) && WIFSIGNALED(wstatus) &&
-	    (WTERMSIG(wstatus) != SIGKILL && WTERMSIG(wstatus) != SIGSEGV))
-	{
-		LOGE("Process index %u (PID: %d) failed to terminate in a clean fashion (signal %d). We cannot continue replaying.\n",
-		     index, wait_pid, WTERMSIG(wstatus));
-
-		if (Global::control_block)
+		if (disposition == WorkerDisposition::Retry)
+			Global::control_block->clean_process_deaths.fetch_add(1, std::memory_order_relaxed);
+		else
 			Global::control_block->dirty_process_deaths.fetch_add(1, std::memory_order_relaxed);
-		return false;
 	}
-
-	// We might have crashed, but we never saw any progress marker.
-	// We do not know what to do from here, so we just terminate.
-	if (graphics_progress < 0 || compute_progress < 0 || raytracing_progress < 0)
+	if (disposition == WorkerDisposition::Retry)
 	{
-		LOGE("Child process %d terminated before we could receive progress. Cannot continue.\n",
-		     wait_pid);
-		if (Global::control_block)
-			Global::control_block->dirty_process_deaths.fetch_add(1, std::memory_order_relaxed);
-		return false;
-	}
-
-	if (Global::control_block)
-		Global::control_block->clean_process_deaths.fetch_add(1, std::memory_order_relaxed);
-
-	start_graphics_index = uint32_t(graphics_progress);
-	start_compute_index = uint32_t(compute_progress);
-	start_raytracing_index = uint32_t(raytracing_progress);
-	if (start_graphics_index >= end_graphics_index &&
-	    start_compute_index >= end_compute_index &&
-	    start_raytracing_index >= end_raytracing_index)
-	{
-		LOGE("Process index %u (PID: %d) crashed, but there is nothing more to replay.\n", index, wait_pid);
-		return false;
-	}
-	else
-	{
+		start_graphics_index = graphics_progress < 0 ? end_graphics_index : unsigned(graphics_progress);
+		start_compute_index = compute_progress < 0 ? end_compute_index : unsigned(compute_progress);
+		start_raytracing_index = raytracing_progress < 0 ? end_raytracing_index : unsigned(raytracing_progress);
 		LOGE("Process index %u (PID: %d) crashed, but will retry.\n", index, wait_pid);
 		LOGE("  New graphics range (%u, %u)\n", start_graphics_index, end_graphics_index);
 		LOGE("  New compute range (%u, %u)\n", start_compute_index, end_compute_index);
 		LOGE("  New raytracing range (%u, %u)\n", start_raytracing_index, end_raytracing_index);
-		return true;
 	}
+	if (disposition == WorkerDisposition::Unresolved)
+		LOGE("Worker %u (PID: %d) unresolved: assigned graphics [%u, %u), compute [%u, %u), "
+		     "raytracing [%u, %u); remainder %s; skipped required culprit %s.\n", index, wait_pid,
+		     outcome.assigned[0].begin, outcome.assigned[0].end,
+		     outcome.assigned[1].begin, outcome.assigned[1].end,
+		     outcome.assigned[2].begin, outcome.assigned[2].end,
+		     outcome.unknown_remainder ? "unknown" : "known", outcome.skipped() ? "yes" : "unknown");
+	return disposition;
 }
 
 static void send_faulty_modules_and_close(int fd)
@@ -505,6 +484,8 @@ static void poll_self_child_memory_usage(const std::vector<ProcessProgress> &pro
 
 bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 {
+	outcome.assign(start_graphics_index, end_graphics_index, start_compute_index, end_compute_index,
+	               start_raytracing_index, end_raytracing_index);
 	graphics_progress = -1;
 	compute_progress = -1;
 	raytracing_progress = -1;
@@ -515,8 +496,11 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 	    start_raytracing_index >= end_raytracing_index)
 	{
 		// Nothing to do.
+		outcome.complete = !outcome.skipped();
 		return true;
 	}
+
+	outcome.attempts++;
 
 	int crash_fds[2];
 	int input_fds[2];
@@ -655,7 +639,11 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 			copy_opts.on_disk_module_identifier_path += std::to_string(index);
 		}
 
+		#ifdef FOSSILIZE_REPLAY_TEST_WORKER
+		exit(FOSSILIZE_REPLAY_TEST_WORKER(index, outcome.attempts, copy_opts));
+#else
 		exit(run_slave_process(Global::device_options, copy_opts, Global::databases));
+#endif
 	}
 	else
 		return false;
@@ -934,6 +922,39 @@ static void handle_control_commands(std::vector<ProcessProgress> &child_processe
 		close_and_remove_epoll_entry(Global::control_fd);
 }
 
+struct ControllerChildrenCleanup
+{
+	vector<ProcessProgress> &children;
+	~ControllerChildrenCleanup()
+	{
+		for (auto &child : children)
+			if (child.pid > 0) kill(child.pid, SIGKILL);
+		for (auto &child : children)
+		{
+			if (child.pid > 0)
+			{
+				int status = 0;
+				pid_t ret;
+				do { ret = waitpid(child.pid, &status, 0); } while (ret < 0 && errno == EINTR);
+				child.expect_kill = true;
+				if (ret == child.pid) child.process_shutdown(status);
+			}
+			close_and_remove_epoll_entry(child.crash_fd);
+			close_and_remove_epoll_entry(child.timer_fd);
+			close_and_remove_epoll_entry(child.watchdog_timer_fd);
+		}
+#ifdef FOSSILIZE_REPLAY_TEST_OBSERVE
+		FOSSILIZE_REPLAY_TEST_OBSERVE(children);
+#endif
+		for (int *fd : { &Global::signal_fd, &Global::timer_fd, &Global::epoll_fd, &Global::metadata_fd })
+		{
+			if (*fd >= 0) close(*fd);
+			*fd = -1;
+		}
+		pthread_sigmask(SIG_SETMASK, &Global::old_mask, nullptr);
+	}
+};
+
 static bool poll_children_process_states(vector<ProcessProgress> &child_processes)
 {
 	// We'll only receive one SIGCHLD signal, even if multiple processes
@@ -942,7 +963,16 @@ static bool poll_children_process_states(vector<ProcessProgress> &child_processe
 	pid_t pid = 0;
 	int wstatus = 0;
 
-	while ((pid = waitpid(-1, &wstatus, WNOHANG)) > 0)
+	#ifdef FOSSILIZE_REPLAY_TEST_BEFORE_HARVEST
+	FOSSILIZE_REPLAY_TEST_BEFORE_HARVEST(child_processes);
+#endif
+	while ((pid =
+#ifdef FOSSILIZE_REPLAY_TEST_WAITPID
+	        FOSSILIZE_REPLAY_TEST_WAITPID(-1, &wstatus, WNOHANG)
+#else
+	        waitpid(-1, &wstatus, WNOHANG)
+#endif
+	       ) > 0)
 	{
 		auto itr = find_if(begin(child_processes), end(child_processes),
 		                   [&](const ProcessProgress &progress)
@@ -957,7 +987,10 @@ static bool poll_children_process_states(vector<ProcessProgress> &child_processe
 
 		if (itr != end(child_processes))
 		{
-			if (itr->process_shutdown(wstatus) && !itr->start_child_process(child_processes))
+			auto disposition = itr->process_shutdown(wstatus);
+			if (disposition == WorkerDisposition::Unresolved)
+				return false;
+			if (disposition == WorkerDisposition::Retry && !itr->start_child_process(child_processes))
 			{
 				LOGE("Failed to start child process.\n");
 				return false;
@@ -966,6 +999,19 @@ static bool poll_children_process_states(vector<ProcessProgress> &child_processe
 		}
 		else
 			LOGE("Got SIGCHLD from unknown process PID %d.\n", pid);
+	}
+
+	if (pid < 0 && errno != EINTR && (errno != ECHILD || Global::active_processes != 0))
+	{
+		int error = errno;
+		LOGE("Failed to observe child process termination (errno = %d).\n", error);
+		for (auto &child : child_processes)
+			if (child.pid > 0)
+			{
+				child.outcome.native_error = unsigned(error);
+				child.outcome.unknown_remainder = true;
+			}
+		return false;
 	}
 
 	return true;
@@ -1154,6 +1200,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 	}
 
 	vector<ProcessProgress> child_processes(processes);
+	ControllerChildrenCleanup cleanup{child_processes};
 	Global::target_running_processes = processes;
 	Global::running_processes = processes;
 
