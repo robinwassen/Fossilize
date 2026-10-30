@@ -414,7 +414,18 @@ Historical singleton/null pointers, empty/nonempty version2 indexes and complete
 failed abandoned states are read compatibility, not successful delivery or live
 task authority. Selected completion/retry certifies only its successful run, even
 while another remains active. Retain all historical states/reports/evidence bytes
-and ancestry. Journal(repo, root_issue=URL, run_id=RUN) selects records-only external
-operation evidence. Approved wrap-up accepts the same explicit selection and never
+and ancestry. Journal(repo, root_issue=URL, run_id=RUN, settle_wait=callback) selects
+records-only external operation evidence. The live coordinator supplies callback;
+it receives one measured artifact-wait receipt and settles it with selected
+Harness.apply('artifact-wait', receipt, current_tip, current_revision). Obtain the
+current selected revision from committed Store records. The callback must return
+only after exact publication succeeds. It is invoked outside the artifact lock;
+Journal itself retains records-only authority. authorize/dispatch then reacquire,
+reload and recheck before the external effect in the same live invocation. An
+uncontended acquisition produces no callback. A missing callback fails before
+selected external dispatch; genuine pre-existing budget exhaustion remains a
+failure. append checks canonical byte preservation before any coordinator
+settlement. Migration accepts settle_wait or a configured Journal. Workers never
+supply their own canonical writer; the live coordinator owns this invocation. Approved wrap-up accepts the same explicit selection and never
 requires unrelated active runs to finish. Its existing approval/publication checks
 still apply.

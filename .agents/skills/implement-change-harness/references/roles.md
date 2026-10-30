@@ -103,3 +103,9 @@ live coordinator; it settles wait and continues the existing workflow automatica
 Only flock wait is excluded from the four-hour run budget. Real execution time,
 pre-existing exhaustion, repair/replan limits and candidate-bound independent
 acceptance are unchanged. No crash/restart/descendant recovery is provided.
+
+Selected external-operation Journals require the live coordinator's settle_wait
+callback. After measured artifact-lock contention, Journal releases the lock,
+calls the coordinator to settle its receipt, then reacquires/reloads and dispatches
+automatically. Journal stays records-only. Workers do not construct canonical
+writer callbacks; they return evidence to the coordinator.

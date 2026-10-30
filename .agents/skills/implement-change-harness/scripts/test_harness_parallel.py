@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import time
+import threading
 import unittest
 from unittest.mock import patch
 
@@ -15,6 +16,8 @@ from harness_state import Harness, Invalid, Store, encoded, git, state_path
 from test_harness_migration import LiveFixture
 import test_harness_issue_closeout as closeout
 import verification_lock as vl
+from issue_migration import Journal
+from github_issues import IssueError
 
 WRAPPER = Path(vl.__file__).resolve()
 
@@ -269,10 +272,53 @@ class ParallelTests(LiveFixture, unittest.TestCase):
                 with self.assertRaisesRegex(Invalid,'already accounted'):
                     self.act('artifact-wait',receipt_artifact)
             self.assertFalse(self.state['limits']['exhausted'])
+        # The coordinator settles Journal waits outside the short lock, then the
+        # same live dispatch reacquires/reloads and proceeds without another call.
+        settled, effects = [], []
+        def settle(receipt):
+            with hs.repository_lock(self.source):
+                pass  # Callback must run outside the lock it needs for settlement.
+            self.now = time.time()
+            tip = self.harness.store.tip()
+            selected = self.harness.selected_record(self.harness.store.records(tip))
+            result = self.harness.apply('artifact-wait',receipt,tip,selected['revision'])
+            self.tip,self.state = result['tip'],result['state']
+            settled.append(receipt)
+        journal = Journal(self.source,root_issue=self.root_issue['html_url'],run_id='run-1',settle_wait=settle)
+        journal.dispatch(lambda: effects.append('uncontended'))
+        self.assertEqual(settled,[])  # No microsecond settle/reacquire loop.
+        with self.assertRaisesRegex(IssueError,'settle_wait callback'):
+            Journal(self.source,root_issue=self.root_issue['html_url'],run_id='run-1').dispatch(lambda: effects.append('missing callback'))
+        self.assertEqual(effects,['uncontended']); effects.clear()
+        ready,released = self.root/'journal-ready',self.root/'journal-release'
+        holder_code = "import sys,time;sys.path.insert(0,%r);from verification_lock import file_lock;from pathlib import Path\nwith file_lock(%r):\n Path(%r).touch()\n end=time.monotonic()+15\n while not Path(%r).exists() and time.monotonic()<end:time.sleep(.01)" % (scripts,str(hs.common_dir(self.source)/'harness-run.lock'),str(ready),str(released))
+        artifact_holder = subprocess.Popen([sys.executable,'-c',holder_code])
+        self.addCleanup(lambda: artifact_holder.kill() if artifact_holder.poll() is None else None)
+        self.wait_file(ready,artifact_holder)
+        before_journal_deadline = self.state['limits']['deadline']
+        effects_at_release = []
+        def release_journal():
+            effects_at_release.extend(effects)
+            released.touch()
+        timer = threading.Timer(max(.2,before_journal_deadline-time.time()+.15),release_journal)
+        timer.start(); self.addCleanup(timer.cancel)
+        journal.dispatch(lambda: effects.append('after automatic settlement'))
+        timer.join(timeout=5); artifact_holder.wait(timeout=10)
+        self.assertEqual(effects_at_release,[])
+        self.assertEqual(effects,['after automatic settlement']); self.assertEqual(len(settled),1)
+        self.assertAlmostEqual(self.state['limits']['deadline'],before_journal_deadline+settled[0]['wait_seconds'])
+        self.assertEqual(other.show()['state']['limits'],b_limits)
+        canonical_before = self.harness.store.records(self.tip)[state_path(self.state['task_key'],self.state['run_id'])]
+        journal.append('journal-wait-fact',{'observed':'dispatch returned automatically'})
+        self.tip = self.harness.store.tip()
+        self.assertEqual(self.harness.store.records(self.tip)[state_path(self.state['task_key'],self.state['run_id'])],canonical_before)
         # Execution elapsed after acquisition is never credited; genuine exhaustion remains.
         self.now = self.state['limits']['deadline'] + 1
         self.act('command-intent',self.command('expired'))
         self.assertTrue(self.state['limits']['exhausted'])
+        with self.assertRaisesRegex(IssueError,'budget exhausted'):
+            journal.dispatch(lambda: effects.append('expired'))
+        self.assertEqual(effects,['after automatic settlement'])
         with self.assertRaises(Invalid):self.act('command-wait',dict(measured,intent_id='unknown'))
 
     def test_P05_retained_history_and_workflow_integration(self):

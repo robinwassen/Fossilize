@@ -944,11 +944,15 @@ class Harness:
                 require(state is not None and active is not None, "no active run")
                 require(state["revision"] == expected_revision, "wrong expected revision")
                 state = copy.deepcopy(state)
+                if action == 'command-wait':
+                    self.command_wait(state, payload)
+                elif action == 'artifact-wait':
+                    self.settle_artifact_wait(state, payload)
                 if self.selection and lock_wait and not state['limits']['exhausted'] and lock_started < state['limits']['deadline']:
                     state['limits']['deadline'] += lock_wait
                     state['limits'].setdefault('artifact_waits', []).append({'started':lock_started,'wait_seconds':lock_wait})
                 state["revision"] += 1
-                self.reduce(state, action, payload, journal, records)
+                self.reduce(state, action, payload, journal, records, wait_settled=action in ('command-wait','artifact-wait'))
             validate_state(state, self.repo)
             path = state_path(state["task_key"], state["run_id"])
             records[path] = encoded(state)
@@ -1120,12 +1124,13 @@ class Harness:
             operation = c.get('resume_operation', 'replan' if phase == 'planning' else 'repair')
             state.update(phase=phase,operation=operation,next_action='dispatch fresh planner after supersession' if phase == 'planning' else 'fresh implementation/checks after invalidating stale readiness')
 
-    def reduce(self, state, action, p, journal, records):
+    def reduce(self, state, action, p, journal, records, wait_settled=False):
         repository = state["repository"]
-        if action == 'command-wait':
-            self.command_wait(state, p)
-        elif action == 'artifact-wait':
-            self.settle_artifact_wait(state, p)
+        if not wait_settled:
+            if action == 'command-wait':
+                self.command_wait(state, p)
+            elif action == 'artifact-wait':
+                self.settle_artifact_wait(state, p)
         expired = self.clock() >= state["limits"]["deadline"]
         # Reports and worker observations are facts worth preserving after expiry.
         # Forward work/publication pauses before its side effect or authorization.
