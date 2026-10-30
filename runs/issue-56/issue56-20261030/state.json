@@ -265,6 +265,10 @@
       {
         "started": 1793401562.4064617,
         "wait_seconds": 6.20102787995711
+      },
+      {
+        "started": 1793401573.3518305,
+        "wait_seconds": 4.551748994970694
       }
     ],
     "command_timeout": 600,
@@ -2262,10 +2266,30 @@
         "log": "/tmp/fossilize-56/output/checker-baseline-controls.log",
         "receipt": "/tmp/fossilize-56/output/checker-baseline-controls-receipt.json",
         "started": 1793399164.5178053,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793401502.0171726,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56/build/checker-baseline",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^fork-child-healthy(-recovery)?$"
+          ],
+          "cwd": "/tmp/fossilize-56/checker-1",
+          "exit_code": 0,
+          "finished": 1793401502.0490458,
+          "intent_id": "ck1-baseline-controls",
+          "started": 1793401502.0146947,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 0
+        }
       }
     ],
-    "deadline": 1793412727.7507253,
+    "deadline": 1793412732.3024743,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -2836,7 +2860,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 112,
+  "revision": 113,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
