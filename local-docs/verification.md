@@ -449,7 +449,11 @@ loss tests remain the configuration-independent control.
 
 `replay-controller-cli-compatibility` exercises `ExternalReplayer::Options{}`,
 `start`, `wait`, `is_process_complete`, and cached status for clean and failed
-controllers. Compile `test/replay_controller_compatibility_test.cpp` with the
+controllers. Kernel terminal-state barriers cover both query-first and wait-first
+completion, including a process already reaped by the initial progress poll.
+Progress pumping after a known terminal status does not reap it a second time
+or overwrite the unsuccessful result with `-ECHILD`. Compile
+`test/replay_controller_compatibility_test.cpp` with the
 input public headers first on its include path and link candidate libraries for
 old-header source compatibility evidence. Existing diagnostic compatibility
 fixtures retain recorder/database and ordinary CLI checks. Public declarations,

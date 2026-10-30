@@ -123,7 +123,7 @@ struct ExternalReplayer::Impl
 
 	bool start(const ExternalReplayer::Options &options);
 	void start_replayer_process(const ExternalReplayer::Options &options, int ctl_fd);
-	ExternalReplayer::PollResult poll_progress(Progress &progress);
+	ExternalReplayer::PollResult poll_progress(Progress &progress, bool poll_child = true);
 	uintptr_t get_process_handle() const;
 	int wait();
 	bool is_process_complete(int *return_status);
@@ -223,7 +223,7 @@ bool ExternalReplayer::Impl::poll_memory_usage(uint32_t *num_processes, ProcessS
 	return true;
 }
 
-ExternalReplayer::PollResult ExternalReplayer::Impl::poll_progress(ExternalReplayer::Progress &progress)
+ExternalReplayer::PollResult ExternalReplayer::Impl::poll_progress(ExternalReplayer::Progress &progress, bool poll_child)
 {
 	bool complete = shm_block->progress_complete.load(std::memory_order_acquire) != 0;
 
@@ -232,7 +232,7 @@ ExternalReplayer::PollResult ExternalReplayer::Impl::poll_progress(ExternalRepla
 
 	// Try to avoid a situation where we're endlessly polling, in case the application died too early during startup and we failed
 	// to catch it ending by receiving a completed wait through is_process_complete().
-	if (!complete && pid >= 0)
+	if (!complete && pid >= 0 && poll_child)
 	{
 		int ret;
 		// This serves as a check to see if process is still alive.
@@ -396,7 +396,7 @@ bool ExternalReplayer::Impl::is_process_complete(int *return_status)
 
 	// Pump the fifo through.
 	ExternalReplayer::Progress progress = {};
-	poll_progress(progress);
+	poll_progress(progress, false);
 
 	reset_pid();
 
@@ -413,6 +413,8 @@ int ExternalReplayer::Impl::wait()
 	// Pump the fifo through.
 	ExternalReplayer::Progress progress = {};
 	poll_progress(progress);
+	if (pid < 0)
+		return wstatus_to_return(wstatus, synthesized_exit_code);
 
 #if 0
 	// FIXME: This code should be correct. Investigate why it seems to cause stability issues.
@@ -484,7 +486,7 @@ int ExternalReplayer::Impl::wait()
 #endif
 
 	// Pump the fifo through.
-	poll_progress(progress);
+	poll_progress(progress, false);
 	reset_pid();
 	return wstatus_to_return(wstatus, synthesized_exit_code);
 }
