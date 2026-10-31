@@ -211,7 +211,9 @@ counts every processed job, including failed processing. Required unsupported or
 blacklisted work and skipped compile-required work are unsuccessful; a successful
 compile-required fallback remains successful, while a failed required loop
 iteration cannot be erased by a later success. Explicit ranges/whitelists exclude
-work from the requested scope; existing cache reuse policy is unchanged.
+work from the requested scope; failed or invalid creation cannot add successful
+replay-cache/validation-whitelist markers, and existing reuse selection policy is
+unchanged.
 
 Normal replay now returns nonzero for retained required failures. Current paired
 children/controllers add an internal `REPLAY_FAILED <reason-mask> <drained>`

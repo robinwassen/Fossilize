@@ -488,7 +488,10 @@ int main(int argc, char **argv)
 	device_opts.null_device = true;
 	ThreadedReplayer::Options opts;
 	opts.num_threads = mixed() || scenario == "held-sibling" ? 2 : 1;
+
+#ifndef _WIN32
 	opts.disable_rate_limiter = true;
+#endif
 	opts.start_graphics_index = opts.start_compute_index = opts.start_raytracing_index = 2;
 	opts.end_graphics_index = opts.end_compute_index = opts.end_raytracing_index = scenario == "zero" ? 2 : 6;
 	if (orderly())

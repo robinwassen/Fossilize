@@ -120,7 +120,8 @@ static void expect(const ThreadedReplayer &r, ReplayFailure reason, ResourceTag 
 struct BlobDatabase : DatabaseInterface
 {
 	std::map<std::pair<ResourceTag, Hash>, std::string> blobs;
-	unsigned reject = 0;
+	unsigned reject = 0, writes = 0;
+	bool writable = false;
 	BlobDatabase() : DatabaseInterface(DatabaseMode::ReadOnly) {}
 	bool prepare() override { return true; }
 	bool read_entry(ResourceTag t, Hash h, size_t *size, void *data, PayloadReadFlags) override
@@ -130,7 +131,11 @@ struct BlobDatabase : DatabaseInterface
 		if (data) memcpy(data, i->second.data(), i->second.size());
 		*size = i->second.size(); return true;
 	}
-	bool write_entry(ResourceTag, Hash, const void *, size_t, PayloadWriteFlags) override { return false; }
+	bool write_entry(ResourceTag tag, Hash hash, const void *data, size_t size, PayloadWriteFlags) override
+	{
+		if (!writable) return false;
+		writes++; blobs[{tag,hash}] = size ? std::string(static_cast<const char *>(data),size) : std::string(); return true;
+	}
 	bool has_entry(ResourceTag t, Hash h) override { return blobs.count({t,h}) != 0; }
 	bool get_hash_list_for_resource_tag(ResourceTag t, size_t *n, Hash *hashes) override
 	{ size_t n2 = 0; for (auto &b : blobs) if (b.first.first == t) { if (hashes) hashes[n2] = b.first.second; n2++; } *n = n2; return true; }
@@ -270,13 +275,26 @@ static void creation_test(bool loops)
 		destroy(replay.device->get_device(),p.entry,nullptr);
 		checks.require(destroys == 1,"creation/retained-library-cleanup");
 	}
+	if (!loops) for (unsigned kind = 0; kind < 3; kind++) for (unsigned scenario = 0; scenario < 3; scenario++)
+	{
+		Replay replay; Pipeline p(kind); PipelineResolver resolver;
+		auto *whitelist = new BlobDatabase; whitelist->writable = true;
+		auto *cache = new BlobDatabase; cache->writable = true;
+		replay.validation_whitelist_db.reset(whitelist); replay.replayer_cache_db.reset(cache);
+		results = {scenario == 0 ? VK_ERROR_DEVICE_LOST : VK_SUCCESS}; inject_validation = scenario == 1;
+		replay.run_creation_work_item(resolver,p.item); inject_validation = false;
+		checks.require(whitelist->writes == (scenario == 2 ? 1u : 0u) && cache->writes == (scenario == 2 ? 1u : 0u),
+		               "creation/failed-or-invalid-work-never-marks-reusable-state");
+	}
 	if (!loops) for (auto result : {VK_ERROR_OUT_OF_HOST_MEMORY,VK_ERROR_DEVICE_LOST,VK_SUCCESS})
 	{
-		Replay replay; results = {result}; auto &d = replay.get_per_thread_data(); d.expected_tag = RESOURCE_SHADER_MODULE; d.expected_hash = 0x101;
+		Replay replay; auto *whitelist = new BlobDatabase; whitelist->writable = true; replay.validation_whitelist_db.reset(whitelist);
+		results = {result}; auto &d = replay.get_per_thread_data(); d.expected_tag = RESOURCE_SHADER_MODULE; d.expected_hash = 0x101;
 		VkShaderModuleCreateInfo info = {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO}; info.pCode = valid_code; info.codeSize = sizeof(valid_code);
 		VkShaderModule module;
 		checks.require(replay.enqueue_create_shader_module(0x101, &info, &module), "shader/callback-consumed");
 		checks.require(replay.outcome.succeeded() == (result == VK_SUCCESS), "shader/result-not-callback-success");
+		checks.require(whitelist->writes == (result == VK_SUCCESS ? 1u : 0u), "shader/creation-failure-never-whitelisted");
 		if (result != VK_SUCCESS) { expect(replay, ReplayFailure::Create, RESOURCE_SHADER_MODULE, 0x101, result); checks.require(!module, "shader/null-error-output"); }
 	}
 }
@@ -355,7 +373,7 @@ static void validation_test()
 }
 static void setup_test()
 {
-	for (unsigned kind = 0; kind < 3; kind++) for (unsigned scenario = 0; scenario < 5; scenario++)
+	for (unsigned kind = 0; kind < 3; kind++) for (unsigned scenario = 0; scenario < 6; scenario++)
 	{
 		Replay replay; Pipeline p(kind); PipelineResolver resolver;
 		if (scenario == 0) p.item.create_info.graphics_create_info = nullptr;
@@ -371,9 +389,10 @@ static void setup_test()
 			if (kind == 2) replay.enqueue_pipeline(p.item.hash, &p.r, &p.output, 0, 0);
 			p.item = replay.pipeline_work_queue.front(); replay.pipeline_work_queue.pop();
 		}
+		if (scenario == 4) p.g.sType = p.c.sType = p.r.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 		replay.run_creation_work_item(resolver, p.item);
-		checks.require(replay.outcome.succeeded() == (scenario == 4) && calls == (scenario == 4 ? 1u : 0u), "setup/blocked-never-calls-Vulkan");
-		if (scenario < 4) { expect(replay, scenario == 0 ? ReplayFailure::Setup : ReplayFailure::Dependency, p.item.tag, p.item.hash); checks.require(!count(replay,ReplayFailure::Parse) && !count(replay,ReplayFailure::Create), "setup/no-spurious-parse-or-compiler-failure"); }
+		checks.require(replay.outcome.succeeded() == (scenario == 5) && calls == (scenario == 5 ? 1u : 0u), "setup/blocked-never-calls-Vulkan");
+		if (scenario < 5) { expect(replay, scenario == 0 || scenario == 4 ? ReplayFailure::Setup : ReplayFailure::Dependency, p.item.tag, p.item.hash); checks.require(!count(replay,ReplayFailure::Parse) && !count(replay,ReplayFailure::Create), "setup/no-spurious-parse-or-compiler-failure"); }
 	}
 	Replay replay; replay.get_per_thread_data().expected_tag = RESOURCE_RENDER_PASS;
 	VkRenderPass pass; checks.require(!replay.enqueue_create_render_pass(0x777, nullptr, &pass), "setup/null-initial-object");
@@ -520,6 +539,9 @@ static void normal_matrix()
 			ThreadedReplayer replay(device_options(),opts); results.clear(); inject_validation = fail_layout = false;
 			int status = run_normal_process(replay,{path.c_str()},nullptr,0,-1);
 			bool good = std::string(mode) == "good";
+			unsigned expected_mask = good ? 0u : std::string(mode) == "mixed" ? 2u : std::string(mode) == "unsupported" ? 8u :
+			                         std::string(mode) == "unsupported-shader" ? 72u : std::string(mode) == "validation" ? 80u : 65u;
+			checks.require(replay.outcome.failure_mask() == expected_mask,"matrix/exact-logical-category-set");
 			checks.require(status == (good ? 0 : 1) && replay.work_drained, "matrix/normal-status-and-all-phases-drained");
 			for (unsigned context = 0; context < NUM_MEMORY_CONTEXTS; context++) checks.require(replay.queued_count[context] == replay.completed_count[context], "matrix/every-submitted-job-completed");
 			checks.require(replay.queued_count[0] == (std::string(mode) == "mixed" ? 5u : 4u) + (std::string(mode) == "library" ? 1u : 0u), "matrix/exact-primary-queue-count");
