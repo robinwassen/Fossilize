@@ -422,11 +422,15 @@ three seconds for emergency cleanup and a 30-second CTest deadline.
 
 Two known compute pipelines and their shader/layout dependencies are recorded
 and read back before replay. Healthy workers execute the null device and update
-production shared counters. Recovery supplies valid progress from a controlled
-first worker before its nonzero exit, then exercises a real replacement. Atomic
+production shared counters. Recovery sends zero cursors and zero hashes from a fully configured first
+worker before its controlled nonzero exit. The real replacement then replays
+both pipelines, without claiming prefix reuse or real GPU crash recovery. Atomic
 pipe records assert the exact injected child/site/generation, setup ordering,
 protocol EOF, controller-owned births, terminal worker status and exactly one
-controller reap. A subreaper checks complete descendant collection; emergency
+controller reap. Initial and adjacent faults wait at their exact injection
+site until the original controller successfully reaps the healthy sibling.
+Records assert reap, barrier release and injection ordering; worker exit alone
+does not release the barrier. A subreaper checks complete descendant collection; emergency
 process-group cleanup runs even when assertions fail. Parent-death readiness is
 acknowledged after real PDEATHSIG/mask/redirect setup, before killing the controller.
 Inherited stdio, atexit and destructor sentinels distinguish fatal `_exit` from
@@ -438,15 +442,19 @@ and parent-race branches already use `_exit`; both have controls. Quiet stderr
 redirection remains best effort. `exit(run_slave_process(...))` remains the normal
 terminal worker path after runtime execution. Parent pre-fork Boolean returns
 remain valid. No public API, binary layout or protocol changes are introduced.
-The original controller still returns `EXIT_SUCCESS` when a worker dies before
-progress; tests explicitly preserve this aggregate policy. Retained loss and
-complete-result reporting belong to issues #13, #22 and #23.
+The issue #13 controller returns `EXIT_FAILURE` for lost required work and
+leaves `progress_complete` zero. These tests preserve that fail-fast policy
+and its cleanup. Healthy and healthy-recovery controls require success, complete
+progress and two actually parsed/completed pipelines. Initial faults retain one
+completed sibling pipeline; recovery faults complete neither pipeline.
 
 Run the full CPU CTest suite in Debug/Release with exceptions OFF/ON. In Debug
 exceptions OFF also repeat `ctest --test-dir BUILD --output-on-failure
 --no-tests=error -R '^fork-child-' --repeat until-fail:3`. For before-fix controls,
 copy the committed candidate source/tests to an isolated directory, replace only
-`cli/fossilize_replay_linux.hpp` with its input revision, and build the fixture.
+`cli/fossilize_replay_linux.hpp` with master revision
+`9804598fba84b747aeecd66c0e873f3f48c4c3cd`, and build the fixture. Retain all
+other candidate files, including issue #13 outcome and cleanup changes.
 The three `fork-child-initial-first-{sigmask,stdout-dup2,stdin-dup2}` tests must
 fail for observed controller fallthrough/worker-owned fork or wrong worker status,
 with one intended injection; healthy and healthy-recovery must still pass.
@@ -456,3 +464,72 @@ This is CPU-only Linux process evidence, without real driver or Steam claims.
 Windows verification is explicitly excluded by the user's #56 run instruction;
 no native Windows execution is claimed. Robust master replay is unsupported on
 Apple/Android in the current build.
+
+## Robust replay worker outcome
+
+Issue [#13](https://github.com/robinwassen/Fossilize/issues/13) separates a worker's
+restart disposition from its retained required-work outcome. Robust controllers
+return `EXIT_FAILURE` immediately after an unrecoverable loss, then terminate and
+reap remaining children. Immutable assigned graphics/compute/ray-tracing ranges,
+observed termination, known skipped culprit, completed prefix and unknown
+remainder survive retry-start changes and optional progress forwarding. A clean
+retry can succeed after a failed attempt when no required culprit was skipped;
+a skipped culprit remains unsuccessful even when its tail completes. Cancelled
+required work is unresolved and unsuccessful; existing child termination
+mechanisms remain in use.
+
+`replay-controller-{clean,zero,empty-archive,lost,lost-progress,mixed-success-first,mixed-loss-first,
+recover,skip-graphics,skip-compute,skip-raytracing,skip-graphics-final,
+skip-compute-final,skip-raytracing-final,skip-graphics-progress,
+skip-graphics-final-progress,partial,loss-after-retry,held-sibling,
+signal,status-error,outcome-state}` use explicit checks active under `NDEBUG`.
+`zero` preserves empty selected ranges on the populated known-hash fixture;
+`empty-archive` additionally reads back zero resources for every tag in a valid
+empty FOZ and runs that archive through the production master.
+The dedicated test executable includes the production controller with adapters
+compiled only in its translation unit. Actual fork/CreateProcess, pipes,
+epoll/native waits, shutdown parsing, restarts and cleanup remain in use.
+Barriers select both terminal report orders and hold a still-live sibling;
+process status and retained state are the oracle. Per-attempt artifacts record
+ranges and item completions, and kernel checks establish reaping/termination.
+Progress-enabled controls preserve the legacy clean/dirty crash-counter meanings
+independently of final required-work failure; expected sibling cleanup is not
+counted as another crash. The state/protocol case also verifies unchanged current message literals and
+shared-ring forwarding, unknown native status, and empty-kind recovery.
+
+`replay-controller-cli-{normal,master,progress}` preserve successful null-device
+invocations on a dependency-complete known-hash fixture. `replay-controller-cli-
+{e5,e6}` use a readback-checked FOZ containing compute `{}`. Debug requires the
+actual CLI's unsuccessful exit, including `--progress --quiet-slave`. To reproduce the
+original defect, invoke `test/replay_controller_cli.cmake` with `GENERATOR`,
+`REPLAY`, `WORK`, `CASE=e5` (then `e6`) and `BASELINE_REPLAY` set to an unchanged
+input Debug executable. The runner checks baseline false-success zero separately
+from candidate status one. Release exercises the historical fixture's distinct
+parser-rejection boundary: it currently exits zero without losing a worker.
+An `ExternalReplayer::Progress` control requires exactly one compute parse
+failure and skip, zero completed compute pipelines and zero clean/dirty worker
+deaths. This zero exit is a current parser-policy limitation, **not successful
+required replay** and not evidence of the child-loss fix. Mandatory deterministic
+real-controller loss cases require status one in every configuration. The E5/E6
+worker-loss defect and baseline contrast are established by Debug evidence.
+
+`replay-controller-cli-compatibility` exercises `ExternalReplayer::Options{}`,
+`start`, `wait`, `is_process_complete`, and cached status for clean and failed
+controllers. Kernel terminal-state barriers cover both query-first and wait-first
+completion, including a process already reaped by the initial progress poll.
+Progress pumping after a known terminal status does not reap it a second time
+or overwrite the unsuccessful result with `-ECHILD`. Compile
+`test/replay_controller_compatibility_test.cpp` with the
+input public headers first on its include path and link candidate libraries for
+old-header source compatibility evidence. Existing diagnostic compatibility
+fixtures retain recorder/database and ordinary CLI checks. Public declarations,
+shared progress layout/version and worker grammar are unchanged. The intentional
+behavior change is that unresolved robust replay returns nonzero, including
+through `ExternalReplayer::wait`. This is no general binary ABI, driver/GPU,
+output durability, full item-ledger or whole observability-standard guarantee.
+Apple/Android `NO_ROBUST_REPLAYER` paths remain outside this contract.
+
+Register the same portable controller cases on native Windows. Native Windows
+execution for the initial issue #13 run was explicitly waived by the user and
+remains unverified; Linux results do not establish Windows process/IPC behavior.
+Record subsequent platform/configuration evidence separately.

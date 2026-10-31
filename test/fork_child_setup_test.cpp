@@ -18,7 +18,7 @@ namespace
 {
 enum EventKind { Birth, Child, Inject, Mask, Output, Input, InputEOF, OutputEOF,
                  Reap, WorkerExit, Fallthrough, ForeignFork, Ready, ForcedCrash,
-                 AtExit, Destructor };
+                 AtExit, Destructor, BarrierRelease, BarrierPassed };
 enum Fault { None, Sigmask, Stdout, Stdin, Prctl, ParentRace };
 struct Event { int kind; pid_t pid; int generation; int a; int b; };
 static int events_fd = -1;
@@ -30,6 +30,9 @@ static unsigned fault_generation;
 static int pipe_index, crash_read_fd;
 static int crash_reads[8];
 static FILE *flush_sentinel;
+static int fault_barrier[2] = { -1, -1 };
+static pid_t worker_pids[8];
+static bool barrier_released;
 
 // Each record is a single PIPE_BUF-sized write, including in post-fork setup.
 static void event(EventKind kind, int a = 0, int b = 0)
@@ -45,6 +48,17 @@ static bool selected(Fault site)
 }
 static void injection(Fault site)
 {
+	if (fault_barrier[0] >= 0)
+	{
+		// The controller releases only after waitpid collected the real healthy
+		// sibling successfully. A WorkerExit notification is not sufficient.
+		char byte;
+		ssize_t ret;
+		do { ret = read(fault_barrier[0], &byte, 1); } while (ret < 0 && errno == EINTR);
+		if (ret != 1 || byte != 'R') _exit(95);
+		close(fault_barrier[0]); fault_barrier[0] = -1;
+		event(BarrierPassed);
+	}
 	injected = true;
 	event(Inject, int(site));
 }
@@ -91,12 +105,16 @@ pid_t __wrap_fork()
 	if (pid == 0)
 	{
 		worker = true;
+		if (fault_barrier[1] >= 0) { close(fault_barrier[1]); fault_barrier[1] = -1; }
+		if (generation != fault_generation && fault_barrier[0] >= 0)
+		{ close(fault_barrier[0]); fault_barrier[0] = -1; }
 		event(Child, __real_getppid());
 	}
 	else if (pid > 0)
 	{
 		if (generation < 8)
 		{
+			worker_pids[generation] = pid;
 			for (unsigned i = 1; i < generation; i++)
 				if (crash_reads[i] == crash_read_fd) crash_reads[i] = -1;
 			crash_reads[generation] = crash_read_fd;
@@ -143,9 +161,9 @@ int __wrap_dup2(int from, int to)
 				event(InputEOF);
 				if (recovery && generation == 1)
 				{
-					// Exercise the real shutdown parser and recovery caller, with one
-					// remaining compute pipeline. This is a controlled crash, not a GPU.
-					static const char progress[] = "GRAPHICS 0 0\nCOMPUTE 1 104\nRAYTRACE 0 0\n";
+					// Exercise the real shutdown parser and recovery caller, with
+					// zero completed or skipped pipelines. This is a controlled crash, not a GPU.
+					static const char progress[] = "GRAPHICS 0 0\nCOMPUTE 0 0\nRAYTRACE 0 0\n";
 					if (write(STDOUT_FILENO, progress, sizeof(progress) - 1) != sizeof(progress) - 1) _exit(93);
 					event(ForcedCrash);
 					_exit(2);
@@ -164,7 +182,20 @@ int __wrap_dup2(int from, int to)
 pid_t __wrap_waitpid(pid_t pid, int *status, int options)
 {
 	pid_t ret = __real_waitpid(pid, status, options);
-	if (ret > 0 && getpid() == controller_pid) event(Reap, ret, *status);
+	if (ret > 0 && getpid() == controller_pid)
+	{
+		event(Reap, ret, *status);
+		unsigned healthy_generation = fault_generation == 1 ? 2 : 1;
+		if (fault_barrier[1] >= 0 && !barrier_released &&
+		    ret == worker_pids[healthy_generation] && WIFEXITED(*status) && WEXITSTATUS(*status) == 0)
+		{
+			barrier_released = true;
+			event(BarrierRelease, ret, *status);
+			const char byte = 'R';
+			if (write(fault_barrier[1], &byte, 1) != 1) _exit(95);
+			close(fault_barrier[1]); fault_barrier[1] = -1;
+		}
+	}
 	return ret;
 }
 ssize_t __wrap_read(int fd, void *data, size_t size)
@@ -269,6 +300,9 @@ int main(int argc, char **argv)
 	auto *control = new (mapping) SharedControlBlock{};
 	control->ring_buffer_offset = sizeof(SharedControlBlock); control->ring_buffer_size = 4096;
 	control->version_cookie = ControlBlockMagic;
+	bool gated_fault = fault != None && !recovery;
+	if (gated_fault) checks.require(__real_pipe(fault_barrier) == 0, "fault-barrier-pipe");
+	if (checks.failures) return 1;
 	fflush(nullptr);
 	pid_t controller = __real_fork();
 	checks.require(controller >= 0, "controller-fork");
@@ -293,9 +327,11 @@ int main(int argc, char **argv)
 		opts.disable_rate_limiter = true;
 		int result = run_master_process(device, opts, { "fixture.foz" }, nullptr, 0, true, -1, -1);
 		if (getpid() != controller_pid) { event(Fallthrough, 3); _exit(94); }
+		for (int fd : fault_barrier) if (fd >= 0) close(fd);
 		_exit(result);
 	}
 	close(event_pipe[1]);
+	for (int fd : fault_barrier) if (fd >= 0) close(fd);
 	setpgid(controller, controller); // Child also sets it, avoiding parent-death readiness races.
 	fcntl(event_pipe[0], F_SETFL, fcntl(event_pipe[0], F_GETFL) | O_NONBLOCK);
 	std::vector<Event> records;
@@ -347,7 +383,9 @@ int main(int argc, char **argv)
 	std::map<pid_t, std::vector<Event>> per_pid;
 	std::map<pid_t, std::vector<int>> reaps;
 	std::set<int> output_eofs;
-	unsigned injections = 0, forced = 0, ready = 0;
+	unsigned injections = 0, forced = 0, ready = 0, releases = 0, passes = 0;
+	size_t healthy_reap_index = records.size(), release_index = records.size(), pass_index = records.size(), inject_index = records.size();
+	size_t record_index = 0;
 	for (const auto &record : records)
 	{
 		per_pid[record.pid].push_back(record);
@@ -360,11 +398,37 @@ int main(int argc, char **argv)
 		}
 		if (record.kind == Reap) { checks.require(record.pid == controller, "original-controller-reaps"); reaps[record.a].push_back(record.b); }
 		if (record.kind == OutputEOF) output_eofs.insert(record.a);
-		if (record.kind == Inject) { ++injections; checks.require(record.generation == int(fault_generation) && record.a == int(fault), "exact-injection-site"); }
+		if (record.kind == Inject) { inject_index = record_index; ++injections; checks.require(record.generation == int(fault_generation) && record.a == int(fault), "exact-injection-site"); }
 		if (record.kind == ForcedCrash) ++forced;
 		if (record.kind == Ready) ++ready;
+		if (record.kind == Reap && WIFEXITED(record.b) && WEXITSTATUS(record.b) == 0)
+			healthy_reap_index = record_index;
+		if (record.kind == BarrierRelease)
+		{
+			++releases; release_index = record_index;
+			checks.require(record.pid == controller && WIFEXITED(record.b) && WEXITSTATUS(record.b) == 0,
+			               "barrier-original-controller-successful-reap");
+			checks.require(reaps[record.a].size() == 1 && reaps[record.a][0] == record.b,
+			               "barrier-reaped-known-sibling");
+		}
+		if (record.kind == BarrierPassed)
+		{
+			++passes; pass_index = record_index;
+			checks.require(record.generation == int(fault_generation), "barrier-selected-generation");
+		}
+		++record_index;
 	}
 	checks.require(births.size() == expected_births, "expected-fork-count");
+	checks.require(releases == (gated_fault ? 1u : 0u) && passes == releases, "exact-barrier-release-and-pass");
+	if (gated_fault)
+	{
+		checks.require(healthy_reap_index < release_index && release_index < pass_index && pass_index < inject_index,
+		               "successful-controller-reap-before-fault-release");
+		for (const auto &record : records)
+			if (record.kind == BarrierRelease)
+				checks.require(births.count(fault_generation == 1 ? 2 : 1) &&
+				               record.a == births[fault_generation == 1 ? 2 : 1], "barrier-exact-healthy-sibling");
+	}
 	checks.require(injections == (fault == None ? 0u : 1u), "exactly-one-intended-injection");
 	checks.require(forced == (recovery ? 1u : 0u), "controlled-recovery-generation");
 	checks.require(ready == (parent_death ? 1u : 0u), "parent-death-ready-barrier");
@@ -410,17 +474,18 @@ int main(int argc, char **argv)
 	{
 		int status = observed_status[controller];
 		checks.require(parent_death ? (WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL) :
-		               (WIFEXITED(status) && WEXITSTATUS(status) == EXIT_SUCCESS), "preserved-aggregate-parent-status");
+		               (WIFEXITED(status) && WEXITSTATUS(status) == (fault == None ? EXIT_SUCCESS : EXIT_FAILURE)), "required-work-parent-status");
 	}
 	checks.require(observed_status.size() == (parent_death ? 2u : 1u), "no-unexpected-adopted-descendants");
 	checks.require(kill(controller, 0) == -1 && errno == ESRCH, "controller-no-longer-exists");
 	struct stat sentinel = {};
 	checks.require(stat("flush-sentinel", &sentinel) == 0 && sentinel.st_size == off_t(6 * normal_workers), "no-fatal-inherited-stdio-flush");
 	checks.require(control->static_total_count_compute.load() == 2, "production-fixture-count");
-	checks.require(control->successful_compute.load() == normal_workers && control->parsed_compute.load() == normal_workers, "real-null-device-fixture-coverage");
+	checks.require(control->successful_compute.load() == (recovery && fault == None ? 2u : normal_workers) &&
+	               control->parsed_compute.load() == (recovery && fault == None ? 2u : normal_workers), "real-null-device-fixture-coverage");
 	if (!parent_death)
 	{
-		checks.require(control->progress_complete.load() == 1, "controller-protocol-complete");
+		checks.require(control->progress_complete.load() == (fault == None ? 1u : 0u), "controller-required-work-complete");
 		checks.require(control->clean_process_deaths.load() == (recovery ? 1u : 0u), "production-recovery-progress-retained");
 		checks.require(control->dirty_process_deaths.load() == (fault == None ? 0u : 1u), "production-no-progress-failure-retained");
 	}
