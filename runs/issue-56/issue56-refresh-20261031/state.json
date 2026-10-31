@@ -10275,7 +10275,31 @@
         "log": "/tmp/fossilize-56-refresh/v2-final-output/baseline-healthy.log",
         "receipt": "/tmp/fossilize-56-refresh/v2-final-output/baseline-healthy.receipt.json",
         "started": 1793440803.532782,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793441049.7829187,
+          "command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^fork-child-healthy(-recovery)?$",
+            "--output-junit",
+            "/tmp/fossilize-56-refresh/v2-final-output/baseline-healthy.xml"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-final",
+          "exit_code": 0,
+          "finished": 1793441049.8150346,
+          "intent_id": "v2f-baseline-healthy",
+          "started": 1793441049.7797348,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 0
+        }
       },
       {
         "child_command": [
@@ -11267,7 +11291,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 430,
+  "revision": 431,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
