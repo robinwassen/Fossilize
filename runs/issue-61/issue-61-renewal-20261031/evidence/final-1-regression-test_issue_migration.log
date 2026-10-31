@@ -1,0 +1,85 @@
+COMMAND python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/final-1 --timeout 600 --intent-id issue61-renew-final-1-regression-test_issue_migration --receipt /tmp/fossilize-61-renewal/output/final-1/regression-test_issue_migration.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_migration --inventory /tmp/fossilize-61-renewal/output/final-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/final-1/suite/regression-test_issue_migration.json
+CWD /tmp/fossilize-61-renewal/final-1
+RECEIPT {"acquired": 1793435892.7781272, "command": ["env", "PYTHONDONTWRITEBYTECODE=1", "python3", "-B", ".agents/skills/implement-change-harness/scripts/run_harness_tests.py", "--run-group", "regression-test_issue_migration", "--inventory", "/tmp/fossilize-61-renewal/output/final-1/suite/inventory.json", "--output", "/tmp/fossilize-61-renewal/output/final-1/suite/regression-test_issue_migration.json"], "cwd": "/tmp/fossilize-61-renewal/final-1", "exit_code": 0, "finished": 1793435931.0237184, "intent_id": "issue61-renew-final-1-regression-test_issue_migration", "started": 1793435808.8475466, "timed_out": false, "timeout": 600.0, "wait_seconds": 83.928389978013}
+STDOUT/STDERR
+test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit (test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit) ... ok
+test_I03_missing_and_cyclic_graph_rejected (test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected) ... ok
+test_M01_unpublished_intent_blocks_dispatch (test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch) ... ok
+test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates (test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates) ... ok
+test_M02_create_lost_response_reconcile_and_no_duplicates (test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates) ... ok
+test_M02_durable_returned_identity_prevents_recreation_after_deletion (test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion) ... ok
+test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile (test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile) ... ok
+test_M02_uncertain_create_followed_by_auth_error_never_means_absent (test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent) ... ok
+test_M02_verified_identity_without_response_record_still_prevents_recreation (test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation) ... ok
+test_M03_unrelated_body_and_comment_edits_preserved (test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved) ... ok
+test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union (test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union) ... ok
+test_M01_external_dispatch_uses_same_canonical_lock (test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock) ... ok
+test_M01_real_git_append_only_cas_byte_preservation_and_publication (test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication) ... ok
+test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch (test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 37.919s
+
+OK
+{"candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a", "outcome": "recorded", "output": "/tmp/fossilize-61-renewal/output/final-1/suite/regression-test_issue_migration.json"}
+
+EXECUTION RESULT
+{
+  "attempt_token": "3a3d26eb26d44c1c9a3ee57a7562aa01",
+  "candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+  "executed": [
+    "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit",
+    "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected",
+    "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch",
+    "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates",
+    "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates",
+    "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion",
+    "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile",
+    "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent",
+    "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation",
+    "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved",
+    "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union",
+    "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock",
+    "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication",
+    "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch"
+  ],
+  "finished": 1793435930.979097,
+  "group": "regression-test_issue_migration",
+  "inventory_digest": "5175846a008ef5a284dba9ceb2c04e7e057cdab2e3c58eb9df6f58d893c42801",
+  "scenarios": [],
+  "selected": [
+    "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit",
+    "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected",
+    "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch",
+    "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates",
+    "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates",
+    "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion",
+    "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile",
+    "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent",
+    "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation",
+    "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved",
+    "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union",
+    "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock",
+    "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication",
+    "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch"
+  ],
+  "started": 1793435893.0575528,
+  "statuses": {
+    "test_issue_migration.IssueMigrationTests.test_I02_I03_I04_M03_all_definitions_before_native_edges_full_audit": "passed",
+    "test_issue_migration.IssueMigrationTests.test_I03_missing_and_cyclic_graph_rejected": "passed",
+    "test_issue_migration.IssueMigrationTests.test_M01_unpublished_intent_blocks_dispatch": "passed",
+    "test_issue_migration.IssueMigrationTests.test_M02_comment_lost_response_and_partial_auth_fail_no_duplicates": "passed",
+    "test_issue_migration.IssueMigrationTests.test_M02_create_lost_response_reconcile_and_no_duplicates": "passed",
+    "test_issue_migration.IssueMigrationTests.test_M02_durable_returned_identity_prevents_recreation_after_deletion": "passed",
+    "test_issue_migration.IssueMigrationTests.test_M02_malformed_timeout_and_after_identity_observation_loss_reconcile": "passed",
+    "test_issue_migration.IssueMigrationTests.test_M02_uncertain_create_followed_by_auth_error_never_means_absent": "passed",
+    "test_issue_migration.IssueMigrationTests.test_M02_verified_identity_without_response_record_still_prevents_recreation": "passed",
+    "test_issue_migration.IssueMigrationTests.test_M03_unrelated_body_and_comment_edits_preserved": "passed",
+    "test_issue_migration.RestrictedJournalTests.test_I01_I02_immutable_inventory_retains_full_sections_and_registry_union": "passed",
+    "test_issue_migration.RestrictedJournalTests.test_M01_external_dispatch_uses_same_canonical_lock": "passed",
+    "test_issue_migration.RestrictedJournalTests.test_M01_real_git_append_only_cas_byte_preservation_and_publication": "passed",
+    "test_issue_migration.RestrictedJournalTests.test_M01_replay_is_read_only_but_pending_publication_still_bars_dispatch": "passed"
+  },
+  "successful": true,
+  "version": 1
+}

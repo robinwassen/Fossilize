@@ -1,0 +1,109 @@
+COMMAND python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/final-1 --timeout 600 --intent-id issue61-renew-final-1-delivery-w11-1 --receipt /tmp/fossilize-61-renewal/output/final-1/delivery-w11-1.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-1 --inventory /tmp/fossilize-61-renewal/output/final-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/final-1/suite/delivery-w11-1.json
+CWD /tmp/fossilize-61-renewal/final-1
+RECEIPT {"acquired": 1793436535.0240946, "command": ["env", "PYTHONDONTWRITEBYTECODE=1", "python3", "-B", ".agents/skills/implement-change-harness/scripts/run_harness_tests.py", "--run-group", "delivery-w11-1", "--inventory", "/tmp/fossilize-61-renewal/output/final-1/suite/inventory.json", "--output", "/tmp/fossilize-61-renewal/output/final-1/suite/delivery-w11-1.json"], "cwd": "/tmp/fossilize-61-renewal/final-1", "exit_code": 0, "finished": 1793436627.0798795, "intent_id": "issue61-renew-final-1-delivery-w11-1", "started": 1793436288.938039, "timed_out": false, "timeout": 600.0, "wait_seconds": 246.08190738596022}
+STDOUT/STDERR
+test_W11_publication_shard_1 (test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 91.742s
+
+OK
+{"candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a", "outcome": "recorded", "output": "/tmp/fossilize-61-renewal/output/final-1/suite/delivery-w11-1.json"}
+
+EXECUTION RESULT
+{
+  "attempt_token": "3a3d26eb26d44c1c9a3ee57a7562aa01",
+  "candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+  "executed": [
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+  ],
+  "finished": 1793436627.0372407,
+  "group": "delivery-w11-1",
+  "inventory_digest": "5175846a008ef5a284dba9ceb2c04e7e057cdab2e3c58eb9df6f58d893c42801",
+  "scenarios": [
+    {
+      "id": "W11:approval:intent:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:merge:dispatch:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:merge:readback:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:merge-verification:dispatch:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:merge-verification:readback:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:detach:dispatch:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:detach:readback:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:remote-delete:dispatch:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:remote-delete:readback:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:local-delete:dispatch:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:local-delete:readback:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:ticket-close-8:dispatch:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:ticket-close-8:readback:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:ticket-comment-8:dispatch:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    },
+    {
+      "id": "W11:ticket-comment-8:readback:after-push",
+      "status": "passed",
+      "test": "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+    }
+  ],
+  "selected": [
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1"
+  ],
+  "started": 1793436535.292305,
+  "statuses": {
+    "test_delivery_wrapup.DeliveryTests.test_W11_publication_shard_1": "passed"
+  },
+  "successful": true,
+  "version": 1
+}

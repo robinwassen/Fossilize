@@ -1,0 +1,85 @@
+COMMAND python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/final-1 --timeout 600 --intent-id issue61-renew-final-1-regression-test_harness_migration --receipt /tmp/fossilize-61-renewal/output/final-1/regression-test_harness_migration.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_migration --inventory /tmp/fossilize-61-renewal/output/final-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_migration.json
+CWD /tmp/fossilize-61-renewal/final-1
+RECEIPT {"acquired": 1793435774.192981, "command": ["env", "PYTHONDONTWRITEBYTECODE=1", "python3", "-B", ".agents/skills/implement-change-harness/scripts/run_harness_tests.py", "--run-group", "regression-test_harness_migration", "--inventory", "/tmp/fossilize-61-renewal/output/final-1/suite/inventory.json", "--output", "/tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_migration.json"], "cwd": "/tmp/fossilize-61-renewal/final-1", "exit_code": 0, "finished": 1793435801.4687638, "intent_id": "issue61-renew-final-1-regression-test_harness_migration", "started": 1793435722.836132, "timed_out": false, "timeout": 600.0, "wait_seconds": 51.35488971392624}
+STDOUT/STDERR
+test_V01_legacy_mutation_api_is_fixture_only (test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only) ... ok
+test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state (test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state) ... ok
+test_R01_live_split_dependency_order_scoped_findings_and_child_drift (test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift) ... ok
+test_R01_stale_report_fenced_required_evidence_final_gate_and_budget (test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget) ... ok
+test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable (test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable) ... ok
+test_S02_split_requires_native_parent_and_complete_criteria (test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria) ... ok
+test_S02_unsplit_issue_initialization_and_snapshot_authority (test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority) ... ok
+test_S03_live_drift_reconciliation_invalidates_acceptances (test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances) ... ok
+test_S03_planner_cannot_silently_adopt_requirement_changes (test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes) ... ok
+test_V01_conflicting_original_mapping_or_active_checker_reject_atomically (test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically) ... ok
+test_V01_idle_migration_retains_history_allocations_original_deadline (test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline) ... ok
+test_V02_active_exact_bridge_once_original_report_bytes (test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes) ... ok
+test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind (test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind) ... ok
+test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token (test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 26.955s
+
+OK
+{"candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a", "outcome": "recorded", "output": "/tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_migration.json"}
+
+EXECUTION RESULT
+{
+  "attempt_token": "3a3d26eb26d44c1c9a3ee57a7562aa01",
+  "candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+  "executed": [
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only",
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state",
+    "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift",
+    "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget",
+    "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable",
+    "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria",
+    "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority",
+    "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances",
+    "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes",
+    "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically",
+    "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline",
+    "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes",
+    "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind",
+    "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token"
+  ],
+  "finished": 1793435801.423178,
+  "group": "regression-test_harness_migration",
+  "inventory_digest": "5175846a008ef5a284dba9ceb2c04e7e057cdab2e3c58eb9df6f58d893c42801",
+  "scenarios": [],
+  "selected": [
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only",
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state",
+    "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift",
+    "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget",
+    "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable",
+    "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria",
+    "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority",
+    "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances",
+    "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes",
+    "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically",
+    "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline",
+    "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes",
+    "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind",
+    "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token"
+  ],
+  "started": 1793435774.4656208,
+  "statuses": {
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_legacy_mutation_api_is_fixture_only": "passed",
+    "test_harness_migration.BootstrapIssueMigrationTests.test_V01_schema1_import_worker_reconciliation_then_source_free_issue_state": "passed",
+    "test_harness_migration.LiveHarnessTests.test_R01_live_split_dependency_order_scoped_findings_and_child_drift": "passed",
+    "test_harness_migration.LiveHarnessTests.test_R01_stale_report_fenced_required_evidence_final_gate_and_budget": "passed",
+    "test_harness_migration.LiveHarnessTests.test_S01_resume_and_planner_dispatch_fail_closed_when_gh_unavailable": "passed",
+    "test_harness_migration.LiveHarnessTests.test_S02_split_requires_native_parent_and_complete_criteria": "passed",
+    "test_harness_migration.LiveHarnessTests.test_S02_unsplit_issue_initialization_and_snapshot_authority": "passed",
+    "test_harness_migration.LiveHarnessTests.test_S03_live_drift_reconciliation_invalidates_acceptances": "passed",
+    "test_harness_migration.LiveHarnessTests.test_S03_planner_cannot_silently_adopt_requirement_changes": "passed",
+    "test_harness_migration.StateMigrationTests.test_V01_conflicting_original_mapping_or_active_checker_reject_atomically": "passed",
+    "test_harness_migration.StateMigrationTests.test_V01_idle_migration_retains_history_allocations_original_deadline": "passed",
+    "test_harness_migration.StateMigrationTests.test_V02_active_exact_bridge_once_original_report_bytes": "passed",
+    "test_harness_migration.StateMigrationTests.test_V03_cleanup_restart_without_source_definitions_and_fresh_clone_rebind": "passed",
+    "test_harness_migration.StateMigrationTests.test_V03_completed_logical_run_cannot_reinitialize_under_new_storage_token": "passed"
+  },
+  "successful": true,
+  "version": 1
+}

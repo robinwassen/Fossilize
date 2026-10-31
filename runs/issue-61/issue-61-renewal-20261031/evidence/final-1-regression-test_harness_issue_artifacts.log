@@ -1,0 +1,65 @@
+COMMAND python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/final-1 --timeout 600 --intent-id issue61-renew-final-1-regression-test_harness_issue_artifacts --receipt /tmp/fossilize-61-renewal/output/final-1/regression-test_harness_issue_artifacts.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_artifacts --inventory /tmp/fossilize-61-renewal/output/final-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_issue_artifacts.json
+CWD /tmp/fossilize-61-renewal/final-1
+RECEIPT {"acquired": 1793435709.3812122, "command": ["env", "PYTHONDONTWRITEBYTECODE=1", "python3", "-B", ".agents/skills/implement-change-harness/scripts/run_harness_tests.py", "--run-group", "regression-test_harness_issue_artifacts", "--inventory", "/tmp/fossilize-61-renewal/output/final-1/suite/inventory.json", "--output", "/tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_issue_artifacts.json"], "cwd": "/tmp/fossilize-61-renewal/final-1", "exit_code": 0, "finished": 1793435714.9569397, "intent_id": "issue61-renew-final-1-regression-test_harness_issue_artifacts", "started": 1793435660.8205204, "timed_out": false, "timeout": 600.0, "wait_seconds": 48.55862958508078}
+STDOUT/STDERR
+test_P01_P05_live_initial_publication_and_idempotent_retry (test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry) ... ok
+test_P04_stale_dirty_inspection_and_user_checkout_preserved (test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved) ... ok
+test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state (test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state) ... ok
+test_P07_interruption_before_push_and_after_success_without_return (test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return) ... ok
+test_P08_live_evidence_descendant_adoption_and_divergence (test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence) ... ok
+test_P09b_pushurl_observation_uses_bound_push_endpoint (test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint) ... ok
+test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish (test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish) ... ok
+test_P09d_concurrent_endpoint_reread_cannot_retarget_publication (test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication) ... ok
+test_P10_actual_postpush_advance_beats_success_and_caller_sha (test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 5.249s
+
+OK
+{"candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a", "outcome": "recorded", "output": "/tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_issue_artifacts.json"}
+
+EXECUTION RESULT
+{
+  "attempt_token": "3a3d26eb26d44c1c9a3ee57a7562aa01",
+  "candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+  "executed": [
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha"
+  ],
+  "finished": 1793435714.910244,
+  "group": "regression-test_harness_issue_artifacts",
+  "inventory_digest": "5175846a008ef5a284dba9ceb2c04e7e057cdab2e3c58eb9df6f58d893c42801",
+  "scenarios": [],
+  "selected": [
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha"
+  ],
+  "started": 1793435709.6585898,
+  "statuses": {
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry": "passed",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved": "passed",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state": "passed",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return": "passed",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence": "passed",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint": "passed",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish": "passed",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication": "passed",
+    "test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha": "passed"
+  },
+  "successful": true,
+  "version": 1
+}

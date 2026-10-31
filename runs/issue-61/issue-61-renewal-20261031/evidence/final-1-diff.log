@@ -1,0 +1,196 @@
+COMMAND python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/final-1 --timeout 600 --intent-id issue61-renew-final-1-diff --receipt /tmp/fossilize-61-renewal/output/final-1/diff.receipt.json -- python3 -B /tmp/fossilize-61-renewal/final_extra.py diff
+CWD /tmp/fossilize-61-renewal/final-1
+RECEIPT {"acquired": 1793435601.4459834, "command": ["python3", "-B", "/tmp/fossilize-61-renewal/final_extra.py", "diff"], "cwd": "/tmp/fossilize-61-renewal/final-1", "exit_code": 0, "finished": 1793435601.5605404, "intent_id": "issue61-renew-final-1-diff", "started": 1793435578.8205657, "timed_out": false, "timeout": 600.0, "wait_seconds": 22.618525044061244}
+STDOUT/STDERR
+diff --git a/.agents/skills/implement-change-harness/SKILL.md b/.agents/skills/implement-change-harness/SKILL.md
+index 35d58ea9..c10fd949 100644
+--- a/.agents/skills/implement-change-harness/SKILL.md
++++ b/.agents/skills/implement-change-harness/SKILL.md
+@@ -41,9 +41,15 @@ while a policy change is under review. Detailed mechanics are in
+    coverage and correctly mapped native dependencies. Steps alone create no issues.
+    Create issues/edges through durable journaled external operations; never allocate
+    FOS keys or create source backlog definitions. Dispatch one fresh implementer
+-   for the first dependency-ready work unit.
++   for the first dependency-ready work unit. Require the relevant CHANGELOG.md
++   entry alongside the implementation in the same committed candidate, following
++   the selected worktree's [changelog guideline](https://github.com/robinwassen/Fossilize/blob/master/local-docs/changelog-guidelines.md)
++   (`local-docs/changelog-guidelines.md`); use its local copy during review.
+ 5. At a committed candidate, dispatch a fresh checker in a new detached worktree.
+-   Require actual planned-gate execution and test mappings. Route incorrect or
++   Require actual planned-gate execution and test mappings, plus independent
++   review of the candidate's changelog entry against that guideline and delivered
++   scope. Revise the entry when scope changes and renew affected checking.
++   Route incorrect or
+    missing planned tests to implementation, missing test design to planning, and
+    unavailable mandatory prerequisites to a decision. Only the checker accepts.
+    Repairs use fresh bounded attempts; preserve scoped findings and stale-worker
+@@ -52,7 +58,8 @@ while a policy change is under review. Detailed mechanics are in
+    concise passing evidence and an honest source compare reference. Journal managed
+    readiness comments and read them back with closeout-record; issues remain open.
+    No source bookkeeping commit is needed. Dispatch a separate fresh final checker
+-   over the unchanged exact candidate. Later changes/rejection require marked
++   over the unchanged exact candidate, including the combined changelog and its
++   consistency with final delivered scope. Later changes/rejection require marked
+    superseding issue evidence, closeout-cleanup and renewed checks. A parent with
+    incomplete required children/criteria cannot become a closing target.
+ 7. Re-read material issue inputs and fetch target master. Persist publish-intent,
+diff --git a/.agents/skills/implement-change-harness/references/roles.md b/.agents/skills/implement-change-harness/references/roles.md
+index 0e41917d..8e0eb255 100644
+--- a/.agents/skills/implement-change-harness/references/roles.md
++++ b/.agents/skills/implement-change-harness/references/roles.md
+@@ -37,7 +37,11 @@ accept implementation or weaken requirements.
+ ## Implementer
+ 
+ Edit source and committed planned tests for one ready work unit in the dedicated
+-implementation worktree. Run required checks with real process deadlines. Commit
++implementation worktree. Add or revise the relevant CHANGELOG.md entry alongside
++that change in the same candidate, using the selected worktree's authoritative
++`local-docs/changelog-guidelines.md` ([published guideline](https://github.com/robinwassen/Fossilize/blob/master/local-docs/changelog-guidelines.md)).
++Keep it accurate when scope changes during review and renew affected checking.
++Run required checks with real process deadlines. Commit
+ the candidate and return result_candidate_sha, test_mapping and commands with
+ exact command/cwd/status, discovered/executed IDs, logs and limitations. An omitted
+ planned test is incomplete work. Explain meaningful original-defect detection.
+@@ -57,7 +61,12 @@ immutable original issue/acceptance and project policy before reading implemente
+ claims. Inspect the entire base-to-candidate diff, test assertions and registration;
+ rerun decisive required gates and credible counterexamples. Reject missing,
+ skipped, vacuous or weakened assertions. A prior passing report is not independent
+-current verification. Read live material issue input and migration/audit evidence.
++current verification. Independently verify the changelog entry is included in the
++exact reviewed candidate and follows the authoritative changelog guideline:
++factual scope and specific practical benefit, meaningful optional topic,
++one short sentence and correct issue traceability. Check that review-driven scope
++changes are reflected and pending work is not presented as completed delivery.
++Read live material issue input and migration/audit evidence.
+ 
+ Return verdict accepted, changes_required or unable_to_verify with criterion-level
+ evidence. Acceptance includes evidence, discovered, executed, test_mapping, skipped
+@@ -77,7 +86,8 @@ or incomplete checks block readiness.
+ 
+ After all work units accept and managed issue readiness is prepared, a separate
+ fresh final checker covers the combined branch, all planned cases and exact
+-candidate/base/plan/current issue inputs. Review eligible closing references and
++candidate/base/plan/current issue inputs, including the combined changelog against
++the guideline and final scope. Review eligible closing references and
+ open issue state; incomplete epics cannot close. Source/plan/base/task changes or
+ rejection invalidate stale readiness and require superseding evidence/new checks.
+ Only explicitly approved, bound wrap-up may merge. Accepted units, completed
+diff --git a/AGENTS.md b/AGENTS.md
+index df8df18d..b45dfdd8 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -19,3 +19,8 @@ Use [robinwassen/Fossilize Issues](https://github.com/robinwassen/Fossilize/issu
+ ## Verification
+ 
+ Before planning or running verification, read the [testing and verification guide](local-docs/verification.md). Select checks appropriate to the change and report what was actually verified, including limitations.
++
++## Changelog
++
++Update `CHANGELOG.md` with each change, following the
++[changelog writing guideline](local-docs/changelog-guidelines.md).
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+new file mode 100644
+index 00000000..2c2f8f42
+--- /dev/null
++++ b/CHANGELOG.md
+@@ -0,0 +1,30 @@
++# Changelog
++
++This records changes in this fork; GitHub Issues remain the authority for tasks
++and their status. Follow the [changelog writing guideline](local-docs/changelog-guidelines.md).
++
++## Unreleased
++
++Entries are reviewed with their implementation PR; inclusion in an open PR does
++not establish merged delivery or a release.
++
++- **[Harness]** Added a shared changelog and required entry review so contributors can see what changed and why it matters. ([#61](https://github.com/robinwassen/Fossilize/issues/61))
++
++## Completed changes
++
++These backfilled entries are grouped by topic, with earlier changes first within
++each topic; no release version or release date is implied.
++
++- **[Observability]** Improved Vulkan and cache error logs to preserve error codes and affected resources so failures are easier to diagnose. ([#10](https://github.com/robinwassen/Fossilize/issues/10))
++- **[Observability]** Fixed list, rehash and prune commands to report failure when resource parsing fails so incomplete processing cannot appear successful. ([#11](https://github.com/robinwassen/Fossilize/issues/11))
++- **[Observability]** Fixed file write helpers to report write, flush and close errors so callers can detect incomplete output. ([#12](https://github.com/robinwassen/Fossilize/issues/12))
++- **[Harness]** Added a resumable change workflow with independent checks so interrupted implementation work can continue with its progress and review evidence preserved. ([#34](https://github.com/robinwassen/Fossilize/issues/34))
++- **[Harness]** Included verified backlog completion in implementation PRs so merged changes update task status without a separate follow-up. ([#35](https://github.com/robinwassen/Fossilize/issues/35))
++- **[Harness]** Added remote publication of change workflow records so plans, reports and recovery checkpoints remain available beyond the local checkout. ([#36](https://github.com/robinwassen/Fossilize/issues/36))
++- **[Harness]** Moved task tracking to GitHub Issues so contributors can find requirements, progress and blocking dependencies in one place. ([#37](https://github.com/robinwassen/Fossilize/issues/37))
++- **[Harness]** Added one-command delivery after explicit approval so merging, branch cleanup and task closeout can resume after interruptions. ([#39](https://github.com/robinwassen/Fossilize/issues/39))
++
++The entry for [#35](https://github.com/robinwassen/Fossilize/issues/35) records
++historical backlog behavior, subsequently replaced by GitHub issue tracking in
++[#37](https://github.com/robinwassen/Fossilize/issues/37); the old backlog mechanism
++is not current contributor guidance.
+diff --git a/local-docs/README.md b/local-docs/README.md
+index 498e46e6..7ed238d6 100644
+--- a/local-docs/README.md
++++ b/local-docs/README.md
+@@ -8,6 +8,7 @@
+ - [Observability applicability review and worker evidence](specs/observability-validation.md)
+ - [Observability adversarial review](specs/observability-adversarial-review.md)
+ - [Issue workflow](issue-workflow.md)
++- [Changelog writing guideline](changelog-guidelines.md)
+ - [Canonical tasks](https://github.com/robinwassen/Fossilize/issues)
+ - [Historical observability sweep](reviews/observability-sweep.md)
+ - [Change harness design rationale](specs/basic-change-harness-plan.md)
+diff --git a/local-docs/changelog-guidelines.md b/local-docs/changelog-guidelines.md
+new file mode 100644
+index 00000000..bdb9cb87
+--- /dev/null
++++ b/local-docs/changelog-guidelines.md
+@@ -0,0 +1,43 @@
++# Changelog writing guideline
++
++Write each changelog entry as one short, clear sentence stating what changed and
++the specific problem it fixes or benefit it provides. Prefix the entry with a
++topic tag, using the associated epic's name where applicable; omit the tag when
++no meaningful topic fits. Describe delivered behavior and avoid unsupported claims.
++
++Suggested pattern: **[Topic] [Changed what] so [practical benefit].**
++
++Use plain language and name the affected behavior or component. Describe the
++delivered behavior rather than simply rephrasing the issue title, and keep the
++benefit within the change's actual scope. Topic tags are useful grouping, not
++mandatory invented categories; use concise epic-derived names such as
++**[Observability]** and **[Harness]**. Include a link to the associated issue for
++traceability, using its full `https://github.com/robinwassen/Fossilize/issues/NUMBER`
++URL.
++
++For example:
++
++- **[Observability]** Fixed file write helpers to report write, flush and close errors so callers can detect incomplete output. ([#12](https://github.com/robinwassen/Fossilize/issues/12))
++
++## Maintaining the record
++
++Add or revise the relevant entry in root [CHANGELOG.md](../CHANGELOG.md) in the
++same implementation PR as the change. Revise its wording whenever implementation
++or review changes the final scope. Independent review checks the entry against
++the actual candidate, including its accuracy, practical benefit, topic, brevity
++and issue link; final review covers the combined changelog too.
++
++Use an Unreleased section for changes without an assigned release; an entry in
++an open implementation PR describes its reviewed candidate scope, not confirmed
++merged delivery. The actual merged PR establishes delivery; no follow-up status
++edit or release date is required merely because it merged. Do not present
++unsupported, failed or incomplete work as completed, or turn desired properties
++and unrun checks into verified claims. Historical entries describe the behavior
++delivered at that time; identify later supersession when needed to avoid implying
++that an obsolete mechanism remains current.
++
++Use understandable historical ordering or topic grouping without inventing release
++versions or release dates. The changelog is a historical change record, not a
++second backlog: future work, requirements, dependencies and task status stay in
++[GitHub Issues](https://github.com/robinwassen/Fossilize/issues) under the
++[issue workflow](issue-workflow.md).
+
+Original defect: absent CHANGELOG.md
+Original defect: absent local-docs/changelog-guidelines.md
+Original defect: lacks changelog instruction AGENTS.md
+Original defect: lacks changelog instruction .agents/skills/implement-change-harness/SKILL.md
+Original defect: lacks changelog instruction .agents/skills/implement-change-harness/references/roles.md
+
+Independently read AGENTS.md, local-docs/README.md, CHANGELOG.md and local-docs/changelog-guidelines.md against the original issue body before prior checker conclusions. The dedicated guideline reproduces the approved one-sentence changed-what plus practical-benefit rule and suggested pattern, permits omission of meaningless topics, uses concise epic tags, requires full issue URLs and describes scope revisions, unsupported/failed/incomplete exclusions and historical supersession. AGENTS adds only its short Changelog heading/instruction/link. Index and changelog link the same tracked guideline. Historical record and GitHub task authority are explicitly distinguished.
+Read tracked SKILL steps4,5,6 and roles Implementer/Checker/final paragraphs in full. Implementer must add or revise the entry in the same committed candidate and renew checks on scope changes. Fresh checker independently reviews accuracy, specific benefit, meaningful topic, brevity, issue link and candidate inclusion. Separate final checker covers combined changelog and final scope. The Unreleased61 sentence accurately describes this candidate's shared changelog and entry-review instructions; accompanying prose explicitly says open-PR inclusion is not merged delivery. No C++ or release automation claim is added.

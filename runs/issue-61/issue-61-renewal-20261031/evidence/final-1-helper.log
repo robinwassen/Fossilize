@@ -1,0 +1,60 @@
+import argparse,json,pathlib,subprocess,sys
+p=argparse.ArgumentParser();p.add_argument('mode',choices=['diff','historydiff','freshness']);a=p.parse_args()
+out=pathlib.Path('/tmp/fossilize-61-renewal/output/final-1');out.mkdir(parents=True,exist_ok=True)
+candidate='b86f35635a9ed7ffe5eaafed046bd74e3dd2679a';base='9804598fba84b747aeecd66c0e873f3f48c4c3cd';url='https://github.com/robinwassen/Fossilize/issues/61'
+def run(argv):return subprocess.check_output(argv,text=True,timeout=60)
+def save(name,v): (out/name).write_text(json.dumps(v,indent=2)+'\n')
+if a.mode=='diff':
+ text=run(['git','diff',base,candidate]);(out/'full.diff').write_text(text);print(text)
+ for f in ['CHANGELOG.md','local-docs/changelog-guidelines.md']:
+  r=subprocess.run(['git','cat-file','-e',base+':'+f],capture_output=True);assert r.returncode!=0;print('Original defect: absent',f)
+ for f in ['AGENTS.md','.agents/skills/implement-change-harness/SKILL.md','.agents/skills/implement-change-harness/references/roles.md']:
+  assert 'changelog' not in run(['git','show',base+':'+f]).lower();print('Original defect: lacks changelog instruction',f)
+elif a.mode=='historydiff':
+ for n in [42,44,45,2,5,6,38,41]:
+  data=json.loads(run(['gh','api','--hostname','github.com','--paginate','--slurp','repos/robinwassen/Fossilize/pulls/'+str(n)+'/files?per_page=100']));save('pr-'+str(n)+'-files.json',data)
+  print('PR',n,[(f['filename'],f['status']) for page in data for f in page])
+else:
+ sys.path.insert(0,str(pathlib.Path.cwd()/'.agents/skills/implement-change-harness/scripts'))
+ from github_issues import GitHub
+ state=json.load(open('/tmp/fossilize-61-renewal/current.json'))['state'];gh=GitHub();snapshot=gh.unchanged(state['issue_snapshot']);save('final-snapshot.json',snapshot)
+ assert state['original']==state['plan']['original'] and state['original'][0]['requirement']==snapshot['nodes'][url]['body']
+ assert snapshot['nodes'][url]['parent']=='https://github.com/robinwassen/Fossilize/issues/9';assert not snapshot['nodes'][url]['children'] and not snapshot['nodes'][url]['blocked_by']
+ assert gh.api('issues/9')['state']=='open' and snapshot['nodes'][url]['state']=='open'
+ closeout=state['closeout'];assert closeout['candidate_sha']==candidate and closeout['base_sha']==base and closeout['plan_version']==1
+ assert closeout['closing_references']==['Closes '+url] and [t['issue'] for t in closeout['targets']]==[url]
+ assert closeout['binding']=='Candidate: `'+candidate+'`; base: `'+base+'`; plan: `1`; issue input: `'+snapshot['digest']+'`.'
+ assert closeout['marker']=='<!-- harness-ready:issue-61-renewal-20261031:5b6f407dc1096253010812ccbb83fac76df8bef6ba856245da21bd1478387b49 -->'
+ comments=gh.comments(61);current=next(c for c in comments if c['id']==6541107421);assert closeout['marker'] in current['body'] and closeout['binding'] in current['body']
+ assert all(t['evidence'] in current['body'] and t['reference'] in current['body'] for t in closeout['targets'])
+ old=next(c for c in comments if c['id']==6536212102)
+ assert '<!-- harness-ready:issue-61-20261030:2c80d2fb021f11ff1858aeb0253aa7d5465d1208a30b8415c87a2a05be25dab1 -->' in old['body']
+ superseding=[c for c in comments if c['id']>old['id'] and 'superseded' in c['body'].lower() and ('168cd322' in c['body'] or str(old['id']) in c['body'])];assert any(c['id']==6540714319 and '<!-- harness-superseded:issue-61-renewal-20261031 -->' in c['body'] and '<!-- harness-ready:issue-61-20261030:2c80d2fb021f11ff1858aeb0253aa7d5465d1208a30b8415c87a2a05be25dab1 -->' in c['body'] for c in superseding)
+ save('final-readiness.json',{'current':{'id':current['id'],'body':current['body']},'old_id':old['id'],'superseding':[{'id':c['id'],'body':c['body']} for c in superseding]})
+ pr=json.loads(run(['gh','pr','view','66','--repo','robinwassen/Fossilize','--json','url,state,isDraft,headRefName,baseRefName,headRefOid,closingIssuesReferences,body']))
+ assert pr['url']=='https://github.com/robinwassen/Fossilize/pull/66' and pr['state']=='OPEN' and not pr['isDraft'];assert pr['headRefName']=='codex/issue-61-changelog' and pr['baseRefName']=='master';assert [x['number'] for x in pr['closingIssuesReferences']]==[61];assert pr['headRefOid'] in [candidate,'168cd322d8742ae2d2a801bce4c527f5495bf3aa'];save('final-pr66.json',pr)
+ assert run(['git','rev-parse','HEAD']).strip()==candidate and not run(['git','status','--porcelain']).strip()
+ master=run(['git','ls-remote','origin','refs/heads/master']).split();assert master==[base,'refs/heads/master'],master
+ result={'passed':['current-issue61-material-input','issue61-and-parent9-open','same-pr66-only-closes61','manual-readiness'],'snapshot_digest':snapshot['digest'],'candidate':candidate,'base':base,'plan':1,'readiness_comment':current['id'],'superseding_comments':[c['id'] for c in superseding],'remote_master':master[0],'remote_pr_head':pr['headRefOid'],'limitation':'Prepublication read; old PR head allowed. Actual installed sync, accepted-head push/attachment/artifacts and approved wrap-up remain coordinator gates.'};save('final-freshness-summary.json',result);print(json.dumps(result))
+
+
+QUEUE SOURCE
+import json,pathlib,shlex,subprocess,time
+root=pathlib.Path('/tmp/fossilize-61-renewal');out=root/'output/final-1';items=json.load(open(root/'final-commands.json'));prefix='issue61-renew-final-1-';started=set();done=set();procs={}
+order=[x['intent_id'].removeprefix(prefix) for x in items]
+while len(done)<len(items):
+ for name in sorted(started-done):
+  receipt=out/(name+'.receipt.json');settled=out/(name+'.receipt.json.settled')
+  if settled.exists():
+   r=json.load(open(receipt));assert r['exit_code']==0 and not r['timed_out'],(name,r)
+   done.add(name);print('SETTLED',name,'exit',r['exit_code'],flush=True)
+ for name in list(order):
+  if len(started-done)>=3:break
+  if name.startswith(('regression-','delivery-')) and 'inventory' not in done:continue
+  if name=='union' and not all(n in done for n in order+list(started) if n.startswith(('regression-','delivery-'))):continue
+  if name=='freshness' and len(done)!=len(items)-1:continue
+  item=next(c for c in items if c['intent_id']==prefix+name)
+  log=(out/(name+'.log')).open('w');procs[name]=subprocess.Popen(shlex.split(item['command']),cwd=item['cwd'],stdout=log,stderr=subprocess.STDOUT);log.close();started.add(name);order.remove(name);print('START',name,flush=True)
+ time.sleep(2)
+print('ALL27 SETTLED',flush=True)
+

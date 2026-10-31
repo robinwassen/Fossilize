@@ -1,0 +1,57 @@
+COMMAND python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/final-1 --timeout 600 --intent-id issue61-renew-final-1-regression-test_harness_closeout --receipt /tmp/fossilize-61-renewal/output/final-1/regression-test_harness_closeout.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_closeout --inventory /tmp/fossilize-61-renewal/output/final-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_closeout.json
+CWD /tmp/fossilize-61-renewal/final-1
+RECEIPT {"acquired": 1793435661.8702724, "command": ["env", "PYTHONDONTWRITEBYTECODE=1", "python3", "-B", ".agents/skills/implement-change-harness/scripts/run_harness_tests.py", "--run-group", "regression-test_harness_closeout", "--inventory", "/tmp/fossilize-61-renewal/output/final-1/suite/inventory.json", "--output", "/tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_closeout.json"], "cwd": "/tmp/fossilize-61-renewal/final-1", "exit_code": 0, "finished": 1793435709.3809624, "intent_id": "issue61-renew-final-1-regression-test_harness_closeout", "started": 1793435650.8209286, "timed_out": false, "timeout": 600.0, "wait_seconds": 11.047255053999834}
+STDOUT/STDERR
+test_C01_C05_intent_record_restart_and_exact_renewal (test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal) ... ok
+test_C02_split_canonical_children_and_registry_preserved (test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved) ... ok
+test_C03_bad_required_verification_never_authorizes_done (test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done) ... ok
+test_C04_rejection_fences_dispatch_until_committed_cleanup (test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup) ... ok
+test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault (test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault) ... ok
+test_C07_one_pr_contains_backlog_after_local_merge (test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge) ... ok
+test_C08_schema2_pending_adoption_preserves_facts_and_completed_record (test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 47.217s
+
+OK
+{"candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a", "outcome": "recorded", "output": "/tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_closeout.json"}
+
+EXECUTION RESULT
+{
+  "attempt_token": "3a3d26eb26d44c1c9a3ee57a7562aa01",
+  "candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+  "executed": [
+    "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+    "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+    "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+    "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+    "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+    "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+    "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record"
+  ],
+  "finished": 1793435709.3512168,
+  "group": "regression-test_harness_closeout",
+  "inventory_digest": "5175846a008ef5a284dba9ceb2c04e7e057cdab2e3c58eb9df6f58d893c42801",
+  "scenarios": [],
+  "selected": [
+    "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal",
+    "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved",
+    "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done",
+    "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup",
+    "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault",
+    "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge",
+    "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record"
+  ],
+  "started": 1793435662.1323562,
+  "statuses": {
+    "test_harness_closeout.CloseoutTests.test_C01_C05_intent_record_restart_and_exact_renewal": "passed",
+    "test_harness_closeout.CloseoutTests.test_C02_split_canonical_children_and_registry_preserved": "passed",
+    "test_harness_closeout.CloseoutTests.test_C03_bad_required_verification_never_authorizes_done": "passed",
+    "test_harness_closeout.CloseoutTests.test_C04_rejection_fences_dispatch_until_committed_cleanup": "passed",
+    "test_harness_closeout.CloseoutTests.test_C05_C06_reject_unrelated_dirty_commit_and_checkpoint_fault": "passed",
+    "test_harness_closeout.CloseoutTests.test_C07_one_pr_contains_backlog_after_local_merge": "passed",
+    "test_harness_closeout.CloseoutTests.test_C08_schema2_pending_adoption_preserves_facts_and_completed_record": "passed"
+  },
+  "successful": true,
+  "version": 1
+}
