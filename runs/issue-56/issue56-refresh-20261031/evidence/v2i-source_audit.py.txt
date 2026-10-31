@@ -1,0 +1,24 @@
+import subprocess,json,hashlib
+from pathlib import Path
+w=Path("/home/robin/dev/fossilize-issue-56"); base="6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807"; head="bbbaedcd21c88500d6e380039e0dbee19bb935bb"
+def git(*a): return subprocess.check_output(["git",*a],cwd=w,text=True)
+assert git("rev-parse","HEAD").strip()==head
+assert not git("status","--porcelain")
+subprocess.run(["git","merge-base","--is-ancestor",base,head],cwd=w,check=True)
+assert git("rev-list","--parents","-1",head).strip().split()[1:]==["ad14d37f701e0ddd7cc9b20de36eb943ef1697ca",base]
+files=git("diff","--name-only",base,head).splitlines(); assert set(files)=={"cli/fossilize_replay_linux.hpp","test/CMakeLists.txt","test/fork_child_setup_test.cpp","local-docs/verification.md","CHANGELOG.md"}
+h="cli/fossilize_replay_linux.hpp"; old=git("show",base+":"+h); new=(w/h).read_text(); expected=old
+for condition in ["pthread_sigmask(SIG_SETMASK, &Global::old_mask, nullptr) != 0", "dup2(crash_fds[1], STDOUT_FILENO) < 0", "dup2(input_fds[0], STDIN_FILENO) < 0"]:
+ a="if ("+condition+")"+chr(10)+chr(9)*3+"return EXIT_FAILURE;"; assert old.count(a)==1; expected=expected.replace(a,a.replace("return EXIT_FAILURE;","_exit(EXIT_FAILURE);"))
+assert new==expected
+print(git("diff","--check",base,head)); print(git("diff",base,head,"--",h)); print(git("submodule","status","--recursive")); print("All master production and tests unchanged outside three _exit replacements and new fixture/registration/docs.")
+doc=(w/"local-docs/verification.md").read_text(); assert "registers 133 tests" in doc and "Windows registers 87" not in doc
+t=(w/"test/fork_child_setup_test.cpp").read_text()
+for s in ["run_master_process(device", "GRAPHICS 0 0"+chr(92)+"nCOMPUTE 0 0"+chr(92)+"nRAYTRACE 0 0", "successful-controller-reap-before-fault-release", "barrier-exact-healthy-sibling", "controller-collection-exactly-once", "controller-required-work-complete", "real-null-device-fixture-coverage", "no-controller-fallthrough-or-worker-fork", "observer-echild-after-cleanup"]: assert s in t,s
+print("Source review: 14 Release-active production-path cases; true successful waitpid sibling barrier; zero-progress retry; strict exits/ownership/reap/EOF/sentinels and actual two-item coverage. Static inventory 6+2+45+1+19+18+14+28=133; pending fresh CTest confirmation.")
+
+assert git("show",base+":"+h)==git("show","9804598fba84b747aeecd66c0e873f3f48c4c3cd:"+h)
+for path in [".agents/skills/implement-change-harness/SKILL.md",".agents/skills/implement-change-harness/references/roles.md","AGENTS.md","local-docs/README.md","local-docs/changelog-guidelines.md"]: assert git("show",base+":"+path)==git("show",head+":"+path)
+old="ad14d37f701e0ddd7cc9b20de36eb943ef1697ca"
+assert set(git("diff","--name-only",old,head).splitlines())=={".agents/skills/implement-change-harness/SKILL.md",".agents/skills/implement-change-harness/references/roles.md","AGENTS.md","CHANGELOG.md","local-docs/README.md","local-docs/changelog-guidelines.md"}
+print(git("log","--oneline","--parents",base+".."+head)); print(git("diff",base,head)); print("Base6ad9 ancestry and guidance preserved; all ad14 runtime/test/doc bytes retained; baseline6ad9 header byte-identical980.")

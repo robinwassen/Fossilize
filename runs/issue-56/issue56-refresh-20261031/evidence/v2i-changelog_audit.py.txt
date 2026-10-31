@@ -1,0 +1,10 @@
+import subprocess
+from pathlib import Path
+w=Path("/home/robin/dev/fossilize-issue-56"); base="6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807"
+def git(*a): return subprocess.check_output(["git",*a],cwd=w,text=True)
+s=git("show","HEAD:CHANGELOG.md"); old=git("show",base+":CHANGELOG.md")
+entry="- **[Worker lifecycle]** Made Linux replay children terminate on signal mask or stdin/stdout setup failure so failed workers cannot execute controller code. ([#56](https://github.com/robinwassen/Fossilize/issues/56))"
+assert s==old.replace("\n## Completed changes\n","\n"+entry+"\n\n## Completed changes\n")
+assert s.index(entry)<s.index("## Completed changes")
+print(git("show","HEAD:local-docs/changelog-guidelines.md")); print(git("diff",base,"HEAD","--","CHANGELOG.md"))
+print("Semantic review: one short factual sentence identifies three Linux fatal setup failures and prevention of failed-child controller execution, accurately matching the three _exit corrections. Worker lifecycle derives from epic46. Full issue56 URL correct; Unreleased placement, all inherited entries and open-PR delivery qualifier preserved. No release/date, Steam, performance, public API, other-platform or merged-delivery claims.")

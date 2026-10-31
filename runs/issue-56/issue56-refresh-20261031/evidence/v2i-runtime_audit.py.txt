@@ -1,0 +1,37 @@
+import json,xml.etree.ElementTree as ET,re
+from pathlib import Path
+r=Path("/tmp/fossilize-56-refresh"); out=r/"v2-impl-output"; sets=[]; summaries=[]
+for key in ["debug-off","release-off","debug-on","release-on"]:
+ b=r/"build"/("v2-impl-"+key)
+ raw=(out/(key+"-discovery.log")).read_text(); inv=json.loads(raw[raw.index("{"):]); names=[t["name"] for t in inv["tests"]]; assert len(names)==len(set(names))==133
+ fork=[n for n in names if n.startswith("fork-child-")]; master=[n for n in names if n.startswith("replay-controller-")]; assert len(fork)==14 and len(master)==28
+ xml=ET.parse(out/(key+"-junit.xml")).getroot(); tests=xml.findall("testcase"); executed=[t.get("name") for t in tests]; assert len(executed)==133 and set(executed)==set(names)
+ assert not xml.findall(".//failure") and not xml.findall(".//skipped") and not xml.findall(".//error")
+ cache=(b/"CMakeCache.txt").read_text(); typ,ex=key.split("-")
+ for line in ["CMAKE_BUILD_TYPE:STRING="+typ.capitalize(),"FOSSILIZE_ENABLE_EXCEPTIONS:BOOL="+ex.upper(),"FOSSILIZE_REPLAYER_SPIRV_VAL:BOOL=ON","FOSSILIZE_TEST_RUNTIME_LAYER:BOOL=OFF"]: assert line in cache,line
+ targets=json.load(open(r/"planner-report.json"))["plan"]["compile_target_completeness"]["required_targets"]; assert len(targets)==21
+ built={t:(b/("layer/libVkLayer_fossilize.so" if t=="VkLayer_fossilize" else ("cli/" if t in ["fossilize-replay","fossilize-list","fossilize-rehash","fossilize-prune"] else "test/")+t)) for t in targets}
+ assert all(path.is_file() for path in built.values()); closure=[]
+ for test in inv["tests"]:
+  for arg in test["command"]:
+   paths=[arg] if arg.startswith(str(b)+"/") else [arg.split("=",1)[1]] if arg.startswith("-D") and "=" in arg and arg.split("=",1)[1].startswith(str(b)+"/") else []
+   for path in paths:
+    if path in [str(p) for p in built.values()]: closure.append(path)
+    elif Path(path).is_file() and Path(path).suffix not in [".cmake"]: raise AssertionError((test["name"],path))
+ assert set(closure)==set(str(p) for p in built.values()),set(str(p) for p in built.values())-set(closure)
+ ninja=(b/"build.ninja").read_text(); flags=re.search(r"build test/CMakeFiles/fork-child-setup-test.dir/fork_child_setup_test.cpp.o:.*?(?=\n\n)",ninja,re.S).group(0)
+ assert ("-fno-exceptions" in flags)==(ex=="off"); assert ("-DNDEBUG" in flags)==(typ=="release")
+ replay_flags=re.search(r"build cli/CMakeFiles/fossilize-replay.dir/fossilize_replay.cpp.o:.*?(?=\n\n)",ninja,re.S).group(0)
+ assert "FOSSILIZE_REPLAYER_SPIRV_VAL" in replay_flags
+ assert "SPIRV-Tools" in ninja
+ sets.append(set(names)); summaries.append(dict(configuration=key,discovered=133,executed=133,skipped=0,fork_child=14,retained_master=28,registered_target_closure=21,validation="ON",fixture_compile_flags=flags))
+assert all(s==sets[0] for s in sets)
+repeat=(out/"debug-off-repeat.log").read_text(); assert len(re.findall(r"Test +#[0-9]+: fork-child-.*?Passed",repeat))==42
+for site in ["sigmask","stdout-dup2","stdin-dup2"]:
+ log=(out/("baseline-"+site+".log")).read_text(); assert "injections=1" in log and "no-controller-fallthrough-or-worker-fork" in log and "exact-worker-exit-status" in log
+ assert "Timeout" not in log and "***Timeout" not in log
+healthy=(out/"baseline-healthy.log").read_text()
+assert re.search(r"100% tests passed(?:, 0 tests failed out of| out of)\s*2",healthy),healthy
+for name in ["fork-child-healthy", "fork-child-healthy-recovery"]: assert re.search(name+r"\s+.*Passed",healthy),name
+(out/"inventory.json").write_text(json.dumps(dict(discovered=sorted(sets[0]),executed=sorted(sets[0]),summaries=summaries),indent=2)+"\n")
+print(json.dumps(summaries,indent=2)); print("All four 133-test inventories exactly executed, no skips; all registered 21-target closure built; Debug OFF42 repeat passes; three baseline intended defects with both healthy controls passing.")

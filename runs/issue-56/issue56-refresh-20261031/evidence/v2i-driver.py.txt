@@ -1,0 +1,27 @@
+import concurrent.futures,json,subprocess,threading
+from pathlib import Path
+r=Path('/tmp/fossilize-56-refresh'); o=r/'v2-impl-output'; w=Path('/home/robin/dev/fossilize-issue-56'); intents=json.load(open(r/'v2-impl-intents.json')); rows=[]; mutex=threading.Lock()
+def run(item):
+ argv=['python3','-B',str(w/'.agents/skills/implement-change-harness/scripts/verification_lock.py'),'--repo',str(w),'--timeout','600','--intent-id',item['intent_id'],'--receipt',item['receipt'],'--']+item['child_command']
+ assert not Path(item['receipt']).exists()
+ with open(item['log'],'w') as log: code=subprocess.run(argv,cwd=w,stdout=log,stderr=subprocess.STDOUT).returncode
+ rec=json.load(open(item['receipt'])); expected=8 if item['intent_id'] in ['v2i-baseline-sigmask','v2i-baseline-stdout-dup2','v2i-baseline-stdin-dup2'] else 0
+ row=dict(item,wrapper_command=argv,exit_code=code,timed_out=rec['timed_out'],expected_exit_code=expected)
+ with mutex:
+  rows.append(row); (o/'commands.json').write_text(json.dumps(rows,indent=2)+'\n'); print(item['intent_id'],code,'timeout',rec['timed_out'],flush=True)
+ assert code==expected and rec['exit_code']==code and not rec['timed_out'],item['intent_id']
+def chain(items):
+ for item in items: run(item)
+groups=[[i for i in intents if i['intent_id'] in ['v2i-source-audit','v2i-changelog-audit']]]
+for key in ['debug-off','release-off','debug-on','release-on','baseline']: groups.append([i for i in intents if i['intent_id'].startswith('v2i-'+key+'-')])
+errors=[]
+with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
+ futures=[pool.submit(chain,g) for g in groups]
+ for future in futures:
+  try: future.result()
+  except Exception as e: errors.append(str(e))
+if not errors: run(next(i for i in intents if i['intent_id']=='v2i-runtime-audit'))
+(o/'driver-result.json').write_text(json.dumps(dict(completed=len(rows),errors=errors),indent=2)+'\n')
+assert not errors,errors
+assert len(rows)==27
+print('ALL27_COMPLETE',flush=True)
