@@ -1112,6 +1112,12 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			return EXIT_FAILURE;
 		}
 
+		// An explicitly requested missing item is not an empty successful
+		// assignment, even when enumeration would launch no children.
+		if (!validate_requested_pipeline_hash(*db, replayer_opts.pipeline_hash))
+			return EXIT_FAILURE;
+
+
 		// Export metadata so that we don't have to re-parse the archive over and over.
 		char export_name[DatabaseInterface::OSHandleNameSize];
 		DatabaseInterface::get_unique_os_export_name(export_name, sizeof(export_name));

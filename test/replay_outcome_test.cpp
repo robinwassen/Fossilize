@@ -434,6 +434,7 @@ static void queue_test()
 }
 static bool fixture(const std::string &mode, const char *path)
 {
+	if (mode == "emptyhash") return fixture("empty",path);
 	if (mode == "compatibility" || mode == "selection" || mode == "hashselection" || mode == "whitelist") return fixture("mixed",path);
 	int previous_failures = checks.failures;
 	std::string intermediate = std::string(path) + ".source.foz";

@@ -881,6 +881,12 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			return EXIT_FAILURE;
 		}
 
+		// An explicitly requested missing item is not an empty successful
+		// assignment, even when enumeration would launch no children.
+		if (!validate_requested_pipeline_hash(*db, replayer_opts.pipeline_hash))
+			return EXIT_FAILURE;
+
+
 		DatabaseInterface::get_unique_os_export_name(Global::metadata_export_name, sizeof(Global::metadata_export_name));
 		intptr_t mapping = db->export_metadata_to_os_handle(Global::metadata_export_name);
 		// Keep the handle alive by "leaking" it. It will be cleaned up on process exit.

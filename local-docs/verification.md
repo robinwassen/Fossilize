@@ -184,11 +184,11 @@ redesign asynchronous persistence error reporting. Opt/disasm migration and the
 explicitly permitted optimizer fallback policy remain future scope; these tests
 make no claim to verify those tools or the complete observability standard.
 
-A normal Linux CLI/layer-enabled build with SPIR-V validation registers 164 tests before optional layer integration, including 14 Linux fork-child cases and 28 replay-controller cases retained from [issue #13](https://github.com/robinwassen/Fossilize/issues/13), plus 31 replay item-outcome cases. Discover the current platform-specific inventory with CTest before reporting coverage; this Linux count does not establish native Windows execution. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
+A normal Linux CLI/layer-enabled build with SPIR-V validation registers 165 tests before optional layer integration, including 14 Linux fork-child cases and 28 replay-controller cases retained from [issue #13](https://github.com/robinwassen/Fossilize/issues/13), plus 32 replay item-outcome cases. Discover the current platform-specific inventory with CTest before reporting coverage; this Linux count does not establish native Windows execution. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
 
 The replay outcome regressions for [issue #14](https://github.com/robinwassen/Fossilize/issues/14)
 register `replay-outcome-{state,parse-read,creation,compile-required-loop,support,validation,setup-dependency,worker-queue,matrix}`,
-four `replay-outcome-entry-*` private production-entry checks, fourteen
+four `replay-outcome-entry-*` private production-entry checks, fifteen
 `replay-outcome-cli-*` fixtures and four Linux `replay-outcome-controller-*`
 order/progress checks. Tests use explicit checks in Release, controlled Vulkan
 producers, rejecting databases, the real SPIR-V validator, checked FOZ readback,
@@ -226,7 +226,9 @@ progress-ring forwarding cannot erase the pipe/OS result. Public ExternalReplaye
 declarations, SharedControlBlock layout/version, existing progress/resume messages
 and cached wait/query status semantics remain unchanged; tests assert those
 specific contracts. This is not a general binary ABI or mixed-version child
-protocol guarantee. The `--progress` wrapper resolves `--pipeline-hash` through
+protocol guarantee. Controllers reject a missing explicitly selected hash before their zero-child
+completion shortcut, including empty archives. The `--progress` wrapper resolves
+`--pipeline-hash` through
 existing range options so missing hashes cannot silently replay a different scope.
 Direct child CLI forces one thread and consumes controller-filtered metadata;
 standalone child whitelist arguments are not a supported selection interface.

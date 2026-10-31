@@ -4780,6 +4780,17 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 // The implementations are drastically different.
 // To simplify build system, just include implementation inline here.
 #ifndef NO_ROBUST_REPLAYER
+static bool validate_requested_pipeline_hash(DatabaseInterface &db, Hash hash)
+{
+	if (!hash) return true;
+	for (auto tag : {RESOURCE_GRAPHICS_PIPELINE, RESOURCE_COMPUTE_PIPELINE, RESOURCE_RAYTRACING_PIPELINE})
+	{
+		size_t size = 0;
+		if (db.read_entry(tag, hash, &size, nullptr, 0)) return true;
+	}
+	LOGE("Specified pipeline hash %016" PRIx64 " not found in database.\n", hash);
+	return false;
+}
 #ifdef __linux__
 #include "fossilize_replay_linux.hpp"
 #elif defined(_WIN32)
