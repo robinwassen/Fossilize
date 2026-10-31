@@ -1,0 +1,51 @@
+{
+  "attempt_id": "checker-1",
+  "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
+  "candidate_sha": "770f48facb29fe444870a1016538b3ad499954e7",
+  "execution_status": "complete: all mandatory work_unit/both gates independently passed",
+  "findings_so_far": [],
+  "limitations": [
+    "Native Windows build/runtime waived by explicit human authorization, remains unverified.",
+    "No actual GPU compilation, durable cache output, general ABI compatibility, whole observability compliance, Apple/Android robust worker support claimed.",
+    "Release malformed-input parser rejection still returns zero despite parsefail1/skipped1/completed0; no worker dies on that path. This parser exit policy is outside the child-loss fix and is not replay success."
+  ],
+  "live_issue_readback": {
+    "issue13": {
+      "id": "I_kwDOVZpjbc8AAAABamKJEQ",
+      "number": 13,
+      "state": "OPEN",
+      "title": "FOS-000004 \u2014 Retain unrecoverable child loss in the controller",
+      "url": "https://github.com/robinwassen/Fossilize/issues/13"
+    },
+    "issue13_body_sha256": "ed742d710553fee0c65db7ce4f3db95f271b6a9c86d0e664a223390ee44b045b",
+    "issue13_material_equal": true,
+    "issue8": {
+      "id": "I_kwDOVZpjbc8AAAABamD6Iw",
+      "number": 8,
+      "state": "OPEN",
+      "title": "Observability: preserve trustworthy outcomes across Fossilize",
+      "url": "https://github.com/robinwassen/Fossilize/issues/8"
+    },
+    "issue8_body_sha256": "dcc6a25680c93c892153524b6e902396b1b4f114aaf72348f0a0484494c0238d",
+    "issue8_material_equal": true
+  },
+  "plan_version": 1,
+  "requirements_derived_before_claims": true,
+  "source_review": [
+    "Entire base-to-candidate diff inspected, including common outcome state, Linux and Windows lifecycle/cleanup code, ExternalReplayer Linux status caching, CMake registration, controller and CLI test sources, and verification documentation.",
+    "Assigned half-open ranges initialize once and survive retry-start mutation. Known culprit index/hash is captured independently of optional shared progress. Absent or invalid required-kind progress prevents retry and retains unknown remainder; empty kinds require no fake progress.",
+    "All Linux harvest paths consume Unresolved; Windows normal-process and timer shutdown callers consume Unresolved. Early unsuccessful return invokes scoped child termination/reaping. Parent-requested cleanup is excluded from legacy crash counts.",
+    "Linux waitpid observation error is retained; Windows WaitForSingleObject/GetExitCodeProcess failure never defaults to code zero success and preserves native_error across handle closure/cleanup. Windows source/registration reviewed only; native execution waived/unverified.",
+    "Actual master loops, fork/CreateProcess, pipes, waits, shutdown parsing and restart state remain in the test executable. Test-only adapters alter worker behavior and terminal harvesting, not outcome aggregation. Explicit DiagnosticChecks survive NDEBUG.",
+    "Mixed-order fixtures barrier both children at terminal state before deterministic harvest selection and require successful sibling marker. Held-sibling fixture waits on IPC and asserts kernel termination/reaping. Recovery fixture checks exact retry range and every required item marker.",
+    "Graphics, compute and ray-tracing culprit fixtures cover beginning/last required item; clean tail cannot erase failure. Partial-progress and loss-after-retry retain original range and known prefix.",
+    "Public ExternalReplayer declarations and SharedControlBlock layout/version unchanged. Existing protocol literals and index/hash semantics exercised. Intentional behavior change is unsuccessful robust-controller exit propagating to caller; no general binary ABI claim.",
+    "Release historical malformed fixture follows a parse rejection without worker death. Preserving its zero exit is an out-of-scope parser-policy limitation; counters must show parsefail1/skip1/complete0/deaths0 and deterministic worker loss must exit1 in every configuration.",
+    "Zero selected ranges use populated FOZ; empty-archive additionally reads back zero resources for every tag. Both use production master and explicit result/state assertions.",
+    "Controller negative cases return99 when any explicit check fails; CMake expects production status1, so a failed test assertion cannot masquerade as the expected unsuccessful controller result."
+  ],
+  "windows_waiver": {
+    "authorization": "Waive the windows verification plz",
+    "scope": "User explicitly waived Windows verification for issue #13 in this conversation on 2026-10-30. Implement Windows behavior and register tests; native Windows build/runtime execution is waived for this run, remains unverified and must be reported as such. Preserve original issue acceptance verbatim."
+  }
+}
