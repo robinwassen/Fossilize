@@ -362,6 +362,10 @@
       {
         "started": 1793435195.8858385,
         "wait_seconds": 1.8363006750587374
+      },
+      {
+        "started": 1793435210.760428,
+        "wait_seconds": 4.6346462930087
       }
     ],
     "command_timeout": 600,
@@ -1605,9 +1609,27 @@
         "intent_id": "issue61-renew-final-1-inventory",
         "started": 1793435207.1165316,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "python3",
+          "-B",
+          "/tmp/fossilize-61-renewal/renewal_checks.py",
+          "scope",
+          "--candidate",
+          "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+          "--output",
+          "/tmp/fossilize-61-renewal/output/final-1/scope"
+        ],
+        "command": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/final-1 --timeout 600 --intent-id issue61-renew-final-1-scope --receipt /tmp/fossilize-61-renewal/output/final-1/scope.receipt.json -- python3 -B /tmp/fossilize-61-renewal/renewal_checks.py scope --candidate b86f35635a9ed7ffe5eaafed046bd74e3dd2679a --output /tmp/fossilize-61-renewal/output/final-1/scope",
+        "cwd": "/tmp/fossilize-61-renewal/final-1",
+        "eligible_deadline": 1793449338.290236,
+        "intent_id": "issue61-renew-final-1-scope",
+        "started": 1793435216.440765,
+        "timeout": 600
       }
     ],
-    "deadline": 1793449333.6555898,
+    "deadline": 1793449338.290236,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -2122,7 +2144,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 87,
+  "revision": 88,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
