@@ -157,7 +157,16 @@ void ProcessProgress::parse_raw(const char *str)
 
 void ProcessProgress::parse(const char *cmd)
 {
-	if (strncmp(cmd, "CRASH", 5) == 0)
+	unsigned failure_mask = 0, drained = 0;
+	int consumed = 0;
+	if (sscanf(cmd, "REPLAY_FAILED %u %u%n", &failure_mask, &drained, &consumed) == 2 &&
+	    (cmd[consumed] == '\0' || (cmd[consumed] == '\n' && cmd[consumed + 1] == '\0')) && failure_mask && failure_mask < (1u << unsigned(ReplayFailure::Count)) && drained <= 1)
+	{
+		outcome.orderly_reported = true;
+		outcome.failure_mask |= failure_mask;
+		outcome.orderly_drained = drained != 0;
+	}
+	else if (strncmp(cmd, "CRASH", 5) == 0)
 	{
 		// We crashed ... Set up a timeout in case the process hangs while trying to recover.
 		close_and_remove_epoll_entry(timer_fd);
@@ -364,11 +373,14 @@ WorkerDisposition ProcessProgress::process_shutdown(int wstatus)
 	bool can_retry = WIFEXITED(wstatus) || (WIFSIGNALED(wstatus) &&
 	                 (WTERMSIG(wstatus) == SIGKILL || WTERMSIG(wstatus) == SIGSEGV));
 	if (expect_kill) can_retry = false;
-	auto disposition = outcome.finish(clean, can_retry, graphics_progress, compute_progress, raytracing_progress);
+	bool controlled = WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == EXIT_FAILURE &&
+	                  outcome.orderly_reported && !expect_kill && !outcome.native_error;
+	auto disposition = controlled ? outcome.finish_controlled() :
+	                   outcome.finish(clean, can_retry, graphics_progress, compute_progress, raytracing_progress);
 	// Legacy counters describe the crash protocol, independently of required
 	// work completeness. A progressed final crash is still a clean crash, and
 	// a parent-requested cleanup death is not an additional crash.
-	if (!clean && !expect_kill && Global::control_block)
+	if (!clean && !controlled && !expect_kill && Global::control_block)
 	{
 		if (can_retry && graphics_progress >= 0 && compute_progress >= 0 && raytracing_progress >= 0)
 			Global::control_block->clean_process_deaths.fetch_add(1, std::memory_order_relaxed);
@@ -504,6 +516,8 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 	}
 
 	outcome.attempts++;
+	outcome.orderly_reported = false;
+	outcome.orderly_drained = false;
 
 	int crash_fds[2];
 	int input_fds[2];
@@ -1098,6 +1112,12 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			return EXIT_FAILURE;
 		}
 
+		// An explicitly requested missing item is not an empty successful
+		// assignment, even when enumeration would launch no children.
+		if (!validate_requested_pipeline_hash(*db, replayer_opts.pipeline_hash))
+			return EXIT_FAILURE;
+
+
 		// Export metadata so that we don't have to re-parse the archive over and over.
 		char export_name[DatabaseInterface::OSHandleNameSize];
 		DatabaseInterface::get_unique_os_export_name(export_name, sizeof(export_name));
@@ -1476,6 +1496,8 @@ static int run_master_process(const VulkanDevice::Options &opts,
 		}
 	}
 
+	for (const auto &child : child_processes)
+		if (!child.outcome.complete) return EXIT_FAILURE;
 	return EXIT_SUCCESS;
 }
 
@@ -1751,6 +1773,12 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 		return EXIT_FAILURE;
 
 	int ret = run_normal_process(replayer, databases, nullptr, 0, Global::metadata_fd);
+	if (ret == EXIT_FAILURE)
+	{
+		char terminal[64];
+		snprintf(terminal, sizeof(terminal), "REPLAY_FAILED %u %u\n", replayer.outcome.failure_mask(), replayer.work_drained ? 1u : 0u);
+		write_all(crash_fd, terminal);
+	}
 	global_replayer = nullptr;
 
 	if (!replayer_opts.disable_signal_handler)
