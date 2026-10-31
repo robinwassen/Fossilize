@@ -1,0 +1,174 @@
+{
+  "attempt_id": "implementer-1",
+  "base_sha": "9804598fba84b747aeecd66c0e873f3f48c4c3cd",
+  "candidate_sha": null,
+  "commands": [
+    {
+      "child_command": [
+        "python3",
+        "-B",
+        "/tmp/fossilize-61-renewal/renewal_checks.py",
+        "scope",
+        "--candidate",
+        "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+        "--output",
+        "/tmp/fossilize-61-renewal/output/implementer-1/scope"
+      ],
+      "command": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /home/robin/dev/fossilize-issue-61 --timeout 600 --intent-id issue61-renew-implementer-1-scope --receipt /tmp/fossilize-61-renewal/output/implementer-1/issue61-renew-implementer-1-scope.receipt.json -- python3 -B /tmp/fossilize-61-renewal/renewal_checks.py scope --candidate b86f35635a9ed7ffe5eaafed046bd74e3dd2679a --output /tmp/fossilize-61-renewal/output/implementer-1/scope",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "environment": {
+        "attempt_id": "implementer-1",
+        "base_sha": "9804598fba84b747aeecd66c0e873f3f48c4c3cd",
+        "candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+        "plan_version": 1,
+        "runtime": "host python3; standard-library assertion runner; installed skill metadata validator"
+      },
+      "exit_code": 0,
+      "intent_id": "issue61-renew-implementer-1-scope",
+      "log": "runs/issue-61/issue-61-renewal-20261031/evidence/implementer-1-scope.log",
+      "receipt": "/tmp/fossilize-61-renewal/output/implementer-1/issue61-renew-implementer-1-scope.receipt.json",
+      "receipt_record": "runs/issue-61/issue-61-renewal-20261031/evidence/implementer-1-scope-receipt.log",
+      "receipt_settled": true,
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "-B",
+        "/tmp/fossilize-61-renewal/renewal_checks.py",
+        "links",
+        "--candidate",
+        "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+        "--output",
+        "/tmp/fossilize-61-renewal/output/implementer-1/links"
+      ],
+      "command": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /home/robin/dev/fossilize-issue-61 --timeout 600 --intent-id issue61-renew-implementer-1-links --receipt /tmp/fossilize-61-renewal/output/implementer-1/issue61-renew-implementer-1-links.receipt.json -- python3 -B /tmp/fossilize-61-renewal/renewal_checks.py links --candidate b86f35635a9ed7ffe5eaafed046bd74e3dd2679a --output /tmp/fossilize-61-renewal/output/implementer-1/links",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "environment": {
+        "attempt_id": "implementer-1",
+        "base_sha": "9804598fba84b747aeecd66c0e873f3f48c4c3cd",
+        "candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+        "plan_version": 1,
+        "runtime": "host python3; standard-library assertion runner; installed skill metadata validator"
+      },
+      "exit_code": 0,
+      "intent_id": "issue61-renew-implementer-1-links",
+      "log": "runs/issue-61/issue-61-renewal-20261031/evidence/implementer-1-links.log",
+      "receipt": "/tmp/fossilize-61-renewal/output/implementer-1/issue61-renew-implementer-1-links.receipt.json",
+      "receipt_record": "runs/issue-61/issue-61-renewal-20261031/evidence/implementer-1-links-receipt.log",
+      "receipt_settled": true,
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "-B",
+        "/home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+        ".agents/skills/implement-change-harness"
+      ],
+      "command": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /home/robin/dev/fossilize-issue-61 --timeout 600 --intent-id issue61-renew-implementer-1-metadata --receipt /tmp/fossilize-61-renewal/output/implementer-1/issue61-renew-implementer-1-metadata.receipt.json -- python3 -B /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+      "cwd": "/home/robin/dev/fossilize-issue-61",
+      "environment": {
+        "attempt_id": "implementer-1",
+        "base_sha": "9804598fba84b747aeecd66c0e873f3f48c4c3cd",
+        "candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+        "plan_version": 1,
+        "runtime": "host python3; standard-library assertion runner; installed skill metadata validator"
+      },
+      "exit_code": 0,
+      "intent_id": "issue61-renew-implementer-1-metadata",
+      "log": "runs/issue-61/issue-61-renewal-20261031/evidence/implementer-1-metadata.log",
+      "receipt": "/tmp/fossilize-61-renewal/output/implementer-1/issue61-renew-implementer-1-metadata.receipt.json",
+      "receipt_record": "runs/issue-61/issue-61-renewal-20261031/evidence/implementer-1-metadata-receipt.log",
+      "receipt_settled": true,
+      "status": "passed",
+      "timeout": 600
+    }
+  ],
+  "input_revision": 5,
+  "input_sha": "168cd322d8742ae2d2a801bce4c527f5495bf3aa",
+  "manual_assertions": {
+    "integration": "Normal --no-ff merge of exact immutable base, no conflicts, no further source edits. No changelog backfill for base issue13 was added because renewal scope expressly preserves the six accepted documentation blobs. Base replay implementation/tests and expanded verification guide remain part of merged base, not issue61 changes.",
+    "manual-eight-entries": "Read CHANGELOG.md: all eight issue61-reviewed sentences and full URLs for #10/#11/#12/#34/#35/#36/#37/#39 are present verbatim under Completed changes, grouped Observability then Harness with earlier issues first. No invented version/date. Explicit prose marks #35 backlog behavior historical and replaced by #37. This implementer did not repeat live history/merged-diff reconciliation; fresh unit and final checker own G-history.",
+    "manual-guideline-contract": "Read dedicated guideline: approved one-sentence changed-what/practical-benefit rule and bold sentence pattern, optional meaningful epic tags, plain component names, full fork issue URL, accurate delivered scope, mandatory wording revision when review changes scope, no unsupported/failed/incomplete-as-complete claims. AGENTS has only a short three-line changelog instruction and local guideline link. README and changelog link that same guideline. Guideline retains GitHub task authority and rejects second backlog.",
+    "manual-prose-links": "Read all six documents: bullet entries use one short changed-what/benefit sentence with meaningful Harness/Observability topics and separate issue traceability links. Local markdown link text is meaningful; tracked link resolution delegated to G-links. Rendered/GFM visual QA is intentionally left for fresh independent unit and final checkers, not claimed here.",
+    "manual-role-contract": "Read complete tracked SKILL and roles: implementation step4 requires entry alongside change and local authoritative guideline; step5 fresh checker checks factual scope/topic/brevity/inclusion; step6 separate final checker covers combined changelog and final scope. Implementer/checker role sections repeat explicit add/revise and exact candidate review duties. Unreleased #61 entry describes shared changelog/required review and specific reader benefit; Unreleased preface explicitly excludes merged delivery/release inference."
+  },
+  "omissions_limits": [
+    "No C++/Vulkan/GPU/Steam tests; integration changes only six docs relative to accepted new base.",
+    "No implementation repeat of mandatory harness suite, live history/merged-diff reconciliation, or GFM rendering; explicitly assigned to both independent checkers by plan.",
+    "No source push, production issue mutation, installed skill mutation, canonical state write or acceptance. Existing PR66 retained for coordinator publication."
+  ],
+  "operation": "implement",
+  "original_defect_detection": "New base lacks root changelog/dedicated guideline and new role instructions. Candidate supplies six preserved documentation blobs; structural assertions reject base-only/changed-doc candidates. No new runtime fault-injection test is required for this integration-only renewal.",
+  "plan_version": 1,
+  "result": "Implementation integration complete; required implementer gates pass. Independent unit and final acceptance remain pending.",
+  "result_candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a",
+  "role": "implementer",
+  "structural_assertions": {
+    "integration": "Normal no-conflict --no-ff merge of immutable supplied base into existing branch; no rewritten history or source edits after merge.",
+    "metadata": "Installed skill-creator quick_validate reports Skill is valid!",
+    "relative_links": "All22 changed-document relative links resolve to tracked files.",
+    "scope": "G-scope asserts exactly six documentation differences from new base, old accepted head and new base ancestry, byte-identical old six blobs, clean worktree and whitespace. Therefore base replay code/tests/new verification guide survive unchanged.",
+    "source_clean": "Clean before merge ordinary git status; scope and links assertion runners each require clean committed HEAD; all outputs kept outside source."
+  },
+  "test_mapping": {
+    "C1": {
+      "executed": [
+        "scope-six-docs",
+        "old-and-new-base-ancestry",
+        "six-docs-byte-preserved",
+        "whitespace-clean"
+      ],
+      "gate": "G-scope",
+      "status": "passed"
+    },
+    "C2": {
+      "executed": [
+        "manual-eight-entries"
+      ],
+      "log": "runs/issue-61/issue-61-renewal-20261031/evidence/implementer-1-manual-review.log",
+      "status": "manual-prose-review-passed; independent-history-pending"
+    },
+    "C3": {
+      "executed": [
+        "manual-guideline-contract"
+      ],
+      "log": "runs/issue-61/issue-61-renewal-20261031/evidence/implementer-1-manual-review.log",
+      "status": "passed-manual-review"
+    },
+    "C4": {
+      "executed": [
+        "manual-role-contract",
+        "skill-metadata"
+      ],
+      "gate": "G-metadata",
+      "log": "runs/issue-61/issue-61-renewal-20261031/evidence/implementer-1-manual-review.log",
+      "status": "passed"
+    },
+    "C5": {
+      "executed": [
+        "tracked-relative-links",
+        "manual-prose-links"
+      ],
+      "gate": "G-links",
+      "status": "relative-links-and-source-prose-passed; independent-render-pending"
+    },
+    "C6": {
+      "pending": "Both fresh independent checkers must run full mandatory16-group discovered suite and exact union, each at this candidate.",
+      "status": "not-run-by-implementer-per-plan"
+    },
+    "C7": {
+      "observed": "Read issue61 explicit fork via gh; open with original body. Coordinator/checkers own full graph/PR/readiness gates.",
+      "status": "live-issue-read-only; full-current-authority-and-readiness-pending"
+    },
+    "C8": {
+      "pending": "Coordinator owns backup/synchronization, source push/PR66 readback, artifact publication and approved supported wrap-up.",
+      "status": "not-run-publication-pending"
+    }
+  },
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/61",
+  "worker_id": "/root/implementer61renew"
+}
