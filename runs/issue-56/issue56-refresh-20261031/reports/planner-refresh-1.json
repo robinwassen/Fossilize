@@ -1,0 +1,764 @@
+{
+  "attempt_id": "planner-refresh-1",
+  "base_sha": "9804598fba84b747aeecd66c0e873f3f48c4c3cd",
+  "candidate_sha": null,
+  "input_revision": 1,
+  "input_sha": "da2b76eb9c80223985f4b993fb18bca82c121503",
+  "operation": "plan",
+  "plan": {
+    "assumptions_and_risks": [
+      "Planner inspected immutable input/base source, live issue56 and PR65 plus saved issue46 shared acceptance; issue body matches immutable original. No builds/probes/tests run during planning.",
+      "Detached planner submodules are absent; populate/reuse exact pinned dependencies in each build setup, recording source/path/SHA. Do not claim dependency/configuration errors as test evidence.",
+      "Master cleanup may legitimately SIGKILL still-live siblings after loss. Initial-fault barrier chooses an ordering where the healthy sibling has already exited and been reaped, allowing the original exact-success oracle to remain strict. Existing #13 held-sibling/mixed-order cases independently cover cleanup ordering.",
+      "Use Linux GCC/Clang compatible linker wrapping, CMake/CTest/Ninja (or an explicitly recorded generator), Python3 and subreaper/process-group support. Tool paths and role placeholders must be concretized and intent-published before execution.",
+      "Events are PIPE_BUF-sized atomic writes; injection scoping excludes controller/library calls. pthread_sigmask returns an error number; dup2 uses -1/errno. Verify no barrier deadlock and unconditional group cleanup even on baseline failure.",
+      "A successful recovery here is a deterministic pre-runtime no-progress crash followed by real complete replacement work; it does not claim real GPU crash recovery or successful prefix reuse.",
+      "All required failed/skipped/unavailable/incomplete gates block acceptance; native Windows exclusion does not become a passing platform claim."
+    ],
+    "boundaries": {
+      "behavior": "Setup failures terminate immediately. Unresolved required work now has master #13 EXIT_FAILURE and cleanup semantics; this integration preserves that intentional base change. Healthy/recovery controls certify actual null-device work and terminal collection.",
+      "binary": "No public layout or symbol changes; no general prebuilt C++ ABI claim.",
+      "protocol": "Existing worker strings, shared-control layout/version and intentionally inherited protocol EOF remain exercised. No new production injection interface.",
+      "source": "Internal Linux header fix, regression fixture/CMake registration and scope-relevant verification documentation. Public declarations unchanged.",
+      "source_base": "9804598fba84b747aeecd66c0e873f3f48c4c3cd"
+    },
+    "cases": [
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+        ],
+        "id": "fork-child-initial-first-sigmask",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+        ],
+        "id": "fork-child-initial-last-sigmask",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "Generation one completes setup, consumes real input EOF, writes GRAPHICS 0 0 / COMPUTE 0 0 / RAYTRACE 0 0 then _exit(2). Actual production shutdown/retry launches generation two, where the fault occurs. Neither generation completes a compute pipeline; clean deaths one and dirty deaths one."
+        ],
+        "id": "fork-child-recovery-sigmask",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+        ],
+        "id": "fork-child-initial-first-stdout-dup2",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+        ],
+        "id": "fork-child-initial-last-stdout-dup2",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "Generation one completes setup, consumes real input EOF, writes GRAPHICS 0 0 / COMPUTE 0 0 / RAYTRACE 0 0 then _exit(2). Actual production shutdown/retry launches generation two, where the fault occurs. Neither generation completes a compute pipeline; clean deaths one and dirty deaths one."
+        ],
+        "id": "fork-child-recovery-stdout-dup2",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+        ],
+        "id": "fork-child-initial-first-stdin-dup2",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+        ],
+        "id": "fork-child-initial-last-stdin-dup2",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "Generation one completes setup, consumes real input EOF, writes GRAPHICS 0 0 / COMPUTE 0 0 / RAYTRACE 0 0 then _exit(2). Actual production shutdown/retry launches generation two, where the fault occurs. Neither generation completes a compute pipeline; clean deaths one and dirty deaths one."
+        ],
+        "id": "fork-child-recovery-stdin-dup2",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "No injection or controlled crash; two initial controller-owned nonempty workers each exit zero through the actual worker path and are controller-reaped exactly once.",
+          "Readback-checked fixture contains shader 0x101, layout 0x102 and compute hashes 0x104/0x105; both pipelines are parsed and completed using the real null device.",
+          "Controller exits zero, progress_complete one, clean/dirty deaths zero, exact protocol EOF and setup sequence, expected inherited stream flush only by normal workers, no fallthrough/unexpected births/survivors."
+        ],
+        "id": "fork-child-healthy",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "No setup fault. Generation one performs setup/protocol EOF then reports zero cursors and zero culprit hashes and exits two. Production process_shutdown and actual recovery launch generation two over the full original two-pipeline assignment.",
+          "Replacement executes real run_slave_process and successfully parses/completes both fixture pipelines; assert counters equal two, not number of normal workers one. Controller exits zero, progress_complete one, clean deaths one, dirty deaths zero.",
+          "Exactly two controller-owned births, original-controller reaps with statuses two then zero, no fatal sentinel callbacks/flush, exact protocol EOF and no descendants. This verifies a no-progress retry followed by real complete recovery, not a fictional completed prefix or skipped culprit."
+        ],
+        "id": "fork-child-healthy-recovery",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Single worker acknowledges after real PR_SET_PDEATHSIG, signal-mask restoration, stdout/stdin redirection and controller input EOF; only then observer SIGKILLs controller.",
+          "Subreaper collects controller and adopted worker, each by SIGKILL, exactly one worker birth and no controller worker reap; no survivors or unintended workers; bounded event EOF/ECHILD.",
+          "No real pipeline completion, normal WorkerExit or inherited-buffer flush before termination."
+        ],
+        "id": "fork-child-parent-death",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "Inject only adjacent PR_SET_PDEATHSIG failure with EPERM. Fatal child terminates before mask/redirect/worker entry.",
+          "Use the same initial-fault release barrier after the healthy sibling is actually controller-reaped. Healthy sibling completes one pipeline; clean deaths zero, dirty deaths one, controller failure, no protocol completion."
+        ],
+        "id": "fork-child-prctl-failure",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+          "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+          "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+          "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+          "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+          "Inject only adjacent getppid mismatch after successful real PDEATHSIG setup. Fatal child terminates before mask/redirect/worker entry.",
+          "Use the same initial-fault release barrier after the healthy sibling is actually controller-reaped. Healthy sibling completes one pipeline; clean deaths zero, dirty deaths one, controller failure, no protocol completion."
+        ],
+        "id": "fork-child-parent-race",
+        "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
+      }
+    ],
+    "compile_target_completeness": {
+      "inventory": "Source predicts 133 CPU tests after combining previous105 and new master28 (22 replay-controller plus 6 replay-controller-cli), including exact14 fork-child IDs. Fresh ctest --show-only=json-v1 discovery is authoritative; verify every registration against this source inventory and explain any difference rather than filtering/omitting tests. layer-test stays disabled because it is GPU-dependent; multi-instance-and-device-test is unregistered GPU stress.",
+      "rationale": "Inspection of candidate test/CMakeLists and new-master additions finds 16 registered CPU-test executables. CMake script tests additionally invoke fossilize-replay, fossilize-list, fossilize-rehash and fossilize-prune; capture tests load VkLayer_fossilize by target-file path. Build all 21 targets explicitly because add_test generator expressions do not make a test-executable target build its external CLI/layer dependencies. CMake builds their library closure (fossilize, cli-utils, miniz, volk and SPIRV-Tools-static for normal default replay validation). Do not build all: fossilize-opt and unused CLI tools would pull unrelated expensive optimizer/Cross libraries. Keep FOSSILIZE_REPLAYER_SPIRV_VAL default ON.",
+      "required_targets": [
+        "fossilize-test",
+        "varint-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-test",
+        "diagnostic-compatibility-test",
+        "utility-parse-test",
+        "file-helper-test",
+        "file-helper-compatibility-test",
+        "fork-child-setup-test",
+        "replay-controller-test",
+        "replay-controller-compatibility-test",
+        "fossilize-replay",
+        "fossilize-list",
+        "fossilize-rehash",
+        "fossilize-prune",
+        "VkLayer_fossilize"
+      ]
+    },
+    "exclusions": [
+      {
+        "platform": "Windows",
+        "reason": "Explicit inherited user exclusion, no native Windows claim.",
+        "status": "excluded_by_user"
+      },
+      {
+        "platform": "Apple/Android robust modes",
+        "reason": "NO_ROBUST_REPLAYER in current build.",
+        "status": "unsupported"
+      },
+      {
+        "checks": "GPU/Steam/runtime-layer/real driver caches/deployment",
+        "reason": "CPU-only child process lifecycle correction.",
+        "status": "not_applicable"
+      }
+    ],
+    "fixture_and_oracles": {
+      "barrier": "For each initial-first/last and prctl/parent-race fault, selected child blocks at the intended injection site until wrapper observes successful waitpid collection of the other known healthy worker in the original controller. Emit/assert successful sibling terminal status, Reap before fault release/injection and exactly one release; never infer completion from a WorkerExit event alone. Use real raw pipe operations, correct descriptor closure, finite observer deadline and unconditional killpg/reap cleanup.",
+      "counts": "Initial faults/adjacent controls: 2 births, 1 successful pipeline, dirty=1 clean=0, controller failure, complete=0. Recovery faults: 2 births, 0 successful/parsed pipelines, clean=1 dirty=1, controller failure, complete=0. Healthy: 2 births, 2 successful/parsed, clean=dirty=0, success/complete=1. Healthy recovery: 2 births, 2 successful/parsed, clean=1 dirty=0, success/complete=1. Parent death: 1 worker birth, 0 work, observer collects controller+worker SIGKILL.",
+      "fatal": "Assert exact WIFEXITED/EXIT_FAILURE, no worker exit path/fallthrough/foreign fork, no inherited cleanup or flush, setup order, pipe EOF, original-controller ownership and once-only collection, exact births, terminal PIDs/ECHILD. Master failure and progress_complete zero reflect unresolved work.",
+      "fixture": "Retain StateRecorder/DatabaseInterface dependency-complete two-known-compute fixture and readback. Healthy initial replay uses two nonempty one-item partitions; recovery uses one two-item assignment and real replacement null-device worker.",
+      "healthy": "Both healthy modes require successful controller outcome, true two-item parsed/completed coverage, progress_complete one and explicit clean/dirty counters. Parent-death readiness is after real PDEATHSIG and redirects; observer verifies SIGKILL and adopted-worker collection.",
+      "recovery": "Generation-one zero-cursor/zero-hash messages advance no completed prefix and skip no required culprit. Production parser/disposition must launch generation two. Assert forced-crash once, generation-two setup identity and exact reaps. Healthy-recovery counters prove both actual replacement pipeline completions."
+    },
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "ROLE_WORKTREE",
+        "expected": [
+          "Merge contains new base plus original #56 history with all three fixes. No #13 reversal, swallowed loss or artificial old success policy.",
+          "All14 cases map to real discovered tests, strict Release-active assertions and required process/descriptor/recovery controls; no observation-only acceptance."
+        ],
+        "id": "integration-source-audit",
+        "kind": "both",
+        "method": {
+          "commands": [
+            [
+              "git",
+              "diff",
+              "9804598fba84b747aeecd66c0e873f3f48c4c3cd",
+              "HEAD",
+              "--"
+            ],
+            [
+              "git",
+              "log",
+              "--oneline",
+              "--parents",
+              "9804598fba84b747aeecd66c0e873f3f48c4c3cd..HEAD"
+            ]
+          ],
+          "review": "Inspect complete new-base-to-candidate diff, merge ancestry and old-head changes; audit entire fork child branch and both callers, fixture/oracles, current issue and parent shared acceptance. Verify _exit at three faults plus adjacent prctl/race; quiet stderr best effort, ordinary terminal exit(run_slave_process) and pre-fork bool returns remain distinct. Verify no public API/layout/grammar changes or unrelated edits."
+        },
+        "prerequisites": [
+          "Immutable original preserved exactly; live issue inputs and base unchanged; exact clean committed candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "ROLE_WORKTREE",
+        "expected": [
+          "Configuration and explicit complete-target build succeed; all discovered CPU CTests pass, no skipped/unrun/empty tests.",
+          "All14 lifecycle cases enforce exact process/status/cleanup/coverage/counter oracles including true recovery and fail-fast parent status; all new #13 tests also pass.",
+          "Debug OFF additional14-case repeat passes three executions per case; runtime and CTest deadlines hold."
+        ],
+        "id": "linux-debug-exceptions-off",
+        "kind": "both",
+        "method": {
+          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default.",
+          "commands": [
+            [
+              "cmake",
+              "-S",
+              "ROLE_WORKTREE",
+              "-B",
+              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-off",
+              "-G",
+              "Ninja",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+            ],
+            [
+              "cmake",
+              "--build",
+              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-off",
+              "--parallel",
+              "4",
+              "--target",
+              "fossilize-test",
+              "varint-test",
+              "application-info-filter-test",
+              "object-cache-test",
+              "feature-filter-test",
+              "futex-test",
+              "replay-diagnostic-test",
+              "device-diagnostic-test",
+              "capture-diagnostic-test",
+              "diagnostic-compatibility-test",
+              "utility-parse-test",
+              "file-helper-test",
+              "file-helper-compatibility-test",
+              "fork-child-setup-test",
+              "replay-controller-test",
+              "replay-controller-compatibility-test",
+              "fossilize-replay",
+              "fossilize-list",
+              "fossilize-rehash",
+              "fossilize-prune",
+              "VkLayer_fossilize"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-off",
+              "--show-only=json-v1"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error",
+              "-R",
+              "^fork-child-",
+              "--repeat",
+              "until-fail:3"
+            ]
+          ],
+          "environment": {
+            "LC_ALL": "C"
+          }
+        },
+        "prerequisites": [
+          "Required pinned submodules available with recorded git submodule status --recursive; Linux toolchain/CMake/Ninja/CTest/Python3.",
+          "Fresh private configuration build paths; committed candidate and external isolated runtime outputs; all21 enumerated targets built."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "ROLE_WORKTREE",
+        "expected": [
+          "Configuration and explicit complete-target build succeed; all discovered CPU CTests pass, no skipped/unrun/empty tests.",
+          "All14 lifecycle cases enforce exact process/status/cleanup/coverage/counter oracles including true recovery and fail-fast parent status; all new #13 tests also pass.",
+          "Debug OFF additional14-case repeat passes three executions per case; runtime and CTest deadlines hold."
+        ],
+        "id": "linux-release-exceptions-off",
+        "kind": "both",
+        "method": {
+          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default.",
+          "commands": [
+            [
+              "cmake",
+              "-S",
+              "ROLE_WORKTREE",
+              "-B",
+              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-off",
+              "-G",
+              "Ninja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+            ],
+            [
+              "cmake",
+              "--build",
+              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-off",
+              "--parallel",
+              "4",
+              "--target",
+              "fossilize-test",
+              "varint-test",
+              "application-info-filter-test",
+              "object-cache-test",
+              "feature-filter-test",
+              "futex-test",
+              "replay-diagnostic-test",
+              "device-diagnostic-test",
+              "capture-diagnostic-test",
+              "diagnostic-compatibility-test",
+              "utility-parse-test",
+              "file-helper-test",
+              "file-helper-compatibility-test",
+              "fork-child-setup-test",
+              "replay-controller-test",
+              "replay-controller-compatibility-test",
+              "fossilize-replay",
+              "fossilize-list",
+              "fossilize-rehash",
+              "fossilize-prune",
+              "VkLayer_fossilize"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-off",
+              "--show-only=json-v1"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error"
+            ]
+          ],
+          "environment": {
+            "LC_ALL": "C"
+          }
+        },
+        "prerequisites": [
+          "Required pinned submodules available with recorded git submodule status --recursive; Linux toolchain/CMake/Ninja/CTest/Python3.",
+          "Fresh private configuration build paths; committed candidate and external isolated runtime outputs; all21 enumerated targets built."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "ROLE_WORKTREE",
+        "expected": [
+          "Configuration and explicit complete-target build succeed; all discovered CPU CTests pass, no skipped/unrun/empty tests.",
+          "All14 lifecycle cases enforce exact process/status/cleanup/coverage/counter oracles including true recovery and fail-fast parent status; all new #13 tests also pass.",
+          "Debug OFF additional14-case repeat passes three executions per case; runtime and CTest deadlines hold."
+        ],
+        "id": "linux-debug-exceptions-on",
+        "kind": "both",
+        "method": {
+          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default.",
+          "commands": [
+            [
+              "cmake",
+              "-S",
+              "ROLE_WORKTREE",
+              "-B",
+              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-on",
+              "-G",
+              "Ninja",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+            ],
+            [
+              "cmake",
+              "--build",
+              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-on",
+              "--parallel",
+              "4",
+              "--target",
+              "fossilize-test",
+              "varint-test",
+              "application-info-filter-test",
+              "object-cache-test",
+              "feature-filter-test",
+              "futex-test",
+              "replay-diagnostic-test",
+              "device-diagnostic-test",
+              "capture-diagnostic-test",
+              "diagnostic-compatibility-test",
+              "utility-parse-test",
+              "file-helper-test",
+              "file-helper-compatibility-test",
+              "fork-child-setup-test",
+              "replay-controller-test",
+              "replay-controller-compatibility-test",
+              "fossilize-replay",
+              "fossilize-list",
+              "fossilize-rehash",
+              "fossilize-prune",
+              "VkLayer_fossilize"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-on",
+              "--show-only=json-v1"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-on",
+              "--output-on-failure",
+              "--no-tests=error"
+            ]
+          ],
+          "environment": {
+            "LC_ALL": "C"
+          }
+        },
+        "prerequisites": [
+          "Required pinned submodules available with recorded git submodule status --recursive; Linux toolchain/CMake/Ninja/CTest/Python3.",
+          "Fresh private configuration build paths; committed candidate and external isolated runtime outputs; all21 enumerated targets built."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "ROLE_WORKTREE",
+        "expected": [
+          "Configuration and explicit complete-target build succeed; all discovered CPU CTests pass, no skipped/unrun/empty tests.",
+          "All14 lifecycle cases enforce exact process/status/cleanup/coverage/counter oracles including true recovery and fail-fast parent status; all new #13 tests also pass.",
+          "Debug OFF additional14-case repeat passes three executions per case; runtime and CTest deadlines hold."
+        ],
+        "id": "linux-release-exceptions-on",
+        "kind": "both",
+        "method": {
+          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default.",
+          "commands": [
+            [
+              "cmake",
+              "-S",
+              "ROLE_WORKTREE",
+              "-B",
+              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-on",
+              "-G",
+              "Ninja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+            ],
+            [
+              "cmake",
+              "--build",
+              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-on",
+              "--parallel",
+              "4",
+              "--target",
+              "fossilize-test",
+              "varint-test",
+              "application-info-filter-test",
+              "object-cache-test",
+              "feature-filter-test",
+              "futex-test",
+              "replay-diagnostic-test",
+              "device-diagnostic-test",
+              "capture-diagnostic-test",
+              "diagnostic-compatibility-test",
+              "utility-parse-test",
+              "file-helper-test",
+              "file-helper-compatibility-test",
+              "fork-child-setup-test",
+              "replay-controller-test",
+              "replay-controller-compatibility-test",
+              "fossilize-replay",
+              "fossilize-list",
+              "fossilize-rehash",
+              "fossilize-prune",
+              "VkLayer_fossilize"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-on",
+              "--show-only=json-v1"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-on",
+              "--output-on-failure",
+              "--no-tests=error"
+            ]
+          ],
+          "environment": {
+            "LC_ALL": "C"
+          }
+        },
+        "prerequisites": [
+          "Required pinned submodules available with recorded git submodule status --recursive; Linux toolchain/CMake/Ninja/CTest/Python3.",
+          "Fresh private configuration build paths; committed candidate and external isolated runtime outputs; all21 enumerated targets built."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Role-specific external baseline source copy (git header read from ROLE_WORKTREE)",
+        "expected": [
+          "Each three fault control exits nonzero for concrete observed fallthrough/worker-owned fork or wrong fatal exit/sentinel; exactly one intended injection. Compile/config errors, deadlines and unrelated failures are not defect detection.",
+          "Healthy and healthy-recovery pass with real two-item coverage under same new-master semantics, proving no false-positive global failure.",
+          "Candidate identical fault tests pass; no leaked process remains on either expected failure or success."
+        ],
+        "id": "new-base-original-defect-controls",
+        "kind": "both",
+        "method": {
+          "commands": [
+            [
+              "git",
+              "show",
+              "9804598fba84b747aeecd66c0e873f3f48c4c3cd:cli/fossilize_replay_linux.hpp"
+            ],
+            [
+              "cmake",
+              "-S",
+              "BASELINE_SOURCE",
+              "-B",
+              "BASELINE_BUILD",
+              "-G",
+              "Ninja",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+            ],
+            [
+              "cmake",
+              "--build",
+              "BASELINE_BUILD",
+              "--parallel",
+              "4",
+              "--target",
+              "fork-child-setup-test"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "BASELINE_BUILD",
+              "-V",
+              "--no-tests=error",
+              "-R",
+              "^fork-child-initial-first-sigmask$"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "BASELINE_BUILD",
+              "-V",
+              "--no-tests=error",
+              "-R",
+              "^fork-child-initial-first-stdout-dup2$"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "BASELINE_BUILD",
+              "-V",
+              "--no-tests=error",
+              "-R",
+              "^fork-child-initial-first-stdin-dup2$"
+            ],
+            [
+              "ctest",
+              "--test-dir",
+              "BASELINE_BUILD",
+              "--output-on-failure",
+              "--no-tests=error",
+              "-R",
+              "^fork-child-healthy(-recovery)?$"
+            ]
+          ],
+          "environment": {
+            "LC_ALL": "C"
+          },
+          "procedure": "Create isolated candidate source copy outside tracked worktrees and replace only cli/fossilize_replay_linux.hpp with unchanged git show 9804598fba84b747aeecd66c0e873f3f48c4c3cd:cli/fossilize_replay_linux.hpp. Keep same committed candidate tests, #13 worker-outcome/header/controller model and dependencies. Configure Debug exceptions OFF in separate baseline build, build fork-child-setup-test only. Run each three initial-first fault cases individually and require intended assertion failure, then both healthy controls must pass. Identical committed tests pass on candidate in matrix. Do not substitute old451 baseline."
+        },
+        "prerequisites": [
+          "Baseline exactly new master980 header with three original wrong returns, all other candidate source/tests unchanged.",
+          "Each role performs its own baseline execution, finite bounds/emergency cleanup retained."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/dev/fossilize-issue-56",
+        "expected": [
+          "One existing PR https://github.com/robinwassen/Fossilize/pull/65 updated and attached at renewed accepted head; honest verification and limitations replace old-base claims.",
+          "Only Closes https://github.com/robinwassen/Fossilize/issues/56 remains eligible; epic46 stays open. New head has no inferred merge approval."
+        ],
+        "id": "publication-binding",
+        "kind": "publication",
+        "method": "Coordinator renews unit and separate final acceptance, supersedes stale issue readiness/PR verification text, rechecks live material issue/base inputs and exact source head, pushes existing branch without force, reads back and attaches existing PR65 only. Follow existing harness external journaling and exact artifact publication; issue56 and parent46 remain open until authorized delivery.",
+        "prerequisites": [
+          "All mandatory exact-head Linux gates independently accepted; no unresolved findings; original unchanged; current base exact."
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "change": "Merge immutable master 9804598fba84b747aeecd66c0e873f3f48c4c3cd into implementation branch in /home/robin/dev/fossilize-issue-56. Resolve integration by retaining all #13 production changes, current worker-outcome header, new master CTests and documentation plus #56 additions. Retain direct _exit(EXIT_FAILURE) at fatal child pthread_sigmask, stdout dup2 and stdin dup2. Do not revert the fail-fast controller/RAII cleanup. Preserve unrelated dirty files in primary checkout; source remains clean at committed candidate.",
+        "step": 1
+      },
+      {
+        "change": "Adapt existing fork_child_setup_test.cpp rather than replacing actual run_master_process/launcher/shutdown/recovery with a model or test_worker stub. Gate initial-slot and adjacent-fault release on explicit original-controller successful reap of the healthy sibling; a raw pipe barrier with exact reap/generation records avoids racing master fail-fast cleanup. No sleep-based readiness. Preserve exact exit, fallthrough, fork, collection, protocol and fatal-sentinel assertions.",
+        "step": 2
+      },
+      {
+        "change": "For recovery scenarios use a controlled no-progress retry: first fully configured worker sends GRAPHICS 0 0, COMPUTE 0 0 and RAYTRACE 0 0 with zero hashes, then _exit(2). Replacement actually replays both known compute pipelines in healthy-recovery; injected recovery faults complete neither. Remove old COMPUTE 1 104: #13 correctly retains that hash as skipped required work. Update honest expected counters/status/progress_complete and explain the recovery scope.",
+        "step": 3
+      },
+      {
+        "change": "Keep all nine first/last/recovery injections plus five healthy/PDEATHSIG/prctl/race controls individually CTest-registered on Linux. Keep explicit Release-active checks, private output, internal 12-second observation plus three-second emergency cleanup and 30-second CTest bounds. Add barrier ordering assertions and cleanup for barrier descriptors; retain no fault injection in shipping CLI.",
+        "step": 4
+      },
+      {
+        "change": "Update only scope-relevant #56 verification documentation to describe master fail-fast semantics, true no-progress retry and current build/baseline procedure. Preserve #13 section and tracked guidance. Coordinator later replaces stale readiness/PR verification claims with current exact-head evidence and keeps parent epic open.",
+        "step": 5
+      }
+    ],
+    "non_goals": [
+      "No new PR, force push, automatic merge, issue closure or restoration of the old aggregate-success policy. New head requires eventual human merge approval.",
+      "No scheduler/result-schema/Steam/deployment/Vulkan/capture-layer redesign, no harness engine or role/state policy edits.",
+      "Windows verification is explicitly excluded by the user. Apple/Android robust modes remain unsupported. GPU, Steam and real driver/cache claims are outside this CPU-only change.",
+      "Unused CLI executables, SPIRV optimizer/Cross libraries, runtime-layer GPU tests and unchanged harness-package Python tests are not additional acceptance for this isolated integration. All registered CPU CTests and their complete target dependencies remain mandatory."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "## Problem\n\nIn the fork-child branch of bool ProcessProgress::start_child_process, failed pthread_sigmask or dup2 returns EXIT_FAILURE. On the audited platform EXIT_FAILURE is 1, converted to true. The failed child can return into controller code after closing its controller descriptors instead of terminating.\n\n## Evidence level\n\nIndependently checked source-proven conditional branch. No actual pthread_sigmask/dup2 failure was injected during the audit; the consequences depend on the failing call and remaining slots.\n\n## Reproduction / verification status\n\nSource inspection: follow the return statements at Linux controller lines 576\u2013578 and 605\u2013609 back to the initial/recovery Boolean callers. Proposed regression: inject each child-only setup failure, assert child exit, no controller fallthrough and no child-created extra workers. That injection has not yet been run.\n\n## Required outcome and acceptance\n\n- Every post-fork fatal child setup error takes a terminal child-exit path, never a Boolean return into parent/controller execution.\n- Inject each covered failure and assert process tree, cleanup/reaping, parent status and absence of unintended worker spawning.\n- Audit neighboring child-return branches and use child-safe termination semantics. Keep rare fault branches distinct from ordinary launch behavior.\n\n## Scope and references\n\nFix/investigate the lifecycle boundary described above, including its regression coverage. Do not expand this into Steam scheduling policy, automatic deployment, a general scheduler rewrite or unrelated Vulkan behavior.\n\n[cli/fossilize_replay_linux.hpp:506](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L506) \u00b7 [cli/fossilize_replay_linux.hpp:576](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L576)\n\n## Shared acceptance and evidence\n\nThis is a child of the worker lifecycle epic through GitHub's native hierarchy. Its shared verification/compatibility gates apply. Add deterministic assertion-bearing regression coverage that fails before the fix where feasible; retain healthy controls. These research probes expose defects and are not passing product tests.\n\nAudit source: `556da9ff7d7616704dda515756219ab1dab693ec`; local audit baseline `2325a40846cceb9e053cc5b26aad4c030e07e1a2`. The relevant platform supervisor/owner headers remain unchanged in fork master `5eb2c496dde819c868fa3d7d1e52c51047d9adb8`. No claim is made about Steam's installed version, report frequency, or hardware cache behavior.\n\n[Checked audit](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit.md) \u00b7 [Evidence and independent checker reports](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/README.md)\n\n<!-- fossilize-worker-lifecycle-audit-2026-10-29:child-setup-return -->\n"
+      }
+    ],
+    "scope": "One unsplit renewal of https://github.com/robinwassen/Fossilize/issues/56 at base 9804598fba84b747aeecd66c0e873f3f48c4c3cd. Merge new master into existing branch codex/issue-56-child-setup without rewriting history, retain the three child-safe terminal fixes, adapt the committed production-path lifecycle regressions to #13 fail-fast worker outcomes/cleanup, and renew independent evidence for existing PR65.",
+    "verification_execution": "No planner build/probe/test execution. Before every configure/build/discovery/CTest/negative-control or other verification command, coordinator publishes unique intent_id, exact child_command argv, cwd/env and timeout. Execute via scripts/verification_lock.py --repo ROLE_WORKTREE --timeout 600 --intent-id ID --receipt UNIQUE_RECEIPT -- COMMAND, never nested. Return receipt/log/status unchanged for coordinator command-wait settlement. Bind all current evidence to exact candidate/base/plan/attempt. Role placeholders below must be replaced with actual committed worktree and unique role/build/output path before intent publication; no build reuse across roles/configs/baseline. Each checker performs actual execution independently, never accepts previous logs as its own results.",
+    "version": 1,
+    "work_units": []
+  },
+  "plan_version": 0,
+  "role": "planner",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/56",
+  "worker_id": "/root/planner56_refresh"
+}
