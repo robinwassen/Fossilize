@@ -289,6 +289,10 @@
       {
         "started": 1793435345.7695174,
         "wait_seconds": 5.366020140936598
+      },
+      {
+        "started": 1793435357.1238706,
+        "wait_seconds": 5.845879341941327
       }
     ],
     "command_timeout": 600,
@@ -2562,7 +2566,36 @@
         "log": "/tmp/fossilize-56-refresh/repair-output/release-on-configure.log",
         "receipt": "/tmp/fossilize-56-refresh/repair-output/release-on-configure.receipt.json",
         "started": 1793435176.657142,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793435288.4787135,
+          "command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/home/robin/dev/fossilize-issue-56",
+            "-B",
+            "/tmp/fossilize-56-refresh/build/repair-release-on",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Release",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+          ],
+          "cwd": "/home/robin/dev/fossilize-issue-56",
+          "exit_code": 0,
+          "finished": 1793435290.2966254,
+          "intent_id": "rr-release-on-configure",
+          "started": 1793435288.4765153,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 0
+        }
       },
       {
         "child_command": [
@@ -2793,7 +2826,7 @@
         "timeout": 600
       }
     ],
-    "deadline": 1793448705.3610792,
+    "deadline": 1793448711.2069585,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -3612,7 +3645,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 113,
+  "revision": 114,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
