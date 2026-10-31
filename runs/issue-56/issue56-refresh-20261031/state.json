@@ -277,6 +277,10 @@
       {
         "started": 1793435305.5772943,
         "wait_seconds": 4.499230655026622
+      },
+      {
+        "started": 1793435322.5204885,
+        "wait_seconds": 5.712506980984472
       }
     ],
     "command_timeout": 600,
@@ -2122,7 +2126,36 @@
         "log": "/tmp/fossilize-56-refresh/repair-output/debug-off-configure.log",
         "receipt": "/tmp/fossilize-56-refresh/repair-output/debug-off-configure.receipt.json",
         "started": 1793435119.5689328,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793435276.752952,
+          "command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/home/robin/dev/fossilize-issue-56",
+            "-B",
+            "/tmp/fossilize-56-refresh/build/repair-debug-off",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+          ],
+          "cwd": "/home/robin/dev/fossilize-issue-56",
+          "exit_code": 0,
+          "finished": 1793435278.5242941,
+          "intent_id": "rr-debug-off-configure",
+          "started": 1793435276.7478967,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 0.0022170139709487557
+        }
       },
       {
         "child_command": [
@@ -2694,7 +2727,7 @@
         "timeout": 600
       }
     ],
-    "deadline": 1793448683.0510824,
+    "deadline": 1793448688.7658064,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -3513,7 +3546,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 110,
+  "revision": 111,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
