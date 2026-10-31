@@ -1,0 +1,205 @@
+{
+  "gate": "new-base-original-defect-controls",
+  "result": "passed",
+  "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+  "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+  "plan_version": 2,
+  "attempt_id": "final-refresh-2",
+  "commands": [
+    {
+      "intent_id": "v2f-baseline-prepare",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "python3",
+        "-B",
+        "/tmp/fossilize-56-refresh/v2-final-audit.py",
+        "baseline"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "actual_exit": 0,
+      "expected_exit": 0,
+      "receipt_record": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-command-receipts.json",
+      "raw_log_sha256": "c7f3ac7682b9ab815a728d884273c4445386a1a51ff1a47a6e3d63bf6476da0d"
+    },
+    {
+      "intent_id": "v2f-baseline-configure",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-56-refresh/v2-final-baseline",
+        "-B",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "actual_exit": 0,
+      "expected_exit": 0,
+      "receipt_record": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-command-receipts.json",
+      "raw_log_sha256": "0525653934701dda675258176eb0734408dda641a8334a6dbf395a1a8c04b60d"
+    },
+    {
+      "intent_id": "v2f-baseline-build",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "--parallel",
+        "4",
+        "--target",
+        "fork-child-setup-test"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "actual_exit": 0,
+      "expected_exit": 0,
+      "receipt_record": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-command-receipts.json",
+      "raw_log_sha256": "78f25306a8736043d1c879b12c9978a26da4fab79013f521f26020f5245b5a32"
+    },
+    {
+      "intent_id": "v2f-baseline-sigmask",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "-V",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-initial-first-sigmask$"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "actual_exit": 8,
+      "expected_exit": 8,
+      "receipt_record": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-command-receipts.json",
+      "raw_log_sha256": "ee989ea51656742a4418b09a5f235d304520b2dea041fe1c5f7632e6b9a4ea90"
+    },
+    {
+      "intent_id": "v2f-baseline-stdout-dup2",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "-V",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-initial-first-stdout-dup2$"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "actual_exit": 8,
+      "expected_exit": 8,
+      "receipt_record": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-command-receipts.json",
+      "raw_log_sha256": "ed0a98e943433d83d96708baae6966f93dd7e411183a1cc07146747b6700bab2"
+    },
+    {
+      "intent_id": "v2f-baseline-stdin-dup2",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "-V",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-initial-first-stdin-dup2$"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "actual_exit": 8,
+      "expected_exit": 8,
+      "receipt_record": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-command-receipts.json",
+      "raw_log_sha256": "ecdf4cf74722ae8844f1e7a6e9aa44f5ef4c2d39296263e6afc3b6b29ff3faf2"
+    },
+    {
+      "intent_id": "v2f-baseline-healthy",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-healthy(-recovery)?$",
+        "--output-junit",
+        "/tmp/fossilize-56-refresh/v2-final-output/baseline-healthy.xml"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "actual_exit": 0,
+      "expected_exit": 0,
+      "receipt_record": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-command-receipts.json",
+      "raw_log_sha256": "b5cf6c62ada4b1d79d008116209cecf087087b4ccc87179d48b25ea5e5c903fc"
+    },
+    {
+      "intent_id": "v2f-runtime",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "python3",
+        "-B",
+        "/tmp/fossilize-56-refresh/v2-final-audit.py",
+        "runtime"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "actual_exit": 0,
+      "expected_exit": 0,
+      "receipt_record": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-command-receipts.json",
+      "raw_log_sha256": "5b84739850379cec344e56c2351a24a13782beacd49500430044d4d23e98b478"
+    }
+  ],
+  "observations": {
+    "baseline": "Own fresh archive of exact candidate; every source blob checked before replacing only production Linux header with6ad base. Exact pinned gitlinks, private SPIRV-Tools external/gtest arrangement.",
+    "actual_fault_evidence": {
+      "sigmask": [
+        "97: FAIL no-controller-fallthrough-or-worker-fork",
+        "97: FAIL exact-worker-exit-status",
+        "97: Executed fork-child-initial-first-sigmask: births=2 injections=1 normal-workers=1 failures=2",
+        "1/1 Test #97: fork-child-initial-first-sigmask ...***Failed    0.01 sec",
+        "0% tests passed, 1 tests failed out of 1"
+      ],
+      "stdout-dup2": [
+        "100: FAIL no-controller-fallthrough-or-worker-fork",
+        "100: FAIL exact-worker-exit-status",
+        "100: Executed fork-child-initial-first-stdout-dup2: births=2 injections=1 normal-workers=1 failures=2",
+        "1/1 Test #100: fork-child-initial-first-stdout-dup2 ...***Failed    0.01 sec",
+        "0% tests passed, 1 tests failed out of 1"
+      ],
+      "stdin-dup2": [
+        "103: FAIL no-controller-fallthrough-or-worker-fork",
+        "103: FAIL exact-worker-exit-status",
+        "103: Executed fork-child-initial-first-stdin-dup2: births=2 injections=1 normal-workers=1 failures=2",
+        "1/1 Test #103: fork-child-initial-first-stdin-dup2 ...***Failed    0.01 sec",
+        "0% tests passed, 1 tests failed out of 1"
+      ]
+    },
+    "fault_exit_codes": [
+      8,
+      8,
+      8
+    ],
+    "healthy_controls": {
+      "executed": [
+        "fork-child-healthy",
+        "fork-child-healthy-recovery"
+      ],
+      "failures": 0,
+      "skips": 0
+    },
+    "interpretation": "Each original-defect control has one intended injection and one real healthy sibling, fails no-controller-fallthrough-or-worker-fork and exact-worker-exit-status, reaches bounded EOF/ECHILD; no timeout/config/build substitute. Identical tests pass allfour currentcandidate configurations. Runtime audit passed0."
+  }
+}

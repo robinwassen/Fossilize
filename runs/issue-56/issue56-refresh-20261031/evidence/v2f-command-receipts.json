@@ -1,0 +1,816 @@
+{
+  "v2f-source": {
+    "status": 1,
+    "receipt": {
+      "intent_id": "v2f-source",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "python3",
+        "-B",
+        "/tmp/fossilize-56-refresh/v2-final-audit.py",
+        "source"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440743.7664433,
+      "acquired": 1793440743.7689605,
+      "wait_seconds": 0.0,
+      "finished": 1793440744.38418,
+      "exit_code": 1,
+      "timed_out": false
+    }
+  },
+  "v2f-debug-off-configure": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-debug-off-configure",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-56-refresh/v2-final",
+        "-B",
+        "/tmp/fossilize-56-refresh/build/v2-final-debug-off",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440743.766194,
+      "acquired": 1793440744.3846445,
+      "wait_seconds": 0.6155929870437831,
+      "finished": 1793440746.102602,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-release-off-configure": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-release-off-configure",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-56-refresh/v2-final",
+        "-B",
+        "/tmp/fossilize-56-refresh/build/v2-final-release-off",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440743.766909,
+      "acquired": 1793440746.1030679,
+      "wait_seconds": 2.3340132900048047,
+      "finished": 1793440747.820986,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-debug-off-build": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-debug-off-build",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-56-refresh/build/v2-final-debug-off",
+        "--parallel",
+        "4",
+        "--target",
+        "fossilize-test",
+        "varint-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-test",
+        "diagnostic-compatibility-test",
+        "utility-parse-test",
+        "file-helper-test",
+        "file-helper-compatibility-test",
+        "fork-child-setup-test",
+        "replay-controller-test",
+        "replay-controller-compatibility-test",
+        "fossilize-replay",
+        "fossilize-list",
+        "fossilize-rehash",
+        "fossilize-prune",
+        "VkLayer_fossilize"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440746.1492872,
+      "acquired": 1793440747.8213062,
+      "wait_seconds": 1.6697075580013916,
+      "finished": 1793440808.2301214,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-release-off-build": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-release-off-build",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-56-refresh/build/v2-final-release-off",
+        "--parallel",
+        "4",
+        "--target",
+        "fossilize-test",
+        "varint-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-test",
+        "diagnostic-compatibility-test",
+        "utility-parse-test",
+        "file-helper-test",
+        "file-helper-compatibility-test",
+        "fork-child-setup-test",
+        "replay-controller-test",
+        "replay-controller-compatibility-test",
+        "fossilize-replay",
+        "fossilize-list",
+        "fossilize-rehash",
+        "fossilize-prune",
+        "VkLayer_fossilize"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440747.8837037,
+      "acquired": 1793440808.2304428,
+      "wait_seconds": 60.34247094602324,
+      "finished": 1793440880.913673,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-release-on-configure": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-release-on-configure",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-56-refresh/v2-final",
+        "-B",
+        "/tmp/fossilize-56-refresh/build/v2-final-release-on",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440793.1704016,
+      "acquired": 1793440880.91405,
+      "wait_seconds": 87.74086238502059,
+      "finished": 1793440882.7323697,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-debug-on-configure": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-debug-on-configure",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-56-refresh/v2-final",
+        "-B",
+        "/tmp/fossilize-56-refresh/build/v2-final-debug-on",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440793.1704016,
+      "acquired": 1793440882.7328591,
+      "wait_seconds": 89.55830639391206,
+      "finished": 1793440884.5015273,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-debug-off-discover": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-debug-off-discover",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-debug-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440808.2913392,
+      "acquired": 1793440884.5020003,
+      "wait_seconds": 76.20519530505408,
+      "finished": 1793440884.5345695,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-baseline-prepare": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-baseline-prepare",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "python3",
+        "-B",
+        "/tmp/fossilize-56-refresh/v2-final-audit.py",
+        "baseline"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440859.7883592,
+      "acquired": 1793440884.5348136,
+      "wait_seconds": 24.74407054600306,
+      "finished": 1793440885.3507917,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-source2": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-source2",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "python3",
+        "-B",
+        "/tmp/fossilize-56-refresh/v2-final-audit.py",
+        "source"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440859.7973864,
+      "acquired": 1793440885.3512218,
+      "wait_seconds": 25.551481066970155,
+      "finished": 1793440889.8269627,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-release-off-discover": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-release-off-discover",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-release-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440880.9627786,
+      "acquired": 1793440889.8272974,
+      "wait_seconds": 8.862405773019418,
+      "finished": 1793440889.8594425,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-release-on-build": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-release-on-build",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-56-refresh/build/v2-final-release-on",
+        "--parallel",
+        "4",
+        "--target",
+        "fossilize-test",
+        "varint-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-test",
+        "diagnostic-compatibility-test",
+        "utility-parse-test",
+        "file-helper-test",
+        "file-helper-compatibility-test",
+        "fork-child-setup-test",
+        "replay-controller-test",
+        "replay-controller-compatibility-test",
+        "fossilize-replay",
+        "fossilize-list",
+        "fossilize-rehash",
+        "fossilize-prune",
+        "VkLayer_fossilize"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440882.7849834,
+      "acquired": 1793440889.8596678,
+      "wait_seconds": 7.072490861057304,
+      "finished": 1793440964.7741878,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-debug-on-build": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-debug-on-build",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-56-refresh/build/v2-final-debug-on",
+        "--parallel",
+        "4",
+        "--target",
+        "fossilize-test",
+        "varint-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-test",
+        "diagnostic-compatibility-test",
+        "utility-parse-test",
+        "file-helper-test",
+        "file-helper-compatibility-test",
+        "fork-child-setup-test",
+        "replay-controller-test",
+        "replay-controller-compatibility-test",
+        "fossilize-replay",
+        "fossilize-list",
+        "fossilize-rehash",
+        "fossilize-prune",
+        "VkLayer_fossilize"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440884.553765,
+      "acquired": 1793440964.7744632,
+      "wait_seconds": 80.21835206390824,
+      "finished": 1793441021.8662782,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-debug-off-suite": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-debug-off-suite",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-56-refresh/v2-final-output/debug-off.xml"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440884.5818658,
+      "acquired": 1793441021.8666391,
+      "wait_seconds": 137.28258144203573,
+      "finished": 1793441025.846455,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-baseline-configure": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-baseline-configure",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-56-refresh/v2-final-baseline",
+        "-B",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440885.3997178,
+      "acquired": 1793441025.8467731,
+      "wait_seconds": 140.4448183750501,
+      "finished": 1793441027.7149394,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-changelog": {
+    "status": 1,
+    "receipt": {
+      "intent_id": "v2f-changelog",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "python3",
+        "-B",
+        "/tmp/fossilize-56-refresh/v2-final-audit.py",
+        "changelog"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440889.8889556,
+      "acquired": 1793441027.715408,
+      "wait_seconds": 137.8218883649679,
+      "finished": 1793441027.8802507,
+      "exit_code": 1,
+      "timed_out": false
+    }
+  },
+  "v2f-release-off-suite": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-release-off-suite",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-release-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-56-refresh/v2-final-output/release-off.xml"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440889.923778,
+      "acquired": 1793441027.8807578,
+      "wait_seconds": 137.95345553196967,
+      "finished": 1793441030.460688,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-release-on-discover": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-release-on-discover",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-release-on",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793440964.83993,
+      "acquired": 1793441030.4609509,
+      "wait_seconds": 65.61742028198205,
+      "finished": 1793441030.493255,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-debug-on-discover": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-debug-on-discover",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-debug-on",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441021.9257252,
+      "acquired": 1793441030.4937038,
+      "wait_seconds": 8.560522235929966,
+      "finished": 1793441030.5261693,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-debug-off-repeat": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-debug-off-repeat",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-",
+        "--repeat",
+        "until-fail:3"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441025.89601,
+      "acquired": 1793441030.526512,
+      "wait_seconds": 4.627921823994257,
+      "finished": 1793441030.740992,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-baseline-build": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-baseline-build",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "--parallel",
+        "4",
+        "--target",
+        "fork-child-setup-test"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441027.765079,
+      "acquired": 1793441030.741211,
+      "wait_seconds": 2.973447410040535,
+      "finished": 1793441043.0834658,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-release-on-suite": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-release-on-suite",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-release-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-56-refresh/v2-final-output/release-on.xml"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441030.5506911,
+      "acquired": 1793441043.083914,
+      "wait_seconds": 12.530856707016937,
+      "finished": 1793441045.658262,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-debug-on-suite": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-debug-on-suite",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-debug-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-56-refresh/v2-final-output/debug-on.xml"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441030.5774887,
+      "acquired": 1793441045.658501,
+      "wait_seconds": 15.078902816050686,
+      "finished": 1793441049.5424032,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-baseline-sigmask": {
+    "status": 8,
+    "receipt": {
+      "intent_id": "v2f-baseline-sigmask",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "-V",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-initial-first-sigmask$"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441043.1839263,
+      "acquired": 1793441049.5427392,
+      "wait_seconds": 6.354309081914835,
+      "finished": 1793441049.5750353,
+      "exit_code": 8,
+      "timed_out": false
+    }
+  },
+  "v2f-baseline-stdout-dup2": {
+    "status": 8,
+    "receipt": {
+      "intent_id": "v2f-baseline-stdout-dup2",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "-V",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-initial-first-stdout-dup2$"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441049.6346645,
+      "acquired": 1793441049.6372812,
+      "wait_seconds": 0.0,
+      "finished": 1793441049.6532266,
+      "exit_code": 8,
+      "timed_out": false
+    }
+  },
+  "v2f-baseline-stdin-dup2": {
+    "status": 8,
+    "receipt": {
+      "intent_id": "v2f-baseline-stdin-dup2",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "-V",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-initial-first-stdin-dup2$"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441049.6992211,
+      "acquired": 1793441049.7020373,
+      "wait_seconds": 0.0,
+      "finished": 1793441049.734172,
+      "exit_code": 8,
+      "timed_out": false
+    }
+  },
+  "v2f-baseline-healthy": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-baseline-healthy",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^fork-child-healthy(-recovery)?$",
+        "--output-junit",
+        "/tmp/fossilize-56-refresh/v2-final-output/baseline-healthy.xml"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441049.7797348,
+      "acquired": 1793441049.7829187,
+      "wait_seconds": 0.0,
+      "finished": 1793441049.8150346,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-runtime": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-runtime",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "python3",
+        "-B",
+        "/tmp/fossilize-56-refresh/v2-final-audit.py",
+        "runtime"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441078.7442334,
+      "acquired": 1793441078.7469995,
+      "wait_seconds": 0.0,
+      "finished": 1793441078.9116292,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  },
+  "v2f-changelog2": {
+    "status": 0,
+    "receipt": {
+      "intent_id": "v2f-changelog2",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "python3",
+        "-B",
+        "/tmp/fossilize-56-refresh/v2-final-audit.py",
+        "changelog"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "timeout": 600.0,
+      "started": 1793441160.6956153,
+      "acquired": 1793441160.6986315,
+      "wait_seconds": 0.0,
+      "finished": 1793441160.8128257,
+      "exit_code": 0,
+      "timed_out": false
+    }
+  }
+}

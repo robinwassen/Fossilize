@@ -1,0 +1,82 @@
+import subprocess,json,pathlib,sys,tarfile,io,re,xml.etree.ElementTree as ET,shutil
+P=pathlib.Path('/tmp/fossilize-56-refresh');W=P/'v2-final';O=P/'v2-final-output';B=P/'v2-final-baseline';C='bbbaedcd21c88500d6e380039e0dbee19bb935bb';BASE='6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807';S=json.load(open(P/'current.json'))['state']
+def cmd(*a,cwd=W):return subprocess.check_output(a,cwd=cwd,text=True,timeout=60)
+def git(*a):return cmd('git',*a)
+def gh(*a):return json.loads(cmd('gh',*a))
+def live():
+ old=S['issue_snapshot']['nodes'][S['issue_snapshot']['root']]
+ root=gh('api','--hostname','github.com','repos/robinwassen/Fossilize/issues/56');parent=gh('api','--hostname','github.com','repos/robinwassen/Fossilize/issues/46');ps=json.load(open(P/'parent.json'))
+ for k in ['title','body','id','node_id']:assert root[k]==old[k],k
+ assert root['body']==S['original'][0]['requirement']; assert parent['title']==ps['title'] and parent['body']==ps['body']; assert root['state']==parent['state']=='open'
+ relation=gh('api','--hostname','github.com','repos/robinwassen/Fossilize/issues/56/parent');assert relation['html_url']==old['parent']
+ reads={}
+ for n in [56,46]:
+  for ep in ['sub_issues','dependencies/blocked_by']:
+   pages=gh('api','--hostname','github.com','--paginate','--slurp',f'repos/robinwassen/Fossilize/issues/{n}/{ep}');reads[f'{n}/{ep}']=[x for page in pages for x in page]
+ assert reads['56/sub_issues']==old['children']==[] and reads['56/dependencies/blocked_by']==old['blocked_by']==[]
+ assert any(x['state']=='open' and x['number']!=56 for x in reads['46/sub_issues'])
+ comments=gh('api','--hostname','github.com','--paginate','--slurp','repos/robinwassen/Fossilize/issues/56/comments');comments=[x for page in comments for x in page];cl=S['closeout']; found=[x for x in comments if cl['marker'] in x['body']];assert len(found)==1;body=found[0]['body'];assert cl['binding'] in body and cl['targets'][0]['reference'] in body and 'pending' in body.lower()
+ assert cl['closing_references']==['Closes '+S['issue_snapshot']['root']];assert len(cl['targets'])==1
+ master=gh('api','--hostname','github.com','repos/robinwassen/Fossilize/git/ref/heads/master')['object']['sha'];assert master==BASE
+ draft=(P/'pr-body.md').read_text(); headings=re.findall(r'^## (.*)$',draft,re.M);assert headings==['Problem','What changes','Why this matters','Why this approach','Verification and limits','Task references'];assert re.findall(r'^Closes (.*)$',draft,re.M)==[S['issue_snapshot']['root']]
+ out={'root_body_title_identity_unchanged':True,'parent_shared_acceptance_unchanged':True,'root_state':root['state'],'parent_state':parent['state'],'native_relationships':{k:[{'number':x['number'],'state':x['state']} for x in v] for k,v in reads.items()},'base':master,'readiness_marker':cl['marker'],'readiness_binding':cl['binding'],'readiness_comment_url':found[0]['html_url'],'readiness_reference':cl['targets'][0]['reference'],'only56_eligible_close':True,'planned_pr_headings':headings,'remote_pr_publication_pending_after_final_acceptance':True}
+ (O/'live.json').write_text(json.dumps(out,indent=2));print(json.dumps(out,indent=2));print('PARENT SHARED ACCEPTANCE\n'+parent['body']);print('DRAFT PR BODY\n'+draft)
+def source():
+ assert git('rev-parse','HEAD').strip()==C and not git('status','--porcelain').strip()
+ for a in [BASE,'da2b76eb9c80223985f4b993fb18bca82c121503','ad14d37f701e0ddd7cc9b20de36eb943ef1697ca']:subprocess.run(['git','merge-base','--is-ancestor',a,C],cwd=W,check=True)
+ changed=git('diff','--name-only',BASE,C).splitlines();assert set(changed)=={'CHANGELOG.md','cli/fossilize_replay_linux.hpp','test/CMakeLists.txt','test/fork_child_setup_test.cpp','local-docs/verification.md'}
+ for args in [('diff',BASE,C,'--'),('log','--oneline','--parents',BASE+'..'+C),('diff','ad14d37f701e0ddd7cc9b20de36eb943ef1697ca',C,'--'),('submodule','status','--recursive')]:print(git(*args))
+ h='cli/fossilize_replay_linux.hpp';before=git('show',BASE+':'+h);assert before==git('show','9804598fba84b747aeecd66c0e873f3f48c4c3cd:'+h)
+ expected=before
+ for expr,op in [('pthread_sigmask(SIG_SETMASK, &Global::old_mask, nullptr)','!= 0'),('dup2(crash_fds[1], STDOUT_FILENO)','< 0'),('dup2(input_fds[0], STDIN_FILENO)','< 0')]:
+  old='if ('+expr+' '+op+')\n\t\t\treturn EXIT_FAILURE;';assert expected.count(old)==1;expected=expected.replace(old,old.replace('return EXIT_FAILURE;','_exit(EXIT_FAILURE);'))
+ assert (W/h).read_text()==expected
+ for path in ['AGENTS.md','local-docs/README.md','local-docs/changelog-guidelines.md','.agents/skills/implement-change-harness/SKILL.md','.agents/skills/implement-change-harness/references/roles.md']:assert git('show',BASE+':'+path)==(W/path).read_text()
+ status=git('submodule','status','--recursive');assert all(x.startswith(' ') for x in status.splitlines());(O/'dependencies.txt').write_text(status);print(cmd('/usr/bin/c++','--version'));live()
+ print('PRODUCTION LAUNCHER\n'+'\n'.join((W/h).read_text().splitlines()[480:680]));print('SOURCE STRUCTURAL AUDIT PASSED; complete diff above requires independent semantic inspection.')
+def changelog():
+ text=git('show',C+':CHANGELOG.md');old=git('show',BASE+':CHANGELOG.md');print(text);print(git('show',C+':local-docs/changelog-guidelines.md'));print(git('diff',BASE,C,'--','CHANGELOG.md'))
+ additions=[x[1:] for x in git('diff','--unified=0',BASE,C,'--','CHANGELOG.md').splitlines() if x.startswith('+') and not x.startswith('+++') and x[1:].strip()];assert len(additions)==1;entry=additions[0];assert 'Worker lifecycle' in entry and 'https://github.com/robinwassen/Fossilize/issues/56' in entry and entry in text.split('## Unreleased',1)[1];assert text.replace(entry+'\n\n','')==old
+ print('ENTRY: '+entry);print('Inherited entries and open implementation PR qualification preserved byte-for-byte.')
+def baseline():
+ B.mkdir(); data=subprocess.check_output(['git','archive',C],cwd=W)
+ with tarfile.open(fileobj=io.BytesIO(data)) as t:t.extractall(B,filter='data')
+ count=0
+ for row in subprocess.check_output(['git','ls-tree','-rz',C],cwd=W).split(b'\0'):
+  if not row:continue
+  info,rb=row.split(b'\t');mode,kind,sha=info.split();rel=rb.decode();dst=B/rel
+  if mode==b'160000':
+   assert cmd('git','rev-parse','HEAD',cwd=W/rel).strip()==sha.decode()
+   if dst.exists():dst.rmdir()
+   if rel=='cli/SPIRV-Tools':
+    dst.mkdir()
+    for src in (W/rel).iterdir():
+     if src.name=='external':
+      out=dst/src.name;out.mkdir()
+      for child in src.iterdir():
+       if child.name=='googletest' or child.name=='gtest':shutil.copytree(child,out/child.name,symlinks=True) if child.is_dir() else shutil.copy2(child,out/child.name)
+       else:(out/child.name).symlink_to(child,target_is_directory=child.is_dir())
+     else:(dst/src.name).symlink_to(src,target_is_directory=src.is_dir())
+   else:dst.symlink_to(W/rel,target_is_directory=True)
+  else:assert dst.read_bytes()==subprocess.check_output(['git','show',C+':'+rel],cwd=W);count+=1
+ (B/'cli/fossilize_replay_linux.hpp').write_text(git('show',BASE+':cli/fossilize_replay_linux.hpp'))
+ for row in git('ls-files').splitlines():
+  if (W/row).is_file() and row!='cli/fossilize_replay_linux.hpp':assert (B/row).read_bytes()==(W/row).read_bytes(),row
+ print('Independent candidate archive,',count,'blobs checked; ONLY production Linux header replaced with current base',BASE,'; exact pinned dependencies retained; SPIRV-Tools external/gtest private.')
+def runtime():
+ summary={};inventory={}
+ for tag in ['debug-off','release-off','debug-on','release-on']:
+  b=P/'build'/('v2-final-'+tag);ids=[x['name'] for x in json.load(open(O/(tag+'-discover.log')))['tests']];cases=ET.parse(O/(tag+'.xml')).getroot();ex=[x.attrib['name'] for x in cases.findall('testcase')];assert len(ids)==len(set(ids))==len(ex)==133 and set(ids)==set(ex);assert not cases.findall('.//failure') and not cases.findall('.//skipped');assert len([x for x in ids if x.startswith('fork-child-')])==14 and len([x for x in ids if x.startswith('replay-controller-')])==28
+  typ,exc=tag.split('-');cache=(b/'CMakeCache.txt').read_text();assert 'CMAKE_BUILD_TYPE:STRING='+typ.title() in cache
+  for k,v in [('FOSSILIZE_ENABLE_EXCEPTIONS',exc.upper()),('FOSSILIZE_TESTS','ON'),('FOSSILIZE_CLI','ON'),('FOSSILIZE_VULKAN_LAYER','ON'),('FOSSILIZE_TEST_RUNTIME_LAYER','OFF'),('FOSSILIZE_REPLAYER_SPIRV_VAL','ON')]:assert k+':BOOL='+v in cache
+  ninja=(b/'build.ninja').read_text();block=ninja.split('build test/CMakeFiles/fork-child-setup-test.dir/fork_child_setup_test.cpp.o:',1)[1].split('\n\n',1)[0];assert ('-fno-exceptions' in block)==(exc=='off');assert ('-DNDEBUG' in block)==(typ=='release');assert 'FOSSILIZE_REPLAYER_SPIRV_VAL' in ninja and 'libSPIRV-Tools.a' in ninja
+  inventory[tag]={'discovered':ids,'executed':ex};summary[tag]={'discovered':len(ids),'executed':len(ex),'failures':0,'skips':0,'fork_child':14,'retained13':28,'exceptions':exc,'build_type':typ,'spirv_validation':'ON'}
+ repeat=(O/'debug-off-repeat.log').read_text()
+ for case in S['plan']['cases']:assert repeat.count(case['id']+' ')==3,(case['id'],repeat.count(case['id']+' '))
+ for site in ['sigmask','stdout-dup2','stdin-dup2']:
+  text=(O/('baseline-'+site+'.log')).read_text()
+  for marker in ['no-controller-fallthrough-or-worker-fork','exact-worker-exit-status','injections=1','normal-workers=1','The following tests FAILED:']:assert marker in text,(site,marker)
+  for marker in ['Timeout','observer-echild-after-cleanup','bounded-completion-and-event-eof']:assert marker not in text,(site,marker)
+ healthy=ET.parse(O/'baseline-healthy.xml').getroot();assert len(healthy.findall('testcase'))==2 and not healthy.findall('.//failure') and not healthy.findall('.//skipped')
+ assert not git('status','--porcelain').strip();(O/'inventory.json').write_text(json.dumps(inventory,indent=2));(O/'runtime-summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(summary,indent=2));print('42 actual repeat starts, 3 original failures as expected, 2 healthy controls passed. Exact candidate clean.')
+{'source':source,'changelog':changelog,'baseline':baseline,'runtime':runtime}[sys.argv[1]]()

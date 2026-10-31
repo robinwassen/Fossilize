@@ -1,0 +1,37 @@
+{
+  "gate": "changelog-semantic-review",
+  "result": "passed",
+  "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+  "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+  "plan_version": 2,
+  "attempt_id": "final-refresh-2",
+  "commands": [
+    {
+      "intent_id": "v2f-changelog2",
+      "command": [
+        "env",
+        "LC_ALL=C",
+        "python3",
+        "-B",
+        "/tmp/fossilize-56-refresh/v2-final-audit.py",
+        "changelog"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "actual_exit": 0,
+      "expected_exit": 0,
+      "receipt_record": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-command-receipts.json",
+      "raw_log_sha256": "f9c17a2deb8e8d0f38afb1c58e52240da41d88605eb6c1b3385f12f337f51ac8"
+    }
+  ],
+  "observations": {
+    "entry": "- **[Worker lifecycle]** Made Linux replay children terminate on signal mask or stdin/stdout setup failure so failed workers cannot execute controller code. ([#56](https://github.com/robinwassen/Fossilize/issues/56))",
+    "accuracy": "Names exactly the Linux signal mask/stdin/stdout fatal setup paths changed in production.",
+    "benefit": "Explicitly states prevention of failed children executing controller code; supported by terminal _exit source and fault assertions.",
+    "scope": "No scheduler, Windows, Steam, performance, GPU or broad recovery claim.",
+    "topic": "Worker lifecycle is the concise meaningful parent46 topic.",
+    "brevity": "One short plain-language sentence.",
+    "traceability": "Full canonical issue56 URL.",
+    "placement": "Under Unreleased; no invented version/date.",
+    "preservation": "All inherited entries and open-PR-is-not-merged-delivery qualification preserved byte-for-byte after removing only the new entry and its separator."
+  }
+}
