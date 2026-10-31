@@ -305,6 +305,10 @@
       {
         "started": 1793435624.8549752,
         "wait_seconds": 4.904833081061952
+      },
+      {
+        "started": 1793435634.6283867,
+        "wait_seconds": 5.182270306977443
       }
     ],
     "command_timeout": 600,
@@ -2483,7 +2487,49 @@
         "log": "/tmp/fossilize-56-refresh/repair-output/release-off-build.log",
         "receipt": "/tmp/fossilize-56-refresh/repair-output/release-off-build.receipt.json",
         "started": 1793435146.1439147,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793435492.360048,
+          "command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-56-refresh/build/repair-release-off",
+            "--parallel",
+            "4",
+            "--target",
+            "fossilize-test",
+            "varint-test",
+            "application-info-filter-test",
+            "object-cache-test",
+            "feature-filter-test",
+            "futex-test",
+            "replay-diagnostic-test",
+            "device-diagnostic-test",
+            "capture-diagnostic-test",
+            "diagnostic-compatibility-test",
+            "utility-parse-test",
+            "file-helper-test",
+            "file-helper-compatibility-test",
+            "fork-child-setup-test",
+            "replay-controller-test",
+            "replay-controller-compatibility-test",
+            "fossilize-replay",
+            "fossilize-list",
+            "fossilize-rehash",
+            "fossilize-prune",
+            "VkLayer_fossilize"
+          ],
+          "cwd": "/home/robin/dev/fossilize-issue-56",
+          "exit_code": 0,
+          "finished": 1793435566.5171506,
+          "intent_id": "rr-release-off-build",
+          "started": 1793435293.8557742,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 198.50163651199546
+        }
       },
       {
         "child_command": [
@@ -3027,7 +3073,7 @@
         "timeout": 600
       }
     ],
-    "deadline": 1793449058.6897633,
+    "deadline": 1793449262.37367,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -3846,7 +3892,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 120,
+  "revision": 121,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
