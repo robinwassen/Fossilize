@@ -7512,7 +7512,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -8386,6 +8386,13 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793413384.9786541,
+      "body": "## Problem\n\nA robust replay controller could return success after a worker died before reporting progress, leaving assigned work unresolved. Restart decisions also conflated completed workers with workers that could not continue.\n\n## What changes\n\n- Retain each worker's original ranges, known skipped culprit, completed prefix and unknown remainder separately from retry cursors.\n- Propagate unrecoverable loss to the controller result and clean up remaining children on Linux and Windows. Fully recovered attempts can still succeed; skipped required culprits cannot.\n- Preserve the Linux ExternalReplayer terminal status while pumping final progress, avoiding a second reap that replaced failure with ECHILD.\n- Add deterministic real-process/IPC regressions, historical-defect controls and an unchanged-header caller fixture.\n\n## Why this matters\n\nCallers can detect observed unrecoverable worker loss from the returned outcome, including quiet progress mode, while retaining the assigned scope and honest uncertainty.\n\n## Why this approach\n\nSeparate restart disposition and retained outcome keep transient attempt failures from poisoning verified recovery. Existing public declarations, shared-progress layout, worker grammar and crash-counter meanings are retained. Fault adapters are compiled only into the test executable.\n\n## Verification and limits\n\nIndependent work-unit and separate final checkers each passed:\n\n- All 119 CTests in Linux Debug/Release with exceptions OFF/ON; 28 controller cases repeated 3 times per configuration.\n- Fresh unchanged-input E5/E6 Debug controls: baseline exit 0, candidate exit 1; baseline-header C++14 caller against candidate libraries.\n- All 138 Python methods and 103 boundary scenarios across 16 groups, the exact-union verifier, and skill metadata validation.\n\nNo findings or mandatory skips. Exact accepted head: `770f48facb29fe444870a1016538b3ad499954e7`. [Work-unit checker report](https://github.com/robinwassen/Fossilize/blob/5703d8ae2961b6713fbd5521d6d45d242538cc19/runs/issue-13/issue13-20261030/reports/checker-1.json), [separate final checker report](https://github.com/robinwassen/Fossilize/blob/5703d8ae2961b6713fbd5521d6d45d242538cc19/runs/issue-13/issue13-20261030/reports/checker-final-1.json).\n\nNative Windows execution was explicitly waived and remains unverified. Null-device and controlled-worker tests do not establish real-driver, GPU, cache-reuse or durability behavior. The covered baseline-header callers establish source compatibility, not a general binary ABI guarantee.\n\nThe historical malformed input follows a separate Release parser-rejection path that still returns zero. Tests assert its parse failure/skip, zero completion and zero worker deaths; that existing parser-policy limitation is outside this worker-loss fix and is not successful required replay.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/13\n\nShared requirements: https://github.com/robinwassen/Fossilize/issues/8 (remains open).\n",
+      "body_sha256": "207017435dc00f6272b0ea82e0ee9db694bf3c5f1abaaedf86c87a74d3e0fc88",
+      "event": "create-dispatched",
+      "title": "Retain unrecoverable replay worker loss"
+    },
     "intent": {
       "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
       "branch": "codex/issue-13-retain-child-loss",
@@ -8406,10 +8413,16 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "body": "## Problem\n\nA robust replay controller could return success after a worker died before reporting progress, leaving assigned work unresolved. Restart decisions also conflated completed workers with workers that could not continue.\n\n## What changes\n\n- Retain each worker's original ranges, known skipped culprit, completed prefix and unknown remainder separately from retry cursors.\n- Propagate unrecoverable loss to the controller result and clean up remaining children on Linux and Windows. Fully recovered attempts can still succeed; skipped required culprits cannot.\n- Preserve the Linux ExternalReplayer terminal status while pumping final progress, avoiding a second reap that replaced failure with ECHILD.\n- Add deterministic real-process/IPC regressions, historical-defect controls and an unchanged-header caller fixture.\n\n## Why this matters\n\nCallers can detect observed unrecoverable worker loss from the returned outcome, including quiet progress mode, while retaining the assigned scope and honest uncertainty.\n\n## Why this approach\n\nSeparate restart disposition and retained outcome keep transient attempt failures from poisoning verified recovery. Existing public declarations, shared-progress layout, worker grammar and crash-counter meanings are retained. Fault adapters are compiled only into the test executable.\n\n## Verification and limits\n\nIndependent work-unit and separate final checkers each passed:\n\n- All 119 CTests in Linux Debug/Release with exceptions OFF/ON; 28 controller cases repeated 3 times per configuration.\n- Fresh unchanged-input E5/E6 Debug controls: baseline exit 0, candidate exit 1; baseline-header C++14 caller against candidate libraries.\n- All 138 Python methods and 103 boundary scenarios across 16 groups, the exact-union verifier, and skill metadata validation.\n\nNo findings or mandatory skips. Exact accepted head: `770f48facb29fe444870a1016538b3ad499954e7`. [Work-unit checker report](https://github.com/robinwassen/Fossilize/blob/5703d8ae2961b6713fbd5521d6d45d242538cc19/runs/issue-13/issue13-20261030/reports/checker-1.json), [separate final checker report](https://github.com/robinwassen/Fossilize/blob/5703d8ae2961b6713fbd5521d6d45d242538cc19/runs/issue-13/issue13-20261030/reports/checker-final-1.json).\n\nNative Windows execution was explicitly waived and remains unverified. Null-device and controlled-worker tests do not establish real-driver, GPU, cache-reuse or durability behavior. The covered baseline-header callers establish source compatibility, not a general binary ABI guarantee.\n\nThe historical malformed input follows a separate Release parser-rejection path that still returns zero. Tests assert its parse failure/skip, zero completion and zero worker deaths; that existing parser-policy limitation is outside this worker-loss fix and is not successful required replay.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/13\n\nShared requirements: https://github.com/robinwassen/Fossilize/issues/8 (remains open).\n",
+        "body_sha256": "207017435dc00f6272b0ea82e0ee9db694bf3c5f1abaaedf86c87a74d3e0fc88",
+        "event": "create-dispatched",
+        "title": "Retain unrecoverable replay worker loss"
       }
     ],
     "remote_sha": "770f48facb29fe444870a1016538b3ad499954e7",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
@@ -8422,7 +8435,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 378,
+  "revision": 379,
   "root_issue": {
     "id": 6079809809,
     "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
