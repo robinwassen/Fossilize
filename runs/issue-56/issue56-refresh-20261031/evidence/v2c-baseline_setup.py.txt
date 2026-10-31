@@ -1,0 +1,15 @@
+import subprocess,pathlib,os,json,hashlib
+w=pathlib.Path('/tmp/fossilize-56-refresh/v2-checker');dst=pathlib.Path('/tmp/fossilize-56-refresh/v2-checker-baseline');dst.mkdir()
+manifest=[]
+for record in subprocess.check_output(['git','ls-files','--stage','-z'],cwd=w).split(b'\0'):
+ if not record:continue
+ meta,name=record.split(b'\t'); mode,sha,stage=meta.split();f=name.decode();target=dst/f;target.parent.mkdir(parents=True,exist_ok=True)
+ if mode==b'160000':target.symlink_to((w/f).resolve(),target_is_directory=True);manifest.append({'path':f,'submodule':sha.decode(),'link':str((w/f).resolve())});continue
+ data=subprocess.check_output(['git','show','HEAD:'+f],cwd=w)
+ if f=='cli/fossilize_replay_linux.hpp':data=subprocess.check_output(['git','show','6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807:'+f],cwd=w)
+ target.write_bytes(data)
+ if mode==b'100755':target.chmod(0o755)
+ manifest.append({'path':f,'sha256':hashlib.sha256(data).hexdigest(),'same_candidate':data==(w/f).read_bytes()})
+changed=[x['path'] for x in manifest if x.get('same_candidate') is False];assert changed==['cli/fossilize_replay_linux.hpp'],changed
+pathlib.Path('/tmp/fossilize-56-refresh/v2-checker-output/baseline-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+print('PASS exact candidate source copy; only Linux header replaced with base6ad; submodules linked without mutations',len(manifest),'records')

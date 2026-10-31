@@ -1,0 +1,41 @@
+import json,pathlib,re,xml.etree.ElementTree as ET,collections
+out=pathlib.Path('/tmp/fossilize-56-refresh/v2-checker-output');plan=json.load(open('/tmp/fossilize-56-refresh/current.json'))['state']['plan'];cases={x['id'] for x in plan['cases']};allids=None;inventory={}
+for typ in ['debug','release']:
+ for ex in ['off','on']:
+  n=typ+'-exceptions-'+ex;b=pathlib.Path('/tmp/fossilize-56-refresh/build/v2-checker-'+n)
+  raw=(out/(n+'-discovery.log')).read_text();j=json.loads(raw[raw.index('{'):]);names=[x['name'] for x in j['tests']];assert len(names)==len(set(names))==133
+  assert {x for x in names if x.startswith('fork-child-')}==cases
+  assert len([x for x in names if x.startswith('replay-controller-')])==28
+  if allids is None:allids=set(names)
+  assert allids==set(names)
+  tree=ET.parse(out/(n+'-junit.xml.txt'));tests=tree.findall('.//testcase');executed=[x.attrib['name'] for x in tests]
+  assert len(executed)==len(set(executed))==133 and set(executed)==set(names)
+  assert all(x.attrib.get('status')=='run' for x in tests)
+  assert not tree.findall('.//failure') and not tree.findall('.//skipped') and not tree.findall('.//error')
+  cache=(b/'CMakeCache.txt').read_text();assert 'CMAKE_BUILD_TYPE:STRING='+typ.title() in cache
+  for k,v in [('FOSSILIZE_ENABLE_EXCEPTIONS',ex.upper()),('FOSSILIZE_TESTS','ON'),('FOSSILIZE_CLI','ON'),('FOSSILIZE_VULKAN_LAYER','ON'),('FOSSILIZE_TEST_RUNTIME_LAYER','OFF'),('FOSSILIZE_REPLAYER_SPIRV_VAL','ON')]:assert k+':BOOL='+v in cache,(n,k)
+  comp=json.load(open(b/'compile_commands.json'));fork=next(x['command'] for x in comp if x['file'].endswith('/test/fork_child_setup_test.cpp'));ship=next(x['command'] for x in comp if x['file'].endswith('/cli/fossilize_replay.cpp'))
+  assert ('-fno-exceptions' in fork)==(ex=='off');assert ('-DNDEBUG' in fork)==(typ=='release');assert '-DFOSSILIZE_REPLAYER_SPIRV_VAL' in ship
+  ninja=(b/'build.ninja').read_text();shipping_link=next(x for x in ninja.splitlines() if x.startswith('build cli/fossilize-replay:'));assert 'cli/SPIRV-Tools/source/libSPIRV-Tools.a' in shipping_link
+  assert (b/'cli/SPIRV-Tools/source/libSPIRV-Tools.a').is_file()
+  for t in plan['compile_target_completeness']['required_targets']:assert (b/('layer/libVkLayer_fossilize.so' if t=='VkLayer_fossilize' else ('cli/' if t.startswith('fossilize-') and t!='fossilize-test' else 'test/')+t)).is_file(),t
+  for x in tests:
+   if x.attrib['name'].startswith('fork-child-'):
+    text=x.findtext('system-out') or '';assert 'failures=0' in text,x.attrib['name']
+  inventory[n]={'discovered':names,'executed':executed,'skipped':[],'fork_child':sorted(cases),'retained_issue13':[x for x in names if x.startswith('replay-controller-')],'count':133,'flags':fork,'shipping_flags':ship,'shipping_link':shipping_link,'all21_built':True}
+  print(n,': PASS133 discovered unique/executed exact,14 fork-child,28 retained#13,zero failures/skips;21 targets; default validation ON; effective flags checked')
+r=(out/'repeat.log').read_text();starts=re.findall(r'^\s*Start\s+\d+:\s+(fork-child-\S+)',r,re.M);assert len(starts)==42 and set(starts)==cases and all(v==3 for v in collections.Counter(starts).values()),collections.Counter(starts)
+print('repeat PASS14 cases x3 =42 actual starts')
+for f in ['sigmask','stdout-dup2','stdin-dup2']:
+ n='baseline-'+f;receipt=json.load(open(out/(n+'-receipt.json')));assert receipt['exit_code']==8 and not receipt['timed_out'];s=(out/(n+'.log')).read_text();assert 'injections=1 normal-workers=1' in s
+ assert 'FAIL no-controller-fallthrough-or-worker-fork' in s and 'FAIL exact-worker-exit-status' in s
+ assert 'Timeout' not in s and 'FAIL bounded-completion-and-event-eof' not in s
+ print(n,': expected status8, one injection and real healthy sibling, fallthrough+wrong exit assertions detected; no timeout')
+tree=ET.parse(out/'baseline-healthy-junit.xml.txt');ts=tree.findall('.//testcase');assert {x.attrib['name'] for x in ts}=={'fork-child-healthy','fork-child-healthy-recovery'} and not tree.findall('.//failure') and not tree.findall('.//skipped');assert json.load(open(out/'baseline-healthy-receipt.json'))['exit_code']==0
+print('baseline controls PASS2 exact healthy IDs, zero failures/skips (CTest wording independent)')
+for i in json.load(open(out/'intents.json')):
+ if i['intent_id']=='v2c-runtime-audit':continue
+ r=json.load(open(i['receipt']));assert r['command']==i['child_command'] and r['cwd']==i['cwd'] and r['timeout']==600 and not r['timed_out']
+ assert r['exit_code']==(8 if i['intent_id'] in ['v2c-baseline-'+f for f in ['sigmask','stdout-dup2','stdin-dup2']] else 0),(i['intent_id'],r)
+(out/'inventory.json').write_text(json.dumps(inventory,indent=2)+'\n')
+print('PASS all measured receipts exact command/cwd/timeout and intended result; four fresh configurations,532 full tests +42 repeats +5 baseline controls')

@@ -1,0 +1,25 @@
+import subprocess,json,hashlib,pathlib
+w=pathlib.Path('/tmp/fossilize-56-refresh/v2-checker'); base='6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807'; head='bbbaedcd21c88500d6e380039e0dbee19bb935bb'
+def run(a):
+ p=subprocess.run(a,cwd=w,capture_output=True,text=True,check=True); print('$',json.dumps(a));print(p.stdout);return p.stdout
+assert run(['git','rev-parse','HEAD']).strip()==head
+assert not run(['git','status','--porcelain']).strip()
+for b in [base,'ad14d37f701e0ddd7cc9b20de36eb943ef1697ca']:run(['git','merge-base','--is-ancestor',b,'HEAD'])
+run(['git','diff',base,'HEAD','--']);run(['git','log','--oneline','--parents',base+'..HEAD']);run(['git','diff','ad14d37f701e0ddd7cc9b20de36eb943ef1697ca','HEAD','--stat'])
+for f in ['AGENTS.md','local-docs/README.md','local-docs/changelog-guidelines.md','.agents/skills/implement-change-harness/SKILL.md','.agents/skills/implement-change-harness/references/roles.md']:
+ assert subprocess.check_output(['git','show',base+':'+f],cwd=w)==(w/f).read_bytes()
+assert subprocess.check_output(['git','show',base+':cli/fossilize_replay_linux.hpp'],cwd=w)==subprocess.check_output(['git','show','9804598fba84b747aeecd66c0e873f3f48c4c3cd:cli/fossilize_replay_linux.hpp'],cwd=w)
+run(['git','submodule','status','--recursive'])
+state=json.load(open('/tmp/fossilize-56-refresh/current.json'))['state']
+for n in [56,46]:
+ data=json.loads(run(['gh','issue','view',str(n),'--repo','robinwassen/Fossilize','--json','number,title,body,state,url,id']))
+ assert data['state']=='OPEN'
+ if n==56:
+  snap=state['issue_snapshot']['nodes']['https://github.com/robinwassen/Fossilize/issues/56']
+  assert data['body']==state['original'][0]['requirement']==snap['body'] and data['title']==snap['title'] and data['id']==snap['node_id']
+parent=json.loads(run(['gh','api','--hostname','github.com','repos/robinwassen/Fossilize/issues/56/parent']));assert parent['number']==46
+for endpoint in ['sub_issues','dependencies/blocked_by']:
+ data=json.loads(run(['gh','api','--hostname','github.com','--paginate','repos/robinwassen/Fossilize/issues/56/'+endpoint]));assert data==[]
+
+run(['gh','api','--hostname','github.com','repos/robinwassen/Fossilize/git/ref/heads/master'])
+print('PASS exact clean source, both ancestries, inherited guidance and baseline header identity')

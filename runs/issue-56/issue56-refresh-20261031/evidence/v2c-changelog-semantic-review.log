@@ -1,0 +1,39 @@
+{
+  "gate": "changelog-semantic-review",
+  "result": "passed",
+  "exit_code": 0,
+  "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+  "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+  "plan_version": 2,
+  "attempt_id": "checker-refresh-3",
+  "command": [
+    [
+      "env",
+      "LC_ALL=C",
+      "python3",
+      "-B",
+      "/tmp/fossilize-56-refresh/v2-checker-output/changelog_audit.py"
+    ]
+  ],
+  "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+  "environment": {
+    "LC_ALL": "C",
+    "platform": "Linux CPU only",
+    "compiler": "GNU13.3.0"
+  },
+  "criteria": [
+    "AC1"
+  ]
+}
+
+Independent semantic review of exact candidate CHANGELOG.md, full final base diff and authoritative local-docs/changelog-guidelines.md.
+Reviewed entry: "Made Linux replay children terminate on signal mask or stdin/stdout setup failure so failed workers cannot execute controller code."
+Accuracy and final scope: precisely names Linux mask and both required redirects, matching the three changed _exit sites and lifecycle fixture; no scheduler, GPU, Steam, performance, platform expansion or general crash recovery claim.
+Practical benefit: explicitly prevents failed worker execution of controller code, the original AC1 hazard.
+Topic/brevity/traceability: meaningful epic-derived [Worker lifecycle] tag; one short plain sentence; correct full https://github.com/robinwassen/Fossilize/issues/56 link.
+Placement/delivery qualification: Unreleased with no invented version/date; exact inherited sentence says inclusion in open PR does not establish merged delivery or release.
+Combined changelog: all inherited Harness/Observability entries, ordering, issue links, historical #35 supersession by #37 and open-PR qualification retained. Base-to-candidate changelog diff adds only the scoped issue56 sentence. No duplicate task ledger/status work. Current reviewed final scope needs no wording change.
+
+
+Measured executed commands:
+{"intent_id": "v2c-changelog", "command": ["env", "LC_ALL=C", "python3", "-B", "/tmp/fossilize-56-refresh/v2-checker-output/changelog_audit.py"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 1.7655970830237493}

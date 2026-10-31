@@ -1,0 +1,69 @@
+{
+  "gate": "new-base-original-defect-controls",
+  "result": "passed",
+  "exit_code": 0,
+  "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+  "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+  "plan_version": 2,
+  "attempt_id": "checker-refresh-3",
+  "command": [
+    "env",
+    "LC_ALL=C",
+    "python3",
+    "-B",
+    "/tmp/fossilize-56-refresh/v2-checker-output/runtime_audit.py"
+  ],
+  "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+  "environment": {
+    "LC_ALL": "C",
+    "platform": "Linux CPU only",
+    "compiler": "GNU13.3.0"
+  },
+  "criteria": [
+    "AC1"
+  ]
+}
+
+Independent original-defect control uses exact candidate source/tests; only Linux header replaced with currentbase6ad9, byte-identical980.196 tracked entries copied, dependencies linked without mutation. No source/test repair. Three separately selected fault CTests each returned intended CTest8; audit returned0 after checking the observed assertions, injection1 and real healthySiblingWork1. No timeout or bounded-completion failure accepted. Healthy plus healthy-recovery both passed0 under same header. Candidate counterparts pass in all four suites.
+
+sigmask:
+97: FAIL no-controller-fallthrough-or-worker-fork
+97: FAIL exact-worker-exit-status
+97: Executed fork-child-initial-first-sigmask: births=2 injections=1 normal-workers=1 failures=2
+
+stdout-dup2:
+100: FAIL no-controller-fallthrough-or-worker-fork
+100: FAIL exact-worker-exit-status
+100: Executed fork-child-initial-first-stdout-dup2: births=2 injections=1 normal-workers=1 failures=2
+
+stdin-dup2:
+103: FAIL no-controller-fallthrough-or-worker-fork
+103: FAIL exact-worker-exit-status
+103: Executed fork-child-initial-first-stdin-dup2: births=2 injections=1 normal-workers=1 failures=2
+
+Healthy control JUnit:2 exact IDs status=run, failures0/skips0; actual stdout:
+Executed fork-child-healthy: births=2 injections=0 normal-workers=2 failures=0
+Executed fork-child-healthy-recovery: births=2 injections=0 normal-workers=1 failures=0
+
+Independent metadata audit:
+debug-exceptions-off : PASS133 discovered unique/executed exact,14 fork-child,28 retained#13,zero failures/skips;21 targets; default validation ON; effective flags checked
+debug-exceptions-on : PASS133 discovered unique/executed exact,14 fork-child,28 retained#13,zero failures/skips;21 targets; default validation ON; effective flags checked
+release-exceptions-off : PASS133 discovered unique/executed exact,14 fork-child,28 retained#13,zero failures/skips;21 targets; default validation ON; effective flags checked
+release-exceptions-on : PASS133 discovered unique/executed exact,14 fork-child,28 retained#13,zero failures/skips;21 targets; default validation ON; effective flags checked
+repeat PASS14 cases x3 =42 actual starts
+baseline-sigmask : expected status8, one injection and real healthy sibling, fallthrough+wrong exit assertions detected; no timeout
+baseline-stdout-dup2 : expected status8, one injection and real healthy sibling, fallthrough+wrong exit assertions detected; no timeout
+baseline-stdin-dup2 : expected status8, one injection and real healthy sibling, fallthrough+wrong exit assertions detected; no timeout
+baseline controls PASS2 exact healthy IDs, zero failures/skips (CTest wording independent)
+PASS all measured receipts exact command/cwd/timeout and intended result; four fresh configurations,532 full tests +42 repeats +5 baseline controls
+
+
+Measured executed commands:
+{"intent_id": "v2c-baseline-setup", "command": ["env", "LC_ALL=C", "python3", "-B", "/tmp/fossilize-56-refresh/v2-checker-output/baseline_setup.py"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 3.681233005016111}
+{"intent_id": "v2c-baseline-configure", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/cmake", "-S", "/tmp/fossilize-56-refresh/v2-checker-baseline", "-B", "/tmp/fossilize-56-refresh/build/v2-checker-baseline", "-G", "Ninja", "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja", "-DCMAKE_BUILD_TYPE=Debug", "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF", "-DFOSSILIZE_TESTS=ON", "-DFOSSILIZE_CLI=ON", "-DFOSSILIZE_VULKAN_LAYER=ON", "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 131.80446432402823}
+{"intent_id": "v2c-baseline-build", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/cmake", "--build", "/tmp/fossilize-56-refresh/build/v2-checker-baseline", "--parallel", "4", "--target", "fork-child-setup-test"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 72.42544470389839}
+{"intent_id": "v2c-baseline-sigmask", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/ctest", "--test-dir", "/tmp/fossilize-56-refresh/build/v2-checker-baseline", "-V", "--no-tests=error", "-R", "^fork-child-initial-first-sigmask$"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 8, "timed_out": false, "wait_seconds": 6.328033801983111}
+{"intent_id": "v2c-baseline-stdout-dup2", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/ctest", "--test-dir", "/tmp/fossilize-56-refresh/build/v2-checker-baseline", "-V", "--no-tests=error", "-R", "^fork-child-initial-first-stdout-dup2$"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 8, "timed_out": false, "wait_seconds": 0.0}
+{"intent_id": "v2c-baseline-stdin-dup2", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/ctest", "--test-dir", "/tmp/fossilize-56-refresh/build/v2-checker-baseline", "-V", "--no-tests=error", "-R", "^fork-child-initial-first-stdin-dup2$"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 8, "timed_out": false, "wait_seconds": 0.0}
+{"intent_id": "v2c-baseline-healthy", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/ctest", "--test-dir", "/tmp/fossilize-56-refresh/build/v2-checker-baseline", "--output-on-failure", "--no-tests=error", "-R", "^fork-child-healthy(-recovery)?$", "--output-junit", "/tmp/fossilize-56-refresh/v2-checker-output/baseline-healthy-junit.xml.txt"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 0.0}
+{"intent_id": "v2c-runtime-audit", "command": ["env", "LC_ALL=C", "python3", "-B", "/tmp/fossilize-56-refresh/v2-checker-output/runtime_audit.py"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 0.0}

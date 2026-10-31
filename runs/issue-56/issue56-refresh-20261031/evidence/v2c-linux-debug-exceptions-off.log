@@ -1,0 +1,134 @@
+{
+  "gate": "linux-debug-exceptions-off",
+  "result": "passed",
+  "exit_code": 0,
+  "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+  "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+  "plan_version": 2,
+  "attempt_id": "checker-refresh-3",
+  "command": [
+    [
+      "env",
+      "LC_ALL=C",
+      "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+      "-S",
+      "/tmp/fossilize-56-refresh/v2-checker",
+      "-B",
+      "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+      "-DCMAKE_BUILD_TYPE=Debug",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    ],
+    [
+      "env",
+      "LC_ALL=C",
+      "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+      "--build",
+      "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+      "--parallel",
+      "4",
+      "--target",
+      "fossilize-test",
+      "varint-test",
+      "application-info-filter-test",
+      "object-cache-test",
+      "feature-filter-test",
+      "futex-test",
+      "replay-diagnostic-test",
+      "device-diagnostic-test",
+      "capture-diagnostic-test",
+      "diagnostic-compatibility-test",
+      "utility-parse-test",
+      "file-helper-test",
+      "file-helper-compatibility-test",
+      "fork-child-setup-test",
+      "replay-controller-test",
+      "replay-controller-compatibility-test",
+      "fossilize-replay",
+      "fossilize-list",
+      "fossilize-rehash",
+      "fossilize-prune",
+      "VkLayer_fossilize"
+    ],
+    [
+      "env",
+      "LC_ALL=C",
+      "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+      "--show-only=json-v1"
+    ],
+    [
+      "env",
+      "LC_ALL=C",
+      "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--output-junit",
+      "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-junit.xml.txt"
+    ],
+    [
+      "env",
+      "LC_ALL=C",
+      "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^fork-child-",
+      "--repeat",
+      "until-fail:3"
+    ]
+  ],
+  "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+  "environment": {
+    "LC_ALL": "C",
+    "platform": "Linux CPU only",
+    "compiler": "GNU13.3.0"
+  },
+  "criteria": [
+    "AC1"
+  ]
+}
+
+Fresh configuration debug-exceptions-off:133 discovered and133 unique actual JUnit testcases status=run, exact ID equality, zero failed/skipped/disabled.14 fork-child and28 retained issue13 cases. All21 targets built, shipping validation defaultON with effective definition and static link closure. GNU13.3.0; isolated fresh build and runtime directories.
+Fork fixture actual summaries (Release-active checks enforce process/status/reap/EOF/barrier/counter assertions):
+Executed fork-child-healthy: births=2 injections=0 normal-workers=2 failures=0
+Executed fork-child-healthy-recovery: births=2 injections=0 normal-workers=1 failures=0
+Executed fork-child-parent-death: births=1 injections=0 normal-workers=0 failures=0
+Executed fork-child-prctl-failure: births=2 injections=1 normal-workers=1 failures=0
+Executed fork-child-parent-race: births=2 injections=1 normal-workers=1 failures=0
+Executed fork-child-initial-first-sigmask: births=2 injections=1 normal-workers=1 failures=0
+Executed fork-child-initial-last-sigmask: births=2 injections=1 normal-workers=1 failures=0
+Executed fork-child-recovery-sigmask: births=2 injections=1 normal-workers=0 failures=0
+Executed fork-child-initial-first-stdout-dup2: births=2 injections=1 normal-workers=1 failures=0
+Executed fork-child-initial-last-stdout-dup2: births=2 injections=1 normal-workers=1 failures=0
+Executed fork-child-recovery-stdout-dup2: births=2 injections=1 normal-workers=0 failures=0
+Executed fork-child-initial-first-stdin-dup2: births=2 injections=1 normal-workers=1 failures=0
+Executed fork-child-initial-last-stdin-dup2: births=2 injections=1 normal-workers=1 failures=0
+Executed fork-child-recovery-stdin-dup2: births=2 injections=1 normal-workers=0 failures=0
+Effective fixture compile command:
+/usr/bin/c++ -I/tmp/fossilize-56-refresh/v2-checker -I/tmp/fossilize-56-refresh/v2-checker/rapidjson/include -I/tmp/fossilize-56-refresh/v2-checker/khronos -I/tmp/fossilize-56-refresh/v2-checker/miniz -I/tmp/fossilize-56-refresh/v2-checker/cli -I/tmp/fossilize-56-refresh/v2-checker/cli/volk -I/tmp/fossilize-56-refresh/v2-checker/cli/../khronos  -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -o test/CMakeFiles/fork-child-setup-test.dir/fork_child_setup_test.cpp.o -c /tmp/fossilize-56-refresh/v2-checker/test/fork_child_setup_test.cpp
+Shipping replay compile command:
+/usr/bin/c++ -DFOSSILIZE_REPLAYER_SPIRV_VAL -I/tmp/fossilize-56-refresh/v2-checker -I/tmp/fossilize-56-refresh/v2-checker/rapidjson/include -I/tmp/fossilize-56-refresh/v2-checker/khronos -I/tmp/fossilize-56-refresh/v2-checker/miniz -I/tmp/fossilize-56-refresh/v2-checker/cli -I/tmp/fossilize-56-refresh/v2-checker/cli/volk -I/tmp/fossilize-56-refresh/v2-checker/cli/../khronos -I/tmp/fossilize-56-refresh/v2-checker/cli/SPIRV-Tools/include  -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -o cli/CMakeFiles/fossilize-replay.dir/fossilize_replay.cpp.o -c /tmp/fossilize-56-refresh/v2-checker/cli/fossilize_replay.cpp
+Shipping replay Ninja link:
+build cli/fossilize-replay: CXX_EXECUTABLE_LINKER__fossilize-replay_Debug cli/CMakeFiles/fossilize-replay.dir/fossilize_replay.cpp.o | libfossilize.a cli/libcli-utils.a cli/SPIRV-Tools/source/libSPIRV-Tools.a libminiz.a cli/libvolk.a || cli/SPIRV-Tools/source/libSPIRV-Tools.a cli/libcli-utils.a cli/libvolk.a libfossilize.a libminiz.a
+Additional repeat passed:14 IDs each actually started3 times =42 executions, zero failures.
+
+
+Measured executed commands:
+{"intent_id": "v2c-debug-exceptions-off-configure", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/cmake", "-S", "/tmp/fossilize-56-refresh/v2-checker", "-B", "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off", "-G", "Ninja", "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja", "-DCMAKE_BUILD_TYPE=Debug", "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF", "-DFOSSILIZE_TESTS=ON", "-DFOSSILIZE_CLI=ON", "-DFOSSILIZE_VULKAN_LAYER=ON", "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF", "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 3.6730063130380586}
+{"intent_id": "v2c-debug-exceptions-off-build", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/cmake", "--build", "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off", "--parallel", "4", "--target", "fossilize-test", "varint-test", "application-info-filter-test", "object-cache-test", "feature-filter-test", "futex-test", "replay-diagnostic-test", "device-diagnostic-test", "capture-diagnostic-test", "diagnostic-compatibility-test", "utility-parse-test", "file-helper-test", "file-helper-compatibility-test", "fork-child-setup-test", "replay-controller-test", "replay-controller-compatibility-test", "fossilize-replay", "fossilize-list", "fossilize-rehash", "fossilize-prune", "VkLayer_fossilize"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 0.006413122988305986}
+{"intent_id": "v2c-debug-exceptions-off-discovery", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/ctest", "--test-dir", "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off", "--show-only=json-v1"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 0.0}
+{"intent_id": "v2c-debug-exceptions-off-ctest", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/ctest", "--test-dir", "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off", "--output-on-failure", "--no-tests=error", "--output-junit", "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-junit.xml.txt"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 0.0}
+{"intent_id": "v2c-repeat", "command": ["env", "LC_ALL=C", "/tmp/fossilize-10/tools/cmake/data/bin/ctest", "--test-dir", "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off", "--output-on-failure", "--no-tests=error", "-R", "^fork-child-", "--repeat", "until-fail:3"], "cwd": "/tmp/fossilize-56-refresh/v2-checker", "timeout": 600.0, "exit_code": 0, "timed_out": false, "wait_seconds": 0.0}
