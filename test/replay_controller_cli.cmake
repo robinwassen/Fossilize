@@ -34,10 +34,9 @@ if(CASE STREQUAL "e5" OR CASE STREQUAL "e6")
         set(boundary "Debug-worker-loss")
     elseif(assertions_disabled STREQUAL "1")
         # This historical fixture rejects at the version boundary in Release;
-        # it does not lose a worker. Its zero exit is a preserved parser-policy
-        # limitation, not proof that the required pipeline was replayed.
-        set(expected 0)
-        set(boundary "Release-parser-rejection-no-worker-loss")
+        # it is an orderly item failure, independent of worker-loss recovery.
+        set(expected 1)
+        set(boundary "Release-parser-rejection-orderly-item-failure")
         execute_process(COMMAND "${CALLER}" --parser-rejection "${REPLAY}" "${WORK}/fixture.foz"
             RESULT_VARIABLE rejection_status OUTPUT_VARIABLE rejection_output ERROR_VARIABLE rejection_errors
             TIMEOUT 30 WORKING_DIRECTORY "${WORK}")

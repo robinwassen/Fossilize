@@ -184,7 +184,65 @@ redesign asynchronous persistence error reporting. Opt/disasm migration and the
 explicitly permitted optimizer fallback policy remain future scope; these tests
 make no claim to verify those tools or the complete observability standard.
 
-A normal Linux CLI/layer-enabled build registers 133 tests before optional layer integration, including 14 Linux fork-child cases and 28 replay-controller cases retained from [issue #13](https://github.com/robinwassen/Fossilize/issues/13). Discover the current platform-specific inventory with CTest before reporting coverage; this Linux count does not establish native Windows execution. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
+A normal Linux CLI/layer-enabled build with SPIR-V validation registers 165 tests before optional layer integration, including 14 Linux fork-child cases and 28 replay-controller cases retained from [issue #13](https://github.com/robinwassen/Fossilize/issues/13), plus 32 replay item-outcome cases. Discover the current platform-specific inventory with CTest before reporting coverage; this Linux count does not establish native Windows execution. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
+
+The replay outcome regressions for [issue #14](https://github.com/robinwassen/Fossilize/issues/14)
+register `replay-outcome-{state,parse-read,creation,compile-required-loop,support,validation,setup-dependency,worker-queue,matrix}`,
+four `replay-outcome-entry-*` private production-entry checks, fifteen
+`replay-outcome-cli-*` fixtures and four Linux `replay-outcome-controller-*`
+order/progress checks. Tests use explicit checks in Release, controlled Vulkan
+producers, rejecting databases, the real SPIR-V validator, checked FOZ readback,
+real workers and CLI processes. Run the full CPU suite in Debug/Release with
+exceptions OFF/ON and `FOSSILIZE_REPLAYER_SPIRV_VAL=ON`; discover actual IDs with
+`ctest --show-only=json-v1`. Native Windows execution is explicitly excluded from
+the issue's Linux verification run at the user's request; portable source and
+registration do not establish Windows runtime behavior. Windows private controller
+order tests cover absent progress; inherited anonymous shared-memory order tests
+are Linux-only, while shipped CLI/ExternalReplayer tests exercise named progress
+sharing on Windows when run there.
+
+`ReplayItemOutcome` is private bounded evidence: independent reason counters and
+one first tag/hash/raw Vulkan result per category, protected by a mutex. Categories
+are read, parse, creation, unsupported, validation, setup and dependency failure;
+counts are overlapping observations, not unique logical item totals. Initial
+objects, shader callbacks, worker parsing/creation and device/run setup retain
+unsuccessful outcomes without requiring shared progress. Queue completion still
+counts every processed job, including failed processing. Required unsupported or
+blacklisted work and skipped compile-required work are unsuccessful; a successful
+compile-required fallback remains successful, while a failed required loop
+iteration cannot be erased by a later success. Explicit ranges/whitelists exclude
+work from the requested scope; failed or invalid creation cannot add successful
+replay-cache/validation-whitelist markers, and existing reuse selection policy is
+unchanged.
+
+Normal replay now returns nonzero for retained required failures. Current paired
+children/controllers add an internal `REPLAY_FAILED <reason-mask> <drained>`
+terminal pipe record for orderly failures; the nonzero OS status remains required.
+Controllers retain the reason set, drain orderly siblings and avoid crash counters
+or restart attempts for controlled item failures. Drained assignment ranges do
+not certify a successful prefix. Missing/truncated terminal proof remains an
+unresolved worker result under the existing recovery policy. Lossy optional
+progress-ring forwarding cannot erase the pipe/OS result. Public ExternalReplayer
+declarations, SharedControlBlock layout/version, existing progress/resume messages
+and cached wait/query status semantics remain unchanged; tests assert those
+specific contracts. This is not a general binary ABI or mixed-version child
+protocol guarantee. Controllers reject a missing explicitly selected hash before their zero-child
+completion shortcut, including empty archives. The `--progress` wrapper resolves
+`--pipeline-hash` through
+existing range options so missing hashes cannot silently replay a different scope.
+Direct child CLI forces one thread and consumes controller-filtered metadata;
+standalone child whitelist arguments are not a supported selection interface.
+
+The E7 oracle is `test/replay_outcome_cli.cmake` with `CASE=e7` (and `CASE=good`
+for its clean control), built fixture generator, real `REPLAY`, isolated `WORK`
+and optional `BASELINE_REPLAY`. Against unchanged base Debug/Release executables,
+the version-999 record must reproduce false-success zero in normal, child,
+master and progress modes; candidate exits must be nonzero and clean controls
+zero on both. The old Release `{}` controller fixture now expects orderly parser
+failure nonzero, while Debug assertion-triggered E5/E6 worker-loss checks remain.
+These CPU results establish neither actual driver compilation, hardware support,
+cache output persistence nor whole-standard observability compliance. Harness
+Python component tests are a separate scope when harness helpers change.
 
 The `*-library-only-*` presets disable **both CLI and tests**. They are build/package checks, not test coverage; their test presets/workflows must not be reported as a passing suite. To test the core without CLI/SPIR-V dependencies:
 
@@ -504,14 +562,16 @@ actual CLI's unsuccessful exit, including `--progress --quiet-slave`. To reprodu
 original defect, invoke `test/replay_controller_cli.cmake` with `GENERATOR`,
 `REPLAY`, `WORK`, `CASE=e5` (then `e6`) and `BASELINE_REPLAY` set to an unchanged
 input Debug executable. The runner checks baseline false-success zero separately
-from candidate status one. Release exercises the historical fixture's distinct
-parser-rejection boundary: it currently exits zero without losing a worker.
-An `ExternalReplayer::Progress` control requires exactly one compute parse
+from candidate status one. Release exercises a distinct parser-rejection boundary without losing a worker.
+At the issue #13 delivery, this fixture exited zero despite rejected required
+work; issue [#14](https://github.com/robinwassen/Fossilize/issues/14) supersedes
+that behavior with status one for the orderly item failure. The current
+`ExternalReplayer::Progress` control still requires exactly one compute parse
 failure and skip, zero completed compute pipelines and zero clean/dirty worker
-deaths. This zero exit is a current parser-policy limitation, **not successful
-required replay** and not evidence of the child-loss fix. Mandatory deterministic
-real-controller loss cases require status one in every configuration. The E5/E6
-worker-loss defect and baseline contrast are established by Debug evidence.
+deaths. This Release case verifies item failure, not worker loss. Mandatory
+deterministic real-controller loss cases require status one in every
+configuration. The E5/E6 worker-loss defect and baseline contrast remain
+established by Debug evidence.
 
 `replay-controller-cli-compatibility` exercises `ExternalReplayer::Options{}`,
 `start`, `wait`, `is_process_complete`, and cached status for clean and failed
@@ -522,10 +582,14 @@ or overwrite the unsuccessful result with `-ECHILD`. Compile
 `test/replay_controller_compatibility_test.cpp` with the
 input public headers first on its include path and link candidate libraries for
 old-header source compatibility evidence. Existing diagnostic compatibility
-fixtures retain recorder/database and ordinary CLI checks. Public declarations,
-shared progress layout/version and worker grammar are unchanged. The intentional
-behavior change is that unresolved robust replay returns nonzero, including
-through `ExternalReplayer::wait`. This is no general binary ABI, driver/GPU,
+fixtures retain recorder/database and ordinary CLI checks. Issue #13 preserved
+public declarations, shared progress layout/version and worker grammar while
+making unresolved robust replay return nonzero, including through
+`ExternalReplayer::wait`. Issue #14 preserves those public declarations and
+shared progress layout/version, plus existing progress/resume message semantics,
+and adds the internal `REPLAY_FAILED <reason-mask> <drained>` terminal record for
+orderly item failures described above. These compatibility checks establish
+preserved caller source compatibility, not a general binary ABI, driver/GPU,
 output durability, full item-ledger or whole observability-standard guarantee.
 Apple/Android `NO_ROBUST_REPLAYER` paths remain outside this contract.
 
