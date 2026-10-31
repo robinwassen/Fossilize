@@ -143,6 +143,10 @@
       {
         "started": 1793433148.972837,
         "wait_seconds": 4.954864838044159
+      },
+      {
+        "started": 1793433159.422822,
+        "wait_seconds": 5.438011046964675
       }
     ],
     "command_timeout": 600,
@@ -649,9 +653,30 @@
         "intent_id": "issue61-renew-checker-1-delivery-w09",
         "started": 1793433155.0992348,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "delivery-w11-0",
+          "--inventory",
+          "/tmp/fossilize-61-renewal/output/checker-1/suite/inventory.json",
+          "--output",
+          "/tmp/fossilize-61-renewal/output/checker-1/suite/delivery-w11-0.json"
+        ],
+        "command": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/checker-1 --timeout 600 --intent-id issue61-renew-checker-1-delivery-w11-0 --receipt /tmp/fossilize-61-renewal/output/checker-1/delivery-w11-0.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-0 --inventory /tmp/fossilize-61-renewal/output/checker-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/checker-1/suite/delivery-w11-0.json",
+        "cwd": "/tmp/fossilize-61-renewal/checker-1",
+        "eligible_deadline": 1793446742.2913122,
+        "intent_id": "issue61-renew-checker-1-delivery-w11-0",
+        "started": 1793433166.0741675,
+        "timeout": 600
       }
     ],
-    "deadline": 1793446736.8533013,
+    "deadline": 1793446742.2913122,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -1166,7 +1191,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 37,
+  "revision": 38,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
