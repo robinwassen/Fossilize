@@ -406,6 +406,10 @@
         "started": 1793405107.3265407,
         "wait_id": "cac46f29a17a46e2be67c77f9bcacfb6",
         "wait_seconds": 4.901936121983454
+      },
+      {
+        "started": 1793405205.8843288,
+        "wait_seconds": 0.9992506100097671
       }
     ],
     "command_timeout": 600,
@@ -3311,7 +3315,7 @@
         }
       }
     ],
-    "deadline": 1793419564.774009,
+    "deadline": 1793419565.7732596,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -3321,7 +3325,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
+  "next_action": "journal actual implementation PR URL on each closeout issue, then publish-observation event=issue-evidence",
   "operation": "publish",
   "original": [
     {
@@ -3899,10 +3903,33 @@
         "body_file": "/tmp/fossilize-56/pr-body.md",
         "event": "create-dispatched",
         "title": "Terminate Linux replay children on fatal setup errors"
+      },
+      {
+        "all_states": true,
+        "event": "lookup",
+        "matches": [
+          {
+            "branch": "codex/issue-56-child-setup",
+            "draft": false,
+            "state": "open",
+            "target_branch": "master",
+            "target_repository": "robinwassen/Fossilize",
+            "url": "https://github.com/robinwassen/Fossilize/pull/65"
+          }
+        ],
+        "unambiguous": true
       }
     ],
+    "pr": {
+      "branch": "codex/issue-56-child-setup",
+      "draft": false,
+      "state": "open",
+      "target_branch": "master",
+      "target_repository": "robinwassen/Fossilize",
+      "url": "https://github.com/robinwassen/Fossilize/pull/65"
+    },
     "remote_sha": "da2b76eb9c80223985f4b993fb18bca82c121503",
-    "stage": "lookup"
+    "stage": "issue-evidence"
   },
   "repository": {
     "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
@@ -3915,7 +3942,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 174,
+  "revision": 175,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
