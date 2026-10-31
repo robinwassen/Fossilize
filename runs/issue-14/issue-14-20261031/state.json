@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/issue-14/issue-14-20261031/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793453393.9106488,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/14",
       "worker_id": "/root/issue14_planner"
     }
@@ -96,8 +97,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -109,9 +110,469 @@
     "output_directory": "/tmp/fossilize-14/output",
     "source_worktree": "/home/robin/.codex/worktrees/0eed/fossilize"
   },
-  "phase": "planning",
-  "plan": null,
-  "provenance": [],
+  "phase": "implementing",
+  "plan": {
+    "assumptions_and_risks": [
+      "Planner inspected the detached base read-only and ran no build, probe or test. Current #14 and shared #8 were read through gh with explicit repository. Current #14 matches the immutable original. Submodules in the detached planner worktree were uninitialized; implementation/checker must populate matching required dependencies before builds.",
+      "A boolean-only failure latch would satisfy aggregate failure but cannot satisfy distinct-outcome assertions alone. Expose internal reason snapshots directly to tests; prose parsing is not the result oracle. Public richer result/API work remains out of scope.",
+      "Internal child IPC/status additions must be acknowledged as intentional protocol behavior; source-level preserved consumer fixtures do not establish mixed-version worker/controller interoperability. Test current paired components and existing unchanged messages.",
+      "Controlled child failure is different from worker disappearance. Existing #13 controller currently returns early for unresolved workers, so integration must not let a new controlled item failure discard successful sibling completion or accidentally make crash recovery permanent failure.",
+      "Shader/dependency parsing, module reuse and pipeline loop counters describe different work units. Define and assert queue completion per submitted phase; do not equate summed event counts or attempt counts with unique final logical items.",
+      "All commands require coordinator-published intent, unique receipt and verification_lock with a real child timeout <=600 seconds. The coordinator settles measured waits before the next budget gate. Do not nest locks. Use bounded build batches if needed; do not lower assertions or change timeout ceilings.",
+      "Four-hour bound, initial implementation plus three repairs and one replan remain unchanged. If a mandatory Linux prerequisite or gate is unavailable/incomplete, report it and route a decision; Windows execution is explicitly excluded by the user, not an unannounced downgrade."
+    ],
+    "cases": [
+      {
+        "assertions": "Concurrent mixed producer updates retain every expected reason and unsuccessful status with shared progress null and present; a clean accumulator succeeds. Deterministic barriers reorder successful/failing producers; bounded exact counters/reason snapshots do not lose updates. Distinct outcomes are asserted through results, not stderr.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-accumulator",
+        "location": "test/replay_outcome_test.cpp (new private production-inclusion target)",
+        "runner_registration": "replay-outcome-state"
+      },
+      {
+        "assertions": "Use a rejecting DatabaseInterface with separate size-read and payload-read failures, an absent required shader/dependency, invalid JSON, unsupported serialization version E7 {\"version\":999}, mismatched tag/hash and parse-with-no-acknowledgement. Assert appropriate read/missing vs parse outcomes and known identities; successful parse control has no failure. E7 never succeeds just because parse-only queue drained.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-parse-read",
+        "location": "test/replay_outcome_test.cpp (new private production-inclusion target)",
+        "runner_registration": "replay-outcome-parse-read"
+      },
+      {
+        "assertions": "For graphics, compute and raytracing, inject at least VK_ERROR_OUT_OF_HOST_MEMORY and VK_ERROR_DEVICE_LOST through actual production creation calls; assert creation-failed outcome, exact raw value/tag/hash, nonzero aggregate, null outputs and cleanup. Add shader-module and initial-object creation rejection controls so these cannot disappear through callback true/parse success. Successful creation remains zero and preserves outputs/lifetimes.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-vulkan-create",
+        "location": "test/replay_outcome_test.cpp (new private production-inclusion target)",
+        "runner_registration": "replay-outcome-creation"
+      },
+      {
+        "assertions": "For every pipeline kind assert compile-required then success fallback yields success; compile-required then failure and explicit skip retain unsuccessful required work; successful fallback is not a driver crash. Check loop_count>1 success and failure-then-success: prior unrecovered required iteration failure remains visible. Verify create/destroy counts and counters remain meaningful.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-compile-required-loop",
+        "location": "test/replay_outcome_test.cpp (new private production-inclusion target)",
+        "runner_registration": "replay-outcome-compile-required"
+      },
+      {
+        "assertions": "Deterministically unsupported shader and graphics/compute/raytracing pipeline create-info produce unsupported, not validation/driver-crash, outcome even when progress is absent. Selected unsupported work returns nonzero; valid support control succeeds. Test a support rejection in a main-thread initial object callback as well as worker setup.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-support",
+        "location": "test/replay_outcome_test.cpp (new private production-inclusion target)",
+        "runner_registration": "replay-outcome-support"
+      },
+      {
+        "assertions": "Invalid SPIR-V with FOSSILIZE_REPLAYER_SPIRV_VAL ON and --spirv-val uses the real validator and records validation-failed; a valid minimal shader control succeeds. Trigger actual on_validation_error callback during shader/pipeline creation via a deterministic dispatch adapter; retain validation failure even when Vulkan returns VK_SUCCESS. Blocked downstream pipelines are dependency failures, not their own compiler crashes.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-validation",
+        "location": "test/replay_outcome_test.cpp (new private production-inclusion target); test/replay_outcome_cli.cmake and test/replay_outcome_compatibility_test.cpp (new or equivalent committed registered fixtures)",
+        "runner_registration": "replay-outcome-validation; replay-outcome-cli-validation"
+      },
+      {
+        "assertions": "Null/invalid setup create info, missing base pipeline, missing shader module and missing graphics/raytracing library dependencies retain setup or dependency-blocked as appropriate; do not dereference null create info or call Vulkan for blocked work. Include missing out-of-range library/dependency and required initial-object failure. Controlled run/device setup failure has unknown item identity and nonzero aggregate. Every failure has a valid-control counterpart.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-setup-dependency",
+        "location": "test/replay_outcome_test.cpp (new private production-inclusion target)",
+        "runner_registration": "replay-outcome-setup-dependency"
+      },
+      {
+        "assertions": "Run actual worker threads over fixed mixed parse/create jobs using one and multiple threads, both memory contexts, successful and failed processing, and shared progress null/present. Assert queued_count==completed_count==the exact submitted work count in every drained context; retained result remains unsuccessful. Include a completely successful queued workload returning zero. Use barriers/watchdogs, no random instability or timing sleeps.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-worker-queue",
+        "location": "test/replay_outcome_test.cpp (new private production-inclusion target)",
+        "runner_registration": "replay-outcome-worker-queue"
+      },
+      {
+        "assertions": "Generate verified FOZ fixtures, read them back to establish known tag/hash/payload; invoke shipped fossilize-replay --null-device for E7, missing input hash/dependency, unsupported required work, real SPIR-V validation failure, a fixed mixed valid/invalid archive, fully valid nonempty workload and empty archive. Assert real numeric process status (nonzero failures, zero controls) and direct ExternalReplayer wait/status behavior. Test creation/setup failures through a private executable invoking the same production main/run path with only the Vulkan/database adapter replaced; it must not set the accumulator directly.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-real-cli",
+        "location": "test/replay_outcome_cli.cmake and test/replay_outcome_compatibility_test.cpp (new or equivalent committed registered fixtures)",
+        "runner_registration": "replay-outcome-cli-<case>; replay-outcome-cli-injected-creation"
+      },
+      {
+        "assertions": "Replay the same fixed mixed workload in normal replay, direct child, child/controller and --progress modes. Cover one/multiple worker threads or controller children and optional shared progress absent/present where supported; impossible CLI combinations use private production-entry fixtures and are documented, not silently omitted. Assert identical expected logical unsuccessful result/reason set, zero for matching clean controls, all orderly assigned work drained, and exact expected queue completions independent of result. Reverse orderly child completion order with deterministic barriers and verify a successful sibling cannot mask failure. Any private adapters only inject producers; they do not replace result logic.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-mode-matrix",
+        "location": "test/replay_outcome_test.cpp (new private production-inclusion target); test/replay_outcome_cli.cmake and test/replay_outcome_compatibility_test.cpp (new or equivalent committed registered fixtures)",
+        "runner_registration": "replay-outcome-matrix-<mode>-<threads>-<progress>"
+      },
+      {
+        "assertions": "Directly inspect controller retained outcomes for orderly controlled item failure with another child successful in both completion orders: failed required items stay unsuccessful, no fake crash counters/restart loop, sibling completes, no shared progress dependency. Retain all #13 lost-before-progress, mixed order, clean, recovered-every-item, skipped culprit, unknown remainder and cleanup assertions. Full ring/drop/absent forwarding must not erase authoritative outcome.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-controller-policy",
+        "location": "test/replay_outcome_test.cpp (new private production-inclusion target); existing test/replay_controller_test.cpp",
+        "runner_registration": "replay-outcome-controller-<case>; existing replay-controller-*"
+      },
+      {
+        "assertions": "Compile/run an old ExternalReplayer caller using declarations from base headers against candidate libraries, asserting wait, is_process_complete and cached status for successful and controlled failed work. Assert SharedControlBlock layout/version and existing progress/resume literal semantics stay unchanged. Preserve valid old CLI invocations, range/whitelist explicit selection behavior, null-device and successful compile-required fallback; document formerly false-success exits and any additive internal terminal protocol behavior. No general binary ABI or mixed-version process guarantee.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-compatibility",
+        "location": "test/replay_outcome_cli.cmake and test/replay_outcome_compatibility_test.cpp (new or equivalent committed registered fixtures); existing test/replay_controller_compatibility_test.cpp and test/diagnostic_compatibility_test.cpp",
+        "runner_registration": "replay-outcome-compatibility; diagnostic-compatibility-test; replay-controller-cli-compatibility"
+      },
+      {
+        "assertions": "Candidate fixture generator emits E7 plus clean control; run identical assertion-bearing CLI oracle against base and candidate normal/master/progress executables. Base is expected to exhibit the original zero exit on rejected work in Debug and Release; candidate must return nonzero. Controls return zero for both. Capture deliberate oracle rejection or explicit defect observation without treating an expected baseline failure as a candidate test failure. Existing #13 Release {} rejection expectation is changed to nonzero; Debug E5/E6 worker-loss assertions remain.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-original-defect",
+        "location": "test/replay_outcome_cli.cmake and test/replay_outcome_compatibility_test.cpp (new or equivalent committed registered fixtures); existing test/replay_controller_cli.cmake",
+        "runner_registration": "replay-outcome-cli-e7 plus baseline override/control mode"
+      },
+      {
+        "assertions": "Candidate changelog has one short factual [Observability] sentence, practical replay false-success benefit and full #14 link. Verification documentation distinguishes internal outcomes, intentional exit/protocol changes, policy/exclusions and unverified Windows/hardware guarantees. No generated outputs or private machine configuration are tracked. Entire base-to-candidate diff is reviewed.",
+        "criteria": [
+          "AC1"
+        ],
+        "id": "R14-scope-docs",
+        "location": "CHANGELOG.md; local-docs/verification.md; entire diff",
+        "runner_registration": "independent unit and final review"
+      }
+    ],
+    "command_protocol": {
+      "cwd": "/home/robin/.codex/worktrees/0eed/fossilize",
+      "preparation": [
+        "git submodule update --init --recursive (only required dependencies; source setup, before build)",
+        "Confirm CMake, CTest, Ninja/compiler and Python are available; use explicit -S/-B rather than preset schema requirements if appropriate.",
+        "Use independent build directories per configuration and role. All fixed-name test output directories must be isolated."
+      ],
+      "resolution": "Commands below name the implementation source/build paths. A checker substitutes its exact detached source and fresh checker build/output paths before submitting concrete argv/cwd intents. Configure, build, inventory and each test invocation are separate locked commands; never put a recursive wrapper inside another wrapper. Record compiler/options, dependency SHAs, actual candidate/base/plan/attempt, command statuses, nonzero discovered/executed IDs and small sanitized logs.",
+      "wrapper": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ROLE_SOURCE --timeout 600 --intent-id UNIQUE --receipt /tmp/fossilize-14/output/ROLE-UNIQUE.receipt.json -- CHILD_ARGV"
+    },
+    "gates": [
+      {
+        "cases": [
+          "R14-accumulator",
+          "R14-parse-read",
+          "R14-vulkan-create",
+          "R14-compile-required-loop",
+          "R14-support",
+          "R14-validation",
+          "R14-setup-dependency",
+          "R14-worker-queue",
+          "R14-real-cli",
+          "R14-mode-matrix",
+          "R14-controller-policy",
+          "R14-compatibility"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/0eed/fossilize",
+        "expected": [
+          "All discovered applicable CPU CTest cases execute and pass, including nonzero new replay-outcome IDs and existing #10/#13 regressions; Release checks remain active and all case IDs map to executed tests. Inventory count is recorded rather than copied from historical 133. No mandatory skipped tests.",
+          "SPIR-V validation fixture really compiles validation support and exercises rejection; queue, mode, progress and outcome assertions above hold in this configuration. No real GPU or runtime layer claim."
+        ],
+        "id": "linux-debug-off",
+        "kind": "both",
+        "method": [
+          "cmake -S /home/robin/.codex/worktrees/0eed/fossilize -B /tmp/fossilize-14/build/debug-off -G Ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+          "cmake --build /tmp/fossilize-14/build/debug-off --parallel 4 (split into bounded target invocations if necessary, without omitting relevant targets)",
+          "ctest --test-dir /tmp/fossilize-14/build/debug-off --show-only=json-v1",
+          "ctest --test-dir /tmp/fossilize-14/build/debug-off --output-on-failure --no-tests=error --timeout 120 -j 1"
+        ],
+        "prerequisites": [
+          "Matching populated dependencies; CMake/Ninja/C++ compiler/Python available; exact committed candidate; new assertion-bearing tests registered and instrumented options inherited; coordinator intents/lock/receipts; role-isolated build/output directories."
+        ]
+      },
+      {
+        "cases": [
+          "R14-accumulator",
+          "R14-parse-read",
+          "R14-vulkan-create",
+          "R14-compile-required-loop",
+          "R14-support",
+          "R14-validation",
+          "R14-setup-dependency",
+          "R14-worker-queue",
+          "R14-real-cli",
+          "R14-mode-matrix",
+          "R14-controller-policy",
+          "R14-compatibility"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/0eed/fossilize",
+        "expected": [
+          "All discovered applicable CPU CTest cases execute and pass, including nonzero new replay-outcome IDs and existing #10/#13 regressions; Release checks remain active and all case IDs map to executed tests. Inventory count is recorded rather than copied from historical 133. No mandatory skipped tests.",
+          "SPIR-V validation fixture really compiles validation support and exercises rejection; queue, mode, progress and outcome assertions above hold in this configuration. No real GPU or runtime layer claim."
+        ],
+        "id": "linux-debug-on",
+        "kind": "both",
+        "method": [
+          "cmake -S /home/robin/.codex/worktrees/0eed/fossilize -B /tmp/fossilize-14/build/debug-on -G Ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+          "cmake --build /tmp/fossilize-14/build/debug-on --parallel 4 (split into bounded target invocations if necessary, without omitting relevant targets)",
+          "ctest --test-dir /tmp/fossilize-14/build/debug-on --show-only=json-v1",
+          "ctest --test-dir /tmp/fossilize-14/build/debug-on --output-on-failure --no-tests=error --timeout 120 -j 1"
+        ],
+        "prerequisites": [
+          "Matching populated dependencies; CMake/Ninja/C++ compiler/Python available; exact committed candidate; new assertion-bearing tests registered and instrumented options inherited; coordinator intents/lock/receipts; role-isolated build/output directories."
+        ]
+      },
+      {
+        "cases": [
+          "R14-accumulator",
+          "R14-parse-read",
+          "R14-vulkan-create",
+          "R14-compile-required-loop",
+          "R14-support",
+          "R14-validation",
+          "R14-setup-dependency",
+          "R14-worker-queue",
+          "R14-real-cli",
+          "R14-mode-matrix",
+          "R14-controller-policy",
+          "R14-compatibility"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/0eed/fossilize",
+        "expected": [
+          "All discovered applicable CPU CTest cases execute and pass, including nonzero new replay-outcome IDs and existing #10/#13 regressions; Release checks remain active and all case IDs map to executed tests. Inventory count is recorded rather than copied from historical 133. No mandatory skipped tests.",
+          "SPIR-V validation fixture really compiles validation support and exercises rejection; queue, mode, progress and outcome assertions above hold in this configuration. No real GPU or runtime layer claim."
+        ],
+        "id": "linux-release-off",
+        "kind": "both",
+        "method": [
+          "cmake -S /home/robin/.codex/worktrees/0eed/fossilize -B /tmp/fossilize-14/build/release-off -G Ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+          "cmake --build /tmp/fossilize-14/build/release-off --parallel 4 (split into bounded target invocations if necessary, without omitting relevant targets)",
+          "ctest --test-dir /tmp/fossilize-14/build/release-off --show-only=json-v1",
+          "ctest --test-dir /tmp/fossilize-14/build/release-off --output-on-failure --no-tests=error --timeout 120 -j 1"
+        ],
+        "prerequisites": [
+          "Matching populated dependencies; CMake/Ninja/C++ compiler/Python available; exact committed candidate; new assertion-bearing tests registered and instrumented options inherited; coordinator intents/lock/receipts; role-isolated build/output directories."
+        ]
+      },
+      {
+        "cases": [
+          "R14-accumulator",
+          "R14-parse-read",
+          "R14-vulkan-create",
+          "R14-compile-required-loop",
+          "R14-support",
+          "R14-validation",
+          "R14-setup-dependency",
+          "R14-worker-queue",
+          "R14-real-cli",
+          "R14-mode-matrix",
+          "R14-controller-policy",
+          "R14-compatibility"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/0eed/fossilize",
+        "expected": [
+          "All discovered applicable CPU CTest cases execute and pass, including nonzero new replay-outcome IDs and existing #10/#13 regressions; Release checks remain active and all case IDs map to executed tests. Inventory count is recorded rather than copied from historical 133. No mandatory skipped tests.",
+          "SPIR-V validation fixture really compiles validation support and exercises rejection; queue, mode, progress and outcome assertions above hold in this configuration. No real GPU or runtime layer claim."
+        ],
+        "id": "linux-release-on",
+        "kind": "both",
+        "method": [
+          "cmake -S /home/robin/.codex/worktrees/0eed/fossilize -B /tmp/fossilize-14/build/release-on -G Ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+          "cmake --build /tmp/fossilize-14/build/release-on --parallel 4 (split into bounded target invocations if necessary, without omitting relevant targets)",
+          "ctest --test-dir /tmp/fossilize-14/build/release-on --show-only=json-v1",
+          "ctest --test-dir /tmp/fossilize-14/build/release-on --output-on-failure --no-tests=error --timeout 120 -j 1"
+        ],
+        "prerequisites": [
+          "Matching populated dependencies; CMake/Ninja/C++ compiler/Python available; exact committed candidate; new assertion-bearing tests registered and instrumented options inherited; coordinator intents/lock/receipts; role-isolated build/output directories."
+        ]
+      },
+      {
+        "cases": [
+          "R14-original-defect"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/0eed/fossilize",
+        "expected": [
+          "E7 rejected blob gives baseline false-success zero but candidate nonzero in normal/master/progress; matching clean fixture zero on both; candidate test asserts the intended behavior change rather than only detecting a log. Debug/Release distinction documented."
+        ],
+        "id": "original-defect-control",
+        "kind": "work_unit",
+        "method": "Use detached base /tmp/fossilize-14/planner at 0ada951c5925e3a5a8e4ef69b382713acd416fd0 and separate /tmp/fossilize-14/build/baseline-debug and baseline-release: configure with CLI ON, tests/layer OFF, SPIRV_VAL OFF, exceptions OFF and corresponding Debug/Release; build target fossilize-replay only; invoke candidate registered E7 oracle/fixture with BASELINE_REPLAY pointing to each actual base executable, in fresh baseline output directories. Publish every concrete configure/build/oracle command intent independently before execution. Reuse only exact-bound immutable baseline artifacts if provenance exists.",
+        "prerequisites": [
+          "Matching populated base dependencies; candidate fixture generator/readback and real CLI oracle; isolated output and bounded commands."
+        ]
+      },
+      {
+        "cases": [
+          "R14-scope-docs",
+          "R14-compatibility"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/0eed/fossilize",
+        "expected": [
+          "Every original requirement has concrete implementation and assertion-bearing coverage; no source/layout compatibility claim exceeds fixtures; controlled result/crash distinctions correct in both platform sources; changelog accurate and concise with full issue reference; Windows execution and hardware limits explicit."
+        ],
+        "id": "independent-scope-review",
+        "kind": "both",
+        "method": "Read git diff --check and entire git diff BASE...CANDIDATE; inspect test registration/assertions, compile/link options, public header/layout diff and both platform source paths; read exact candidate CHANGELOG.md/local-docs/verification.md and fresh gh issue view 14/8 --repo robinwassen/Fossilize. Source review commands are read-only; any actual compile/probe is separately intent-published and locked.",
+        "prerequisites": [
+          "Exact clean committed candidate/base/plan; original acceptance and current material issue inputs; four Linux gate results and test mappings."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/0eed/fossilize",
+        "expected": [
+          "Only https://github.com/robinwassen/Fossilize/issues/14 closes; #8 remains open; actual Linux evidence and intentional false-success exit changes described; native Windows explicitly unverified at user request, no claim of whole-standard compliance or durable cache warming."
+        ],
+        "id": "publication-readiness",
+        "kind": "publication",
+        "method": "Coordinator supported issue snapshot/closeout/final acceptance/publication workflow on the exact reviewed candidate; separately review the final PR body compatibility/verification limits and exact Closes root URL.",
+        "prerequisites": [
+          "Independent unit and separate final acceptance; current issue inputs; required Linux evidence current and complete; candidate/base clean and bound; source compare and managed issue readiness."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/0eed/fossilize",
+        "expected": [
+          "No sanitizer findings in deterministic concurrent outcomes/queue tests; unsupported runtime is recorded as optional unavailable, never product pass or substitute for four mandatory configurations."
+        ],
+        "id": "bounded-thread-sanitizer",
+        "kind": "optional",
+        "method": "Separate Debug exceptions-OFF CLI/tests build with FOSSILIZE_SANITIZE_THREADS=ON and effective compile/link instrumentation confirmed; build the private replay-outcome target and dependencies only; run ctest --test-dir /tmp/fossilize-14/build/tsan --output-on-failure --no-tests=error -R \"^replay-outcome-(state|worker-queue|matrix)\" --timeout 120 -j 1. All concrete commands independently intent-published/locked. A bounded ASan-only target build/run is an alternative additional check for parser/lifetime changes, never combined with TSan.",
+        "prerequisites": [
+          "Run budget permits; toolchain/runtime supports sanitizer; instrument changed production-inclusion code, not just a wrapper."
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "boundaries": "cli/fossilize_replay.cpp and, if useful, a private cli/replay_outcome.hpp; no public library layout change.",
+        "change": "Define an internal replay outcome accumulator with stable named reason categories and an unsuccessful query/snapshot. Use atomics or a bounded mutex-protected object; initialize all state explicitly, avoid shared-progress dependency and exception requirements, and keep memory bounded by the needed facts. Preserve known tag/hash and raw VkResult when available, with explicit unknown identity for run setup. Do not infer crashes from controlled errors.",
+        "step": 1
+      },
+      {
+        "boundaries": "run_parse_work_item, enqueue_create_* callbacks, run_creation_work_item_setup*, run_creation_work_item*, enqueue_deferred_pipelines, on_validation_error and run_normal_process.",
+        "change": "Audit all required-input and item producers: both database read phases and parser return/acknowledgement in run_parse_work_item; initial main-thread parse callbacks; device/setup exits; shader support/SPIR-V/validation callback paths; pipeline setup rejection, missing shader/library/base handles, and graphics/compute/raytracing creation helpers. Return meaningful per-item results or record a precise category at the producer. Avoid double-classifying a support/validation callback rejection as a generic parse error when its cause is known. A missing dependency is retained as the origin, and its unattempted consumers as dependency-blocked rather than additional driver failures.",
+        "step": 2
+      },
+      {
+        "change": "Preserve successful compile-required fallback: intermediate VK_PIPELINE_COMPILE_REQUIRED followed by VK_SUCCESS can succeed; an unrecovered/explicitly skipped selected compile-required item is unsuccessful under the required-work policy. Preserve successful invocation flags, loop_count, pipeline output cleanup and positive counts. Any creation failure in required benchmark iterations cannot disappear behind a later loop success. Only actual successful work may be marked as replayed/validated; this is not a complete redesign of persistent replayer-cache trust. Keep intentional input range/whitelist exclusions separate from selected but unsupported required work.",
+        "step": 3
+      },
+      {
+        "boundaries": "cli/fossilize_replay_linux.hpp, cli/fossilize_replay_windows.hpp, cli/replay_worker_outcome.hpp, progress wrapper and ExternalReplayer status observation. An additive internal terminal record or reserved internal status may be used if documented and tested; existing progress/resume message meanings stay unchanged. Do not extend public SharedControlBlock or ExternalReplayer layouts for this slice.",
+        "change": "After joining/draining queues, return the retained normal-process outcome. Give orderly child completion with item failures an authoritative terminal path independent of optional shared memory and diagnostic-ring forwarding. The controller must retain that unsuccessful result, avoid treating it as a crash or endlessly retrying it, and allow other orderly children to finish so successful sibling order cannot erase failures. Retain #13 unresolved-loss/range/recovery rules. Use the same shared policy in Linux and Windows source.",
+        "step": 4
+      },
+      {
+        "change": "Add explicit Release-active checks in registered replay outcome unit/private production-inclusion and real CLI integration fixtures, isolated work directories and watchdogs. Link test targets with the same exception and sanitizer settings and enable SPIR-V validation in relevant fixtures. Update existing #13 Release parser-rejection compatibility expectations from false success to intentional nonzero controlled failure, without weakening the Debug worker-loss checks. Update local-docs/verification.md with registration, scope and intentional behavior/protocol compatibility boundaries; add one short factual [Observability] CHANGELOG.md entry with the full issue link.",
+        "step": 5
+      }
+    ],
+    "non_goals": [
+      "Do not implement the entire proposed observability standard, a public structured-result API/schema, durable cache guarantees, full retry reconciliation, cancellation redesign, Steam scheduling, new public ABI, or unrelated persistence/capture fixes.",
+      "Do not introduce production fault-injection CLI switches or environment hooks. Private production-inclusion fixtures and deterministic Vulkan/database adapters belong to test translation units.",
+      "Do not claim physical-driver compilation, cache warming/reuse, runtime validation-layer compatibility, native Windows/Apple/Android execution or general C++ binary ABI compatibility from null-device Linux tests.",
+      "No harness source or helper behavior changes are planned. The separate change-harness Python component suite is outside this C++ slice; its mandatory full-discovery procedure applies when checking that component. Run the full applicable CPU CTest inventory here, including its existing harness-style C++ fixtures."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000005`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n5. **FOS-000005 \u2014 Separate replay-thread work completion from item success.** **M; depends on `FOS-000001` and `FOS-000004` for complete propagation; \u00a72\u2013\u00a73.** [worker:1800](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1800) discards the parse return and increments `completed_count` after processing; creation helpers return void. [normal replay:4553](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L4553) returns success after the queue finishes (E7). Introduce a thread-safe outcome accumulator independent of optional shared memory. First cover parse/read and Vulkan creation failures, then setup/validation/support/dependency exits. Propagate the result through normal replay, child and controller. **Check:** E7, missing entry, injected Vulkan failure, and mixed success/failure. Keep queue progress as queue progress. Unsupported required work must be unsuccessful under the declared policy, even when it is not a crash.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Replay unit and CLI integration tests:** E7, missing input entries, injected creation errors, unsupported required work, validation failures and dependency-blocked work produce the expected distinct outcomes and nonzero aggregate exits. A fully successful workload returns zero.\n   - **Thread/mode matrix:** The same fixed mixed workload has the same final logical outcome in normal, child/controller and progress modes, with shared progress absent/present and one/multiple threads. Queue completion still reaches its expected count even when processing fails; it is never the success oracle.\n\n<!-- fossilize-migration-v1:FOS-000005 -->\n"
+      }
+    ],
+    "scope": [
+      "One coherent unsplit implementation of https://github.com/robinwassen/Fossilize/issues/14 at the supplied base; prerequisites #10 and #13 are completed and remain regression obligations.",
+      "Retain thread-safe, process-local replay outcomes independently of optional SharedControlBlock progress. Distinguish input read/missing, parse rejection (including E7), Vulkan creation failure, unsupported required work, validation failure, setup failure and dependency-blocked work; aggregate every required failure into nonzero normal/child/controller/progress exits.",
+      "Queue completed_count continues to count dequeued processing completion, including failed work, rather than successful items. Outcome retention must not depend on logs, optional shared progress or diagnostic-ring capacity.",
+      "Linux runtime verification covers Debug/Release crossed with exceptions OFF/ON. User explicitly excluded Windows execution: preserve original acceptance verbatim, maintain portable Windows source handling, and report native Windows behavior unverified rather than claiming it passed."
+    ],
+    "version": 1,
+    "work_units": []
+  },
+  "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/14"
+        ],
+        "digest": "89c84c7be07e1334441e0d52cbd4cf597ef996e19fe2781e13407896236fbc94",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/10": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n",
+            "children": [],
+            "id": 6079794262,
+            "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
+            "number": 10,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000001 \u2014 Preserve precise context in existing diagnostics",
+            "url": "https://github.com/robinwassen/Fossilize/issues/10"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/13": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n",
+            "children": [],
+            "id": 6079809809,
+            "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
+            "number": 13,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000004 \u2014 Retain unrecoverable child loss in the controller",
+            "url": "https://github.com/robinwassen/Fossilize/issues/13"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/14": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/10",
+              "https://github.com/robinwassen/Fossilize/issues/13"
+            ],
+            "body": "Legacy identity: `FOS-000005`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n5. **FOS-000005 \u2014 Separate replay-thread work completion from item success.** **M; depends on `FOS-000001` and `FOS-000004` for complete propagation; \u00a72\u2013\u00a73.** [worker:1800](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1800) discards the parse return and increments `completed_count` after processing; creation helpers return void. [normal replay:4553](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L4553) returns success after the queue finishes (E7). Introduce a thread-safe outcome accumulator independent of optional shared memory. First cover parse/read and Vulkan creation failures, then setup/validation/support/dependency exits. Propagate the result through normal replay, child and controller. **Check:** E7, missing entry, injected Vulkan failure, and mixed success/failure. Keep queue progress as queue progress. Unsupported required work must be unsuccessful under the declared policy, even when it is not a crash.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Replay unit and CLI integration tests:** E7, missing input entries, injected creation errors, unsupported required work, validation failures and dependency-blocked work produce the expected distinct outcomes and nonzero aggregate exits. A fully successful workload returns zero.\n   - **Thread/mode matrix:** The same fixed mixed workload has the same final logical outcome in normal, child/controller and progress modes, with shared progress absent/present and one/multiple threads. Queue completion still reaches its expected count even when processing fails; it is never the success oracle.\n\n<!-- fossilize-migration-v1:FOS-000005 -->\n",
+            "children": [],
+            "id": 6079814916,
+            "node_id": "I_kwDOVZpjbc8AAAABamKdBA",
+            "number": 14,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "FOS-000005 \u2014 Separate replay-thread work completion from item success",
+            "url": "https://github.com/robinwassen/Fossilize/issues/14"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/14"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    }
+  ],
   "publishing": {
     "ci_policy": "local",
     "stage": "none"
@@ -127,7 +588,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 3,
+  "revision": 4,
   "root_issue": {
     "id": 6079814916,
     "node_id": "I_kwDOVZpjbc8AAAABamKdBA",
@@ -137,9 +598,17 @@
   },
   "run_id": "issue-14-20261031",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-14",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/14",
   "verification": [],
-  "work_units": []
+  "work_units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/14",
+      "key": "https://github.com/robinwassen/Fossilize/issues/14",
+      "status": "ready"
+    }
+  ]
 }
