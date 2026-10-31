@@ -392,6 +392,10 @@
       {
         "started": 1793405078.2833736,
         "wait_seconds": 8.548512409906834
+      },
+      {
+        "started": 1793405094.6790092,
+        "wait_seconds": 4.8613527660490945
       }
     ],
     "command_timeout": 600,
@@ -3297,7 +3301,7 @@
         }
       }
     ],
-    "deadline": 1793419555.0107203,
+    "deadline": 1793419559.872073,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -3307,7 +3311,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -3855,6 +3859,12 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793405103.1244764,
+      "body_file": "/tmp/fossilize-56/pr-body.md",
+      "event": "create-dispatched",
+      "title": "Terminate Linux replay children on fatal setup errors"
+    },
     "intent": {
       "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
       "branch": "codex/issue-56-child-setup",
@@ -3874,10 +3884,15 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "body_file": "/tmp/fossilize-56/pr-body.md",
+        "event": "create-dispatched",
+        "title": "Terminate Linux replay children on fatal setup errors"
       }
     ],
     "remote_sha": "da2b76eb9c80223985f4b993fb18bca82c121503",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
@@ -3890,7 +3905,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 172,
+  "revision": 173,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
