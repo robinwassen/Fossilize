@@ -7953,7 +7953,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -8431,6 +8431,23 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793464447.7038558,
+      "body_marker": "<!-- harness-pr-create:issue-14-20261031:01f810ad6be415198775313891efe92ec3b1b5a2 -->",
+      "body_sha256": "953800a8d912414741bedeadf9fdc5f9cbefcd1c85bf4f0cae509f54e5bef738",
+      "event": "create-dispatched",
+      "expected_prior_observation": {
+        "all_states": true,
+        "branch": "codex/issue-14-replay-item-outcomes",
+        "matches": [],
+        "target_branch": "master",
+        "target_repository": "robinwassen/Fossilize",
+        "unambiguous": true
+      },
+      "intended_effect": "Create one open non-draft implementation PR from the accepted head to robinwassen/Fossilize master.",
+      "operation_key": "pr-create-issue-14-20261031-01f810ad6be415198775313891efe92ec3b1b5a2",
+      "title": "Propagate replay item failures across threads and processes"
+    },
     "intent": {
       "base_sha": "0ada951c5925e3a5a8e4ef69b382713acd416fd0",
       "body_sha256": "953800a8d912414741bedeadf9fdc5f9cbefcd1c85bf4f0cae509f54e5bef738",
@@ -8455,10 +8472,26 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "body_marker": "<!-- harness-pr-create:issue-14-20261031:01f810ad6be415198775313891efe92ec3b1b5a2 -->",
+        "body_sha256": "953800a8d912414741bedeadf9fdc5f9cbefcd1c85bf4f0cae509f54e5bef738",
+        "event": "create-dispatched",
+        "expected_prior_observation": {
+          "all_states": true,
+          "branch": "codex/issue-14-replay-item-outcomes",
+          "matches": [],
+          "target_branch": "master",
+          "target_repository": "robinwassen/Fossilize",
+          "unambiguous": true
+        },
+        "intended_effect": "Create one open non-draft implementation PR from the accepted head to robinwassen/Fossilize master.",
+        "operation_key": "pr-create-issue-14-20261031-01f810ad6be415198775313891efe92ec3b1b5a2",
+        "title": "Propagate replay item failures across threads and processes"
       }
     ],
     "remote_sha": "01f810ad6be415198775313891efe92ec3b1b5a2",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "0ada951c5925e3a5a8e4ef69b382713acd416fd0",
@@ -8471,7 +8504,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 415,
+  "revision": 416,
   "root_issue": {
     "id": 6079814916,
     "node_id": "I_kwDOVZpjbc8AAAABamKdBA",
