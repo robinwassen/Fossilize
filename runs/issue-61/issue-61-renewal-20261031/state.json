@@ -741,6 +741,27 @@
         "intent_id": "issue61-renew-checker-1-delivery-w11-3",
         "started": 1793433187.3485491,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-extra",
+          "--inventory",
+          "/tmp/fossilize-61-renewal/output/checker-1/suite/inventory.json",
+          "--output",
+          "/tmp/fossilize-61-renewal/output/checker-1/suite/regression-extra.json"
+        ],
+        "command": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/checker-1 --timeout 600 --intent-id issue61-renew-checker-1-regression-extra --receipt /tmp/fossilize-61-renewal/output/checker-1/regression-extra.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-extra --inventory /tmp/fossilize-61-renewal/output/checker-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/checker-1/suite/regression-extra.json",
+        "cwd": "/tmp/fossilize-61-renewal/checker-1",
+        "eligible_deadline": 1793446747.9566827,
+        "intent_id": "issue61-renew-checker-1-regression-extra",
+        "started": 1793433192.3210623,
+        "timeout": 600
       }
     ],
     "deadline": 1793446747.9566827,
@@ -1258,7 +1279,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 41,
+  "revision": 42,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
