@@ -26,7 +26,7 @@
 
 // Internal controller state. This is deliberately separate from optional shared
 // progress and from the mutable range used to launch the next attempt.
-enum class WorkerDisposition { Complete, Retry, Unresolved };
+enum class WorkerDisposition { Complete, Retry, Unresolved, Failed };
 
 struct ReplayWorkerOutcome
 {
@@ -44,6 +44,20 @@ struct ReplayWorkerOutcome
 	bool initialized = false;
 	bool unknown_remainder = false;
 	bool complete = false;
+	bool controlled_failure = false;
+	unsigned failure_mask = 0;
+	bool orderly_reported = false;
+	bool orderly_drained = false;
+
+	WorkerDisposition finish_controlled()
+	{
+		controlled_failure = true;
+		complete = false;
+		unknown_remainder = !orderly_drained;
+		// Drained means processed, not a successfully replayed prefix.
+		// A bounded category summary cannot certify individual item success.
+		return WorkerDisposition::Failed;
+	}
 
 	void assign(unsigned gb, unsigned ge, unsigned cb, unsigned ce, unsigned rb, unsigned re)
 	{

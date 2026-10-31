@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 		opts.databases = db; opts.num_databases = 1;
 		opts.num_threads = 1; opts.null_device = true; opts.quiet = true;
 		checks.require(replay.start(opts), "parser-rejection/start");
-		checks.require(replay.wait() == 0, "parser-rejection/current-clean-worker-exit-boundary");
+		checks.require(replay.wait() == 1, "parser-rejection/orderly-item-failure");
 		Fossilize::ExternalReplayer::Progress progress = {};
 		checks.require(replay.poll_progress(progress) == Fossilize::ExternalReplayer::PollResult::Complete,
 		               "parser-rejection/process-progress-complete");
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 		               "parser-rejection/no-worker-death-exercised");
 		checks.require(progress.total_compute_pipeline_blobs == 1 && progress.compute.parsed_fail == 1 &&
 		               progress.compute.completed == 0 && progress.compute.skipped == 1,
-		               "parser-rejection/required-pipeline-not-replayed-despite-current-zero-exit");
+		               "parser-rejection/required-pipeline-rejected-with-nonzero-exit");
 		printf("Executed R13/Release-parser-rejection-boundary; worker-deaths=%u/%u; parsed-fail=%u; completed=%u; failures=%d\n",
 		       progress.clean_crashes, progress.dirty_crashes, progress.compute.parsed_fail, progress.compute.completed, checks.failures);
 		return checks.failures ? 1 : 0;

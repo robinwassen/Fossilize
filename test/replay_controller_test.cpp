@@ -47,7 +47,8 @@ static std::string marker_path(unsigned index, unsigned attempt)
 {
 	return "worker-" + std::to_string(index) + "-" + std::to_string(attempt) + ".txt";
 }
-static bool mixed() { return scenario == "mixed-success-first" || scenario == "mixed-loss-first"; }
+static bool orderly() { return scenario.find("orderly-") == 0; }
+static bool mixed() { return scenario == "mixed-success-first" || scenario == "mixed-loss-first" || orderly(); }
 static void complete_items(std::ofstream &out, unsigned kind, unsigned begin, unsigned end)
 {
 	for (unsigned i = begin; i < end; i++) out << "complete " << kind << ' ' << i << '\n';
@@ -66,6 +67,19 @@ template <typename Options> static int test_worker(unsigned index, unsigned atte
 	unsigned end[] = {opts.end_graphics_index, opts.end_compute_index, opts.end_raytracing_index};
 	for (unsigned i = 0; i < 3; i++) out << "range " << i << ' ' << begin[i] << ' ' << end[i] << '\n';
 	out.flush();
+	if (orderly())
+	{
+		// The fixed archive and actual production slave perform all parsing,
+		// creation, outcome accumulation, queue draining and terminal writing.
+		int result;
+#ifdef _WIN32
+		result = run_slave_process(Global::device_options, opts, Global::databases, nullptr, nullptr, nullptr);
+#else
+		result = run_slave_process(Global::device_options, opts, Global::databases);
+#endif
+		out << "orderly-return " << result << '\n';
+		return result;
+	}
 	if (scenario == "held-sibling" && index == 0)
 	{
 #ifdef _WIN32
@@ -159,7 +173,7 @@ template <typename Children> static void before_harvest(const Children &children
 		do { ret = waitid(P_PID, child.pid, &info, WEXITED | WNOWAIT); } while (ret < 0 && errno == EINTR);
 		checks.require(ret == 0, "mixed/both-workers-terminal");
 	}
-	unsigned first = scenario == "mixed-success-first" ? 1 : 0;
+	unsigned first = orderly() ? (scenario.find("success-first") != std::string::npos ? 0 : 1) : scenario == "mixed-success-first" ? 1 : 0;
 	order.push_back(children[first].pid);
 	order.push_back(children[1 - first].pid);
 	harvest_prepared = true;
@@ -183,6 +197,7 @@ template <typename Process> static void child_command(std::string &command, cons
 	                      p.end_compute_index, p.start_raytracing_index, p.end_raytracing_index})
 		command += " " + std::to_string(value);
 	command += " " + (hold_name.empty() ? "unused" : hold_name);
+	if (orderly()) for (auto path : Global::databases) command += " \"" + std::string(path) + "\"";
 }
 template <typename Handles, typename Children> static DWORD test_wait(const Handles &handles, const Children &children)
 {
@@ -192,7 +207,7 @@ template <typename Handles, typename Children> static DWORD test_wait(const Hand
 		for (const auto &child : children)
 			if (child.process) checks.require(WaitForSingleObject(child.process, 5000) == WAIT_OBJECT_0,
 			                                 "mixed/both-workers-terminal");
-		unsigned first = scenario == "mixed-success-first" ? 1 : 0;
+		unsigned first = orderly() ? (scenario.find("success-first") != std::string::npos ? 0 : 1) : scenario == "mixed-success-first" ? 1 : 0;
 		for (unsigned n = 0; n < 2; n++)
 		{
 			HANDLE chosen = children[(first + n) % 2].process;
@@ -287,6 +302,20 @@ static std::string read_marker(unsigned worker, unsigned attempt)
 }
 static void validate(int result, unsigned workers, bool zero)
 {
+	if (orderly())
+	{
+		checks.require(result == 1 && observed == 2, "orderly/direct-status-and-both-workers-retained");
+		for (unsigned i = 0; i < 2; i++)
+		{
+			const auto &r = retained[i];
+			checks.require(r.attempts == 1 && r.failed_attempts == 0, "orderly/no-crash-or-retry");
+			checks.require(r.complete == (i == 0) && r.controlled_failure == (i == 1) && !r.unknown_remainder,
+			               "orderly/queue-drained-distinct-from-required-success");
+			checks.require(r.failure_mask == (i == 1 ? 1u << unsigned(ReplayFailure::Parse) : 0u), "orderly/identical-logical-reason-mask");
+			checks.contains(read_marker(i,1), std::string("orderly-return ") + (i == 0 ? "0" : "1"), "orderly/siblings-reached-production-return");
+		}
+		return;
+	}
 	bool empty_archive = scenario == "empty-archive";
 	bool success = scenario == "clean" || scenario == "zero" || empty_archive || scenario == "recover";
 	checks.require(result == (success ? 0 : 1), "controller/direct-return-status");
@@ -361,6 +390,11 @@ static void validate(int result, unsigned workers, bool zero)
 static int state_and_protocol()
 {
 	// Same protocol literals and shared-ring consumer contract as the input.
+	static_assert(ControlBlockMagic == 0x19bcde1d, "base version cookie");
+	static_assert(offsetof(SharedControlBlock, successful_modules) == 8, "base progress offset");
+	static_assert(offsetof(SharedControlBlock, process_reserved_memory_mib) == 140, "base process stats offset");
+	static_assert(offsetof(SharedControlBlock, ring_buffer_size) == 3240, "base ring size offset");
+	static_assert(sizeof(SharedControlBlock) == 3244, "base shared layout");
 	struct ProgressMemory { SharedControlBlock control; char ring[4096]; } memory = {};
 	memory.control.version_cookie = 0x19bcde1d;
 	memory.control.ring_buffer_offset = unsigned(offsetof(ProgressMemory, ring));
@@ -387,6 +421,16 @@ static int state_and_protocol()
 	               process.outcome.assigned[1].skipped_index == 3 && process.outcome.assigned[1].skipped_hash == 0xdef &&
 	               process.outcome.assigned[2].skipped_index == 4 && process.outcome.assigned[2].skipped_hash == 0x123,
 	               "protocol/authoritative-culprits-independent-of-forwarding");
+	// Category terminal records use the authoritative pipe, not the lossy ring.
+	for (unsigned n = 0; n < 1000; n++) process.parse("COMPUTE_VERR abc");
+	process.parse("REPLAY_FAILED 2 1");
+	checks.require(process.outcome.orderly_reported && process.outcome.failure_mask == 2 && process.outcome.orderly_drained,
+	               "protocol/full-ring-does-not-erase-terminal-outcome");
+	ProcessProgress truncated;
+	truncated.parse("REPLAY_FAILED 2");
+	checks.require(!truncated.outcome.orderly_reported, "protocol/truncated-terminal-is-not-orderly-proof");
+	truncated.parse("REPLAY_FAILED 0 1");
+	checks.require(!truncated.outcome.orderly_reported, "protocol/empty-failure-summary-rejected");
 	Global::control_block = nullptr;
 #ifdef _WIN32
 	CloseHandle(Global::shared_mutex); Global::shared_mutex = nullptr;
@@ -413,10 +457,12 @@ int main(int argc, char **argv)
 	setrlimit(RLIMIT_CORE, &core_limit);
 #endif
 #ifdef _WIN32
-	if (argc == 12 && std::string(argv[1]) == "--test-worker")
+	if (argc >= 12 && std::string(argv[1]) == "--test-worker")
 	{
 		scenario = argv[2];
 		hold_name = argv[11];
+		Global::device_options.null_device = true;
+		for (int i = 12; i < argc; i++) Global::databases.push_back(argv[i]);
 		ThreadedReplayer::Options opts;
 		opts.start_graphics_index = unsigned(atoi(argv[5])); opts.end_graphics_index = unsigned(atoi(argv[6]));
 		opts.start_compute_index = unsigned(atoi(argv[7])); opts.end_compute_index = unsigned(atoi(argv[8]));
@@ -445,6 +491,11 @@ int main(int argc, char **argv)
 	opts.disable_rate_limiter = true;
 	opts.start_graphics_index = opts.start_compute_index = opts.start_raytracing_index = 2;
 	opts.end_graphics_index = opts.end_compute_index = opts.end_raytracing_index = scenario == "zero" ? 2 : 6;
+	if (orderly())
+	{
+		opts.start_graphics_index = opts.start_compute_index = opts.start_raytracing_index = 0;
+		opts.end_graphics_index = opts.end_compute_index = opts.end_raytracing_index = ~0u;
+	}
 	if (scenario == "held-sibling")
 	{
 #ifdef _WIN32
@@ -457,9 +508,21 @@ int main(int argc, char **argv)
 	}
 	std::vector<const char *> databases{argv[3]};
 	struct ProgressMemory { SharedControlBlock control; char ring[4096]; } memory = {};
-	auto &optional_progress = memory.control;
-	bool use_progress = scenario == "lost-progress" || scenario == "held-sibling" ||
+	bool use_progress = scenario.find("progress") != std::string::npos || scenario == "lost-progress" || scenario == "held-sibling" ||
 	                    scenario == "skip-graphics-progress" || scenario == "skip-graphics-final-progress";
+#ifndef _WIN32
+	ProgressMemory *shared_memory = nullptr;
+	if (orderly() && use_progress)
+	{
+		void *mapping = mmap(nullptr, sizeof(ProgressMemory), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+		checks.require(mapping != MAP_FAILED,"orderly/shared-progress-allocation");
+		if (mapping == MAP_FAILED) return 99;
+		shared_memory = new (mapping) ProgressMemory{};
+	}
+	auto &optional_progress = shared_memory ? shared_memory->control : memory.control;
+#else
+	auto &optional_progress = memory.control;
+#endif
 	if (use_progress)
 	{
 		optional_progress.ring_buffer_offset = unsigned(offsetof(ProgressMemory, ring));
@@ -487,7 +550,17 @@ int main(int argc, char **argv)
 		checks.require(optional_progress.clean_process_deaths.load() == 1 && optional_progress.dirty_process_deaths.load() == 0,
 		               "progress/preserved-clean-crash-counter-independent-of-unresolved-required-work");
 	}
+	if (orderly() && use_progress)
+	{
+		checks.require(optional_progress.clean_process_deaths.load() == 0 && optional_progress.dirty_process_deaths.load() == 0,
+		               "orderly/no-false-crash-counters");
+		checks.require(optional_progress.successful_compute.load() == 2 && optional_progress.parsed_compute_failures.load() == 1,
+		               "orderly/every-valid-sibling-and-rejected-item-accounted");
+	}
 	Global::control_block = nullptr;
+#ifndef _WIN32
+	if (shared_memory) munmap(shared_memory,sizeof(ProgressMemory));
+#endif
 #ifdef _WIN32
 	if (use_progress) { CloseHandle(Global::shared_mutex); Global::shared_mutex = nullptr; }
 #endif

@@ -8,6 +8,8 @@ and their status. Follow the [changelog writing guideline](local-docs/changelog-
 Entries are reviewed with their implementation PR; inclusion in an open PR does
 not establish merged delivery or a release.
 
+- **[Observability]** Retained replay item failures across threads and child processes so drained queues no longer report failed required work as successful. ([#14](https://github.com/robinwassen/Fossilize/issues/14))
+
 - **[Harness]** Added a shared changelog and required entry review so contributors can see what changed and why it matters. ([#61](https://github.com/robinwassen/Fossilize/issues/61))
 
 - **[Worker lifecycle]** Made Linux replay children terminate on signal mask or stdin/stdout setup failure so failed workers cannot execute controller code. ([#56](https://github.com/robinwassen/Fossilize/issues/56))

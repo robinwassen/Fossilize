@@ -38,6 +38,7 @@
 #include "fossilize_external_replayer_control_block.hpp"
 #include "fossilize_errors.hpp"
 #include "util/object_cache.hpp"
+#include "replay_item_outcome.hpp"
 
 #include <string>
 #include <unordered_set>
@@ -275,6 +276,7 @@ struct PipelineWorkItem
 	unsigned index = 0;
 	unsigned memory_context_index = 0;
 	bool parse_only = false;
+	bool dependency_blocked = false;
 	bool force_outside_range = false;
 
 	union
@@ -378,6 +380,7 @@ struct PipelineFeedback
 class PipelineResolver
 {
 public:
+	VkResult failure_result = VK_SUCCESS;
 	~PipelineResolver();
 	const VkGraphicsPipelineCreateInfo *resolve_graphics_pipeline(VulkanDevice *device, const VkGraphicsPipelineCreateInfo *info);
 	const VkComputePipelineCreateInfo *resolve_compute_pipeline(VulkanDevice *device, const VkComputePipelineCreateInfo *info);
@@ -568,6 +571,7 @@ VkResult PipelineResolver::resolve_pipeline_layout(VulkanDevice *device, VkPipel
 const VkGraphicsPipelineCreateInfo *
 PipelineResolver::resolve_graphics_pipeline(VulkanDevice *device, const VkGraphicsPipelineCreateInfo *create_info)
 {
+	failure_result = VK_SUCCESS;
 	if (create_info->sType != VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO)
 		return nullptr;
 
@@ -575,11 +579,11 @@ PipelineResolver::resolve_graphics_pipeline(VulkanDevice *device, const VkGraphi
 	*info = *create_info;
 
 	if (info->renderPass)
-		if (resolve_render_pass(device, &info->renderPass) != VK_SUCCESS)
+		if ((failure_result = resolve_render_pass(device, &info->renderPass)) != VK_SUCCESS)
 			return nullptr;
 
 	if (info->layout)
-		if (resolve_pipeline_layout(device, &info->layout) != VK_SUCCESS)
+		if ((failure_result = resolve_pipeline_layout(device, &info->layout)) != VK_SUCCESS)
 			return nullptr;
 
 	return info;
@@ -588,6 +592,7 @@ PipelineResolver::resolve_graphics_pipeline(VulkanDevice *device, const VkGraphi
 const VkComputePipelineCreateInfo *
 PipelineResolver::resolve_compute_pipeline(VulkanDevice *device, const VkComputePipelineCreateInfo *create_info)
 {
+	failure_result = VK_SUCCESS;
 	if (create_info->sType != VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO)
 		return nullptr;
 
@@ -595,7 +600,7 @@ PipelineResolver::resolve_compute_pipeline(VulkanDevice *device, const VkCompute
 	*info = *create_info;
 
 	if (info->layout)
-		if (resolve_pipeline_layout(device, &info->layout) != VK_SUCCESS)
+		if ((failure_result = resolve_pipeline_layout(device, &info->layout)) != VK_SUCCESS)
 			return nullptr;
 
 	return info;
@@ -604,6 +609,7 @@ PipelineResolver::resolve_compute_pipeline(VulkanDevice *device, const VkCompute
 const VkRayTracingPipelineCreateInfoKHR *
 PipelineResolver::resolve_ray_tracing_pipeline(VulkanDevice *device, const VkRayTracingPipelineCreateInfoKHR *create_info)
 {
+	failure_result = VK_SUCCESS;
 	if (create_info->sType != VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR)
 		return nullptr;
 
@@ -611,7 +617,7 @@ PipelineResolver::resolve_ray_tracing_pipeline(VulkanDevice *device, const VkRay
 	*info = *create_info;
 
 	if (info->layout)
-		if (resolve_pipeline_layout(device, &info->layout) != VK_SUCCESS)
+		if ((failure_result = resolve_pipeline_layout(device, &info->layout)) != VK_SUCCESS)
 			return nullptr;
 
 	return info;
@@ -619,6 +625,15 @@ PipelineResolver::resolve_ray_tracing_pipeline(VulkanDevice *device, const VkRay
 
 struct ThreadedReplayer : StateCreatorInterface
 {
+	ReplayItemOutcome outcome;
+	void record_failure(ReplayFailure reason, ResourceTag tag = RESOURCE_COUNT, Hash hash = 0, VkResult result = VK_SUCCESS)
+	{
+		get_per_thread_data().failure_generation++;
+		outcome.fail(reason, tag, hash, result);
+	}
+	bool work_drained = false;
+	int fail_run(ReplayFailure reason, ResourceTag tag = RESOURCE_COUNT, Hash hash = 0)
+	{ record_failure(reason, tag, hash); return EXIT_FAILURE; }
 	struct Options
 	{
 		bool spirv_validate = false;
@@ -715,6 +730,10 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		bool force_outside_range = false;
 		bool triggered_validation_error = false;
+		bool creation_succeeded = true;
+		uint64_t failure_generation = 0;
+		ResourceTag active_tag = RESOURCE_COUNT;
+		Hash active_hash = 0;
 
 		ResourceTag expected_tag = RESOURCE_COUNT;
 		Hash expected_hash = 0;
@@ -987,6 +1006,7 @@ struct ThreadedReplayer : StateCreatorInterface
 			     unsigned(work_item.tag), work_item.hash);
 			if (work_item.tag == RESOURCE_SHADER_MODULE && opts.control_block)
 				opts.control_block->parsed_module_failures.fetch_add(1, std::memory_order_relaxed);
+			record_failure(ReplayFailure::Read, work_item.tag, work_item.hash);
 			return false;
 		}
 
@@ -996,10 +1016,13 @@ struct ThreadedReplayer : StateCreatorInterface
 		{
 			LOGW("Entry (%u: %016" PRIx64 ") does not exist, this might be benign depending on where the archive comes from.\n",
 			     unsigned(work_item.tag), work_item.hash);
+			record_failure(ReplayFailure::Read, work_item.tag, work_item.hash);
 			return false;
 		}
 
 		auto &per_thread = get_per_thread_data();
+		per_thread.active_tag = work_item.tag;
+		per_thread.active_hash = work_item.hash;
 		per_thread.current_parse_index = work_item.index;
 		per_thread.force_outside_range = work_item.force_outside_range;
 		per_thread.memory_context_index = work_item.memory_context_index;
@@ -1012,9 +1035,14 @@ struct ThreadedReplayer : StateCreatorInterface
 		// It's also possible that nothing happened while parsing. That should count as a fail as well.
 		per_thread.acknowledge_parsing_work = false;
 
+		uint64_t previous_failure = per_thread.failure_generation;
+		bool parsed = true;
 		if (!replayer.parse(*this, global_database, buffer.data(), buffer.size()) ||
 		    !per_thread.acknowledge_parsing_work)
 		{
+			parsed = false;
+			if (per_thread.failure_generation == previous_failure)
+				record_failure(ReplayFailure::Parse, work_item.tag, work_item.hash);
 			LOGW("Did not replay blob (tag: %d, hash: 0x%016" PRIx64 "). See previous logs for context.\n",
 			     work_item.tag, work_item.hash);
 
@@ -1049,7 +1077,7 @@ struct ThreadedReplayer : StateCreatorInterface
 				shader_module_total_compressed_size.fetch_add(json_size, std::memory_order_relaxed);
 		}
 
-		return true;
+		return parsed;
 	}
 
 	void get_pipeline_stats(ResourceTag tag, Hash hash, VkPipeline pipeline,
@@ -1243,6 +1271,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool run_creation_work_item_setup_graphics(PipelineResolver &resolver, PipelineWorkItem &work_item)
 	{
+		resolver.failure_result = VK_SUCCESS;
 		if (device->get_feature_filter().supports_maintenance4() && work_item.create_info.graphics_create_info)
 		{
 			// If we crash during resolve, it should count as a dirty crash. Don't try to recover.
@@ -1257,6 +1286,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!work_item.create_info.graphics_create_info)
 		{
 			LOGE("Invalid graphics create info.\n");
+			record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
+			             work_item.tag, work_item.hash, resolver.failure_result);
 			return false;
 		}
 
@@ -1265,12 +1296,14 @@ struct ThreadedReplayer : StateCreatorInterface
 		{
 			// This pipeline failed for some reason, don't try to compile this one either.
 			LOGE("Invalid derivative pipeline!\n");
+			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			return false;
 		}
 
 		if (!device->get_feature_filter().graphics_pipeline_is_supported(work_item.create_info.graphics_create_info))
 		{
 			LOGW("Graphics pipeline %016" PRIx64 " is not supported by current device, skipping.\n", work_item.hash);
+			record_failure(ReplayFailure::Unsupported, work_item.tag, work_item.hash);
 			return false;
 		}
 
@@ -1282,6 +1315,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool run_creation_work_item_setup_compute(PipelineResolver &resolver, PipelineWorkItem &work_item)
 	{
+		resolver.failure_result = VK_SUCCESS;
 		if (device->get_feature_filter().supports_maintenance4() && work_item.create_info.compute_create_info)
 		{
 			// If we crash during resolve, it should count as a dirty crash. Don't try to recover.
@@ -1296,6 +1330,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!work_item.create_info.compute_create_info)
 		{
 			LOGE("Invalid compute create info.\n");
+			record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
+			             work_item.tag, work_item.hash, resolver.failure_result);
 			return false;
 		}
 
@@ -1304,12 +1340,14 @@ struct ThreadedReplayer : StateCreatorInterface
 		{
 			// This pipeline failed for some reason, don't try to compile this one either.
 			LOGE("Invalid derivative pipeline!\n");
+			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			return false;
 		}
 
 		if (!device->get_feature_filter().compute_pipeline_is_supported(work_item.create_info.compute_create_info))
 		{
 			LOGW("Compute pipeline %016" PRIx64 " is not supported by current device, skipping.\n", work_item.hash);
+			record_failure(ReplayFailure::Unsupported, work_item.tag, work_item.hash);
 			return false;
 		}
 
@@ -1319,6 +1357,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool run_creation_work_item_setup_raytracing(PipelineResolver &resolver, PipelineWorkItem &work_item)
 	{
+		resolver.failure_result = VK_SUCCESS;
 		if (device->get_feature_filter().supports_maintenance4() && work_item.create_info.raytracing_create_info)
 		{
 			// If we crash during resolve, it should count as a dirty crash. Don't try to recover.
@@ -1333,6 +1372,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!work_item.create_info.raytracing_create_info)
 		{
 			LOGE("Invalid raytracing create info.\n");
+			record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
+			             work_item.tag, work_item.hash, resolver.failure_result);
 			return false;
 		}
 
@@ -1341,6 +1382,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		{
 			// This pipeline failed for some reason, don't try to compile this one either.
 			LOGE("Invalid derivative pipeline!\n");
+			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			return false;
 		}
 
@@ -1352,6 +1394,7 @@ struct ThreadedReplayer : StateCreatorInterface
 				if (pLibraryInfo->pLibraries[i] == VK_NULL_HANDLE)
 				{
 					LOGE("Invalid library!\n");
+					record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 					return false;
 				}
 			}
@@ -1360,6 +1403,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!device->get_feature_filter().raytracing_pipeline_is_supported(work_item.create_info.raytracing_create_info))
 		{
 			LOGW("Raytracing pipeline %016" PRIx64 " is not supported by current device, skipping.\n", work_item.hash);
+			record_failure(ReplayFailure::Unsupported, work_item.tag, work_item.hash);
 			return false;
 		}
 
@@ -1374,12 +1418,17 @@ struct ThreadedReplayer : StateCreatorInterface
 		per_thread.current_graphics_pipeline = 0;
 		per_thread.current_compute_pipeline = 0;
 		per_thread.current_raytracing_pipeline = 0;
-		bool ret = true;
+		per_thread.active_tag = work_item.tag;
+		per_thread.active_hash = work_item.hash;
+		per_thread.triggered_validation_error = false;
+		per_thread.creation_succeeded = true;
+		bool ret = !work_item.dependency_blocked;
 
 		// Don't bother replaying blacklisted objects.
 		if (resource_is_blacklisted(work_item.tag, work_item.hash))
 		{
 			LOGW("Resource is blacklisted, ignoring.\n");
+			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			ret = false;
 		}
 
@@ -1400,13 +1449,11 @@ struct ThreadedReplayer : StateCreatorInterface
 				break;
 
 			default:
+				record_failure(ReplayFailure::Setup, work_item.tag, work_item.hash);
 				ret = false;
 				break;
 			}
 		}
-
-		// If we trigger validation errors while resolving objects, ignore that.
-		per_thread.triggered_validation_error = false;
 
 		if (!ret)
 		{
@@ -1427,7 +1474,7 @@ struct ThreadedReplayer : StateCreatorInterface
 					break;
 				}
 			}
-			*work_item.output.pipeline = VK_NULL_HANDLE;
+			if (work_item.output.pipeline) *work_item.output.pipeline = VK_NULL_HANDLE;
 		}
 
 		return ret;
@@ -1558,6 +1605,11 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 		else
 		{
+			get_per_thread_data().creation_succeeded = false;
+			record_failure(ReplayFailure::Create, work_item.tag, work_item.hash, result);
+			if (*work_item.output.pipeline)
+				vkDestroyPipeline(device->get_device(), *work_item.output.pipeline, nullptr);
+			*work_item.output.pipeline = VK_NULL_HANDLE;
 			LOGE("Replay/create graphics pipeline failed: hash=0x%016" PRIx64 ", VkResult=%d.\n",
 			     work_item.hash, int(result));
 		}
@@ -1624,6 +1676,11 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 		else
 		{
+			get_per_thread_data().creation_succeeded = false;
+			record_failure(ReplayFailure::Create, work_item.tag, work_item.hash, result);
+			if (*work_item.output.pipeline)
+				vkDestroyPipeline(device->get_device(), *work_item.output.pipeline, nullptr);
+			*work_item.output.pipeline = VK_NULL_HANDLE;
 			LOGE("Replay/create compute pipeline failed: hash=0x%016" PRIx64 ", VkResult=%d.\n",
 			     work_item.hash, int(result));
 		}
@@ -1690,6 +1747,11 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 		else
 		{
+			get_per_thread_data().creation_succeeded = false;
+			record_failure(ReplayFailure::Create, work_item.tag, work_item.hash, result);
+			if (*work_item.output.pipeline)
+				vkDestroyPipeline(device->get_device(), *work_item.output.pipeline, nullptr);
+			*work_item.output.pipeline = VK_NULL_HANDLE;
 			LOGE("Replay/create raytracing pipeline failed: hash=0x%016" PRIx64 ", VkResult=%d.\n",
 			     work_item.hash, int(result));
 		}
@@ -1705,7 +1767,12 @@ struct ThreadedReplayer : StateCreatorInterface
 	void run_creation_work_item(PipelineResolver &resolver, PipelineWorkItem work_item)
 	{
 		if (!run_creation_work_item_setup(resolver, work_item))
+		{
+			resolver.flush(device.get());
+			auto &per_thread = get_per_thread_data();
+			per_thread.current_graphics_pipeline = per_thread.current_compute_pipeline = per_thread.current_raytracing_pipeline = 0;
 			return;
+		}
 
 		bool valid_type = true;
 
@@ -1738,9 +1805,11 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (valid_type)
 		{
-			if (!per_thread.triggered_validation_error)
+			if (!per_thread.triggered_validation_error && per_thread.creation_succeeded)
+			{
 				whitelist_resource(work_item.tag, work_item.hash);
-			mark_replayed_resource(work_item.tag, work_item.hash);
+				mark_replayed_resource(work_item.tag, work_item.hash);
+			}
 		}
 
 		per_thread.current_compute_pipeline = 0;
@@ -2079,9 +2148,11 @@ struct ThreadedReplayer : StateCreatorInterface
 			if (!device->init_device(device_opts))
 			{
 				LOGE("Failed to create Vulkan device, bailing ...\n");
-				exit(EXIT_FAILURE);
+				record_failure(ReplayFailure::Setup);
+				return;
 			}
 
+			device_ready = true;
 			device->set_validation_error_callback(on_validation_error, this);
 
 			if (opts.pipeline_stats && !device->has_pipeline_stats())
@@ -2240,6 +2311,8 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_create_sampler(Hash index, const VkSamplerCreateInfo *create_info, VkSampler *sampler) override
 	{
+		*sampler = VK_NULL_HANDLE;
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_SAMPLER, index); return false; }
 		auto &per_thread = get_per_thread_data();
 		if (per_thread.expected_tag != RESOURCE_SAMPLER &&
 		    per_thread.expected_tag != RESOURCE_DESCRIPTOR_SET_LAYOUT &&
@@ -2251,6 +2324,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!device->get_feature_filter().sampler_is_supported(create_info))
 		{
 			LOGW("Sampler %016" PRIx64 " is not supported. Skipping.\n", index);
+			record_failure(ReplayFailure::Unsupported, RESOURCE_SAMPLER, index);
 			return false;
 		}
 
@@ -2258,15 +2332,18 @@ struct ThreadedReplayer : StateCreatorInterface
 		{
 			// With maintenance4, pipelines cannot refer to pipeline layouts anymore after creation,
 			// so we can safely create and destroy pipeline layouts lazily.
-			if (device->resolve_sampler_with_ycbcr_remap(const_cast<VkSamplerCreateInfo *>(create_info)) != VK_SUCCESS)
-				return false;
+			VkResult result = device->resolve_sampler_with_ycbcr_remap(const_cast<VkSamplerCreateInfo *>(create_info));
+			if (result != VK_SUCCESS)
+			{ record_failure(ReplayFailure::Create, RESOURCE_SAMPLER, index, result); return false; }
 
 			*sampler = reinterpret_cast<VkSampler>(const_cast<VkSamplerCreateInfo *>(create_info));
 		}
 		else
 		{
-			if (device->create_sampler_with_ycbcr_remap(create_info, sampler) != VK_SUCCESS)
+			VkResult result = device->create_sampler_with_ycbcr_remap(create_info, sampler);
+			if (result != VK_SUCCESS)
 			{
+				record_failure(ReplayFailure::Create, RESOURCE_SAMPLER, index, result);
 				LOGE("Creating sampler %016" PRIx64 " Failed!\n", index);
 				return false;
 			}
@@ -2279,6 +2356,8 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_create_descriptor_set_layout(Hash index, const VkDescriptorSetLayoutCreateInfo *create_info, VkDescriptorSetLayout *layout) override
 	{
+		*layout = VK_NULL_HANDLE;
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_DESCRIPTOR_SET_LAYOUT, index); return false; }
 		auto &per_thread = get_per_thread_data();
 		if (per_thread.expected_tag != RESOURCE_DESCRIPTOR_SET_LAYOUT &&
 		    per_thread.expected_tag != RESOURCE_PIPELINE_LAYOUT)
@@ -2289,6 +2368,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!device->get_feature_filter().descriptor_set_layout_is_supported(create_info))
 		{
 			LOGW("Descriptor set layout %016" PRIx64 " is not supported. Skipping.\n", index);
+			record_failure(ReplayFailure::Unsupported, RESOURCE_DESCRIPTOR_SET_LAYOUT, index);
 			return false;
 		}
 
@@ -2301,8 +2381,10 @@ struct ThreadedReplayer : StateCreatorInterface
 		else
 		{
 			// Playback in-order.
-			if (vkCreateDescriptorSetLayout(device->get_device(), create_info, nullptr, layout) != VK_SUCCESS)
+			VkResult result = vkCreateDescriptorSetLayout(device->get_device(), create_info, nullptr, layout);
+			if (result != VK_SUCCESS)
 			{
+				record_failure(ReplayFailure::Create, RESOURCE_DESCRIPTOR_SET_LAYOUT, index, result);
 				LOGE("Creating descriptor set layout %016" PRIx64 " Failed!\n", index);
 				return false;
 			}
@@ -2314,12 +2396,15 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_create_pipeline_layout(Hash index, const VkPipelineLayoutCreateInfo *create_info, VkPipelineLayout *layout) override
 	{
+		*layout = VK_NULL_HANDLE;
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_PIPELINE_LAYOUT, index); return false; }
 		if (get_per_thread_data().expected_tag != RESOURCE_PIPELINE_LAYOUT)
 			return false;
 
 		if (!device->get_feature_filter().pipeline_layout_is_supported(create_info))
 		{
 			LOGW("Pipeline layout %016" PRIx64 " is not supported. Skipping.\n", index);
+			record_failure(ReplayFailure::Unsupported, RESOURCE_PIPELINE_LAYOUT, index);
 			return false;
 		}
 
@@ -2332,8 +2417,10 @@ struct ThreadedReplayer : StateCreatorInterface
 		else
 		{
 			// Playback in-order.
-			if (vkCreatePipelineLayout(device->get_device(), create_info, nullptr, layout) != VK_SUCCESS)
+			VkResult result = vkCreatePipelineLayout(device->get_device(), create_info, nullptr, layout);
+			if (result != VK_SUCCESS)
 			{
+				record_failure(ReplayFailure::Create, RESOURCE_PIPELINE_LAYOUT, index, result);
 				LOGE("Creating pipeline layout %0" PRIX64 " Failed!\n", index);
 				return false;
 			}
@@ -2345,12 +2432,15 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_create_render_pass(Hash index, const VkRenderPassCreateInfo *create_info, VkRenderPass *render_pass) override
 	{
+		*render_pass = VK_NULL_HANDLE;
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_RENDER_PASS, index); return false; }
 		if (get_per_thread_data().expected_tag != RESOURCE_RENDER_PASS)
 			return false;
 
 		if (!device->get_feature_filter().render_pass_is_supported(create_info))
 		{
 			LOGW("Render pass %016" PRIx64 " is not supported. Skipping.\n", index);
+			record_failure(ReplayFailure::Unsupported, RESOURCE_RENDER_PASS, index);
 			return false;
 		}
 
@@ -2364,8 +2454,10 @@ struct ThreadedReplayer : StateCreatorInterface
 		else
 		{
 			// Playback in-order.
-			if (vkCreateRenderPass(device->get_device(), create_info, nullptr, render_pass) != VK_SUCCESS)
+			VkResult result = vkCreateRenderPass(device->get_device(), create_info, nullptr, render_pass);
+			if (result != VK_SUCCESS)
 			{
+				record_failure(ReplayFailure::Create, RESOURCE_RENDER_PASS, index, result);
 				LOGE("Creating render pass %0" PRIX64 " Failed!\n", index);
 				return false;
 			}
@@ -2377,12 +2469,15 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_create_render_pass2(Hash index, const VkRenderPassCreateInfo2 *create_info, VkRenderPass *render_pass) override
 	{
+		*render_pass = VK_NULL_HANDLE;
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_RENDER_PASS, index); return false; }
 		if (get_per_thread_data().expected_tag != RESOURCE_RENDER_PASS)
 			return false;
 
 		if (!device->get_feature_filter().render_pass2_is_supported(create_info))
 		{
 			LOGW("Render pass (version 2) %016" PRIx64 " is not supported. Skipping.\n", index);
+			record_failure(ReplayFailure::Unsupported, RESOURCE_RENDER_PASS, index);
 			return false;
 		}
 
@@ -2396,8 +2491,10 @@ struct ThreadedReplayer : StateCreatorInterface
 		else
 		{
 			// Playback in-order.
-			if (vkCreateRenderPass2KHR(device->get_device(), create_info, nullptr, render_pass) != VK_SUCCESS)
+			VkResult result = vkCreateRenderPass2KHR(device->get_device(), create_info, nullptr, render_pass);
+			if (result != VK_SUCCESS)
 			{
+				record_failure(ReplayFailure::Create, RESOURCE_RENDER_PASS, index, result);
 				LOGE("Creating render pass %0" PRIX64 " Failed!\n", index);
 				return false;
 			}
@@ -2410,6 +2507,7 @@ struct ThreadedReplayer : StateCreatorInterface
 	bool enqueue_create_shader_module(Hash hash, const VkShaderModuleCreateInfo *create_info, VkShaderModule *module) override
 	{
 		*module = VK_NULL_HANDLE;
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_SHADER_MODULE, hash); return false; }
 
 		auto &per_thread = get_per_thread_data();
 		if (per_thread.expected_hash != hash || per_thread.expected_tag != RESOURCE_SHADER_MODULE)
@@ -2419,9 +2517,12 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 
 		per_thread.acknowledge_parsing_work = true;
+		per_thread.active_tag = RESOURCE_SHADER_MODULE;
+		per_thread.active_hash = hash;
 
 		if (masked_shader_modules.count(hash) || resource_is_blacklisted(RESOURCE_SHADER_MODULE, hash))
 		{
+			record_failure(ReplayFailure::Dependency, RESOURCE_SHADER_MODULE, hash);
 			lock_guard<mutex> lock(internal_enqueue_mutex);
 			//LOGI("Inserting shader module %016llx.\n", static_cast<unsigned long long>(hash));
 			shader_modules.insert_object(hash, *module, 1);
@@ -2480,6 +2581,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 			if (!ret)
 			{
+				record_failure(ReplayFailure::Validation, RESOURCE_SHADER_MODULE, hash);
 				LOGW("Failed to validate SPIR-V module: %0" PRIX64 ", skipping!\n", hash);
 				*module = VK_NULL_HANDLE;
 				lock_guard<mutex> lock(internal_enqueue_mutex);
@@ -2498,6 +2600,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (!device->get_feature_filter().shader_module_is_supported(create_info))
 		{
+			record_failure(ReplayFailure::Unsupported, RESOURCE_SHADER_MODULE, hash);
 			LOGW("Shader module %0" PRIx64 " is not supported on this device.\n", hash);
 			*module = VK_NULL_HANDLE;
 
@@ -2513,6 +2616,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 
 		per_thread.triggered_validation_error = false;
+		bool created = true;
 
 		for (unsigned i = 0; i < loop_count; i++)
 		{
@@ -2529,7 +2633,8 @@ struct ThreadedReplayer : StateCreatorInterface
 			}
 
 			auto start_time = chrono::steady_clock::now();
-			if (vkCreateShaderModule(device->get_device(), create_info, nullptr, module) == VK_SUCCESS)
+			VkResult result = vkCreateShaderModule(device->get_device(), create_info, nullptr, module);
+			if (result == VK_SUCCESS)
 			{
 				auto end_time = chrono::steady_clock::now();
 				auto duration_ns = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count();
@@ -2563,7 +2668,11 @@ struct ThreadedReplayer : StateCreatorInterface
 			}
 			else
 			{
-				LOGE("Failed to create shader module for hash 0x%016" PRIx64 ".\n", hash);
+				created = false;
+				record_failure(ReplayFailure::Create, RESOURCE_SHADER_MODULE, hash, result);
+				if (*module) vkDestroyShaderModule(device->get_device(), *module, nullptr);
+				*module = VK_NULL_HANDLE;
+				LOGE("Failed to create shader module for hash 0x%016" PRIx64 ", VkResult=%d.\n", hash, int(result));
 			}
 		}
 
@@ -2575,9 +2684,9 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		// vkCreateShaderModule doesn't generally crash anything, so just deal with blacklisting here
 		// rather than in an error callback.
-		if (!per_thread.triggered_validation_error)
+		if (!per_thread.triggered_validation_error && created)
 			whitelist_resource(RESOURCE_SHADER_MODULE, hash);
-		else
+		else if (per_thread.triggered_validation_error)
 			blacklist_resource(RESOURCE_SHADER_MODULE, hash);
 
 		return true;
@@ -2585,6 +2694,8 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_create_compute_pipeline(Hash hash, const VkComputePipelineCreateInfo *create_info, VkPipeline *pipeline) override
 	{
+		*pipeline = VK_NULL_HANDLE;
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_COMPUTE_PIPELINE, hash); return false; }
 		// Ignore derived pipelines, no relevant drivers use them.
 		auto *info = const_cast<VkComputePipelineCreateInfo *>(create_info);
 		remove_pipeline_flag(create_info, VK_PIPELINE_CREATE_DERIVATIVE_BIT | VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT);
@@ -2637,6 +2748,8 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_create_graphics_pipeline(Hash hash, const VkGraphicsPipelineCreateInfo *create_info, VkPipeline *pipeline) override
 	{
+		*pipeline = VK_NULL_HANDLE;
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_GRAPHICS_PIPELINE, hash); return false; }
 		// Ignore derived pipelines, no relevant drivers use them.
 		auto *info = const_cast<VkGraphicsPipelineCreateInfo *>(create_info);
 		remove_pipeline_flag(create_info, VK_PIPELINE_CREATE_DERIVATIVE_BIT | VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT);
@@ -2690,6 +2803,8 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_create_raytracing_pipeline(Hash hash, const VkRayTracingPipelineCreateInfoKHR *create_info, VkPipeline *pipeline) override
 	{
+		*pipeline = VK_NULL_HANDLE;
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_RAYTRACING_PIPELINE, hash); return false; }
 		// Ignore derived pipelines, no relevant drivers use them.
 		auto *info = const_cast<VkRayTracingPipelineCreateInfoKHR *>(create_info);
 		remove_pipeline_flag(create_info, VK_PIPELINE_CREATE_DERIVATIVE_BIT | VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT);
@@ -2744,6 +2859,7 @@ struct ThreadedReplayer : StateCreatorInterface
 	bool enqueue_pipeline(Hash hash, const VkComputePipelineCreateInfo *create_info, VkPipeline *pipeline,
 	                      unsigned index, unsigned memory_context_index)
 	{
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_COMPUTE_PIPELINE, hash); *pipeline = VK_NULL_HANDLE; return false; }
 		PipelineWorkItem work_item = {};
 		work_item.hash = hash;
 		work_item.tag = RESOURCE_COMPUTE_PIPELINE;
@@ -2771,6 +2887,11 @@ struct ThreadedReplayer : StateCreatorInterface
 		//else
 		//	LOGE("Skipping replay of graphics pipeline index %u.\n", graphics_pipeline_index);
 
+		if (!work_item.create_info.compute_create_info)
+		{
+			work_item.dependency_blocked = true;
+			record_failure(ReplayFailure::Dependency, work_item.tag, hash);
+		}
 		enqueue_work_item(work_item);
 
 		return true;
@@ -2779,6 +2900,7 @@ struct ThreadedReplayer : StateCreatorInterface
 	bool enqueue_pipeline(Hash hash, const VkGraphicsPipelineCreateInfo *create_info, VkPipeline *pipeline,
 	                      unsigned index, unsigned memory_context_index)
 	{
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_GRAPHICS_PIPELINE, hash); *pipeline = VK_NULL_HANDLE; return false; }
 		bool valid_handles = true;
 		for (uint32_t i = 0; i < create_info->stageCount; i++)
 			if (create_info->pStages[i].module == VK_NULL_HANDLE)
@@ -2811,6 +2933,11 @@ struct ThreadedReplayer : StateCreatorInterface
 		//else
 		//	LOGE("Skipping replay of graphics pipeline index %u.\n", graphics_pipeline_index);
 
+		if (!work_item.create_info.graphics_create_info)
+		{
+			work_item.dependency_blocked = true;
+			record_failure(ReplayFailure::Dependency, work_item.tag, hash);
+		}
 		enqueue_work_item(work_item);
 
 		return true;
@@ -2819,6 +2946,7 @@ struct ThreadedReplayer : StateCreatorInterface
 	bool enqueue_pipeline(Hash hash, const VkRayTracingPipelineCreateInfoKHR *create_info, VkPipeline *pipeline,
 	                      unsigned index, unsigned memory_context_index)
 	{
+		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_RAYTRACING_PIPELINE, hash); *pipeline = VK_NULL_HANDLE; return false; }
 		bool valid_handles = true;
 		for (uint32_t i = 0; i < create_info->stageCount; i++)
 			if (create_info->pStages[i].module == VK_NULL_HANDLE)
@@ -2848,6 +2976,11 @@ struct ThreadedReplayer : StateCreatorInterface
 		//else
 		//	LOGE("Skipping replay of graphics pipeline index %u.\n", graphics_pipeline_index);
 
+		if (!work_item.create_info.raytracing_create_info)
+		{
+			work_item.dependency_blocked = true;
+			record_failure(ReplayFailure::Dependency, work_item.tag, hash);
+		}
 		enqueue_work_item(work_item);
 
 		return true;
@@ -3412,7 +3545,10 @@ struct ThreadedReplayer : StateCreatorInterface
 							                continue;
 
 						                if (!derived_work_item_is_satisfied(parent, pipelines))
-							                continue;
+							                {
+								                record_failure(ReplayFailure::Dependency, DerivedInfo::get_tag(), parent.hash);
+								                continue;
+							                }
 
 						                uint32_t depth = parents_depth.at(parent.hash);
 						                if (prev_depth != depth)
@@ -3436,7 +3572,9 @@ struct ThreadedReplayer : StateCreatorInterface
 				                 // Go over all pipelines. If there are no further dependencies to resolve, we can go ahead and queue them up.
 				                 // If an entry exists in pipelines, we have queued up that hash earlier, but it might not be done compiling yet.
 				                 auto itr = unstable_remove_if(begin(*derived), end(*derived), [&](const DerivedInfo &info) -> bool {
-					                 return derived_work_item_is_satisfied(info, pipelines) || parents.count(info.hash) != 0;
+					                 bool satisfied = derived_work_item_is_satisfied(info, pipelines) || parents.count(info.hash) != 0;
+					                 if (!satisfied) record_failure(ReplayFailure::Dependency, DerivedInfo::get_tag(), info.hash);
+					                 return satisfied;
 				                 });
 
 				                 // Wait for parent pipelines to complete.
@@ -3624,6 +3762,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	unique_ptr<VulkanDevice> device;
 	bool device_was_init = false;
+	bool device_ready = false;
 	VulkanDevice::Options device_opts;
 
 	// Crash recovery.
@@ -3639,6 +3778,7 @@ static void on_validation_error(void *userdata)
 
 	auto &per_thread = replayer->get_per_thread_data();
 	per_thread.triggered_validation_error = true;
+	replayer->record_failure(ReplayFailure::Validation, per_thread.active_tag, per_thread.active_hash);
 
 	if (per_thread.current_graphics_pipeline)
 		replayer->blacklist_resource(RESOURCE_GRAPHICS_PIPELINE, per_thread.current_graphics_pipeline);
@@ -3876,6 +4016,45 @@ static int run_progress_process(const VulkanDevice::Options &device_opts,
 			nullptr : replayer_opts.replayer_cache_path.c_str();
 	opts.on_disk_replay_whitelist = whitelist;
 	opts.on_disk_replay_whitelist_mask = whitelist_mask;
+
+	// ExternalReplayer's existing API selects ranges rather than hashes. Resolve
+	// the requested hash before launching so progress mode preserves selection.
+	if (replayer_opts.pipeline_hash)
+	{
+		auto db = create_database(databases);
+		if (whitelist)
+		{
+			db->set_whitelist_tag_mask(whitelist_mask);
+			if (!db->load_whitelist_database(whitelist)) return EXIT_FAILURE;
+			if (db->has_sub_databases())
+				for (unsigned index : replayer_opts.implicit_whitelist_database_indices)
+					db->promote_sub_database_to_whitelist(index);
+		}
+		if (!db->prepare()) return EXIT_FAILURE;
+		bool found = false;
+		unsigned *starts[] = {&opts.start_graphics_index, &opts.start_compute_index, &opts.start_raytracing_index};
+		unsigned *ends[] = {&opts.end_graphics_index, &opts.end_compute_index, &opts.end_raytracing_index};
+		ResourceTag tags[] = {RESOURCE_GRAPHICS_PIPELINE, RESOURCE_COMPUTE_PIPELINE, RESOURCE_RAYTRACING_PIPELINE};
+		for (unsigned i = 0; i < 3; i++)
+		{
+			size_t count = 0;
+			if (!db->get_hash_list_for_resource_tag(tags[i], &count, nullptr)) return EXIT_FAILURE;
+			vector<Hash> hashes(count);
+			if (!db->get_hash_list_for_resource_tag(tags[i], &count, hashes.data())) return EXIT_FAILURE;
+			auto itr = find(begin(hashes), end(hashes), replayer_opts.pipeline_hash);
+			*starts[i] = *ends[i] = 0;
+			if (itr != end(hashes))
+			{
+				found = true; *starts[i] = unsigned(itr - begin(hashes)); *ends[i] = *starts[i] + 1;
+			}
+		}
+		if (!found)
+		{
+			LOGE("Specified pipeline hash %016" PRIx64 " not found in database.\n", replayer_opts.pipeline_hash);
+			return EXIT_FAILURE;
+		}
+		opts.use_pipeline_range = true;
+	}
 
 	ExternalReplayer replayer;
 	if (!replayer.start(opts))
@@ -4179,7 +4358,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 		if (!resolver->load_whitelist_database(whitelist))
 		{
 			LOGE("Failed to load whitelist database: %s.\n", whitelist);
-			return EXIT_FAILURE;
+			return replayer.fail_run(ReplayFailure::Setup);
 		}
 
 		if (resolver->has_sub_databases())
@@ -4192,7 +4371,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 		if (!resolver->import_metadata_from_os_handle(metadata_handle))
 		{
 			LOGE("Failed to import metadata.\n");
-			return EXIT_FAILURE;
+			return replayer.fail_run(ReplayFailure::Setup);
 		}
 	}
 
@@ -4202,7 +4381,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 	if (!resolver->prepare())
 	{
 		LOGE("Failed to prepare database.\n");
-		return EXIT_FAILURE;
+		return replayer.fail_run(ReplayFailure::Setup);
 	}
 	auto end_prepare = chrono::steady_clock::now();
 
@@ -4215,7 +4394,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 	if (!replayer.init_implicit_whitelist())
 	{
 		LOGE("Failed to initialize implicit whitelist.\n");
-		return EXIT_FAILURE;
+		return replayer.fail_run(ReplayFailure::Setup);
 	}
 
 	vector<Hash> resource_hashes;
@@ -4252,7 +4431,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 		if (!resolver->get_hash_list_for_resource_tag(RESOURCE_BUCKET_INFO, &resource_hash_count, nullptr))
 		{
 			LOGE("Failed to get list of resource hashes.\n");
-			return EXIT_FAILURE;
+			return replayer.fail_run(ReplayFailure::Setup);
 		}
 
 		resource_hashes.resize(resource_hash_count);
@@ -4260,17 +4439,17 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 		if (!resolver->get_hash_list_for_resource_tag(RESOURCE_BUCKET_INFO, &resource_hash_count, resource_hashes.data()))
 		{
 			LOGE("Failed to get list of resource hashes.\n");
-			return EXIT_FAILURE;
+			return replayer.fail_run(ReplayFailure::Setup);
 		}
 
 		for (auto &hash : resource_hashes)
 		{
 			size_t state_json_size = 0;
 			if (!resolver->read_entry(RESOURCE_BUCKET_INFO, hash, &state_json_size, nullptr, PAYLOAD_READ_NO_FLAGS))
-				return EXIT_FAILURE;
+				return replayer.fail_run(ReplayFailure::Read, RESOURCE_BUCKET_INFO, hash);
 			state_json.resize(state_json_size);
 			if (!resolver->read_entry(RESOURCE_BUCKET_INFO, hash, &state_json_size, state_json.data(), PAYLOAD_READ_NO_FLAGS))
-				return EXIT_FAILURE;
+				return replayer.fail_run(ReplayFailure::Read, RESOURCE_BUCKET_INFO, hash);
 			state_json.push_back('\0');
 			LOGI("Replaying for bucket: %s\n", reinterpret_cast<const char *>(state_json.data()));
 		}
@@ -4286,7 +4465,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 		if (!resolver->get_hash_list_for_resource_tag(tag, &resource_hash_count, nullptr))
 		{
 			LOGE("Failed to get list of resource hashes.\n");
-			return EXIT_FAILURE;
+			return replayer.fail_run(ReplayFailure::Setup);
 		}
 
 		resource_hashes.resize(resource_hash_count);
@@ -4294,7 +4473,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 		if (!resolver->get_hash_list_for_resource_tag(tag, &resource_hash_count, resource_hashes.data()))
 		{
 			LOGE("Failed to get list of resource hashes.\n");
-			return EXIT_FAILURE;
+			return replayer.fail_run(ReplayFailure::Setup);
 		}
 
 		auto &per_thread_data = replayer.get_per_thread_data();
@@ -4311,7 +4490,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 			if (!resolver->read_entry(tag, hash, &state_json_size, nullptr, 0))
 			{
 				LOGE("Failed to load blob from cache.\n");
-				return EXIT_FAILURE;
+				return replayer.fail_run(ReplayFailure::Read, tag, hash);
 			}
 
 			state_json.resize(state_json_size);
@@ -4320,11 +4499,18 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 			if (!resolver->read_entry(tag, hash, &state_json_size, state_json.data(), 0))
 			{
 				LOGE("Failed to load blob from cache.\n");
-				return EXIT_FAILURE;
+				return replayer.fail_run(ReplayFailure::Read, tag, hash);
 			}
 
+			per_thread_data.active_tag = tag;
+			per_thread_data.active_hash = hash;
+			uint64_t previous_failure = per_thread_data.failure_generation;
 			if (!state_replayer.parse(replayer, resolver.get(), state_json.data(), state_json.size()))
+			{
+				if (per_thread_data.failure_generation == previous_failure)
+					replayer.record_failure(ReplayFailure::Parse, tag, hash);
 				LOGW("Did not replay blob (tag: %s, hash: %016" PRIx64 "). See previous logs for context.\n", tag_names[tag], hash);
+			}
 		}
 
 		if (tag == RESOURCE_APPLICATION_INFO)
@@ -4332,6 +4518,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 			// Just in case there was no application info in the database, we provide a dummy info,
 			// this makes sure the VkDevice is created.
 			replayer.set_application_info(0, nullptr, nullptr);
+			if (!replayer.device_ready) return replayer.outcome.exit_status();
 		}
 
 		LOGI("Total binary size for %s: %" PRIu64 " (%" PRIu64 " compressed)\n", tag_names[tag],
@@ -4375,6 +4562,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 		{
 			LOGE("Specified pipeline hash %016" PRIx64 " not found in database.\n",
 			     replayer.opts.pipeline_hash);
+			replayer.record_failure(ReplayFailure::Read, RESOURCE_COUNT, replayer.opts.pipeline_hash);
 			return EXIT_FAILURE;
 		}
 	}
@@ -4389,7 +4577,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 			if (!resolver->get_hash_list_for_resource_tag(tag, &resource_hash_count, nullptr))
 			{
 				LOGE("Failed to get list of resource hashes.\n");
-				return EXIT_FAILURE;
+				return replayer.fail_run(ReplayFailure::Setup);
 			}
 
 			unsigned start_index = 0;
@@ -4432,7 +4620,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 			if (!resolver->get_hash_list_for_resource_tag(tag, &resource_hash_count, hashes->data()))
 			{
 				LOGE("Failed to get list of resource hashes.\n");
-				return EXIT_FAILURE;
+				return replayer.fail_run(ReplayFailure::Setup);
 			}
 
 			std::move(begin(*hashes) + start_index, begin(*hashes) + end_index, begin(*hashes));
@@ -4452,7 +4640,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 				if (!resolver->read_entry(tag, hash, &state_json_size, nullptr, 0))
 				{
 					LOGE("Failed to load blob from cache.\n");
-					return EXIT_FAILURE;
+					return replayer.fail_run(ReplayFailure::Read, tag, hash);
 				}
 				tag_total_size += state_json_size;
 			}
@@ -4585,7 +4773,8 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 	LOGI("  graphics pipelines:    %7lu\n", (unsigned long)replayer.graphics_pipelines_cleared);
 	LOGI("  raytracing pipelines:  %7lu\n", (unsigned long)replayer.raytracing_pipelines_cleared);
 
-	return EXIT_SUCCESS;
+	replayer.work_drained = true;
+	return replayer.outcome.exit_status();
 }
 
 // The implementations are drastically different.

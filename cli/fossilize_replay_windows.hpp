@@ -119,7 +119,16 @@ bool ProcessProgress::kick_overlapped_io()
 
 void ProcessProgress::parse(const char *cmd)
 {
-	if (strncmp(cmd, "CRASH", 5) == 0)
+	unsigned failure_mask = 0, drained = 0;
+	int consumed = 0;
+	if (sscanf(cmd, "REPLAY_FAILED %u %u%n", &failure_mask, &drained, &consumed) == 2 &&
+	    (cmd[consumed] == '\0' || (cmd[consumed] == '\n' && cmd[consumed + 1] == '\0')) && failure_mask && failure_mask < (1u << unsigned(ReplayFailure::Count)) && drained <= 1)
+	{
+		outcome.orderly_reported = true;
+		outcome.failure_mask |= failure_mask;
+		outcome.orderly_drained = drained != 0;
+	}
+	else if (strncmp(cmd, "CRASH", 5) == 0)
 	{
 		// We crashed ... Set up a timeout in case the process hangs while trying to recover.
 		if (timer_handle)
@@ -325,7 +334,10 @@ WorkerDisposition ProcessProgress::process_shutdown()
 	}
 
 	outcome.termination = code;
-	auto disposition = outcome.finish(observed && code == 0, observed && !expect_kill,
+	bool controlled = observed && code == EXIT_FAILURE && outcome.orderly_reported &&
+	                  !expect_kill && !outcome.native_error;
+	auto disposition = controlled ? outcome.finish_controlled() :
+	                   outcome.finish(observed && code == 0, observed && !expect_kill,
 	                                  graphics_progress, compute_progress, raytracing_progress);
 	if (disposition == WorkerDisposition::Retry)
 	{
@@ -337,7 +349,7 @@ WorkerDisposition ProcessProgress::process_shutdown()
 		LOGE("  New compute range (%u, %u)\n", start_compute_index, end_compute_index);
 		LOGE("  New raytracing range (%u, %u)\n", start_raytracing_index, end_raytracing_index);
 	}
-	if (terminated && (!observed || code != 0) && !expect_kill && Global::control_block)
+	if (terminated && (!observed || code != 0) && !controlled && !expect_kill && Global::control_block)
 	{
 		if (observed && graphics_progress >= 0 && compute_progress >= 0 && raytracing_progress >= 0)
 			Global::control_block->clean_process_deaths.fetch_add(1, std::memory_order_relaxed);
@@ -411,6 +423,8 @@ bool ProcessProgress::start_child_process()
 	}
 
 	outcome.attempts++;
+	outcome.orderly_reported = false;
+	outcome.orderly_drained = false;
 
 	// We cannot use fork() on Windows, so we need to create a new process which references ourselves.
 
@@ -432,18 +446,27 @@ bool ProcessProgress::start_child_process()
 
 	cmdline += " --slave-process";
 	cmdline += " --num-threads 1";
-	cmdline += " --graphics-pipeline-range ";
-	cmdline += to_string(start_graphics_index);
-	cmdline += " ";
-	cmdline += to_string(end_graphics_index);
-	cmdline += " --compute-pipeline-range ";
-	cmdline += to_string(start_compute_index);
-	cmdline += " ";
-	cmdline += to_string(end_compute_index);
-	cmdline += " --raytracing-pipeline-range ";
-	cmdline += to_string(start_raytracing_index);
-	cmdline += " ";
-	cmdline += to_string(end_raytracing_index);
+	if (Global::base_replayer_options.pipeline_hash)
+	{
+		char hash[32];
+		snprintf(hash, sizeof(hash), "%016" PRIx64, Global::base_replayer_options.pipeline_hash);
+		cmdline += " --pipeline-hash "; cmdline += hash;
+	}
+	else
+	{
+		cmdline += " --graphics-pipeline-range ";
+		cmdline += to_string(start_graphics_index);
+		cmdline += " ";
+		cmdline += to_string(end_graphics_index);
+		cmdline += " --compute-pipeline-range ";
+		cmdline += to_string(start_compute_index);
+		cmdline += " ";
+		cmdline += to_string(end_compute_index);
+		cmdline += " --raytracing-pipeline-range ";
+		cmdline += to_string(start_raytracing_index);
+		cmdline += " ";
+		cmdline += to_string(end_raytracing_index);
+	}
 
 	cmdline += " --device-index ";
 	cmdline += std::to_string(Global::device_options.device_index);
@@ -1083,6 +1106,8 @@ static int run_master_process(const VulkanDevice::Options &opts,
 	if (Global::control_block)
 		Global::control_block->progress_complete.store(1, std::memory_order_release);
 
+	for (const auto &child : child_processes)
+		if (!child.outcome.complete) return EXIT_FAILURE;
 	return EXIT_SUCCESS;
 }
 
@@ -1361,6 +1386,12 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 
 	global_replayer = &replayer;
 	int code = run_normal_process(replayer, databases, nullptr, 0, reinterpret_cast<intptr_t>(Global::metadata_handle));
+	if (code == EXIT_FAILURE)
+	{
+		char terminal[64];
+		snprintf(terminal, sizeof(terminal), "REPLAY_FAILED %u %u\n", replayer.outcome.failure_mask(), replayer.work_drained ? 1u : 0u);
+		write_all(crash_handle, terminal);
+	}
 	global_replayer = nullptr;
 
 	// Do not try to catch errors in teardown. Crashes here should never happen, and if they do,
