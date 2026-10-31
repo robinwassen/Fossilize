@@ -1,0 +1,910 @@
+Independent exact-candidate full CPU configuration release-on
+165 unique discovered and 165 unique passed, no missing/skipped/not-run tests.
+Effective changed production-inclusion target:
+build test/CMakeFiles/replay-outcome-test.dir/replay_outcome_test.cpp.o: CXX_COMPILER__replay-outcome-test_unscanned_Release /tmp/fossilize-14/checker-1/test/replay_outcome_test.cpp || cmake_object_order_depends_target_replay-outcome-test
+  CONFIG = Release
+  DEFINES = -DFOSSILIZE_REPLAYER_SPIRV_VAL
+  DEP_FILE = test/CMakeFiles/replay-outcome-test.dir/replay_outcome_test.cpp.o.d
+  FLAGS = -fvisibility=hidden -O3 -DNDEBUG -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -pthread
+  INCLUDES = -I/tmp/fossilize-14/checker-1 -I/tmp/fossilize-14/checker-1/rapidjson/include -I/tmp/fossilize-14/checker-1/khronos -I/tmp/fossilize-14/checker-1/miniz -I/tmp/fossilize-14/checker-1/cli -I/tmp/fossilize-14/checker-1/cli/volk -I/tmp/fossilize-14/checker-1/cli/../khronos -I/tmp/fossilize-14/checker-1/cli/SPIRV-Tools/include
+  OBJECT_DIR = test/CMakeFiles/replay-outcome-test.dir
+  OBJECT_FILE_DIR = test/CMakeFiles/replay-outcome-test.dir
+  TARGET_COMPILE_PDB = test/CMakeFiles/replay-outcome-test.dir/
+  TARGET_PDB = test/replay-outcome-test.pdb
+  TARGET_SUPPORT_DIR = test/CMakeFiles/replay-outcome-test.dir
+
+$ /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /tmp/fossilize-14/checker-1 -B /tmp/fossilize-14/build/checker-1/release-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF
+cwd=/tmp/fossilize-14/checker-1
+receipt={"intent_id": "checker1-release-on-configure", "command": ["/tmp/fossilize-10/tools/cmake/data/bin/cmake", "-S", "/tmp/fossilize-14/checker-1", "-B", "/tmp/fossilize-14/build/checker-1/release-on", "-G", "Ninja", "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja", "-DCMAKE_BUILD_TYPE=Release", "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON", "-DFOSSILIZE_CLI=ON", "-DFOSSILIZE_TESTS=ON", "-DFOSSILIZE_VULKAN_LAYER=ON", "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON", "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"], "cwd": "/tmp/fossilize-14/checker-1", "timeout": 600.0, "started": 1793458830.9083686, "acquired": 1793458830.911081, "wait_seconds": 0.0, "finished": 1793458832.678899, "exit_code": 0, "timed_out": false}
+CMake Warning (deprecated) at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+-- The CXX compiler identification is GNU 13.3.0
+-- The C compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Found Python3: /usr/bin/python3.12 (found version "3.12.3") found components: Interpreter
+-- Did not find googletest, tests will not be built. To enable tests place googletest in '<spirv-dir>/external/googletest'.
+-- SPIRV-Cross: Finding Git version for SPIRV-Cross.
+-- Found Git: /usr/bin/git (found version "2.43.0")
+-- SPIRV-Cross: Git hash: vulkan-sdk-1.4.341.0
+SPIRV-Cross:  Testing will be disabled for SPIRV-Cross. Could not find glslang or SPIRV-Tools build under external/. To enable testing, run ./checkout_glslang_spirv_tools.sh and ./build_glslang_spirv_tools.sh first.
+-- Configuring done (1.6s)
+-- Generating done (0.1s)
+-- Build files have been written to: /tmp/fossilize-14/build/checker-1/release-on
+
+
+$ /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-14/build/checker-1/release-on --parallel 4 --target fossilize-replay
+cwd=/tmp/fossilize-14/checker-1
+receipt={"intent_id": "checker1-release-on-build-replay", "command": ["/tmp/fossilize-10/tools/cmake/data/bin/cmake", "--build", "/tmp/fossilize-14/build/checker-1/release-on", "--parallel", "4", "--target", "fossilize-replay"], "cwd": "/tmp/fossilize-14/checker-1", "timeout": 600.0, "started": 1793458832.733916, "acquired": 1793458832.7367954, "wait_seconds": 0.0, "finished": 1793458890.982414, "exit_code": 0, "timed_out": false}
+[1/105] Generate language specific header for DebugInfo.
+[2/105] Generate language specific header for OpenCLDebugInfo100.
+[3/105] Generate grammar tables
+[4/105] Generate tables based on the SPIR-V XML registry.
+[5/105] Update build-version.inc in the SPIRV-Tools build directory (if necessary).
+[6/105] Building C object cli/CMakeFiles/volk.dir/volk/volk.c.o
+[7/105] Building CXX object CMakeFiles/fossilize.dir/varint.cpp.o
+[8/105] Building C object CMakeFiles/miniz.dir/miniz/miniz.c.o
+[9/105] Linking C static library libminiz.a
+[10/105] Building CXX object CMakeFiles/fossilize.dir/fossilize_application_filter.cpp.o
+[11/105] Building CXX object CMakeFiles/fossilize.dir/path.cpp.o
+[12/105] Linking C static library cli/libvolk.a
+[13/105] Building CXX object CMakeFiles/fossilize.dir/fossilize_db.cpp.o
+[14/105] Building CXX object cli/CMakeFiles/cli-utils.dir/cli_parser.cpp.o
+[15/105] Building CXX object cli/CMakeFiles/cli-utils.dir/file.cpp.o
+[16/105] Building CXX object CMakeFiles/fossilize.dir/fossilize_external_replayer.cpp.o
+[17/105] Building CXX object cli/CMakeFiles/cli-utils.dir/device.cpp.o
+[18/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/util/bit_vector.cpp.o
+[19/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/util/string_utils.cpp.o
+[20/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/assembly_grammar.cpp.o
+[21/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/binary.cpp.o
+[22/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/util/parse_number.cpp.o
+[23/105] Building CXX object cli/CMakeFiles/cli-utils.dir/fossilize_feature_filter.cpp.o
+[24/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/diagnostic.cpp.o
+[25/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/ext_inst.cpp.o
+[26/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/extensions.cpp.o
+[27/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/libspirv.cpp.o
+[28/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/opcode.cpp.o
+[29/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/disassemble.cpp.o
+[30/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/name_mapper.cpp.o
+[31/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/print.cpp.o
+[32/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/software_version.cpp.o
+[33/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/spirv_endian.cpp.o
+[34/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/operand.cpp.o
+[35/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/spirv_optimizer_options.cpp.o
+[36/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/parsed_operand.cpp.o
+[37/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/spirv_fuzzer_options.cpp.o
+[38/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/spirv_validator_options.cpp.o
+[39/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/spirv_reducer_options.cpp.o
+[40/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/spirv_target_env.cpp.o
+[41/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/table.cpp.o
+[42/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/table2.cpp.o
+[43/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/to_string.cpp.o
+[44/105] Building CXX object CMakeFiles/fossilize.dir/fossilize.cpp.o
+[45/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/text_handler.cpp.o
+[46/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/text.cpp.o
+[47/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_adjacency.cpp.o
+[48/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate.cpp.o
+[49/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_arithmetics.cpp.o
+[50/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_annotation.cpp.o
+[51/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_atomics.cpp.o
+[52/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_barriers.cpp.o
+[53/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_bitwise.cpp.o
+[54/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_capability.cpp.o
+[55/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_composites.cpp.o
+[56/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_constants.cpp.o
+[57/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_cfg.cpp.o
+[58/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_conversion.cpp.o
+[59/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_debug.cpp.o
+[60/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_derivatives.cpp.o
+[61/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_dot_product.cpp.o
+[62/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_builtins.cpp.o
+[63/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_execution_limitations.cpp.o
+[64/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_decorations.cpp.o
+[65/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_function.cpp.o
+[66/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_graph.cpp.o
+[67/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_explicit_layout.cpp.o
+[68/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_extensions.cpp.o
+[69/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_group.cpp.o
+[70/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_id.cpp.o
+[71/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_layout.cpp.o
+[72/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_image.cpp.o
+[73/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_instruction.cpp.o
+[74/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_interfaces.cpp.o
+[75/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_literals.cpp.o
+[76/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_logicals.cpp.o
+[77/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_logical_pointers.cpp.o
+[78/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_memory_semantics.cpp.o
+[79/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_mesh_shading.cpp.o
+[80/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_misc.cpp.o
+[81/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_memory.cpp.o
+[82/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_non_uniform.cpp.o
+[83/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_pipe.cpp.o
+[84/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_primitives.cpp.o
+[85/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_mode_setting.cpp.o
+[86/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_ray_query.cpp.o
+[87/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_ray_tracing.cpp.o
+[88/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_scopes.cpp.o
+[89/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_small_type_uses.cpp.o
+[90/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_ray_tracing_reorder.cpp.o
+[91/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_tensor_layout.cpp.o
+[92/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_tensor.cpp.o
+[93/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/basic_block.cpp.o
+[94/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_invalid_type.cpp.o
+[95/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/instruction.cpp.o
+[96/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/construct.cpp.o
+[97/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validate_type.cpp.o
+[98/105] Linking CXX static library libfossilize.a
+[99/105] Linking CXX static library cli/libcli-utils.a
+[100/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/util/timer.cpp.o
+[101/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/function.cpp.o
+[102/105] Building CXX object cli/SPIRV-Tools/source/CMakeFiles/SPIRV-Tools-static.dir/val/validation_state.cpp.o
+[103/105] Linking CXX static library cli/SPIRV-Tools/source/libSPIRV-Tools.a
+[104/105] Building CXX object cli/CMakeFiles/fossilize-replay.dir/fossilize_replay.cpp.o
+[105/105] Linking CXX executable cli/fossilize-replay
+
+
+$ /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-14/build/checker-1/release-on --parallel 4 --target fossilize-opt
+cwd=/tmp/fossilize-14/checker-1
+receipt={"intent_id": "checker1-release-on-build-opt", "command": ["/tmp/fossilize-10/tools/cmake/data/bin/cmake", "--build", "/tmp/fossilize-14/build/checker-1/release-on", "--parallel", "4", "--target", "fossilize-opt"], "cwd": "/tmp/fossilize-14/checker-1", "timeout": 600.0, "started": 1793458891.037087, "acquired": 1793458891.0395756, "wait_seconds": 0.0, "finished": 1793459050.2735376, "exit_code": 0, "timed_out": false}
+[1/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/analyze_live_input_pass.cpp.o
+[2/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/fix_func_call_arguments.cpp.o
+[3/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/amd_ext_to_khr.cpp.o
+[4/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/aggressive_dead_code_elim_pass.cpp.o
+[5/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/block_merge_pass.cpp.o
+[6/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/basic_block.cpp.o
+[7/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/block_merge_util.cpp.o
+[8/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/cfg_cleanup_pass.cpp.o
+[9/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/build_module.cpp.o
+[10/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/ccp_pass.cpp.o
+[11/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/code_sink.cpp.o
+[12/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/compact_ids_pass.cpp.o
+[13/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/cfg.cpp.o
+[14/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/combine_access_chains.cpp.o
+[15/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/control_dependence.cpp.o
+[16/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/composite.cpp.o
+[17/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/constants.cpp.o
+[18/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/const_folding_rules.cpp.o
+[19/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/convert_to_sampled_image_pass.cpp.o
+[20/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/convert_to_untyped.cpp.o
+[21/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/dataflow.cpp.o
+[22/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/convert_to_half_pass.cpp.o
+[23/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/copy_prop_arrays.cpp.o
+[24/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/dead_branch_elim_pass.cpp.o
+[25/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/dead_insert_elim_pass.cpp.o
+[26/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/dead_variable_elimination.cpp.o
+[27/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/def_use_manager.cpp.o
+[28/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/decoration_manager.cpp.o
+[29/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/desc_sroa_util.cpp.o
+[30/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/desc_sroa.cpp.o
+[31/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/debug_info_manager.cpp.o
+[32/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/dominator_analysis.cpp.o
+[33/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/eliminate_dead_functions_pass.cpp.o
+[34/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/eliminate_dead_constant_pass.cpp.o
+[35/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/eliminate_dead_functions_util.cpp.o
+[36/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/dominator_tree.cpp.o
+[37/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/feature_manager.cpp.o
+[38/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/eliminate_dead_io_components_pass.cpp.o
+[39/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/eliminate_dead_output_stores_pass.cpp.o
+[40/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/eliminate_dead_members_pass.cpp.o
+[41/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/fix_storage_class.cpp.o
+[42/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/flatten_decoration_pass.cpp.o
+[43/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/fold.cpp.o
+[44/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/freeze_spec_constant_value_pass.cpp.o
+[45/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/fold_spec_constant_op_and_composite_pass.cpp.o
+[46/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/graph.cpp.o
+[47/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/function.cpp.o
+[48/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/folding_rules.cpp.o
+[49/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/inline_exhaustive_pass.cpp.o
+[50/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/graphics_robust_access_pass.cpp.o
+[51/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/if_conversion.cpp.o
+[52/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/inline_opaque_pass.cpp.o
+[53/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/instruction_list.cpp.o
+[54/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/inline_pass.cpp.o
+[55/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/instruction.cpp.o
+[56/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/invocation_interlock_placement_pass.cpp.o
+[57/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/interface_var_sroa.cpp.o
+[58/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/interp_fixup_pass.cpp.o
+[59/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/opextinst_forward_ref_fixup_pass.cpp.o
+[60/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/ir_loader.cpp.o
+[61/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/licm_pass.cpp.o
+[62/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/ir_context.cpp.o
+[63/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/legalize_multidim_array_pass.cpp.o
+[64/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/liveness.cpp.o
+[65/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/local_redundancy_elimination.cpp.o
+[66/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/local_access_chain_convert_pass.cpp.o
+[67/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/local_single_block_elim_pass.cpp.o
+[68/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/local_single_store_elim_pass.cpp.o
+[69/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/loop_dependence_helpers.cpp.o
+[70/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/loop_dependence.cpp.o
+[71/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/loop_descriptor.cpp.o
+[72/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/loop_fission.cpp.o
+[73/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/loop_fusion_pass.cpp.o
+[74/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/loop_fusion.cpp.o
+[75/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/loop_peeling.cpp.o
+[76/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/loop_utils.cpp.o
+[77/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/loop_unroller.cpp.o
+[78/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/loop_unswitch_pass.cpp.o
+[79/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/modify_maximal_reconvergence.cpp.o
+[80/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/mem_pass.cpp.o
+[81/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/merge_return_pass.cpp.o
+[82/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/module.cpp.o
+[83/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/pass.cpp.o
+[84/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/pass_manager.cpp.o
+[85/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/private_to_local_pass.cpp.o
+[86/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/propagator.cpp.o
+[87/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/optimizer.cpp.o
+[88/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/reduce_load_size.cpp.o
+[89/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/redundancy_elimination.cpp.o
+[90/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/relax_float_ops_pass.cpp.o
+[91/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/remove_dontinline_pass.cpp.o
+[92/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/canonicalize_ids_pass.cpp.o
+[93/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/register_pressure.cpp.o
+[94/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/remove_duplicates_pass.cpp.o
+[95/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/remove_unused_interface_variables_pass.cpp.o
+[96/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/replace_invalid_opc.cpp.o
+[97/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/replace_desc_array_access_using_var_index.cpp.o
+[98/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/scalar_analysis_simplification.cpp.o
+[99/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/resolve_binding_conflicts_pass.cpp.o
+[100/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/scalar_analysis.cpp.o
+[101/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/set_spec_constant_default_value_pass.cpp.o
+[102/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/simplification_pass.cpp.o
+[103/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/scalar_replacement_pass.cpp.o
+[104/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/split_combined_image_sampler_pass.cpp.o
+[105/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/spread_volatile_semantics.cpp.o
+[106/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/strength_reduction_pass.cpp.o
+[107/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/ssa_rewrite_pass.cpp.o
+[108/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/strip_debug_info_pass.cpp.o
+[109/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/strip_nonsemantic_info_pass.cpp.o
+[110/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/struct_cfg_analysis.cpp.o
+[111/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/struct_packing_pass.cpp.o
+[112/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/switch_descriptorset_pass.cpp.o
+[113/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/trim_capabilities_pass.cpp.o
+[114/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/unify_const_pass.cpp.o
+[115/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/types.cpp.o
+[116/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/type_manager.cpp.o
+[117/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/value_number_table.cpp.o
+[118/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/upgrade_memory_model.cpp.o
+[119/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/vector_dce.cpp.o
+[120/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/workaround1209.cpp.o
+[121/124] Building CXX object cli/CMakeFiles/fossilize-opt.dir/fossilize_opt.cpp.o
+[122/124] Building CXX object cli/SPIRV-Tools/source/opt/CMakeFiles/SPIRV-Tools-opt.dir/wrap_opkill.cpp.o
+[123/124] Linking CXX static library cli/SPIRV-Tools/source/opt/libSPIRV-Tools-opt.a
+[124/124] Linking CXX executable cli/fossilize-opt
+
+
+$ /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-14/build/checker-1/release-on --parallel 4
+cwd=/tmp/fossilize-14/checker-1
+receipt={"intent_id": "checker1-release-on-build-all", "command": ["/tmp/fossilize-10/tools/cmake/data/bin/cmake", "--build", "/tmp/fossilize-14/build/checker-1/release-on", "--parallel", "4"], "cwd": "/tmp/fossilize-14/checker-1", "timeout": 600.0, "started": 1793459050.325108, "acquired": 1793459050.3278587, "wait_seconds": 0.0, "finished": 1793459117.4472423, "exit_code": 0, "timed_out": false}
+[1/84] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-core.dir/spirv_cfg.cpp.o
+[2/84] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-core.dir/spirv_cross_parsed_ir.cpp.o
+[3/84] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-core.dir/spirv_parser.cpp.o
+[4/84] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-cpp.dir/spirv_cpp.cpp.o
+[5/84] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-core.dir/spirv_cross.cpp.o
+[6/84] Linking CXX static library cli/SPIRV-Cross/libspirv-cross-core.a
+[7/84] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-reflect.dir/spirv_reflect.cpp.o
+[8/84] Building CXX object cli/CMakeFiles/fossilize-sifter-utils.dir/fossilize_sifter_utils.cpp.o
+[9/84] Linking CXX static library cli/SPIRV-Cross/libspirv-cross-reflect.a
+[10/84] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-c.dir/spirv_cross_c.cpp.o
+[11/84] Building CXX object layer/CMakeFiles/VkLayer_fossilize.dir/device.cpp.o
+[12/84] Building CXX object layer/CMakeFiles/VkLayer_fossilize.dir/instance.cpp.o
+[13/84] Building CXX object layer/CMakeFiles/VkLayer_fossilize.dir/dispatch.cpp.o
+[14/84] Building CXX object layer/CMakeFiles/VkLayer_fossilize.dir/dispatch_helper.cpp.o
+[15/84] Building CXX object cli/CMakeFiles/fossilize-bench.dir/fossilize_bench.cpp.o
+[16/84] Building CXX object cli/CMakeFiles/fossilize-convert-db.dir/fossilize_convert_db.cpp.o
+[17/84] Building CXX object cli/CMakeFiles/fossilize-merge-db.dir/fossilize_merge_db.cpp.o
+[18/84] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-hlsl.dir/spirv_hlsl.cpp.o
+[19/84] Building CXX object cli/CMakeFiles/fossilize-disasm.dir/fossilize_disasm.cpp.o
+[20/84] Building CXX object cli/CMakeFiles/fossilize-list.dir/fossilize_list.cpp.o
+[21/84] Building CXX object cli/CMakeFiles/fossilize-rehash.dir/fossilize_rehash.cpp.o
+[22/84] Building CXX object cli/CMakeFiles/fossilize-prune.dir/fossilize_prune.cpp.o
+[23/84] Linking CXX static library cli/libfossilize-sifter-utils.a
+[24/84] Building CXX object cli/CMakeFiles/fossilize-validate-cache-roundtrip.dir/fossilize_validate_cache_roundtrip.cpp.o
+[25/84] Building CXX object cli/CMakeFiles/fossilize-synth.dir/fossilize_synth.cpp.o
+[26/84] Building CXX object cli/CMakeFiles/fossilize-feature-sifter.dir/fossilize_feature_sifter.cpp.o
+[27/84] Building CXX object test/CMakeFiles/varint-test.dir/varint_test.cpp.o
+[28/84] Building CXX object test/CMakeFiles/application-info-filter-test.dir/application_info_filter_test.cpp.o
+[29/84] Building CXX object test/CMakeFiles/object-cache-test.dir/object_cache_test.cpp.o
+[30/84] Building CXX object test/CMakeFiles/fossilize-test.dir/fossilize_test.cpp.o
+[31/84] Building CXX object test/CMakeFiles/feature-filter-test.dir/feature_filter_test.cpp.o
+[32/84] Building CXX object test/CMakeFiles/futex-test.dir/futex_test.cpp.o
+[33/84] Building CXX object test/CMakeFiles/multi-instance-and-device-test.dir/multi_instance_and_device_test.cpp.o
+[34/84] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-glsl.dir/spirv_glsl.cpp.o
+[35/84] Linking CXX static library cli/SPIRV-Cross/libspirv-cross-glsl.a
+[36/84] Linking CXX static library cli/SPIRV-Cross/libspirv-cross-cpp.a
+[37/84] Linking CXX static library cli/SPIRV-Cross/libspirv-cross-hlsl.a
+[38/84] Building CXX object test/CMakeFiles/capture-diagnostic-test.dir/capture_diagnostic_test.cpp.o
+[39/84] Building CXX object test/CMakeFiles/diagnostic-compatibility-test.dir/diagnostic_compatibility_test.cpp.o
+[40/84] Building CXX object test/CMakeFiles/device-diagnostic-test.dir/device_diagnostic_test.cpp.o
+[41/84] Building CXX object test/CMakeFiles/file-helper-test.dir/file_helper_test.cpp.o
+[42/84] Building CXX object test/CMakeFiles/file-helper-test.dir/__/cli/file.cpp.o
+[43/84] Building CXX object test/CMakeFiles/file-helper-compatibility-test.dir/file_helper_compatibility_test.cpp.o
+[44/84] Building CXX object test/CMakeFiles/file-helper-compatibility-test.dir/__/cli/file.cpp.o
+[45/84] Building CXX object test/CMakeFiles/utility-parse-test.dir/utility_parse_test.cpp.o
+[46/84] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-msl.dir/spirv_msl.cpp.o
+[47/84] Linking CXX static library cli/SPIRV-Cross/libspirv-cross-msl.a
+[48/84] Linking CXX static library cli/SPIRV-Cross/libspirv-cross-c.a
+[49/84] Building CXX object test/CMakeFiles/replay-controller-compatibility-test.dir/replay_controller_compatibility_test.cpp.o
+[50/84] Building CXX object test/CMakeFiles/replay-diagnostic-test.dir/replay_diagnostic_test.cpp.o
+[51/84] Building CXX object test/CMakeFiles/replay-outcome-compatibility-test.dir/replay_outcome_compatibility_test.cpp.o
+[52/84] Linking CXX shared library layer/libVkLayer_fossilize.so
+[53/84] Linking CXX executable cli/fossilize-bench
+[54/84] Linking CXX executable cli/fossilize-convert-db
+[55/84] Linking CXX executable cli/fossilize-merge-db
+[56/84] Linking CXX executable cli/fossilize-disasm
+[57/84] Linking CXX executable cli/fossilize-prune
+[58/84] Linking CXX executable cli/fossilize-list
+[59/84] Linking CXX executable cli/fossilize-rehash
+[60/84] Linking CXX executable cli/fossilize-synth
+[61/84] Linking CXX executable cli/fossilize-validate-cache-roundtrip
+[62/84] Linking CXX executable cli/fossilize-feature-sifter
+[63/84] Linking CXX executable test/fossilize-test
+[64/84] Linking CXX executable test/varint-test
+[65/84] Linking CXX executable test/application-info-filter-test
+[66/84] Linking CXX executable test/object-cache-test
+[67/84] Linking CXX executable test/multi-instance-and-device-test
+[68/84] Linking CXX executable test/feature-filter-test
+[69/84] Linking CXX executable test/futex-test
+[70/84] Linking CXX executable test/replay-diagnostic-test
+[71/84] Linking CXX executable test/device-diagnostic-test
+[72/84] Linking CXX executable test/capture-diagnostic-test
+[73/84] Linking CXX executable test/diagnostic-compatibility-test
+[74/84] Linking CXX executable test/utility-parse-test
+[75/84] Linking CXX executable test/file-helper-test
+[76/84] Linking CXX executable test/file-helper-compatibility-test
+[77/84] Linking CXX executable test/replay-controller-compatibility-test
+[78/84] Linking CXX executable test/replay-outcome-compatibility-test
+[79/84] Building CXX object test/CMakeFiles/fork-child-setup-test.dir/fork_child_setup_test.cpp.o
+In file included from /usr/include/c++/13/algorithm:61,
+                 from /tmp/fossilize-14/checker-1/util/object_pool.hpp:28,
+                 from /tmp/fossilize-14/checker-1/util/object_cache.hpp:27,
+                 from /tmp/fossilize-14/checker-1/test/../cli/fossilize_replay.cpp:40,
+                 from /tmp/fossilize-14/checker-1/test/fork_child_setup_test.cpp:7:
+In function ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = long unsigned int*; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’,
+    inlined from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = long unsigned int*; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’ at /usr/include/c++/13/bits/stl_algo.h:1854:5,
+    inlined from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = long unsigned int*; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’ at /usr/include/c++/13/bits/stl_algo.h:1950:31,
+    inlined from ‘void std::sort(_RAIter, _RAIter) [with _RAIter = long unsigned int*]’ at /usr/include/c++/13/bits/stl_algo.h:4861:18,
+    inlined from ‘bool fixture(DiagnosticChecks&)’ at /tmp/fossilize-14/checker-1/test/fork_child_setup_test.cpp:266:12,
+    inlined from ‘int main(int, char**)’ at /tmp/fossilize-14/checker-1/test/fork_child_setup_test.cpp:289:24:
+/usr/include/c++/13/bits/stl_algo.h:1859:32: warning: array subscript 16 is outside array bounds of ‘Fossilize::Hash [2]’ {aka ‘long unsigned int [2]’} [-Warray-bounds=]
+ 1859 |           std::__insertion_sort(__first, __first + int(_S_threshold), __comp);
+      |           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/fossilize-14/checker-1/test/fork_child_setup_test.cpp: In function ‘int main(int, char**)’:
+/tmp/fossilize-14/checker-1/test/fork_child_setup_test.cpp:264:22: note: at offset 128 into object ‘hashes’ of size 16
+  264 |                 Hash hashes[2] = {};
+      |                      ^~~~~~
+[80/84] Linking CXX executable test/fork-child-setup-test
+[81/84] Building CXX object test/CMakeFiles/replay-controller-test.dir/replay_controller_test.cpp.o
+[82/84] Linking CXX executable test/replay-controller-test
+[83/84] Building CXX object test/CMakeFiles/replay-outcome-test.dir/replay_outcome_test.cpp.o
+[84/84] Linking CXX executable test/replay-outcome-test
+
+
+$ /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-14/build/checker-1/release-on --show-only=json-v1
+cwd=/tmp/fossilize-14/checker-1
+receipt={"intent_id": "checker1-release-on-inventory", "command": ["/tmp/fossilize-10/tools/cmake/data/bin/ctest", "--test-dir", "/tmp/fossilize-14/build/checker-1/release-on", "--show-only=json-v1"], "cwd": "/tmp/fossilize-14/checker-1", "timeout": 600.0, "started": 1793459117.50263, "acquired": 1793459117.5053794, "wait_seconds": 0.0, "finished": 1793459117.537397, "exit_code": 0, "timed_out": false}
+{
+  "kind": "actual CTest inventory names (full raw inventory retained locally)",
+  "names": [
+    "fossilize-system-test",
+    "varint-system-test",
+    "application-info-filter-test",
+    "object-cache-test",
+    "feature-filter-test",
+    "linux-futex-test",
+    "replay-diagnostic-test",
+    "device-diagnostic-test",
+    "capture-diagnostic-normal-graphics-reject",
+    "capture-diagnostic-normal-graphics-success",
+    "capture-diagnostic-normal-graphics-vulkan-error",
+    "capture-diagnostic-normal-compute-reject",
+    "capture-diagnostic-normal-compute-success",
+    "capture-diagnostic-normal-compute-vulkan-error",
+    "capture-diagnostic-normal-raytracing-reject",
+    "capture-diagnostic-normal-raytracing-success",
+    "capture-diagnostic-normal-raytracing-vulkan-error",
+    "capture-diagnostic-qa-graphics-reject",
+    "capture-diagnostic-qa-graphics-success",
+    "capture-diagnostic-qa-graphics-vulkan-error",
+    "capture-diagnostic-qa-compute-reject",
+    "capture-diagnostic-qa-compute-success",
+    "capture-diagnostic-qa-compute-vulkan-error",
+    "capture-diagnostic-qa-raytracing-reject",
+    "capture-diagnostic-qa-raytracing-success",
+    "capture-diagnostic-qa-raytracing-vulkan-error",
+    "capture-diagnostic-paranoid-graphics-reject",
+    "capture-diagnostic-paranoid-graphics-success",
+    "capture-diagnostic-paranoid-graphics-vulkan-error",
+    "capture-diagnostic-paranoid-compute-reject",
+    "capture-diagnostic-paranoid-compute-success",
+    "capture-diagnostic-paranoid-compute-vulkan-error",
+    "capture-diagnostic-paranoid-raytracing-reject",
+    "capture-diagnostic-paranoid-raytracing-success",
+    "capture-diagnostic-paranoid-raytracing-vulkan-error",
+    "capture-diagnostic-eager-graphics-reject",
+    "capture-diagnostic-eager-graphics-success",
+    "capture-diagnostic-eager-graphics-vulkan-error",
+    "capture-diagnostic-eager-compute-reject",
+    "capture-diagnostic-eager-compute-success",
+    "capture-diagnostic-eager-compute-vulkan-error",
+    "capture-diagnostic-eager-raytracing-reject",
+    "capture-diagnostic-eager-raytracing-success",
+    "capture-diagnostic-eager-raytracing-vulkan-error",
+    "capture-diagnostic-binary-graphics-reject",
+    "capture-diagnostic-binary-graphics-success",
+    "capture-diagnostic-binary-graphics-vulkan-error",
+    "capture-diagnostic-binary-compute-reject",
+    "capture-diagnostic-binary-compute-success",
+    "capture-diagnostic-binary-compute-vulkan-error",
+    "capture-diagnostic-binary-raytracing-reject",
+    "capture-diagnostic-binary-raytracing-success",
+    "capture-diagnostic-binary-raytracing-vulkan-error",
+    "diagnostic-compatibility-test",
+    "utility-parse-list-version",
+    "utility-parse-list-invalid-json",
+    "utility-parse-list-empty",
+    "utility-parse-list-populated",
+    "utility-parse-list-mixed",
+    "utility-parse-list-dependency-failure",
+    "utility-parse-list-empty-dependencies",
+    "utility-parse-list-legacy-invocations",
+    "utility-parse-rehash-version",
+    "utility-parse-rehash-invalid-json",
+    "utility-parse-rehash-empty",
+    "utility-parse-rehash-populated",
+    "utility-parse-rehash-mixed",
+    "utility-parse-prune-version",
+    "utility-parse-prune-invalid-json",
+    "utility-parse-prune-empty",
+    "utility-parse-prune-populated",
+    "utility-parse-prune-mixed",
+    "utility-parse-prune-rejected-application",
+    "file-helper-string-open",
+    "file-helper-string-short-write",
+    "file-helper-string-flush",
+    "file-helper-string-close",
+    "file-helper-string-first-error",
+    "file-helper-string-success",
+    "file-helper-string-filesystem",
+    "file-helper-string-dev-full",
+    "file-helper-buffer-open",
+    "file-helper-buffer-short-write",
+    "file-helper-buffer-flush",
+    "file-helper-buffer-close",
+    "file-helper-buffer-first-error",
+    "file-helper-buffer-success",
+    "file-helper-buffer-filesystem",
+    "file-helper-buffer-dev-full",
+    "file-helper-legacy-compatibility",
+    "file-helper-legacy-completion",
+    "fork-child-healthy",
+    "fork-child-healthy-recovery",
+    "fork-child-parent-death",
+    "fork-child-prctl-failure",
+    "fork-child-parent-race",
+    "fork-child-initial-first-sigmask",
+    "fork-child-initial-last-sigmask",
+    "fork-child-recovery-sigmask",
+    "fork-child-initial-first-stdout-dup2",
+    "fork-child-initial-last-stdout-dup2",
+    "fork-child-recovery-stdout-dup2",
+    "fork-child-initial-first-stdin-dup2",
+    "fork-child-initial-last-stdin-dup2",
+    "fork-child-recovery-stdin-dup2",
+    "replay-controller-clean",
+    "replay-controller-zero",
+    "replay-controller-empty-archive",
+    "replay-controller-lost",
+    "replay-controller-lost-progress",
+    "replay-controller-mixed-success-first",
+    "replay-controller-mixed-loss-first",
+    "replay-controller-recover",
+    "replay-controller-skip-graphics",
+    "replay-controller-skip-compute",
+    "replay-controller-skip-raytracing",
+    "replay-controller-skip-graphics-final",
+    "replay-controller-skip-compute-final",
+    "replay-controller-skip-raytracing-final",
+    "replay-controller-skip-graphics-progress",
+    "replay-controller-skip-graphics-final-progress",
+    "replay-controller-partial",
+    "replay-controller-loss-after-retry",
+    "replay-controller-held-sibling",
+    "replay-controller-signal",
+    "replay-controller-status-error",
+    "replay-controller-outcome-state",
+    "replay-controller-cli-normal",
+    "replay-controller-cli-master",
+    "replay-controller-cli-progress",
+    "replay-controller-cli-e5",
+    "replay-controller-cli-e6",
+    "replay-controller-cli-compatibility",
+    "replay-outcome-state",
+    "replay-outcome-parse-read",
+    "replay-outcome-creation",
+    "replay-outcome-compile-required-loop",
+    "replay-outcome-support",
+    "replay-outcome-setup-dependency",
+    "replay-outcome-worker-queue",
+    "replay-outcome-matrix",
+    "replay-outcome-validation",
+    "replay-outcome-entry-good",
+    "replay-outcome-entry-create",
+    "replay-outcome-entry-layout",
+    "replay-outcome-entry-device",
+    "replay-outcome-cli-e7",
+    "replay-outcome-cli-missing",
+    "replay-outcome-cli-unsupported",
+    "replay-outcome-cli-unsupported-shader",
+    "replay-outcome-cli-library",
+    "replay-outcome-cli-mixed",
+    "replay-outcome-cli-good",
+    "replay-outcome-cli-empty",
+    "replay-outcome-cli-missinghash",
+    "replay-outcome-cli-emptyhash",
+    "replay-outcome-cli-selection",
+    "replay-outcome-cli-hashselection",
+    "replay-outcome-cli-whitelist",
+    "replay-outcome-cli-compatibility",
+    "replay-outcome-cli-validation",
+    "replay-outcome-controller-success-first-absent",
+    "replay-outcome-controller-success-first-progress",
+    "replay-outcome-controller-failure-first-absent",
+    "replay-outcome-controller-failure-first-progress"
+  ]
+}
+
+$ /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-14/build/checker-1/release-on --output-on-failure --no-tests=error --timeout 120 -j 1
+cwd=/tmp/fossilize-14/checker-1
+receipt={"intent_id": "checker1-release-on-ctest", "command": ["/tmp/fossilize-10/tools/cmake/data/bin/ctest", "--test-dir", "/tmp/fossilize-14/build/checker-1/release-on", "--output-on-failure", "--no-tests=error", "--timeout", "120", "-j", "1"], "cwd": "/tmp/fossilize-14/checker-1", "timeout": 600.0, "started": 1793459117.587584, "acquired": 1793459117.5903435, "wait_seconds": 0.0, "finished": 1793459123.072201, "exit_code": 0, "timed_out": false}
+Test project /tmp/fossilize-14/build/checker-1/release-on
+        Start   1: fossilize-system-test
+  1/165 Test   #1: fossilize-system-test .................................   Passed    0.18 sec
+        Start   2: varint-system-test
+  2/165 Test   #2: varint-system-test ....................................   Passed    0.46 sec
+        Start   3: application-info-filter-test
+  3/165 Test   #3: application-info-filter-test ..........................   Passed    0.00 sec
+        Start   4: object-cache-test
+  4/165 Test   #4: object-cache-test .....................................   Passed    0.00 sec
+        Start   5: feature-filter-test
+  5/165 Test   #5: feature-filter-test ...................................   Passed    0.00 sec
+        Start   6: linux-futex-test
+  6/165 Test   #6: linux-futex-test ......................................   Passed    0.50 sec
+        Start   7: replay-diagnostic-test
+  7/165 Test   #7: replay-diagnostic-test ................................   Passed    0.00 sec
+        Start   8: device-diagnostic-test
+  8/165 Test   #8: device-diagnostic-test ................................   Passed    0.00 sec
+        Start   9: capture-diagnostic-normal-graphics-reject
+  9/165 Test   #9: capture-diagnostic-normal-graphics-reject .............   Passed    0.00 sec
+        Start  10: capture-diagnostic-normal-graphics-success
+ 10/165 Test  #10: capture-diagnostic-normal-graphics-success ............   Passed    0.00 sec
+        Start  11: capture-diagnostic-normal-graphics-vulkan-error
+ 11/165 Test  #11: capture-diagnostic-normal-graphics-vulkan-error .......   Passed    0.00 sec
+        Start  12: capture-diagnostic-normal-compute-reject
+ 12/165 Test  #12: capture-diagnostic-normal-compute-reject ..............   Passed    0.00 sec
+        Start  13: capture-diagnostic-normal-compute-success
+ 13/165 Test  #13: capture-diagnostic-normal-compute-success .............   Passed    0.00 sec
+        Start  14: capture-diagnostic-normal-compute-vulkan-error
+ 14/165 Test  #14: capture-diagnostic-normal-compute-vulkan-error ........   Passed    0.00 sec
+        Start  15: capture-diagnostic-normal-raytracing-reject
+ 15/165 Test  #15: capture-diagnostic-normal-raytracing-reject ...........   Passed    0.00 sec
+        Start  16: capture-diagnostic-normal-raytracing-success
+ 16/165 Test  #16: capture-diagnostic-normal-raytracing-success ..........   Passed    0.00 sec
+        Start  17: capture-diagnostic-normal-raytracing-vulkan-error
+ 17/165 Test  #17: capture-diagnostic-normal-raytracing-vulkan-error .....   Passed    0.00 sec
+        Start  18: capture-diagnostic-qa-graphics-reject
+ 18/165 Test  #18: capture-diagnostic-qa-graphics-reject .................   Passed    0.00 sec
+        Start  19: capture-diagnostic-qa-graphics-success
+ 19/165 Test  #19: capture-diagnostic-qa-graphics-success ................   Passed    0.00 sec
+        Start  20: capture-diagnostic-qa-graphics-vulkan-error
+ 20/165 Test  #20: capture-diagnostic-qa-graphics-vulkan-error ...........   Passed    0.00 sec
+        Start  21: capture-diagnostic-qa-compute-reject
+ 21/165 Test  #21: capture-diagnostic-qa-compute-reject ..................   Passed    0.00 sec
+        Start  22: capture-diagnostic-qa-compute-success
+ 22/165 Test  #22: capture-diagnostic-qa-compute-success .................   Passed    0.00 sec
+        Start  23: capture-diagnostic-qa-compute-vulkan-error
+ 23/165 Test  #23: capture-diagnostic-qa-compute-vulkan-error ............   Passed    0.00 sec
+        Start  24: capture-diagnostic-qa-raytracing-reject
+ 24/165 Test  #24: capture-diagnostic-qa-raytracing-reject ...............   Passed    0.00 sec
+        Start  25: capture-diagnostic-qa-raytracing-success
+ 25/165 Test  #25: capture-diagnostic-qa-raytracing-success ..............   Passed    0.00 sec
+        Start  26: capture-diagnostic-qa-raytracing-vulkan-error
+ 26/165 Test  #26: capture-diagnostic-qa-raytracing-vulkan-error .........   Passed    0.00 sec
+        Start  27: capture-diagnostic-paranoid-graphics-reject
+ 27/165 Test  #27: capture-diagnostic-paranoid-graphics-reject ...........   Passed    0.00 sec
+        Start  28: capture-diagnostic-paranoid-graphics-success
+ 28/165 Test  #28: capture-diagnostic-paranoid-graphics-success ..........   Passed    0.00 sec
+        Start  29: capture-diagnostic-paranoid-graphics-vulkan-error
+ 29/165 Test  #29: capture-diagnostic-paranoid-graphics-vulkan-error .....   Passed    0.00 sec
+        Start  30: capture-diagnostic-paranoid-compute-reject
+ 30/165 Test  #30: capture-diagnostic-paranoid-compute-reject ............   Passed    0.00 sec
+        Start  31: capture-diagnostic-paranoid-compute-success
+ 31/165 Test  #31: capture-diagnostic-paranoid-compute-success ...........   Passed    0.00 sec
+        Start  32: capture-diagnostic-paranoid-compute-vulkan-error
+ 32/165 Test  #32: capture-diagnostic-paranoid-compute-vulkan-error ......   Passed    0.00 sec
+        Start  33: capture-diagnostic-paranoid-raytracing-reject
+ 33/165 Test  #33: capture-diagnostic-paranoid-raytracing-reject .........   Passed    0.00 sec
+        Start  34: capture-diagnostic-paranoid-raytracing-success
+ 34/165 Test  #34: capture-diagnostic-paranoid-raytracing-success ........   Passed    0.00 sec
+        Start  35: capture-diagnostic-paranoid-raytracing-vulkan-error
+ 35/165 Test  #35: capture-diagnostic-paranoid-raytracing-vulkan-error ...   Passed    0.00 sec
+        Start  36: capture-diagnostic-eager-graphics-reject
+ 36/165 Test  #36: capture-diagnostic-eager-graphics-reject ..............   Passed    0.00 sec
+        Start  37: capture-diagnostic-eager-graphics-success
+ 37/165 Test  #37: capture-diagnostic-eager-graphics-success .............   Passed    0.00 sec
+        Start  38: capture-diagnostic-eager-graphics-vulkan-error
+ 38/165 Test  #38: capture-diagnostic-eager-graphics-vulkan-error ........   Passed    0.00 sec
+        Start  39: capture-diagnostic-eager-compute-reject
+ 39/165 Test  #39: capture-diagnostic-eager-compute-reject ...............   Passed    0.00 sec
+        Start  40: capture-diagnostic-eager-compute-success
+ 40/165 Test  #40: capture-diagnostic-eager-compute-success ..............   Passed    0.00 sec
+        Start  41: capture-diagnostic-eager-compute-vulkan-error
+ 41/165 Test  #41: capture-diagnostic-eager-compute-vulkan-error .........   Passed    0.00 sec
+        Start  42: capture-diagnostic-eager-raytracing-reject
+ 42/165 Test  #42: capture-diagnostic-eager-raytracing-reject ............   Passed    0.00 sec
+        Start  43: capture-diagnostic-eager-raytracing-success
+ 43/165 Test  #43: capture-diagnostic-eager-raytracing-success ...........   Passed    0.00 sec
+        Start  44: capture-diagnostic-eager-raytracing-vulkan-error
+ 44/165 Test  #44: capture-diagnostic-eager-raytracing-vulkan-error ......   Passed    0.00 sec
+        Start  45: capture-diagnostic-binary-graphics-reject
+ 45/165 Test  #45: capture-diagnostic-binary-graphics-reject .............   Passed    0.00 sec
+        Start  46: capture-diagnostic-binary-graphics-success
+ 46/165 Test  #46: capture-diagnostic-binary-graphics-success ............   Passed    0.00 sec
+        Start  47: capture-diagnostic-binary-graphics-vulkan-error
+ 47/165 Test  #47: capture-diagnostic-binary-graphics-vulkan-error .......   Passed    0.00 sec
+        Start  48: capture-diagnostic-binary-compute-reject
+ 48/165 Test  #48: capture-diagnostic-binary-compute-reject ..............   Passed    0.00 sec
+        Start  49: capture-diagnostic-binary-compute-success
+ 49/165 Test  #49: capture-diagnostic-binary-compute-success .............   Passed    0.00 sec
+        Start  50: capture-diagnostic-binary-compute-vulkan-error
+ 50/165 Test  #50: capture-diagnostic-binary-compute-vulkan-error ........   Passed    0.00 sec
+        Start  51: capture-diagnostic-binary-raytracing-reject
+ 51/165 Test  #51: capture-diagnostic-binary-raytracing-reject ...........   Passed    0.00 sec
+        Start  52: capture-diagnostic-binary-raytracing-success
+ 52/165 Test  #52: capture-diagnostic-binary-raytracing-success ..........   Passed    0.00 sec
+        Start  53: capture-diagnostic-binary-raytracing-vulkan-error
+ 53/165 Test  #53: capture-diagnostic-binary-raytracing-vulkan-error .....   Passed    0.00 sec
+        Start  54: diagnostic-compatibility-test
+ 54/165 Test  #54: diagnostic-compatibility-test .........................   Passed    0.01 sec
+        Start  55: utility-parse-list-version
+ 55/165 Test  #55: utility-parse-list-version ............................   Passed    0.01 sec
+        Start  56: utility-parse-list-invalid-json
+ 56/165 Test  #56: utility-parse-list-invalid-json .......................   Passed    0.01 sec
+        Start  57: utility-parse-list-empty
+ 57/165 Test  #57: utility-parse-list-empty ..............................   Passed    0.01 sec
+        Start  58: utility-parse-list-populated
+ 58/165 Test  #58: utility-parse-list-populated ..........................   Passed    0.01 sec
+        Start  59: utility-parse-list-mixed
+ 59/165 Test  #59: utility-parse-list-mixed ..............................   Passed    0.02 sec
+        Start  60: utility-parse-list-dependency-failure
+ 60/165 Test  #60: utility-parse-list-dependency-failure .................   Passed    0.02 sec
+        Start  61: utility-parse-list-empty-dependencies
+ 61/165 Test  #61: utility-parse-list-empty-dependencies .................   Passed    0.01 sec
+        Start  62: utility-parse-list-legacy-invocations
+ 62/165 Test  #62: utility-parse-list-legacy-invocations .................   Passed    0.03 sec
+        Start  63: utility-parse-rehash-version
+ 63/165 Test  #63: utility-parse-rehash-version ..........................   Passed    0.01 sec
+        Start  64: utility-parse-rehash-invalid-json
+ 64/165 Test  #64: utility-parse-rehash-invalid-json .....................   Passed    0.01 sec
+        Start  65: utility-parse-rehash-empty
+ 65/165 Test  #65: utility-parse-rehash-empty ............................   Passed    0.01 sec
+        Start  66: utility-parse-rehash-populated
+ 66/165 Test  #66: utility-parse-rehash-populated ........................   Passed    0.01 sec
+        Start  67: utility-parse-rehash-mixed
+ 67/165 Test  #67: utility-parse-rehash-mixed ............................   Passed    0.02 sec
+        Start  68: utility-parse-prune-version
+ 68/165 Test  #68: utility-parse-prune-version ...........................   Passed    0.01 sec
+        Start  69: utility-parse-prune-invalid-json
+ 69/165 Test  #69: utility-parse-prune-invalid-json ......................   Passed    0.01 sec
+        Start  70: utility-parse-prune-empty
+ 70/165 Test  #70: utility-parse-prune-empty .............................   Passed    0.01 sec
+        Start  71: utility-parse-prune-populated
+ 71/165 Test  #71: utility-parse-prune-populated .........................   Passed    0.01 sec
+        Start  72: utility-parse-prune-mixed
+ 72/165 Test  #72: utility-parse-prune-mixed .............................   Passed    0.02 sec
+        Start  73: utility-parse-prune-rejected-application
+ 73/165 Test  #73: utility-parse-prune-rejected-application ..............   Passed    0.03 sec
+        Start  74: file-helper-string-open
+ 74/165 Test  #74: file-helper-string-open ...............................   Passed    0.00 sec
+        Start  75: file-helper-string-short-write
+ 75/165 Test  #75: file-helper-string-short-write ........................   Passed    0.00 sec
+        Start  76: file-helper-string-flush
+ 76/165 Test  #76: file-helper-string-flush ..............................   Passed    0.00 sec
+        Start  77: file-helper-string-close
+ 77/165 Test  #77: file-helper-string-close ..............................   Passed    0.00 sec
+        Start  78: file-helper-string-first-error
+ 78/165 Test  #78: file-helper-string-first-error ........................   Passed    0.00 sec
+        Start  79: file-helper-string-success
+ 79/165 Test  #79: file-helper-string-success ............................   Passed    0.00 sec
+        Start  80: file-helper-string-filesystem
+ 80/165 Test  #80: file-helper-string-filesystem .........................   Passed    0.00 sec
+        Start  81: file-helper-string-dev-full
+ 81/165 Test  #81: file-helper-string-dev-full ...........................   Passed    0.00 sec
+        Start  82: file-helper-buffer-open
+ 82/165 Test  #82: file-helper-buffer-open ...............................   Passed    0.00 sec
+        Start  83: file-helper-buffer-short-write
+ 83/165 Test  #83: file-helper-buffer-short-write ........................   Passed    0.00 sec
+        Start  84: file-helper-buffer-flush
+ 84/165 Test  #84: file-helper-buffer-flush ..............................   Passed    0.00 sec
+        Start  85: file-helper-buffer-close
+ 85/165 Test  #85: file-helper-buffer-close ..............................   Passed    0.00 sec
+        Start  86: file-helper-buffer-first-error
+ 86/165 Test  #86: file-helper-buffer-first-error ........................   Passed    0.00 sec
+        Start  87: file-helper-buffer-success
+ 87/165 Test  #87: file-helper-buffer-success ............................   Passed    0.00 sec
+        Start  88: file-helper-buffer-filesystem
+ 88/165 Test  #88: file-helper-buffer-filesystem .........................   Passed    0.00 sec
+        Start  89: file-helper-buffer-dev-full
+ 89/165 Test  #89: file-helper-buffer-dev-full ...........................   Passed    0.00 sec
+        Start  90: file-helper-legacy-compatibility
+ 90/165 Test  #90: file-helper-legacy-compatibility ......................   Passed    0.00 sec
+        Start  91: file-helper-legacy-completion
+ 91/165 Test  #91: file-helper-legacy-completion .........................   Passed    0.01 sec
+        Start  92: fork-child-healthy
+ 92/165 Test  #92: fork-child-healthy ....................................   Passed    0.00 sec
+        Start  93: fork-child-healthy-recovery
+ 93/165 Test  #93: fork-child-healthy-recovery ...........................   Passed    0.00 sec
+        Start  94: fork-child-parent-death
+ 94/165 Test  #94: fork-child-parent-death ...............................   Passed    0.00 sec
+        Start  95: fork-child-prctl-failure
+ 95/165 Test  #95: fork-child-prctl-failure ..............................   Passed    0.00 sec
+        Start  96: fork-child-parent-race
+ 96/165 Test  #96: fork-child-parent-race ................................   Passed    0.01 sec
+        Start  97: fork-child-initial-first-sigmask
+ 97/165 Test  #97: fork-child-initial-first-sigmask ......................   Passed    0.00 sec
+        Start  98: fork-child-initial-last-sigmask
+ 98/165 Test  #98: fork-child-initial-last-sigmask .......................   Passed    0.00 sec
+        Start  99: fork-child-recovery-sigmask
+ 99/165 Test  #99: fork-child-recovery-sigmask ...........................   Passed    0.00 sec
+        Start 100: fork-child-initial-first-stdout-dup2
+100/165 Test #100: fork-child-initial-first-stdout-dup2 ..................   Passed    0.00 sec
+        Start 101: fork-child-initial-last-stdout-dup2
+101/165 Test #101: fork-child-initial-last-stdout-dup2 ...................   Passed    0.00 sec
+        Start 102: fork-child-recovery-stdout-dup2
+102/165 Test #102: fork-child-recovery-stdout-dup2 .......................   Passed    0.00 sec
+        Start 103: fork-child-initial-first-stdin-dup2
+103/165 Test #103: fork-child-initial-first-stdin-dup2 ...................   Passed    0.01 sec
+        Start 104: fork-child-initial-last-stdin-dup2
+104/165 Test #104: fork-child-initial-last-stdin-dup2 ....................   Passed    0.00 sec
+        Start 105: fork-child-recovery-stdin-dup2
+105/165 Test #105: fork-child-recovery-stdin-dup2 ........................   Passed    0.00 sec
+        Start 106: replay-controller-clean
+106/165 Test #106: replay-controller-clean ...............................   Passed    0.01 sec
+        Start 107: replay-controller-zero
+107/165 Test #107: replay-controller-zero ................................   Passed    0.01 sec
+        Start 108: replay-controller-empty-archive
+108/165 Test #108: replay-controller-empty-archive .......................   Passed    0.01 sec
+        Start 109: replay-controller-lost
+109/165 Test #109: replay-controller-lost ................................   Passed    0.01 sec
+        Start 110: replay-controller-lost-progress
+110/165 Test #110: replay-controller-lost-progress .......................   Passed    0.01 sec
+        Start 111: replay-controller-mixed-success-first
+111/165 Test #111: replay-controller-mixed-success-first .................   Passed    0.01 sec
+        Start 112: replay-controller-mixed-loss-first
+112/165 Test #112: replay-controller-mixed-loss-first ....................   Passed    0.01 sec
+        Start 113: replay-controller-recover
+113/165 Test #113: replay-controller-recover .............................   Passed    0.01 sec
+        Start 114: replay-controller-skip-graphics
+114/165 Test #114: replay-controller-skip-graphics .......................   Passed    0.01 sec
+        Start 115: replay-controller-skip-compute
+115/165 Test #115: replay-controller-skip-compute ........................   Passed    0.01 sec
+        Start 116: replay-controller-skip-raytracing
+116/165 Test #116: replay-controller-skip-raytracing .....................   Passed    0.01 sec
+        Start 117: replay-controller-skip-graphics-final
+117/165 Test #117: replay-controller-skip-graphics-final .................   Passed    0.01 sec
+        Start 118: replay-controller-skip-compute-final
+118/165 Test #118: replay-controller-skip-compute-final ..................   Passed    0.01 sec
+        Start 119: replay-controller-skip-raytracing-final
+119/165 Test #119: replay-controller-skip-raytracing-final ...............   Passed    0.01 sec
+        Start 120: replay-controller-skip-graphics-progress
+120/165 Test #120: replay-controller-skip-graphics-progress ..............   Passed    0.01 sec
+        Start 121: replay-controller-skip-graphics-final-progress
+121/165 Test #121: replay-controller-skip-graphics-final-progress ........   Passed    0.01 sec
+        Start 122: replay-controller-partial
+122/165 Test #122: replay-controller-partial .............................   Passed    0.01 sec
+        Start 123: replay-controller-loss-after-retry
+123/165 Test #123: replay-controller-loss-after-retry ....................   Passed    0.01 sec
+        Start 124: replay-controller-held-sibling
+124/165 Test #124: replay-controller-held-sibling ........................   Passed    0.01 sec
+        Start 125: replay-controller-signal
+125/165 Test #125: replay-controller-signal ..............................   Passed    0.14 sec
+        Start 126: replay-controller-status-error
+126/165 Test #126: replay-controller-status-error ........................   Passed    0.01 sec
+        Start 127: replay-controller-outcome-state
+127/165 Test #127: replay-controller-outcome-state .......................   Passed    0.01 sec
+        Start 128: replay-controller-cli-normal
+128/165 Test #128: replay-controller-cli-normal ..........................   Passed    0.01 sec
+        Start 129: replay-controller-cli-master
+129/165 Test #129: replay-controller-cli-master ..........................   Passed    0.01 sec
+        Start 130: replay-controller-cli-progress
+130/165 Test #130: replay-controller-cli-progress ........................   Passed    0.11 sec
+        Start 131: replay-controller-cli-e5
+131/165 Test #131: replay-controller-cli-e5 ..............................   Passed    0.02 sec
+        Start 132: replay-controller-cli-e6
+132/165 Test #132: replay-controller-cli-e6 ..............................   Passed    0.12 sec
+        Start 133: replay-controller-cli-compatibility
+133/165 Test #133: replay-controller-cli-compatibility ...................   Passed    0.04 sec
+        Start 134: replay-outcome-state
+134/165 Test #134: replay-outcome-state ..................................   Passed    0.01 sec
+        Start 135: replay-outcome-parse-read
+135/165 Test #135: replay-outcome-parse-read .............................   Passed    0.00 sec
+        Start 136: replay-outcome-creation
+136/165 Test #136: replay-outcome-creation ...............................   Passed    0.00 sec
+        Start 137: replay-outcome-compile-required-loop
+137/165 Test #137: replay-outcome-compile-required-loop ..................   Passed    0.00 sec
+        Start 138: replay-outcome-support
+138/165 Test #138: replay-outcome-support ................................   Passed    0.00 sec
+        Start 139: replay-outcome-setup-dependency
+139/165 Test #139: replay-outcome-setup-dependency .......................   Passed    0.00 sec
+        Start 140: replay-outcome-worker-queue
+140/165 Test #140: replay-outcome-worker-queue ...........................   Passed    0.01 sec
+        Start 141: replay-outcome-matrix
+141/165 Test #141: replay-outcome-matrix .................................   Passed    0.01 sec
+        Start 142: replay-outcome-validation
+142/165 Test #142: replay-outcome-validation .............................   Passed    0.00 sec
+        Start 143: replay-outcome-entry-good
+143/165 Test #143: replay-outcome-entry-good .............................   Passed    0.00 sec
+        Start 144: replay-outcome-entry-create
+144/165 Test #144: replay-outcome-entry-create ...........................   Passed    0.00 sec
+        Start 145: replay-outcome-entry-layout
+145/165 Test #145: replay-outcome-entry-layout ...........................   Passed    0.00 sec
+        Start 146: replay-outcome-entry-device
+146/165 Test #146: replay-outcome-entry-device ...........................   Passed    0.00 sec
+        Start 147: replay-outcome-cli-e7
+147/165 Test #147: replay-outcome-cli-e7 .................................   Passed    0.23 sec
+        Start 148: replay-outcome-cli-missing
+148/165 Test #148: replay-outcome-cli-missing ............................   Passed    0.23 sec
+        Start 149: replay-outcome-cli-unsupported
+149/165 Test #149: replay-outcome-cli-unsupported ........................   Passed    0.24 sec
+        Start 150: replay-outcome-cli-unsupported-shader
+150/165 Test #150: replay-outcome-cli-unsupported-shader .................   Passed    0.23 sec
+        Start 151: replay-outcome-cli-library
+151/165 Test #151: replay-outcome-cli-library ............................   Passed    0.24 sec
+        Start 152: replay-outcome-cli-mixed
+152/165 Test #152: replay-outcome-cli-mixed ..............................   Passed    0.24 sec
+        Start 153: replay-outcome-cli-good
+153/165 Test #153: replay-outcome-cli-good ...............................   Passed    0.24 sec
+        Start 154: replay-outcome-cli-empty
+154/165 Test #154: replay-outcome-cli-empty ..............................   Passed    0.23 sec
+        Start 155: replay-outcome-cli-missinghash
+155/165 Test #155: replay-outcome-cli-missinghash ........................   Passed    0.03 sec
+        Start 156: replay-outcome-cli-emptyhash
+156/165 Test #156: replay-outcome-cli-emptyhash ..........................   Passed    0.03 sec
+        Start 157: replay-outcome-cli-selection
+157/165 Test #157: replay-outcome-cli-selection ..........................   Passed    0.24 sec
+        Start 158: replay-outcome-cli-hashselection
+158/165 Test #158: replay-outcome-cli-hashselection ......................   Passed    0.24 sec
+        Start 159: replay-outcome-cli-whitelist
+159/165 Test #159: replay-outcome-cli-whitelist ..........................   Passed    0.23 sec
+        Start 160: replay-outcome-cli-compatibility
+160/165 Test #160: replay-outcome-cli-compatibility ......................   Passed    0.04 sec
+        Start 161: replay-outcome-cli-validation
+161/165 Test #161: replay-outcome-cli-validation .........................   Passed    0.23 sec
+        Start 162: replay-outcome-controller-success-first-absent
+162/165 Test #162: replay-outcome-controller-success-first-absent ........   Passed    0.02 sec
+        Start 163: replay-outcome-controller-success-first-progress
+163/165 Test #163: replay-outcome-controller-success-first-progress ......   Passed    0.01 sec
+        Start 164: replay-outcome-controller-failure-first-absent
+164/165 Test #164: replay-outcome-controller-failure-first-absent ........   Passed    0.01 sec
+        Start 165: replay-outcome-controller-failure-first-progress
+165/165 Test #165: replay-outcome-controller-failure-first-progress ......   Passed    0.01 sec
+
+100% tests passed out of 165
+
+Total Test time (real) =   5.45 sec
+

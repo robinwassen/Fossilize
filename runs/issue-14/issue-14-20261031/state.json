@@ -65,13 +65,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "9ff069fb169df8d7ea16360c73df37a633c487b43a56f450d3a56d35f729eefc",
+      "report": "runs/issue-14/issue-14-20261031/reports/checker-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793457721.497153,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/14",
       "worker_id": "/root/issue14_checker"
     }
@@ -80,7 +82,23 @@
     "stage": "pending"
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/14",
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "The current candidate still says the Release compute{} parser rejection currently exits zero and calls that zero exit a current parser-policy limitation (lines566-570), while test/replay_controller_cli.cmake and replay_controller_compatibility_test.cpp now explicitly require1 and all four independent CTest configurations pass. Lines583-586 also say worker grammar is unchanged, while cli/fossilize_replay_linux.hpp and fossilize_replay_windows.hpp add REPLAY_FAILED <reason-mask> <drained>. The new #14 section accurately explains both changes, so the retained unqualified current guidance is internally contradictory. Historical fixture describes input bytes, not an explicit historical-before-#14 scope for these current behavior claims.",
+      "id": "I14-C1-DOCS-SUPERSESSION",
+      "location": "local-docs/verification.md:566-570 and :583-586",
+      "planned_case": "R14-scope-docs",
+      "priority": 2,
+      "requested_change": "Update the retained #13 section to say current Release parser rejection returns1 as an orderly item failure, or clearly date/bind the old zero-exit statement to before #14 with a cross-reference to its replacement; likewise distinguish preserved existing progress/resume semantics from the intentionally added REPLAY_FAILED terminal record. Keep the historical Debug E5/E6 child-loss distinction and unchanged public layout/API claims accurate.",
+      "route": "implementation",
+      "status": "open",
+      "title": "Reconcile stale current parser-exit and worker-protocol claims in the #13 verification section"
+    }
+  ],
   "issue_snapshot": {
     "deliverables": [
       "https://github.com/robinwassen/Fossilize/issues/14"
@@ -4549,8 +4567,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Dispatch a fresh implementation repair to reconcile the stale current parser-exit and worker-protocol claims in local-docs/verification.md for I14-C1-DOCS-SUPERSESSION, then dispatch fresh independent verification of the repaired exact candidate before acceptance.",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -4562,7 +4580,7 @@
     "output_directory": "/tmp/fossilize-14/output",
     "source_worktree": "/home/robin/.codex/worktrees/0eed/fossilize"
   },
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "assumptions_and_risks": [
       "Planner inspected the detached base read-only and ran no build, probe or test. Current #14 and shared #8 were read through gh with explicit repository. Current #14 matches the immutable original. Submodules in the detached planner worktree were uninitialized; implementation/checker must populate matching required dependencies before builds.",
@@ -5040,7 +5058,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 229,
+  "revision": 230,
   "root_issue": {
     "id": 6079814916,
     "node_id": "I_kwDOVZpjbc8AAAABamKdBA",
@@ -5050,7 +5068,7 @@
   },
   "run_id": "issue-14-20261031",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-14",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/14",
   "verification": [],

@@ -1,0 +1,171 @@
+Independent checker1 source review of ef4c0b52bfdb56e82322e9a3818a2b2bad03ffc1 against 0ada951c5925e3a5a8e4ef69b382713acd416fd0, plan1, AC1.
+
+Reviewed entire 14-file base-to-candidate diff, original issue14, current parent8, original docs, relevant observability specs (proposed, not conformance proof), verification/changelog policies and harness role/state contracts.
+
+Fresh issue observation: {"body": "Legacy identity: `FOS-000005`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n5. **FOS-000005 — Separate replay-thread work completion from item success.** **M; depends on `FOS-000001` and `FOS-000004` for complete propagation; §2–§3.** [worker:1800](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1800) discards the parse return and increments `completed_count` after processing; creation helpers return void. [normal replay:4553](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L4553) returns success after the queue finishes (E7). Introduce a thread-safe outcome accumulator independent of optional shared memory. First cover parse/read and Vulkan creation failures, then setup/validation/support/dependency exits. Propagate the result through normal replay, child and controller. **Check:** E7, missing entry, injected Vulkan failure, and mixed success/failure. Keep queue progress as queue progress. Unsupported required work must be unsuccessful under the declared policy, even when it is not a crash.\n\n   **Required automated success criteria — pending implementation:**\n\n   - **Replay unit and CLI integration tests:** E7, missing input entries, injected creation errors, unsupported required work, validation failures and dependency-blocked work produce the expected distinct outcomes and nonzero aggregate exits. A fully successful workload returns zero.\n   - **Thread/mode matrix:** The same fixed mixed workload has the same final logical outcome in normal, child/controller and progress modes, with shared progress absent/present and one/multiple threads. Queue completion still reaches its expected count even when processing fails; it is never the success oracle.\n\n<!-- fossilize-migration-v1:FOS-000005 -->\n", "id": "I_kwDOVZpjbc8AAAABamKdBA", "number": 14, "state": "OPEN", "title": "FOS-000005 — Separate replay-thread work completion from item success", "url": "https://github.com/robinwassen/Fossilize/issues/14"}
+
+Fresh issue observation: {"body": "Required outcome: deliver every migrated observability child with its original criteria. This epic stays open until all required children and shared gates complete.\n\n## Ordered implementation backlog\n\nAll criteria below are mandatory completion gates for the applicable implementation slice. They describe future assertions, not tests already implemented or passing. A task is complete only when its criteria are covered by committed automated tests registered with the project test runner/CI, and passing evidence records the commands, configurations and platforms. If a task is split, each split-out item must receive its own registered key and name its covered criteria; the parent remains incomplete until all are satisfied. Manual inspection, log screenshots and the observation-only research runner are insufficient acceptance evidence.\n\nUse unit tests for result/state logic and deterministic fault injection, plus subprocess/filesystem/IPC/layer integration tests for externally visible behavior. Assert returned outcomes, exit statuses, structured fields, actual output contents and handle/application behavior; prose-only assertions are appropriate only where human presentation itself is the requirement. Include successful controls alongside failure cases. Upgrade E1–E9 into assertion-bearing regressions as their owning tasks are implemented. Tests must expose the defect before its fix where feasible, rather than merely mirror implementation internals.\n\nConcurrency/deadline tests must use fake clocks, barriers and controllable adapters instead of random driver instability or fragile sleeps. Give process tests watchdogs and isolated temporary output directories. Linux and Windows process changes require platform-specific automated evidence; GPU-independent mocks are the baseline, with hardware jobs for hardware claims. An unavailable platform/device is skipped/unverified and leaves that acceptance criterion open. Record applicable debug/release and exception-enabled/disabled coverage; use sanitizer jobs where useful for changed parsing, lifetime or concurrency code. Tests must check honest unknown outcomes where evidence is deliberately lost.\n\n**Compatibility gate for every affected public boundary:** declare whether source, binary, protocol and behavioral compatibility are preserved or intentionally changed. Maintain compile/run fixtures for preserved old callers/invocations, schema/protocol fixtures for preserved consumers and prebuilt-consumer checks only where binary compatibility is claimed. Assert and document intentional changes, including formerly false-success CLI exits. Additive signatures alone do not establish compatibility; do not claim that all existing callers continue working. Require structured outcomes without prose parsing once the relevant result API/mode is introduced.\n\n\n## Dependency and delivery notes\n\nThe critical path is **FOS-000005 → FOS-000009 → (FOS-000010 and FOS-000011) → FOS-000012 → FOS-000013 → FOS-000014**: worker facts precede reconciliation, which precedes a trustworthy controller/API result. **FOS-000003 → FOS-000016 → FOS-000017 → FOS-000019** is the persistence/capture path. **FOS-000006** prevents later runs from trusting a failed attempt. **FOS-000004** is an early containment fix, not a substitute for the richer accounting. Initial result schemas may report persistence/support detail as unknown until the respective producers are migrated; they must not imply whole-standard compliance early.\n\nKeep regression verification alongside every iteration. Do not defer all tests to `FOS-000024`. The highest-value fixtures are E1–E9, deterministic worker failure/deadline injection, duplicate/stale messages, full diagnostic rings, close-time ENOSPC, optional versus required output loss, and cancellation before/after final publication. Linux and Windows process implementations need the same behavioral matrix even when mechanisms differ. Apple/Android builds use `NO_ROBUST_REPLAYER`; ordinary replay/library/capture contracts still apply without inventing worker support there.\n\n\n## Remaining verification\n\nBefore implementation is accepted, run supported CMake builds and tests on Linux and Windows, exception-enabled/disabled and release/debug configurations as applicable. Add deterministic fault injection rather than relying solely on the existing random `SIMULATE_UNSTABLE_DRIVER` hooks. Exercise runtime capture with multiple instances/devices and real Vulkan support failures; test cache feedback on hardware that exposes it. No current probe demonstrates actual cache warming or durable driver output.\n\n\n## Unkeyed report disposition\n# Repeated shader processing with unclear failure and cache-reuse outcomes\n\nThe Sims 4 repeatedly delayed startup with “Processing Vulkan shaders,” despite previous processing having finished.\n\nSteam launched Fossilize’s replayer before Proton, with a **10-second limit without pipeline completion**. Controlled tests showed workers timing out and compilation being interrupted. Allowing 60 seconds let the tested workload finish; its resulting cache was reusable.\n\nThe investigation was complicated by several observability gaps:\n\n- **Hidden failure context:** Steam’s normal logs showed progress and completion without an actionable explanation of worker failures. Separate, unsuppressed replay runs exposed the timeouts.\n- **Ambiguous crash reporting:** Timeouts used SIGABRT and the crash-recovery path. A debugger was needed to establish that an interrupted worker was executing inside NVIDIA’s shader compiler; this did not prove a spontaneous driver crash.\n- **Unclear completion:** One replay returned exit status zero despite reporting “Cannot continue,” making successful termination insufficient evidence of completed work.\n- **Unclear reuse:** The logs did not clearly connect replay triggers, previously processed entries, skipped/failed work and persisted results. A shader-bucket update also triggered processing of an unchanged generic database.\n\n**The integration gap:** Fossilize needs to expose explicit failure reasons and partial outcomes even in quiet mode. Steam needs to retain and present those results alongside why replay was scheduled and what reuse information is available.\n\nThe investigation did **not** establish that the entire cache was discarded. Cache reuse worked in controlled tests, while deliberately forcing a warm replay still incurred substantial processing overhead.\n\n## References\n\nInvestigated 26–27 October 2026.\n\n- [Upstream issue: steam-for-linux #13810](https://github.com/ValveSoftware/steam-for-linux/issues/13810)\n- [Sanitized supporting evidence](https://gist.github.com/robinwassen/6d8cd12e4040cf409cb3553f4fb87b61)\n\nFossilize obligations overlap FOS-000004/000005/000007/000009/000012/000013/000014/000022; retained individually without a duplicate issue. Steam scheduling/presentation belongs to external steam-for-linux#13810; no new Fossilize implementation requirement.\n\nSpecifications, reproduced E1..E9 findings, adversarial review and sanitized fixtures are supporting evidence, not additional task definitions.\n\n<!-- fossilize-migration-v1:observability -->\n", "id": "I_kwDOVZpjbc8AAAABamD6Iw", "number": 8, "state": "OPEN", "title": "Observability: preserve trustworthy outcomes across Fossilize", "url": "https://github.com/robinwassen/Fossilize/issues/8"}
+
+No public header or SharedControlBlock production layout changes. Existing CRASH/resume/ring semantics remain asserted by retained tests; added internal terminal mask/drained record intentionally changes paired-process behavior only. No C++ binary ABI or mixed-version guarantee is inferred.
+
+Linux and Windows process paths reviewed: terminal parser requires full nonzero bounded mask/drained proof, controlled OS failure bypasses retries/crash counters; controller drains siblings and returns failure if any outcome is incomplete. Missing terminal remains old unresolved/recovery logic. Native Windows was excluded explicitly by the user and is unverified.
+
+Producer callbacks retain independent categories without deriving success from logs; queued/completed counts remain queue progress. Failed/invalid pipeline creation cannot add successful replay-cache/whitelist markers. Existing selection/reuse policy remains separately bounded.
+
+Tests reviewed for real production inclusion, direct expected outcomes/raw VkResult, real worker/CLI/protocol paths, success controls, isolated directories/watchdogs, explicit checks surviving NDEBUG and appropriate options. Matrix impossibilities are explicit (direct child one thread, whitelist controller metadata); no mandatory planned case intentionally omitted.
+
+Changelog review: exact candidate includes one short [Observability] sentence with concrete drained-queue false-success benefit and full #14 URL, under Unreleased. Scope is accurate, no claims of merged delivery/hardware/cache guarantees.
+
+Initial-only archive speculation is not a finding: required selected pipeline assignment and retained zero-range/empty controls govern robust scope. Presence of a non-pipeline blob alone does not establish selected required pipeline work.
+
+$ git status --short
+exit=0
+
+$ git diff --stat 0ada951c5925e3a5a8e4ef69b382713acd416fd0 HEAD
+ CHANGELOG.md                                  |   2 +
+ cli/fossilize_replay.cpp                      | 284 +++++++++++--
+ cli/fossilize_replay_linux.hpp                |  34 +-
+ cli/fossilize_replay_windows.hpp              |  67 ++-
+ cli/replay_item_outcome.hpp                   |  48 +++
+ cli/replay_worker_outcome.hpp                 |  16 +-
+ local-docs/verification.md                    |  60 ++-
+ test/CMakeLists.txt                           |  64 +++
+ test/replay_controller_cli.cmake              |   7 +-
+ test/replay_controller_compatibility_test.cpp |   4 +-
+ test/replay_controller_test.cpp               |  88 +++-
+ test/replay_outcome_cli.cmake                 |  85 ++++
+ test/replay_outcome_compatibility_test.cpp    |  50 +++
+ test/replay_outcome_test.cpp                  | 581 ++++++++++++++++++++++++++
+ 14 files changed, 1316 insertions(+), 74 deletions(-)
+exit=0
+
+$ git submodule status --recursive
+ a0fba56c34a6700f1724bf9b751da5b488a3775c cli/SPIRV-Cross (vulkan-sdk-1.4.341.0)
+ 496543121ce6419f23d6fa5d7194ba66c36212d2 cli/SPIRV-Headers (v2026.08.0-2-g4965431)
+ d7ca4efbbe36709fc49e1a102cdbe1d970d5eb7e cli/SPIRV-Tools (v2022.4-1329-gd7ca4efb)
+ c885633e126a3a949ec0497273ec13e2c03e862c cli/dirent (1.23-38-gc885633)
+ 8a2387afabdf1336f132e0a8bf38701df9838130 cli/volk (vulkan-sdk-1.4.357.0-3-g8a2387a)
+ 8f4c021fa2f1e001d2376095928fc0532adf2ae6 rapidjson (v1.1.0-549-g8f4c021f)
+ ba96d0b1161f540656efdaed035b3c062b60e006 rapidjson/thirdparty/gtest (release-1.8.0-1003-gba96d0b1)
+exit=0
+
+Exact current #14 body equals immutable original AC1.
+
+Exact current root title matches saved material snapshot as well as body matching original AC1. Prerequisite-delivery-recheck.json reviewed from canonical artifact branch: completed #10/#13 merged identities and independent historical reports agree; historical proofs are not new-candidate evidence.
+
+Final live material recheck https://github.com/robinwassen/Fossilize/issues/14: title/body unchanged; state OPEN; identity I_kwDOVZpjbc8AAAABamKdBA
+Final live material recheck https://github.com/robinwassen/Fossilize/issues/8: title/body unchanged; state OPEN; identity I_kwDOVZpjbc8AAAABamD6Iw
+Final source recheck: exact detached candidate HEAD, clean source including untracked files; exact base HEAD; public ExternalReplayer, control-block and types headers byte-identical to base.
+
+Subsequent whole-document cross-reference review found I14-C1-DOCS-SUPERSESSION (open, implementation/root scope): stale unqualified current behavior claims in the retained #13 section must be reconciled before acceptance. Changelog itself remains accurate. All automated commands passed; this semantic documentation failure blocks the independent-scope-review gate.
+
+Actual exact-candidate source local-docs/verification.md:
+558: `replay-controller-cli-{normal,master,progress}` preserve successful null-device
+559: invocations on a dependency-complete known-hash fixture. `replay-controller-cli-
+560: {e5,e6}` use a readback-checked FOZ containing compute `{}`. Debug requires the
+561: actual CLI's unsuccessful exit, including `--progress --quiet-slave`. To reproduce the
+562: original defect, invoke `test/replay_controller_cli.cmake` with `GENERATOR`,
+563: `REPLAY`, `WORK`, `CASE=e5` (then `e6`) and `BASELINE_REPLAY` set to an unchanged
+564: input Debug executable. The runner checks baseline false-success zero separately
+565: from candidate status one. Release exercises the historical fixture's distinct
+566: parser-rejection boundary: it currently exits zero without losing a worker.
+567: An `ExternalReplayer::Progress` control requires exactly one compute parse
+568: failure and skip, zero completed compute pipelines and zero clean/dirty worker
+569: deaths. This zero exit is a current parser-policy limitation, **not successful
+570: required replay** and not evidence of the child-loss fix. Mandatory deterministic
+571: real-controller loss cases require status one in every configuration. The E5/E6
+572: worker-loss defect and baseline contrast are established by Debug evidence.
+573: 
+574: `replay-controller-cli-compatibility` exercises `ExternalReplayer::Options{}`,
+575: `start`, `wait`, `is_process_complete`, and cached status for clean and failed
+576: controllers. Kernel terminal-state barriers cover both query-first and wait-first
+577: completion, including a process already reaped by the initial progress poll.
+578: Progress pumping after a known terminal status does not reap it a second time
+579: or overwrite the unsuccessful result with `-ECHILD`. Compile
+580: `test/replay_controller_compatibility_test.cpp` with the
+581: input public headers first on its include path and link candidate libraries for
+582: old-header source compatibility evidence. Existing diagnostic compatibility
+583: fixtures retain recorder/database and ordinary CLI checks. Public declarations,
+584: shared progress layout/version and worker grammar are unchanged. The intentional
+585: behavior change is that unresolved robust replay returns nonzero, including
+586: through `ExternalReplayer::wait`. This is no general binary ABI, driver/GPU,
+587: output durability, full item-ledger or whole observability-standard guarantee.
+
+Actual exact-candidate source test/replay_controller_cli.cmake:
+30: if(CASE STREQUAL "e5" OR CASE STREQUAL "e6")
+31:     execute_process(COMMAND "${GENERATOR}" --assertions-enabled RESULT_VARIABLE assertions_disabled TIMEOUT 10)
+32:     if(assertions_disabled STREQUAL "0")
+33:         set(expected 1)
+34:         set(boundary "Debug-worker-loss")
+35:     elseif(assertions_disabled STREQUAL "1")
+36:         # This historical fixture rejects at the version boundary in Release;
+37:         # it is an orderly item failure, independent of worker-loss recovery.
+38:         set(expected 1)
+39:         set(boundary "Release-parser-rejection-orderly-item-failure")
+40:         execute_process(COMMAND "${CALLER}" --parser-rejection "${REPLAY}" "${WORK}/fixture.foz"
+41:             RESULT_VARIABLE rejection_status OUTPUT_VARIABLE rejection_output ERROR_VARIABLE rejection_errors
+42:             TIMEOUT 30 WORKING_DIRECTORY "${WORK}")
+43:         file(WRITE "${WORK}/parser-rejection.stdout" "${rejection_output}")
+44:         file(WRITE "${WORK}/parser-rejection.stderr" "${rejection_errors}")
+45:         if(NOT rejection_status STREQUAL "0")
+46:             message(FATAL_ERROR "Structured parser-rejection/no-worker-loss control failed: ${rejection_status}\n${rejection_output}")
+
+Actual exact-candidate source test/replay_controller_compatibility_test.cpp:
+18: 		Fossilize::ExternalReplayer::Options opts = {};
+19: 		const char *db[] = {argv[3]};
+20: 		opts.external_replayer_path = argv[2];
+21: 		opts.databases = db; opts.num_databases = 1;
+22: 		opts.num_threads = 1; opts.null_device = true; opts.quiet = true;
+23: 		checks.require(replay.start(opts), "parser-rejection/start");
+24: 		checks.require(replay.wait() == 1, "parser-rejection/orderly-item-failure");
+25: 		Fossilize::ExternalReplayer::Progress progress = {};
+26: 		checks.require(replay.poll_progress(progress) == Fossilize::ExternalReplayer::PollResult::Complete,
+27: 		               "parser-rejection/process-progress-complete");
+28: 		checks.require(progress.clean_crashes == 0 && progress.dirty_crashes == 0,
+29: 		               "parser-rejection/no-worker-death-exercised");
+30: 		checks.require(progress.total_compute_pipeline_blobs == 1 && progress.compute.parsed_fail == 1 &&
+31: 		               progress.compute.completed == 0 && progress.compute.skipped == 1,
+32: 		               "parser-rejection/required-pipeline-rejected-with-nonzero-exit");
+33: 		printf("Executed R13/Release-parser-rejection-boundary; worker-deaths=%u/%u; parsed-fail=%u; completed=%u; failures=%d\n",
+34: 		       progress.clean_crashes, progress.dirty_crashes, progress.compute.parsed_fail, progress.compute.completed, checks.failures);
+35: 		return checks.failures ? 1 : 0;
+
+Actual exact-candidate source cli/fossilize_replay_linux.hpp:
+157: 
+158: void ProcessProgress::parse(const char *cmd)
+159: {
+160: 	unsigned failure_mask = 0, drained = 0;
+161: 	int consumed = 0;
+162: 	if (sscanf(cmd, "REPLAY_FAILED %u %u%n", &failure_mask, &drained, &consumed) == 2 &&
+163: 	    (cmd[consumed] == '\0' || (cmd[consumed] == '\n' && cmd[consumed + 1] == '\0')) && failure_mask && failure_mask < (1u << unsigned(ReplayFailure::Count)) && drained <= 1)
+164: 	{
+165: 		outcome.orderly_reported = true;
+166: 		outcome.failure_mask |= failure_mask;
+167: 		outcome.orderly_drained = drained != 0;
+168: 	}
+169: 	else if (strncmp(cmd, "CRASH", 5) == 0)
+170: 	{
+171: 		// We crashed ... Set up a timeout in case the process hangs while trying to recover.
+172: 		close_and_remove_epoll_entry(timer_fd);
+
+$ git diff --check 0ada951c5925e3a5a8e4ef69b382713acd416fd0 ef4c0b52bfdb56e82322e9a3818a2b2bad03ffc1
+cwd=/tmp/fossilize-14/checker-1
+receipt={"intent_id": "checker1-diffcheck", "command": ["git", "diff", "--check", "0ada951c5925e3a5a8e4ef69b382713acd416fd0", "ef4c0b52bfdb56e82322e9a3818a2b2bad03ffc1"], "cwd": "/tmp/fossilize-14/checker-1", "timeout": 600.0, "started": 1793459212.8957741, "acquired": 1793459212.8984535, "wait_seconds": 0.0, "finished": 1793459212.9143705, "exit_code": 0, "timed_out": false}
+
+
+$ g++ -std=c++14 -pthread -fno-exceptions -I/tmp/fossilize-14/planner -I/tmp/fossilize-14/checker-1/test -I/tmp/fossilize-14/planner/khronos /tmp/fossilize-14/output/checker-1/old_header_caller.cpp /tmp/fossilize-14/build/checker-1/debug-off/libfossilize.a /tmp/fossilize-14/build/checker-1/debug-off/libminiz.a -lrt -o /tmp/fossilize-14/output/checker-1/old-header-caller
+cwd=/tmp/fossilize-14/checker-1
+receipt={"intent_id": "checker1-old-header-compile", "command": ["g++", "-std=c++14", "-pthread", "-fno-exceptions", "-I/tmp/fossilize-14/planner", "-I/tmp/fossilize-14/checker-1/test", "-I/tmp/fossilize-14/planner/khronos", "/tmp/fossilize-14/output/checker-1/old_header_caller.cpp", "/tmp/fossilize-14/build/checker-1/debug-off/libfossilize.a", "/tmp/fossilize-14/build/checker-1/debug-off/libminiz.a", "-lrt", "-o", "/tmp/fossilize-14/output/checker-1/old-header-caller"], "cwd": "/tmp/fossilize-14/checker-1", "timeout": 600.0, "started": 1793459212.9636815, "acquired": 1793459212.9661891, "wait_seconds": 0.0, "finished": 1793459213.2810922, "exit_code": 0, "timed_out": false}
+
+
+$ /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-14/build/checker-1/debug-off/test/replay-outcome-test -DREPLAY=/tmp/fossilize-14/build/checker-1/debug-off/cli/fossilize-replay -DCALLER=/tmp/fossilize-14/output/checker-1/old-header-caller -DCASE=compatibility -DWORK=/tmp/fossilize-14/output/checker-1/old-header-run -P /tmp/fossilize-14/checker-1/test/replay_outcome_cli.cmake
+cwd=/tmp/fossilize-14/checker-1
+receipt={"intent_id": "checker1-old-header-run", "command": ["/tmp/fossilize-10/tools/cmake/data/bin/cmake", "-DGENERATOR=/tmp/fossilize-14/build/checker-1/debug-off/test/replay-outcome-test", "-DREPLAY=/tmp/fossilize-14/build/checker-1/debug-off/cli/fossilize-replay", "-DCALLER=/tmp/fossilize-14/output/checker-1/old-header-caller", "-DCASE=compatibility", "-DWORK=/tmp/fossilize-14/output/checker-1/old-header-run", "-P", "/tmp/fossilize-14/checker-1/test/replay_outcome_cli.cmake"], "cwd": "/tmp/fossilize-14/checker-1", "timeout": 600.0, "started": 1793459213.3350368, "acquired": 1793459213.3378916, "wait_seconds": 0.0, "finished": 1793459213.402109, "exit_code": 0, "timed_out": false}
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Executed R14/old-source-ExternalReplayer; failures=0
+

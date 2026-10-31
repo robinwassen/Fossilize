@@ -1,0 +1,15 @@
+{
+  "id": "I14-C1-DOCS-SUPERSESSION",
+  "status": "open",
+  "title": "Reconcile stale current parser-exit and worker-protocol claims in the #13 verification section",
+  "affected_task": "https://github.com/robinwassen/Fossilize/issues/14",
+  "route": "implementation",
+  "criteria": [
+    "AC1"
+  ],
+  "planned_case": "R14-scope-docs",
+  "priority": 2,
+  "location": "local-docs/verification.md:566-570 and :583-586",
+  "evidence": "The current candidate still says the Release compute{} parser rejection currently exits zero and calls that zero exit a current parser-policy limitation (lines566-570), while test/replay_controller_cli.cmake and replay_controller_compatibility_test.cpp now explicitly require1 and all four independent CTest configurations pass. Lines583-586 also say worker grammar is unchanged, while cli/fossilize_replay_linux.hpp and fossilize_replay_windows.hpp add REPLAY_FAILED <reason-mask> <drained>. The new #14 section accurately explains both changes, so the retained unqualified current guidance is internally contradictory. Historical fixture describes input bytes, not an explicit historical-before-#14 scope for these current behavior claims.",
+  "requested_change": "Update the retained #13 section to say current Release parser rejection returns1 as an orderly item failure, or clearly date/bind the old zero-exit statement to before #14 with a cross-reference to its replacement; likewise distinguish preserved existing progress/resume semantics from the intentionally added REPLAY_FAILED terminal record. Keep the historical Debug E5/E6 child-loss distinction and unchanged public layout/API claims accurate."
+}
