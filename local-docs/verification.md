@@ -184,7 +184,7 @@ redesign asynchronous persistence error reporting. Opt/disasm migration and the
 explicitly permitted optimizer fallback policy remain future scope; these tests
 make no claim to verify those tools or the complete observability standard.
 
-A normal Linux CLI/layer-enabled build registers 91 tests before optional layer integration; Windows registers 87. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
+A normal Linux CLI/layer-enabled build registers 133 tests before optional layer integration, including 14 Linux fork-child cases and 28 replay-controller cases retained from [issue #13](https://github.com/robinwassen/Fossilize/issues/13). Discover the current platform-specific inventory with CTest before reporting coverage; this Linux count does not establish native Windows execution. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
 
 The `*-library-only-*` presets disable **both CLI and tests**. They are build/package checks, not test coverage; their test presets/workflows must not be reported as a passing suite. To test the core without CLI/SPIR-V dependencies:
 
@@ -407,6 +407,63 @@ record native platform evidence or its unavailable/incomplete status separately.
 - **Dependency changes:** use the dependency's documented test/corpus/build workflow (SPIRV-Tools, SPIRV-Cross, RapidJSON, volk/miniz as applicable) plus Fossilize integration. Top-level CTest does not run every vendored suite; do not label dependency coverage as first-party behavioral verification.
 
 External references: [Khronos layer discovery](https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderLayerInterface.md), [loader environment variables](https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderInterfaceArchitecture.md), [CMake presets/workflows](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html), [upstream Linux wrapper](https://github.com/ValveSoftware/Fossilize/blob/master/cli/fossilize_replay_linux.hpp). Local source is authoritative for this checkout; external documentation does not establish a particular installed runtime supports a feature.
+
+## Linux fork-child setup termination
+
+[Issue #56](https://github.com/robinwassen/Fossilize/issues/56) registers 14
+`fork-child-*` CTests on Linux with CLI/tests enabled: sigmask, stdout dup2 and
+stdin dup2 failures at the first initial slot, last initial slot and recovery;
+healthy replay, healthy recovery, parent death, prctl failure and parent-race
+controls. The fixture includes the production replay translation unit and calls
+`run_master_process`, its actual launcher, shutdown parser and recovery loop.
+Only this executable wraps syscalls; the shipped CLI has no injection interface.
+Each test has private output, Release-active checks, a 12-second observer deadline,
+three seconds for emergency cleanup and a 30-second CTest deadline.
+
+Two known compute pipelines and their shader/layout dependencies are recorded
+and read back before replay. Healthy workers execute the null device and update
+production shared counters. Recovery sends zero cursors and zero hashes from a fully configured first
+worker before its controlled nonzero exit. The real replacement then replays
+both pipelines, without claiming prefix reuse or real GPU crash recovery. Atomic
+pipe records assert the exact injected child/site/generation, setup ordering,
+protocol EOF, controller-owned births, terminal worker status and exactly one
+controller reap. Initial and adjacent faults wait at their exact injection
+site until the original controller successfully reaps the healthy sibling.
+Records assert reap, barrier release and injection ordering; worker exit alone
+does not release the barrier. A subreaper checks complete descendant collection; emergency
+process-group cleanup runs even when assertions fail. Parent-death readiness is
+acknowledged after real PDEATHSIG/mask/redirect setup, before killing the controller.
+Inherited stdio, atexit and destructor sentinels distinguish fatal `_exit` from
+ordinary worker `exit`. A faulted child attempting a controller fork/epoll operation
+is reported and terminated to bound regression controls.
+
+The three fatal setup branches use `_exit(EXIT_FAILURE)`. Adjacent prctl failure
+and parent-race branches already use `_exit`; both have controls. Quiet stderr
+redirection remains best effort. `exit(run_slave_process(...))` remains the normal
+terminal worker path after runtime execution. Parent pre-fork Boolean returns
+remain valid. No public API, binary layout or protocol changes are introduced.
+The issue #13 controller returns `EXIT_FAILURE` for lost required work and
+leaves `progress_complete` zero. These tests preserve that fail-fast policy
+and its cleanup. Healthy and healthy-recovery controls require success, complete
+progress and two actually parsed/completed pipelines. Initial faults retain one
+completed sibling pipeline; recovery faults complete neither pipeline.
+
+Run the full CPU CTest suite in Debug/Release with exceptions OFF/ON. In Debug
+exceptions OFF also repeat `ctest --test-dir BUILD --output-on-failure
+--no-tests=error -R '^fork-child-' --repeat until-fail:3`. For before-fix controls,
+copy the committed candidate source/tests to an isolated directory, replace only
+`cli/fossilize_replay_linux.hpp` with master revision
+`9804598fba84b747aeecd66c0e873f3f48c4c3cd`, and build the fixture. Retain all
+other candidate files, including issue #13 outcome and cleanup changes.
+The three `fork-child-initial-first-{sigmask,stdout-dup2,stdin-dup2}` tests must
+fail for observed controller fallthrough/worker-owned fork or wrong worker status,
+with one intended injection; healthy and healthy-recovery must still pass.
+Configuration/build errors and deadlines are not original-defect evidence.
+
+This is CPU-only Linux process evidence, without real driver or Steam claims.
+Windows verification is explicitly excluded by the user's #56 run instruction;
+no native Windows execution is claimed. Robust master replay is unsupported on
+Apple/Android in the current build.
 
 ## Robust replay worker outcome
 

@@ -176,6 +176,29 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/file-helper-legacy")
 endif()
 
+# Include the production robust Linux controller in a private syscall fixture.
+# No injection symbols or options are added to the shipped replayer.
+if(FOSSILIZE_CLI AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_executable(fork-child-setup-test fork_child_setup_test.cpp)
+    target_link_libraries(fork-child-setup-test PRIVATE fossilize cli-utils)
+    target_compile_options(fork-child-setup-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
+    set_target_properties(fork-child-setup-test PROPERTIES LINK_FLAGS
+        "${FOSSILIZE_LINK_FLAGS} -Wl,--wrap=fork,--wrap=pipe,--wrap=pthread_sigmask,--wrap=dup2,--wrap=getppid,--wrap=waitpid,--wrap=read,--wrap=epoll_wait,--wrap=exit")
+    set(child_setup_cases healthy healthy-recovery parent-death prctl-failure parent-race)
+    foreach(site sigmask stdout-dup2 stdin-dup2)
+        foreach(position initial-first initial-last recovery)
+            list(APPEND child_setup_cases ${position}-${site})
+        endforeach()
+    endforeach()
+    foreach(case IN LISTS child_setup_cases)
+        set(name fork-child-${case})
+        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}")
+        add_test(NAME ${name} COMMAND fork-child-setup-test ${case})
+        set_tests_properties(${name} PROPERTIES TIMEOUT 30
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}")
+    endforeach()
+endif()
+
 # Test-only adapters retain real master loops, fork/CreateProcess, pipes and OS
 # waits. They are compiled into this executable alone, never the shipping CLI.
 if(FOSSILIZE_CLI AND (WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Linux"))

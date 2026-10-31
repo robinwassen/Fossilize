@@ -10,6 +10,8 @@ not establish merged delivery or a release.
 
 - **[Harness]** Added a shared changelog and required entry review so contributors can see what changed and why it matters. ([#61](https://github.com/robinwassen/Fossilize/issues/61))
 
+- **[Worker lifecycle]** Made Linux replay children terminate on signal mask or stdin/stdout setup failure so failed workers cannot execute controller code. ([#56](https://github.com/robinwassen/Fossilize/issues/56))
+
 ## Completed changes
 
 These backfilled entries are grouped by topic, with earlier changes first within

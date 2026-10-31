@@ -562,7 +562,7 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 
 		// Unblock the signal mask.
 		if (pthread_sigmask(SIG_SETMASK, &Global::old_mask, nullptr) != 0)
-			return EXIT_FAILURE;
+			_exit(EXIT_FAILURE);
 
 		// Make sure we don't hold unrelated epoll sensitive FDs open.
 		for (auto &sibling : siblings)
@@ -591,9 +591,9 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 
 		// Override stdin/stdout.
 		if (dup2(crash_fds[1], STDOUT_FILENO) < 0)
-			return EXIT_FAILURE;
+			_exit(EXIT_FAILURE);
 		if (dup2(input_fds[0], STDIN_FILENO) < 0)
-			return EXIT_FAILURE;
+			_exit(EXIT_FAILURE);
 
 		close(crash_fds[1]);
 		close(input_fds[0]);
