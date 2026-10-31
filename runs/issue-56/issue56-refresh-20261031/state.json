@@ -134,12 +134,19 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/56",
+      "attempt_id": "checker-refresh-2",
       "evidence": "The edited unqualified full Linux CLI/layer CTest count says105 (91+14), but test/CMakeLists.txt also registers28 replay-controller cases retained from master issue13:22 controller cases plus6 CLI/compatibility cases. The complete source-defined Linux count is133. No CTest discovery or execution was performed by this checker; this finding is source inspection and contradicts the planned133 suite inventory.",
       "id": "CR56-DOC-COUNT",
       "location": "local-docs/verification.md:187",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/56",
+        "candidate_sha": "ad14d37f701e0ddd7cc9b20de36eb943ef1697ca",
+        "evidence": "Fresh checker-refresh-2 independently inspected verification.md:187 at ad14d37f: it states133 including14 fork-child and28 retained #13 tests and removes the unverified Windows numeric total. All four fresh CTest show-only inventories discovered133 unique IDs (including14 fork-child and28 replay-controller), and all four JUnit runs executed exactly those133 with zero failures/skips. checker2-output/inventory.json, four discovery logs/JUnit files and runtime-audit.log independently confirm the corrected count, required21-target closure and build options.",
+        "finding_id": "CR56-DOC-COUNT"
+      },
       "required_change": "Correct the edited full Linux test inventory statement to include the retained issue13 cases (133 for the planned CLI/layer-enabled Linux configuration), or describe the inventory accurately without a stale fixed total. Preserve all runtime gates and assertions.",
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -5535,7 +5542,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 189,
+  "revision": 190,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
