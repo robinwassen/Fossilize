@@ -407,6 +407,10 @@
       {
         "started": 1793405609.292335,
         "wait_seconds": 6.211251722997986
+      },
+      {
+        "started": 1793405621.054677,
+        "wait_seconds": 5.567040119902231
       }
     ],
     "command_timeout": 600,
@@ -3647,9 +3651,33 @@
         "intent_id": "r13-checker1-repeat-release-on",
         "started": 1793405616.9600441,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "-S",
+          "/tmp/fossilize-13/baseline",
+          "-B",
+          "/tmp/fossilize-13/build/checker-1/baseline-debug-off",
+          "-G",
+          "Ninja",
+          "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+          "-DFOSSILIZE_CLI=ON",
+          "-DFOSSILIZE_TESTS=OFF",
+          "-DFOSSILIZE_VULKAN_LAYER=OFF",
+          "-DFOSSILIZE_REPLAYER_SPIRV_VAL=OFF"
+        ],
+        "command": "/tmp/fossilize-10/tools/cmake/data/bin/cmake -S /tmp/fossilize-13/baseline -B /tmp/fossilize-13/build/checker-1/baseline-debug-off -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=OFF -DFOSSILIZE_VULKAN_LAYER=OFF -DFOSSILIZE_REPLAYER_SPIRV_VAL=OFF",
+        "cwd": "/tmp/fossilize-13/checker-1-770f48f",
+        "eligible_deadline": 1793415398.0474045,
+        "intent_id": "r13-checker1-baseline-config",
+        "started": 1793405628.020682,
+        "timeout": 600
       }
     ],
-    "deadline": 1793415392.4803643,
+    "deadline": 1793415398.0474045,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -4546,7 +4574,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 182,
+  "revision": 183,
   "root_issue": {
     "id": 6079809809,
     "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
