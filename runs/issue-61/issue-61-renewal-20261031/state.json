@@ -1760,6 +1760,27 @@
         "intent_id": "issue61-renew-final-1-authority",
         "started": 1793435273.6523316,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "regression-test_harness_artifacts",
+          "--inventory",
+          "/tmp/fossilize-61-renewal/output/final-1/suite/inventory.json",
+          "--output",
+          "/tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_artifacts.json"
+        ],
+        "command": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/final-1 --timeout 600 --intent-id issue61-renew-final-1-regression-test_harness_artifacts --receipt /tmp/fossilize-61-renewal/output/final-1/regression-test_harness_artifacts.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_artifacts --inventory /tmp/fossilize-61-renewal/output/final-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/final-1/suite/regression-test_harness_artifacts.json",
+        "cwd": "/tmp/fossilize-61-renewal/final-1",
+        "eligible_deadline": 1793449362.5617034,
+        "intent_id": "issue61-renew-final-1-regression-test_harness_artifacts",
+        "started": 1793435278.0089955,
+        "timeout": 600
       }
     ],
     "deadline": 1793449362.5617034,
@@ -2277,7 +2298,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 95,
+  "revision": 96,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
