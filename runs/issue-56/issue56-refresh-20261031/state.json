@@ -217,13 +217,14 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 2,
+      "report": "runs/issue-56/issue56-refresh-20261031/reports/checker-refresh-3.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793439878.311684,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/56",
       "worker_id": "/root/checker56_v2"
     }
@@ -8931,8 +8932,8 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "persist closeout-intent before journaled issue evidence",
+  "operation": "closeout",
   "original": [
     {
       "id": "AC1",
@@ -8944,7 +8945,7 @@
     "output_directory": "/tmp/fossilize-56-refresh/output",
     "source_worktree": "/home/robin/dev/fossilize-issue-56"
   },
-  "phase": "checking",
+  "phase": "closing",
   "plan": {
     "assumptions_and_risks": [
       "Planner read live issue56 and parent46 through gh, immutable original acceptance, current candidate and desired-base source/diffs, required project documents and both old/new harness guidance. Issue56 body/title/node identity and open state match the retained snapshot. No builds/probes/tests were run by this planner.",
@@ -9853,7 +9854,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 371,
+  "revision": 372,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
@@ -9863,7 +9864,7 @@
   },
   "run_id": "issue56-refresh-20261031",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-56",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/56",
   "verification": [
@@ -12406,15 +12407,1659 @@
       "verdict": "accepted",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/56",
       "worker_id": "/root/checker56_refresh2"
+    },
+    {
+      "attempt_id": "checker-refresh-3",
+      "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+      "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+      "commands": [
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "python3",
+            "-B",
+            "/tmp/fossilize-56-refresh/v2-checker-output/source_audit.py"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-source",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/source.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/source-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "python3",
+            "-B",
+            "/tmp/fossilize-56-refresh/v2-checker-output/changelog_audit.py"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-changelog",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/changelog.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/changelog-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/tmp/fossilize-56-refresh/v2-checker",
+            "-B",
+            "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+            "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-debug-exceptions-off-configure",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-configure.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-configure-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+            "--parallel",
+            "4",
+            "--target",
+            "fossilize-test",
+            "varint-test",
+            "application-info-filter-test",
+            "object-cache-test",
+            "feature-filter-test",
+            "futex-test",
+            "replay-diagnostic-test",
+            "device-diagnostic-test",
+            "capture-diagnostic-test",
+            "diagnostic-compatibility-test",
+            "utility-parse-test",
+            "file-helper-test",
+            "file-helper-compatibility-test",
+            "fork-child-setup-test",
+            "replay-controller-test",
+            "replay-controller-compatibility-test",
+            "fossilize-replay",
+            "fossilize-list",
+            "fossilize-rehash",
+            "fossilize-prune",
+            "VkLayer_fossilize"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-debug-exceptions-off-build",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-build.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-build-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+            "--show-only=json-v1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-debug-exceptions-off-discovery",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-discovery.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-discovery-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "--output-junit",
+            "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-junit.xml.txt"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-debug-exceptions-off-ctest",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-ctest.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-ctest-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^fork-child-",
+            "--repeat",
+            "until-fail:3"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-repeat",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/repeat.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/repeat-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/tmp/fossilize-56-refresh/v2-checker",
+            "-B",
+            "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-on",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+            "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-debug-exceptions-on-configure",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-on-configure.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-on-configure-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-on",
+            "--parallel",
+            "4",
+            "--target",
+            "fossilize-test",
+            "varint-test",
+            "application-info-filter-test",
+            "object-cache-test",
+            "feature-filter-test",
+            "futex-test",
+            "replay-diagnostic-test",
+            "device-diagnostic-test",
+            "capture-diagnostic-test",
+            "diagnostic-compatibility-test",
+            "utility-parse-test",
+            "file-helper-test",
+            "file-helper-compatibility-test",
+            "fork-child-setup-test",
+            "replay-controller-test",
+            "replay-controller-compatibility-test",
+            "fossilize-replay",
+            "fossilize-list",
+            "fossilize-rehash",
+            "fossilize-prune",
+            "VkLayer_fossilize"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-debug-exceptions-on-build",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-on-build.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-on-build-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-on",
+            "--show-only=json-v1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-debug-exceptions-on-discovery",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-on-discovery.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-on-discovery-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-on",
+            "--output-on-failure",
+            "--no-tests=error",
+            "--output-junit",
+            "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-on-junit.xml.txt"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-debug-exceptions-on-ctest",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-on-ctest.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-on-ctest-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/tmp/fossilize-56-refresh/v2-checker",
+            "-B",
+            "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-off",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Release",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+            "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-release-exceptions-off-configure",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-off-configure.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-off-configure-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-off",
+            "--parallel",
+            "4",
+            "--target",
+            "fossilize-test",
+            "varint-test",
+            "application-info-filter-test",
+            "object-cache-test",
+            "feature-filter-test",
+            "futex-test",
+            "replay-diagnostic-test",
+            "device-diagnostic-test",
+            "capture-diagnostic-test",
+            "diagnostic-compatibility-test",
+            "utility-parse-test",
+            "file-helper-test",
+            "file-helper-compatibility-test",
+            "fork-child-setup-test",
+            "replay-controller-test",
+            "replay-controller-compatibility-test",
+            "fossilize-replay",
+            "fossilize-list",
+            "fossilize-rehash",
+            "fossilize-prune",
+            "VkLayer_fossilize"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-release-exceptions-off-build",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-off-build.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-off-build-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-off",
+            "--show-only=json-v1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-release-exceptions-off-discovery",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-off-discovery.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-off-discovery-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "--output-junit",
+            "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-off-junit.xml.txt"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-release-exceptions-off-ctest",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-off-ctest.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-off-ctest-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/tmp/fossilize-56-refresh/v2-checker",
+            "-B",
+            "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-on",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Release",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+            "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-release-exceptions-on-configure",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-on-configure.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-on-configure-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-on",
+            "--parallel",
+            "4",
+            "--target",
+            "fossilize-test",
+            "varint-test",
+            "application-info-filter-test",
+            "object-cache-test",
+            "feature-filter-test",
+            "futex-test",
+            "replay-diagnostic-test",
+            "device-diagnostic-test",
+            "capture-diagnostic-test",
+            "diagnostic-compatibility-test",
+            "utility-parse-test",
+            "file-helper-test",
+            "file-helper-compatibility-test",
+            "fork-child-setup-test",
+            "replay-controller-test",
+            "replay-controller-compatibility-test",
+            "fossilize-replay",
+            "fossilize-list",
+            "fossilize-rehash",
+            "fossilize-prune",
+            "VkLayer_fossilize"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-release-exceptions-on-build",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-on-build.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-on-build-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-on",
+            "--show-only=json-v1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-release-exceptions-on-discovery",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-on-discovery.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-on-discovery-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-on",
+            "--output-on-failure",
+            "--no-tests=error",
+            "--output-junit",
+            "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-on-junit.xml.txt"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-release-exceptions-on-ctest",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-on-ctest.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-on-ctest-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "python3",
+            "-B",
+            "/tmp/fossilize-56-refresh/v2-checker-output/baseline_setup.py"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-baseline-setup",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-setup.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-setup-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/tmp/fossilize-56-refresh/v2-checker-baseline",
+            "-B",
+            "/tmp/fossilize-56-refresh/build/v2-checker-baseline",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-baseline-configure",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-configure.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-configure-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-56-refresh/build/v2-checker-baseline",
+            "--parallel",
+            "4",
+            "--target",
+            "fork-child-setup-test"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-baseline-build",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-build.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-build-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-baseline",
+            "-V",
+            "--no-tests=error",
+            "-R",
+            "^fork-child-initial-first-sigmask$"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 8,
+          "intent_id": "v2c-baseline-sigmask",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-sigmask.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-sigmask-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-baseline",
+            "-V",
+            "--no-tests=error",
+            "-R",
+            "^fork-child-initial-first-stdout-dup2$"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 8,
+          "intent_id": "v2c-baseline-stdout-dup2",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-stdout-dup2.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-stdout-dup2-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-baseline",
+            "-V",
+            "--no-tests=error",
+            "-R",
+            "^fork-child-initial-first-stdin-dup2$"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 8,
+          "intent_id": "v2c-baseline-stdin-dup2",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-stdin-dup2.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-stdin-dup2-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-56-refresh/build/v2-checker-baseline",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^fork-child-healthy(-recovery)?$",
+            "--output-junit",
+            "/tmp/fossilize-56-refresh/v2-checker-output/baseline-healthy-junit.xml.txt"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-baseline-healthy",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-healthy.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/baseline-healthy-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        },
+        {
+          "child_command": [
+            "env",
+            "LC_ALL=C",
+            "python3",
+            "-B",
+            "/tmp/fossilize-56-refresh/v2-checker-output/runtime_audit.py"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "exit_code": 0,
+          "intent_id": "v2c-runtime-audit",
+          "log": "/tmp/fossilize-56-refresh/v2-checker-output/runtime-audit.log",
+          "receipt": "/tmp/fossilize-56-refresh/v2-checker-output/runtime-audit-receipt.json",
+          "timed_out": false,
+          "timeout": 600
+        }
+      ],
+      "criterion_evidence": {
+        "AC1": "All seven mandatory both gates independently passed at exact candidate/base/plan2. Three direct _exit changes and neighboring branch/caller audit;14 assertion-bearing production-path cases x4 plus42 repeat; all133 unique discovered IDs executed in each configuration (532 full-suite executions), zero skips;21 target dependency closure; three meaningful currentbase defect failures and2 healthy controls. Changelog accurately describes exact reviewed scope with inherited entries retained."
+      },
+      "discovered": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "file-helper-string-open",
+        "file-helper-string-short-write",
+        "file-helper-string-flush",
+        "file-helper-string-close",
+        "file-helper-string-first-error",
+        "file-helper-string-success",
+        "file-helper-string-filesystem",
+        "file-helper-string-dev-full",
+        "file-helper-buffer-open",
+        "file-helper-buffer-short-write",
+        "file-helper-buffer-flush",
+        "file-helper-buffer-close",
+        "file-helper-buffer-first-error",
+        "file-helper-buffer-success",
+        "file-helper-buffer-filesystem",
+        "file-helper-buffer-dev-full",
+        "file-helper-legacy-compatibility",
+        "file-helper-legacy-completion",
+        "fork-child-healthy",
+        "fork-child-healthy-recovery",
+        "fork-child-parent-death",
+        "fork-child-prctl-failure",
+        "fork-child-parent-race",
+        "fork-child-initial-first-sigmask",
+        "fork-child-initial-last-sigmask",
+        "fork-child-recovery-sigmask",
+        "fork-child-initial-first-stdout-dup2",
+        "fork-child-initial-last-stdout-dup2",
+        "fork-child-recovery-stdout-dup2",
+        "fork-child-initial-first-stdin-dup2",
+        "fork-child-initial-last-stdin-dup2",
+        "fork-child-recovery-stdin-dup2",
+        "replay-controller-clean",
+        "replay-controller-zero",
+        "replay-controller-empty-archive",
+        "replay-controller-lost",
+        "replay-controller-lost-progress",
+        "replay-controller-mixed-success-first",
+        "replay-controller-mixed-loss-first",
+        "replay-controller-recover",
+        "replay-controller-skip-graphics",
+        "replay-controller-skip-compute",
+        "replay-controller-skip-raytracing",
+        "replay-controller-skip-graphics-final",
+        "replay-controller-skip-compute-final",
+        "replay-controller-skip-raytracing-final",
+        "replay-controller-skip-graphics-progress",
+        "replay-controller-skip-graphics-final-progress",
+        "replay-controller-partial",
+        "replay-controller-loss-after-retry",
+        "replay-controller-held-sibling",
+        "replay-controller-signal",
+        "replay-controller-status-error",
+        "replay-controller-outcome-state",
+        "replay-controller-cli-normal",
+        "replay-controller-cli-master",
+        "replay-controller-cli-progress",
+        "replay-controller-cli-e5",
+        "replay-controller-cli-e6",
+        "replay-controller-cli-compatibility"
+      ],
+      "evidence": [
+        {
+          "attempt_id": "checker-refresh-3",
+          "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+          "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+          "command": [
+            [
+              "env",
+              "LC_ALL=C",
+              "python3",
+              "-B",
+              "/tmp/fossilize-56-refresh/v2-checker-output/source_audit.py"
+            ]
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "environment": {
+            "LC_ALL": "C",
+            "compiler": "GNU13.3.0",
+            "platform": "Linux CPU only"
+          },
+          "exit_code": 0,
+          "gate": "integration-source-audit",
+          "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2c-integration-source-audit.log",
+          "plan_version": 2,
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-refresh-3",
+          "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+          "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+          "command": [
+            [
+              "env",
+              "LC_ALL=C",
+              "python3",
+              "-B",
+              "/tmp/fossilize-56-refresh/v2-checker-output/changelog_audit.py"
+            ]
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "environment": {
+            "LC_ALL": "C",
+            "compiler": "GNU13.3.0",
+            "platform": "Linux CPU only"
+          },
+          "exit_code": 0,
+          "gate": "changelog-semantic-review",
+          "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2c-changelog-semantic-review.log",
+          "plan_version": 2,
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-refresh-3",
+          "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+          "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+          "command": [
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/tmp/fossilize-56-refresh/v2-checker",
+              "-B",
+              "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+              "--parallel",
+              "4",
+              "--target",
+              "fossilize-test",
+              "varint-test",
+              "application-info-filter-test",
+              "object-cache-test",
+              "feature-filter-test",
+              "futex-test",
+              "replay-diagnostic-test",
+              "device-diagnostic-test",
+              "capture-diagnostic-test",
+              "diagnostic-compatibility-test",
+              "utility-parse-test",
+              "file-helper-test",
+              "file-helper-compatibility-test",
+              "fork-child-setup-test",
+              "replay-controller-test",
+              "replay-controller-compatibility-test",
+              "fossilize-replay",
+              "fossilize-list",
+              "fossilize-rehash",
+              "fossilize-prune",
+              "VkLayer_fossilize"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+              "--show-only=json-v1"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--output-junit",
+              "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-off-junit.xml.txt"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error",
+              "-R",
+              "^fork-child-",
+              "--repeat",
+              "until-fail:3"
+            ]
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "environment": {
+            "LC_ALL": "C",
+            "compiler": "GNU13.3.0",
+            "platform": "Linux CPU only"
+          },
+          "exit_code": 0,
+          "gate": "linux-debug-exceptions-off",
+          "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2c-linux-debug-exceptions-off.log",
+          "plan_version": 2,
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-refresh-3",
+          "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+          "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+          "command": [
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/tmp/fossilize-56-refresh/v2-checker",
+              "-B",
+              "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-on",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-on",
+              "--parallel",
+              "4",
+              "--target",
+              "fossilize-test",
+              "varint-test",
+              "application-info-filter-test",
+              "object-cache-test",
+              "feature-filter-test",
+              "futex-test",
+              "replay-diagnostic-test",
+              "device-diagnostic-test",
+              "capture-diagnostic-test",
+              "diagnostic-compatibility-test",
+              "utility-parse-test",
+              "file-helper-test",
+              "file-helper-compatibility-test",
+              "fork-child-setup-test",
+              "replay-controller-test",
+              "replay-controller-compatibility-test",
+              "fossilize-replay",
+              "fossilize-list",
+              "fossilize-rehash",
+              "fossilize-prune",
+              "VkLayer_fossilize"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-on",
+              "--show-only=json-v1"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/v2-checker-debug-exceptions-on",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--output-junit",
+              "/tmp/fossilize-56-refresh/v2-checker-output/debug-exceptions-on-junit.xml.txt"
+            ]
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "environment": {
+            "LC_ALL": "C",
+            "compiler": "GNU13.3.0",
+            "platform": "Linux CPU only"
+          },
+          "exit_code": 0,
+          "gate": "linux-debug-exceptions-on",
+          "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2c-linux-debug-exceptions-on.log",
+          "plan_version": 2,
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-refresh-3",
+          "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+          "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+          "command": [
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/tmp/fossilize-56-refresh/v2-checker",
+              "-B",
+              "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-off",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-off",
+              "--parallel",
+              "4",
+              "--target",
+              "fossilize-test",
+              "varint-test",
+              "application-info-filter-test",
+              "object-cache-test",
+              "feature-filter-test",
+              "futex-test",
+              "replay-diagnostic-test",
+              "device-diagnostic-test",
+              "capture-diagnostic-test",
+              "diagnostic-compatibility-test",
+              "utility-parse-test",
+              "file-helper-test",
+              "file-helper-compatibility-test",
+              "fork-child-setup-test",
+              "replay-controller-test",
+              "replay-controller-compatibility-test",
+              "fossilize-replay",
+              "fossilize-list",
+              "fossilize-rehash",
+              "fossilize-prune",
+              "VkLayer_fossilize"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-off",
+              "--show-only=json-v1"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--output-junit",
+              "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-off-junit.xml.txt"
+            ]
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "environment": {
+            "LC_ALL": "C",
+            "compiler": "GNU13.3.0",
+            "platform": "Linux CPU only"
+          },
+          "exit_code": 0,
+          "gate": "linux-release-exceptions-off",
+          "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2c-linux-release-exceptions-off.log",
+          "plan_version": 2,
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-refresh-3",
+          "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+          "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+          "command": [
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/tmp/fossilize-56-refresh/v2-checker",
+              "-B",
+              "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-on",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-on",
+              "--parallel",
+              "4",
+              "--target",
+              "fossilize-test",
+              "varint-test",
+              "application-info-filter-test",
+              "object-cache-test",
+              "feature-filter-test",
+              "futex-test",
+              "replay-diagnostic-test",
+              "device-diagnostic-test",
+              "capture-diagnostic-test",
+              "diagnostic-compatibility-test",
+              "utility-parse-test",
+              "file-helper-test",
+              "file-helper-compatibility-test",
+              "fork-child-setup-test",
+              "replay-controller-test",
+              "replay-controller-compatibility-test",
+              "fossilize-replay",
+              "fossilize-list",
+              "fossilize-rehash",
+              "fossilize-prune",
+              "VkLayer_fossilize"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-on",
+              "--show-only=json-v1"
+            ],
+            [
+              "env",
+              "LC_ALL=C",
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-56-refresh/build/v2-checker-release-exceptions-on",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--output-junit",
+              "/tmp/fossilize-56-refresh/v2-checker-output/release-exceptions-on-junit.xml.txt"
+            ]
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "environment": {
+            "LC_ALL": "C",
+            "compiler": "GNU13.3.0",
+            "platform": "Linux CPU only"
+          },
+          "exit_code": 0,
+          "gate": "linux-release-exceptions-on",
+          "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2c-linux-release-exceptions-on.log",
+          "plan_version": 2,
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-refresh-3",
+          "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+          "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+          "command": [
+            "env",
+            "LC_ALL=C",
+            "python3",
+            "-B",
+            "/tmp/fossilize-56-refresh/v2-checker-output/runtime_audit.py"
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-56-refresh/v2-checker",
+          "environment": {
+            "LC_ALL": "C",
+            "compiler": "GNU13.3.0",
+            "platform": "Linux CPU only"
+          },
+          "exit_code": 0,
+          "gate": "new-base-original-defect-controls",
+          "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2c-new-base-original-defect-controls.log",
+          "plan_version": 2,
+          "result": "passed"
+        }
+      ],
+      "executed": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "file-helper-string-open",
+        "file-helper-string-short-write",
+        "file-helper-string-flush",
+        "file-helper-string-close",
+        "file-helper-string-first-error",
+        "file-helper-string-success",
+        "file-helper-string-filesystem",
+        "file-helper-string-dev-full",
+        "file-helper-buffer-open",
+        "file-helper-buffer-short-write",
+        "file-helper-buffer-flush",
+        "file-helper-buffer-close",
+        "file-helper-buffer-first-error",
+        "file-helper-buffer-success",
+        "file-helper-buffer-filesystem",
+        "file-helper-buffer-dev-full",
+        "file-helper-legacy-compatibility",
+        "file-helper-legacy-completion",
+        "fork-child-healthy",
+        "fork-child-healthy-recovery",
+        "fork-child-parent-death",
+        "fork-child-prctl-failure",
+        "fork-child-parent-race",
+        "fork-child-initial-first-sigmask",
+        "fork-child-initial-last-sigmask",
+        "fork-child-recovery-sigmask",
+        "fork-child-initial-first-stdout-dup2",
+        "fork-child-initial-last-stdout-dup2",
+        "fork-child-recovery-stdout-dup2",
+        "fork-child-initial-first-stdin-dup2",
+        "fork-child-initial-last-stdin-dup2",
+        "fork-child-recovery-stdin-dup2",
+        "replay-controller-clean",
+        "replay-controller-zero",
+        "replay-controller-empty-archive",
+        "replay-controller-lost",
+        "replay-controller-lost-progress",
+        "replay-controller-mixed-success-first",
+        "replay-controller-mixed-loss-first",
+        "replay-controller-recover",
+        "replay-controller-skip-graphics",
+        "replay-controller-skip-compute",
+        "replay-controller-skip-raytracing",
+        "replay-controller-skip-graphics-final",
+        "replay-controller-skip-compute-final",
+        "replay-controller-skip-raytracing-final",
+        "replay-controller-skip-graphics-progress",
+        "replay-controller-skip-graphics-final-progress",
+        "replay-controller-partial",
+        "replay-controller-loss-after-retry",
+        "replay-controller-held-sibling",
+        "replay-controller-signal",
+        "replay-controller-status-error",
+        "replay-controller-outcome-state",
+        "replay-controller-cli-normal",
+        "replay-controller-cli-master",
+        "replay-controller-cli-progress",
+        "replay-controller-cli-e5",
+        "replay-controller-cli-e6",
+        "replay-controller-cli-compatibility"
+      ],
+      "finding_rechecks": {
+        "CR56-DOC-COUNT": "Current verification.md accurately states133 including14 issue56 and28 retained issue13. Four fresh discoveries and JUnit exact133 ID equality independently confirm it.",
+        "FR56-BASE-ADVANCE": "Fresh independent source audit confirms live6ad9 ancestor normal merge bbba(ad14,6ad9), desired guidance inherited unchanged, plan2 original AC1 preserved, one accurate scoped Unreleased changelog entry and independently renewed seven gates:4 fresh133 suites/42 repeats/three failing and2 passing currentbase controls. No carried acceptance."
+      },
+      "findings": [],
+      "input_revision": 314,
+      "input_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+      "limitations": [
+        "Windows explicitly excluded by user; no native Windows execution claim.",
+        "Apple/Android robust modes unsupported; GPU/runtime-layer/Steam/real driver compilation/cache reuse/deployment outside CPU-only scope.",
+        "No broad proposed observability-standard compliance or general C++ binary ABI claim.",
+        "Unit acceptance does not authorize merge or close incomplete parent46; separate fresh final checker and publication gates remain coordinator work."
+      ],
+      "operation": "work_unit",
+      "plan_version": 2,
+      "role": "checker",
+      "skipped": [],
+      "test_mapping": {
+        "fork-child-healthy": {
+          "assertions": [
+            "No injection or controlled crash; two initial controller-owned nonempty workers each exit zero through the actual worker path and are controller-reaped exactly once.",
+            "Readback-checked fixture contains shader 0x101, layout 0x102 and compute hashes 0x104/0x105; both pipelines are parsed and completed using the real null device.",
+            "Controller exits zero, progress_complete one, clean/dirty deaths zero, exact protocol EOF and setup sequence, expected inherited stream flush only by normal workers, no fallthrough/unexpected births/survivors."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-healthy"
+          ]
+        },
+        "fork-child-healthy-recovery": {
+          "assertions": [
+            "No setup fault. Generation one performs setup/protocol EOF then reports zero cursors and zero culprit hashes and exits two. Production process_shutdown and actual recovery launch generation two over the full original two-pipeline assignment.",
+            "Replacement executes real run_slave_process and successfully parses/completes both fixture pipelines; assert counters equal two, not number of normal workers one. Controller exits zero, progress_complete one, clean deaths one, dirty deaths zero.",
+            "Exactly two controller-owned births, original-controller reaps with statuses two then zero, no fatal sentinel callbacks/flush, exact protocol EOF and no descendants. This verifies a no-progress retry followed by real complete recovery, not a fictional completed prefix or skipped culprit."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-healthy-recovery"
+          ]
+        },
+        "fork-child-initial-first-sigmask": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-initial-first-sigmask"
+          ]
+        },
+        "fork-child-initial-first-stdin-dup2": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-initial-first-stdin-dup2"
+          ]
+        },
+        "fork-child-initial-first-stdout-dup2": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-initial-first-stdout-dup2"
+          ]
+        },
+        "fork-child-initial-last-sigmask": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-initial-last-sigmask"
+          ]
+        },
+        "fork-child-initial-last-stdin-dup2": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-initial-last-stdin-dup2"
+          ]
+        },
+        "fork-child-initial-last-stdout-dup2": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-initial-last-stdout-dup2"
+          ]
+        },
+        "fork-child-parent-death": {
+          "assertions": [
+            "Single worker acknowledges after real PR_SET_PDEATHSIG, signal-mask restoration, stdout/stdin redirection and controller input EOF; only then observer SIGKILLs controller.",
+            "Subreaper collects controller and adopted worker, each by SIGKILL, exactly one worker birth and no controller worker reap; no survivors or unintended workers; bounded event EOF/ECHILD.",
+            "No real pipeline completion, normal WorkerExit or inherited-buffer flush before termination."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-parent-death"
+          ]
+        },
+        "fork-child-parent-race": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "Inject only adjacent getppid mismatch after successful real PDEATHSIG setup. Fatal child terminates before mask/redirect/worker entry.",
+            "Use the same initial-fault release barrier after the healthy sibling is actually controller-reaped. Healthy sibling completes one pipeline; clean deaths zero, dirty deaths one, controller failure, no protocol completion."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-parent-race"
+          ]
+        },
+        "fork-child-prctl-failure": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "Inject only adjacent PR_SET_PDEATHSIG failure with EPERM. Fatal child terminates before mask/redirect/worker entry.",
+            "Use the same initial-fault release barrier after the healthy sibling is actually controller-reaped. Healthy sibling completes one pipeline; clean deaths zero, dirty deaths one, controller failure, no protocol completion."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-prctl-failure"
+          ]
+        },
+        "fork-child-recovery-sigmask": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "Generation one completes setup, consumes real input EOF, writes GRAPHICS 0 0 / COMPUTE 0 0 / RAYTRACE 0 0 then _exit(2). Actual production shutdown/retry launches generation two, where the fault occurs. Neither generation completes a compute pipeline; clean deaths one and dirty deaths one."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-recovery-sigmask"
+          ]
+        },
+        "fork-child-recovery-stdin-dup2": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "Generation one completes setup, consumes real input EOF, writes GRAPHICS 0 0 / COMPUTE 0 0 / RAYTRACE 0 0 then _exit(2). Actual production shutdown/retry launches generation two, where the fault occurs. Neither generation completes a compute pipeline; clean deaths one and dirty deaths one."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-recovery-stdin-dup2"
+          ]
+        },
+        "fork-child-recovery-stdout-dup2": {
+          "assertions": [
+            "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+            "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+            "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+            "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+            "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+            "Generation one completes setup, consumes real input EOF, writes GRAPHICS 0 0 / COMPUTE 0 0 / RAYTRACE 0 0 then _exit(2). Actual production shutdown/retry launches generation two, where the fault occurs. Neither generation completes a compute pipeline; clean deaths one and dirty deaths one."
+          ],
+          "criteria": [
+            "AC1"
+          ],
+          "evidence": "All four exact133-test suites execute this registered ID with active assertions and failures0; DebugOFF additionally executes it three times.",
+          "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+          "tests": [
+            "fork-child-recovery-stdout-dup2"
+          ]
+        }
+      },
+      "verdict": "accepted",
+      "work_unit": "https://github.com/robinwassen/Fossilize/issues/56",
+      "worker_id": "/root/checker56_v2"
     }
   ],
   "work_units": [
     {
-      "accepted": null,
+      "accepted": {
+        "attempt_id": "checker-refresh-3",
+        "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+        "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+        "plan_version": 2
+      },
       "dependencies": [],
       "issue": "https://github.com/robinwassen/Fossilize/issues/56",
       "key": "https://github.com/robinwassen/Fossilize/issues/56",
-      "status": "ready"
+      "status": "accepted"
     }
   ]
 }
