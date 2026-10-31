@@ -41,9 +41,15 @@ while a policy change is under review. Detailed mechanics are in
    coverage and correctly mapped native dependencies. Steps alone create no issues.
    Create issues/edges through durable journaled external operations; never allocate
    FOS keys or create source backlog definitions. Dispatch one fresh implementer
-   for the first dependency-ready work unit.
+   for the first dependency-ready work unit. Require the relevant CHANGELOG.md
+   entry alongside the implementation in the same committed candidate, following
+   the selected worktree's [changelog guideline](https://github.com/robinwassen/Fossilize/blob/master/local-docs/changelog-guidelines.md)
+   (`local-docs/changelog-guidelines.md`); use its local copy during review.
 5. At a committed candidate, dispatch a fresh checker in a new detached worktree.
-   Require actual planned-gate execution and test mappings. Route incorrect or
+   Require actual planned-gate execution and test mappings, plus independent
+   review of the candidate's changelog entry against that guideline and delivered
+   scope. Revise the entry when scope changes and renew affected checking.
+   Route incorrect or
    missing planned tests to implementation, missing test design to planning, and
    unavailable mandatory prerequisites to a decision. Only the checker accepts.
    Repairs use fresh bounded attempts; preserve scoped findings and stale-worker
@@ -52,7 +58,8 @@ while a policy change is under review. Detailed mechanics are in
    concise passing evidence and an honest source compare reference. Journal managed
    readiness comments and read them back with closeout-record; issues remain open.
    No source bookkeeping commit is needed. Dispatch a separate fresh final checker
-   over the unchanged exact candidate. Later changes/rejection require marked
+   over the unchanged exact candidate, including the combined changelog and its
+   consistency with final delivered scope. Later changes/rejection require marked
    superseding issue evidence, closeout-cleanup and renewed checks. A parent with
    incomplete required children/criteria cannot become a closing target.
 7. Re-read material issue inputs and fetch target master. Persist publish-intent,
