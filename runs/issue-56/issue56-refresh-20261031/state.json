@@ -141,13 +141,15 @@
       "observations": [],
       "operation": "final",
       "plan_version": 1,
+      "rejection_signature": "c0b2f7114328357804e20804797736a463a0bc9ae4227c6d46be8f23e98acdc9",
+      "report": "runs/issue-56/issue56-refresh-20261031/reports/final-refresh-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793437677.155684,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/56",
       "worker_id": "/root/final56_refresh"
     }
@@ -162,7 +164,10 @@
     "generation": 192,
     "marker": "<!-- harness-ready:issue56-refresh-20261031:068e57fade53c73edeff0ff2964cfdab5e48bc587dccfc1647f9775c412afc1a -->",
     "plan_version": 1,
-    "stage": "prepared",
+    "reason": "checker rejected proposed completion",
+    "resume_operation": "replan",
+    "resume_phase": "planning",
+    "stage": "cleanup",
     "targets": [
       {
         "evidence": "Independent renewed Linux unit verification passed all133 CPU CTests in Debug/Release with exceptions OFF/ON,42 child-case repeat executions,and current-master980 original-defect controls:three intended fallthrough/exit-status failures while both healthy controls pass. Documentation count independently confirmed and finding resolved. Windows verification explicitly excluded by user; no GPU/Steam claim. Verified integrated local candidate ad14d37; PR branch publication remains pending.",
@@ -188,6 +193,15 @@
       "required_change": "Correct the edited full Linux test inventory statement to include the retained issue13 cases (133 for the planned CLI/layer-enabled Linux configuration), or describe the inventory accurately without a stale fixed total. Preserve all runtime gates and assertions.",
       "route": "implementation",
       "status": "resolved"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/56",
+      "evidence": "Final live readback found master6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807, single parent9804598fba84b747aeecd66c0e873f3f48c4c3cd. Commit message: Add shared changelog and require entry review in change harness (#66). Changed files are .agents/skills/implement-change-harness/SKILL.md, .agents/skills/implement-change-harness/references/roles.md, AGENTS.md, CHANGELOG.md, local-docs/README.md and local-docs/changelog-guidelines.md. No runtime source changed, but immutable plan1/base980 lacks new required changelog design/review and final current-base binding is stale. Root56 original title/body/identity/native parent/empty children/prerequisites are unchanged;56 and46 remain open; current readiness still binds ad14/base980/plan1 and only56 is eligible to close.",
+      "id": "FR56-BASE-ADVANCE",
+      "location": "GitHub refs/heads/master; new AGENTS.md and changelog/harness requirements in PR66",
+      "required_change": "Replan against target6ad9ad4 with the new project/changelog guidance and required changelog entry design/review, preserving original AC1 and successful observed runtime evidence. Integrate new base and entry, supersede stale readiness and renew candidate/base/plan-bound independent acceptance before publication; do not infer merge approval.",
+      "route": "planner",
+      "status": "open"
     }
   ],
   "issue_snapshot": {
@@ -6165,8 +6179,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "final",
+  "next_action": "journal superseding issue evidence, then closeout-cleanup",
+  "operation": "replan",
   "original": [
     {
       "id": "AC1",
@@ -6178,7 +6192,7 @@
     "output_directory": "/tmp/fossilize-56-refresh/output",
     "source_worktree": "/home/robin/dev/fossilize-issue-56"
   },
-  "phase": "checking",
+  "phase": "planning",
   "plan": {
     "assumptions_and_risks": [
       "Planner inspected immutable input/base source, live issue56 and PR65 plus saved issue46 shared acceptance; issue body matches immutable original. No builds/probes/tests run during planning.",
@@ -6974,7 +6988,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 251,
+  "revision": 252,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
@@ -6984,7 +6998,7 @@
   },
   "run_id": "issue56-refresh-20261031",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-56",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/56",
   "verification": [
