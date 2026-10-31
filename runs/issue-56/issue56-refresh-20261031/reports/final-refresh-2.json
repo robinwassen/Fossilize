@@ -1,0 +1,1234 @@
+{
+  "all_wrappers_finished": true,
+  "attempt_id": "final-refresh-2",
+  "audit_infrastructure_failures": [
+    {
+      "evidence": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-source1-metadata-error.log",
+      "exit_code": 1,
+      "intent_id": "v2f-source",
+      "original_expected_exit": 0,
+      "product_failure": false,
+      "superseded_by": "v2f-source2"
+    },
+    {
+      "evidence": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-changelog1-metadata-error.log",
+      "exit_code": 1,
+      "intent_id": "v2f-changelog",
+      "original_expected_exit": 0,
+      "product_failure": false,
+      "superseded_by": "v2f-changelog2"
+    }
+  ],
+  "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+  "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+  "changelog_review": {
+    "accuracy": "Names exactly the Linux signal mask/stdin/stdout fatal setup paths changed in production.",
+    "benefit": "Explicitly states prevention of failed children executing controller code; supported by terminal _exit source and fault assertions.",
+    "brevity": "One short plain-language sentence.",
+    "entry": "- **[Worker lifecycle]** Made Linux replay children terminate on signal mask or stdin/stdout setup failure so failed workers cannot execute controller code. ([#56](https://github.com/robinwassen/Fossilize/issues/56))",
+    "placement": "Under Unreleased; no invented version/date.",
+    "preservation": "All inherited entries and open-PR-is-not-merged-delivery qualification preserved byte-for-byte after removing only the new entry and its separator.",
+    "scope": "No scheduler, Windows, Steam, performance, GPU or broad recovery claim.",
+    "topic": "Worker lifecycle is the concise meaningful parent46 topic.",
+    "traceability": "Full canonical issue56 URL."
+  },
+  "closeout_review": {
+    "base": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+    "native_relationships": {
+      "46/dependencies/blocked_by": [],
+      "46/sub_issues": [
+        {
+          "number": 47,
+          "state": "open"
+        },
+        {
+          "number": 48,
+          "state": "open"
+        },
+        {
+          "number": 49,
+          "state": "open"
+        },
+        {
+          "number": 50,
+          "state": "open"
+        },
+        {
+          "number": 51,
+          "state": "open"
+        },
+        {
+          "number": 52,
+          "state": "open"
+        },
+        {
+          "number": 53,
+          "state": "open"
+        },
+        {
+          "number": 54,
+          "state": "open"
+        },
+        {
+          "number": 55,
+          "state": "open"
+        },
+        {
+          "number": 56,
+          "state": "open"
+        },
+        {
+          "number": 57,
+          "state": "open"
+        },
+        {
+          "number": 58,
+          "state": "open"
+        },
+        {
+          "number": 59,
+          "state": "open"
+        },
+        {
+          "number": 60,
+          "state": "open"
+        }
+      ],
+      "56/dependencies/blocked_by": [],
+      "56/sub_issues": []
+    },
+    "only56_eligible_close": true,
+    "parent_shared_acceptance_unchanged": true,
+    "parent_state": "open",
+    "planned_pr_headings": [
+      "Problem",
+      "What changes",
+      "Why this matters",
+      "Why this approach",
+      "Verification and limits",
+      "Task references"
+    ],
+    "readiness_binding": "Candidate: `bbbaedcd21c88500d6e380039e0dbee19bb935bb`; base: `6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807`; plan: `2`; issue input: `1393d94eb5e43fa11f8f13dde913d0691cc8ae797ff42567e317b5b5f1fe82f5`.",
+    "readiness_comment_url": "https://github.com/robinwassen/Fossilize/issues/56#issuecomment-6541934283",
+    "readiness_marker": "<!-- harness-ready:issue56-refresh-20261031:f82f8ced204d7471404ece01358dd2c59a9a48137e9066226064679cd7d7e32b -->",
+    "readiness_reference": "https://github.com/robinwassen/Fossilize/compare/master...codex/issue-56-child-setup",
+    "remote_pr_publication_pending_after_final_acceptance": true,
+    "root_body_title_identity_unchanged": true,
+    "root_state": "open"
+  },
+  "criteria_verdicts": {
+    "AC1": {
+      "evidence": [
+        "runs/issue-56/issue56-refresh-20261031/evidence/v2f-integration-source-audit.log",
+        "runs/issue-56/issue56-refresh-20261031/evidence/v2f-changelog-semantic-review.log",
+        "runs/issue-56/issue56-refresh-20261031/evidence/v2f-linux-debug-exceptions-off.log",
+        "runs/issue-56/issue56-refresh-20261031/evidence/v2f-linux-release-exceptions-off.log",
+        "runs/issue-56/issue56-refresh-20261031/evidence/v2f-linux-debug-exceptions-on.log",
+        "runs/issue-56/issue56-refresh-20261031/evidence/v2f-linux-release-exceptions-on.log",
+        "runs/issue-56/issue56-refresh-20261031/evidence/v2f-new-base-original-defect-controls.log"
+      ],
+      "rationale": "Every covered fatal setup path is terminal and child-safe; production faults and controls independently prove process ownership, exact statuses, cleanup/reaping and no unintended worker spawning. Neighboring branches and full integrated compatibility/matrix/changelog gates pass.",
+      "verdict": "accepted"
+    }
+  },
+  "discovered": [
+    "fossilize-system-test",
+    "varint-system-test",
+    "application-info-filter-test",
+    "object-cache-test",
+    "feature-filter-test",
+    "linux-futex-test",
+    "replay-diagnostic-test",
+    "device-diagnostic-test",
+    "capture-diagnostic-normal-graphics-reject",
+    "capture-diagnostic-normal-graphics-success",
+    "capture-diagnostic-normal-graphics-vulkan-error",
+    "capture-diagnostic-normal-compute-reject",
+    "capture-diagnostic-normal-compute-success",
+    "capture-diagnostic-normal-compute-vulkan-error",
+    "capture-diagnostic-normal-raytracing-reject",
+    "capture-diagnostic-normal-raytracing-success",
+    "capture-diagnostic-normal-raytracing-vulkan-error",
+    "capture-diagnostic-qa-graphics-reject",
+    "capture-diagnostic-qa-graphics-success",
+    "capture-diagnostic-qa-graphics-vulkan-error",
+    "capture-diagnostic-qa-compute-reject",
+    "capture-diagnostic-qa-compute-success",
+    "capture-diagnostic-qa-compute-vulkan-error",
+    "capture-diagnostic-qa-raytracing-reject",
+    "capture-diagnostic-qa-raytracing-success",
+    "capture-diagnostic-qa-raytracing-vulkan-error",
+    "capture-diagnostic-paranoid-graphics-reject",
+    "capture-diagnostic-paranoid-graphics-success",
+    "capture-diagnostic-paranoid-graphics-vulkan-error",
+    "capture-diagnostic-paranoid-compute-reject",
+    "capture-diagnostic-paranoid-compute-success",
+    "capture-diagnostic-paranoid-compute-vulkan-error",
+    "capture-diagnostic-paranoid-raytracing-reject",
+    "capture-diagnostic-paranoid-raytracing-success",
+    "capture-diagnostic-paranoid-raytracing-vulkan-error",
+    "capture-diagnostic-eager-graphics-reject",
+    "capture-diagnostic-eager-graphics-success",
+    "capture-diagnostic-eager-graphics-vulkan-error",
+    "capture-diagnostic-eager-compute-reject",
+    "capture-diagnostic-eager-compute-success",
+    "capture-diagnostic-eager-compute-vulkan-error",
+    "capture-diagnostic-eager-raytracing-reject",
+    "capture-diagnostic-eager-raytracing-success",
+    "capture-diagnostic-eager-raytracing-vulkan-error",
+    "capture-diagnostic-binary-graphics-reject",
+    "capture-diagnostic-binary-graphics-success",
+    "capture-diagnostic-binary-graphics-vulkan-error",
+    "capture-diagnostic-binary-compute-reject",
+    "capture-diagnostic-binary-compute-success",
+    "capture-diagnostic-binary-compute-vulkan-error",
+    "capture-diagnostic-binary-raytracing-reject",
+    "capture-diagnostic-binary-raytracing-success",
+    "capture-diagnostic-binary-raytracing-vulkan-error",
+    "diagnostic-compatibility-test",
+    "utility-parse-list-version",
+    "utility-parse-list-invalid-json",
+    "utility-parse-list-empty",
+    "utility-parse-list-populated",
+    "utility-parse-list-mixed",
+    "utility-parse-list-dependency-failure",
+    "utility-parse-list-empty-dependencies",
+    "utility-parse-list-legacy-invocations",
+    "utility-parse-rehash-version",
+    "utility-parse-rehash-invalid-json",
+    "utility-parse-rehash-empty",
+    "utility-parse-rehash-populated",
+    "utility-parse-rehash-mixed",
+    "utility-parse-prune-version",
+    "utility-parse-prune-invalid-json",
+    "utility-parse-prune-empty",
+    "utility-parse-prune-populated",
+    "utility-parse-prune-mixed",
+    "utility-parse-prune-rejected-application",
+    "file-helper-string-open",
+    "file-helper-string-short-write",
+    "file-helper-string-flush",
+    "file-helper-string-close",
+    "file-helper-string-first-error",
+    "file-helper-string-success",
+    "file-helper-string-filesystem",
+    "file-helper-string-dev-full",
+    "file-helper-buffer-open",
+    "file-helper-buffer-short-write",
+    "file-helper-buffer-flush",
+    "file-helper-buffer-close",
+    "file-helper-buffer-first-error",
+    "file-helper-buffer-success",
+    "file-helper-buffer-filesystem",
+    "file-helper-buffer-dev-full",
+    "file-helper-legacy-compatibility",
+    "file-helper-legacy-completion",
+    "fork-child-healthy",
+    "fork-child-healthy-recovery",
+    "fork-child-parent-death",
+    "fork-child-prctl-failure",
+    "fork-child-parent-race",
+    "fork-child-initial-first-sigmask",
+    "fork-child-initial-last-sigmask",
+    "fork-child-recovery-sigmask",
+    "fork-child-initial-first-stdout-dup2",
+    "fork-child-initial-last-stdout-dup2",
+    "fork-child-recovery-stdout-dup2",
+    "fork-child-initial-first-stdin-dup2",
+    "fork-child-initial-last-stdin-dup2",
+    "fork-child-recovery-stdin-dup2",
+    "replay-controller-clean",
+    "replay-controller-zero",
+    "replay-controller-empty-archive",
+    "replay-controller-lost",
+    "replay-controller-lost-progress",
+    "replay-controller-mixed-success-first",
+    "replay-controller-mixed-loss-first",
+    "replay-controller-recover",
+    "replay-controller-skip-graphics",
+    "replay-controller-skip-compute",
+    "replay-controller-skip-raytracing",
+    "replay-controller-skip-graphics-final",
+    "replay-controller-skip-compute-final",
+    "replay-controller-skip-raytracing-final",
+    "replay-controller-skip-graphics-progress",
+    "replay-controller-skip-graphics-final-progress",
+    "replay-controller-partial",
+    "replay-controller-loss-after-retry",
+    "replay-controller-held-sibling",
+    "replay-controller-signal",
+    "replay-controller-status-error",
+    "replay-controller-outcome-state",
+    "replay-controller-cli-normal",
+    "replay-controller-cli-master",
+    "replay-controller-cli-progress",
+    "replay-controller-cli-e5",
+    "replay-controller-cli-e6",
+    "replay-controller-cli-compatibility"
+  ],
+  "evidence": [
+    {
+      "attempt_id": "final-refresh-2",
+      "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+      "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+      "command": [
+        [
+          "env",
+          "LC_ALL=C",
+          "python3",
+          "-B",
+          "/tmp/fossilize-56-refresh/v2-final-audit.py",
+          "source"
+        ]
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "environment": {
+        "CMake_CTest": "4.4.0",
+        "LC_ALL": "C",
+        "OS": "Linux",
+        "compiler": "Ubuntu GCC13.3.0",
+        "default_spirv_validation": "ON"
+      },
+      "exit_code": 0,
+      "gate": "integration-source-audit",
+      "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-integration-source-audit.log",
+      "plan_version": 2,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "final-refresh-2",
+      "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+      "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+      "command": [
+        [
+          "env",
+          "LC_ALL=C",
+          "python3",
+          "-B",
+          "/tmp/fossilize-56-refresh/v2-final-audit.py",
+          "changelog"
+        ]
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "environment": {
+        "CMake_CTest": "4.4.0",
+        "LC_ALL": "C",
+        "OS": "Linux",
+        "compiler": "Ubuntu GCC13.3.0",
+        "default_spirv_validation": "ON"
+      },
+      "exit_code": 0,
+      "gate": "changelog-semantic-review",
+      "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-changelog-semantic-review.log",
+      "plan_version": 2,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "final-refresh-2",
+      "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+      "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+      "command": [
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "-S",
+          "/tmp/fossilize-56-refresh/v2-final",
+          "-B",
+          "/tmp/fossilize-56-refresh/build/v2-final-debug-off",
+          "-G",
+          "Ninja",
+          "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+          "-DFOSSILIZE_TESTS=ON",
+          "-DFOSSILIZE_CLI=ON",
+          "-DFOSSILIZE_VULKAN_LAYER=ON",
+          "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "--build",
+          "/tmp/fossilize-56-refresh/build/v2-final-debug-off",
+          "--parallel",
+          "4",
+          "--target",
+          "fossilize-test",
+          "varint-test",
+          "application-info-filter-test",
+          "object-cache-test",
+          "feature-filter-test",
+          "futex-test",
+          "replay-diagnostic-test",
+          "device-diagnostic-test",
+          "capture-diagnostic-test",
+          "diagnostic-compatibility-test",
+          "utility-parse-test",
+          "file-helper-test",
+          "file-helper-compatibility-test",
+          "fork-child-setup-test",
+          "replay-controller-test",
+          "replay-controller-compatibility-test",
+          "fossilize-replay",
+          "fossilize-list",
+          "fossilize-rehash",
+          "fossilize-prune",
+          "VkLayer_fossilize"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-debug-off",
+          "--show-only=json-v1"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-debug-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "--output-junit",
+          "/tmp/fossilize-56-refresh/v2-final-output/debug-off.xml"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-debug-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-",
+          "--repeat",
+          "until-fail:3"
+        ]
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "environment": {
+        "CMake_CTest": "4.4.0",
+        "LC_ALL": "C",
+        "OS": "Linux",
+        "compiler": "Ubuntu GCC13.3.0",
+        "default_spirv_validation": "ON"
+      },
+      "exit_code": 0,
+      "gate": "linux-debug-exceptions-off",
+      "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-linux-debug-exceptions-off.log",
+      "plan_version": 2,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "final-refresh-2",
+      "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+      "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+      "command": [
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "-S",
+          "/tmp/fossilize-56-refresh/v2-final",
+          "-B",
+          "/tmp/fossilize-56-refresh/build/v2-final-release-off",
+          "-G",
+          "Ninja",
+          "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+          "-DFOSSILIZE_TESTS=ON",
+          "-DFOSSILIZE_CLI=ON",
+          "-DFOSSILIZE_VULKAN_LAYER=ON",
+          "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "--build",
+          "/tmp/fossilize-56-refresh/build/v2-final-release-off",
+          "--parallel",
+          "4",
+          "--target",
+          "fossilize-test",
+          "varint-test",
+          "application-info-filter-test",
+          "object-cache-test",
+          "feature-filter-test",
+          "futex-test",
+          "replay-diagnostic-test",
+          "device-diagnostic-test",
+          "capture-diagnostic-test",
+          "diagnostic-compatibility-test",
+          "utility-parse-test",
+          "file-helper-test",
+          "file-helper-compatibility-test",
+          "fork-child-setup-test",
+          "replay-controller-test",
+          "replay-controller-compatibility-test",
+          "fossilize-replay",
+          "fossilize-list",
+          "fossilize-rehash",
+          "fossilize-prune",
+          "VkLayer_fossilize"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-release-off",
+          "--show-only=json-v1"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-release-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "--output-junit",
+          "/tmp/fossilize-56-refresh/v2-final-output/release-off.xml"
+        ]
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "environment": {
+        "CMake_CTest": "4.4.0",
+        "LC_ALL": "C",
+        "OS": "Linux",
+        "compiler": "Ubuntu GCC13.3.0",
+        "default_spirv_validation": "ON"
+      },
+      "exit_code": 0,
+      "gate": "linux-release-exceptions-off",
+      "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-linux-release-exceptions-off.log",
+      "plan_version": 2,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "final-refresh-2",
+      "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+      "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+      "command": [
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "-S",
+          "/tmp/fossilize-56-refresh/v2-final",
+          "-B",
+          "/tmp/fossilize-56-refresh/build/v2-final-debug-on",
+          "-G",
+          "Ninja",
+          "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+          "-DFOSSILIZE_TESTS=ON",
+          "-DFOSSILIZE_CLI=ON",
+          "-DFOSSILIZE_VULKAN_LAYER=ON",
+          "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "--build",
+          "/tmp/fossilize-56-refresh/build/v2-final-debug-on",
+          "--parallel",
+          "4",
+          "--target",
+          "fossilize-test",
+          "varint-test",
+          "application-info-filter-test",
+          "object-cache-test",
+          "feature-filter-test",
+          "futex-test",
+          "replay-diagnostic-test",
+          "device-diagnostic-test",
+          "capture-diagnostic-test",
+          "diagnostic-compatibility-test",
+          "utility-parse-test",
+          "file-helper-test",
+          "file-helper-compatibility-test",
+          "fork-child-setup-test",
+          "replay-controller-test",
+          "replay-controller-compatibility-test",
+          "fossilize-replay",
+          "fossilize-list",
+          "fossilize-rehash",
+          "fossilize-prune",
+          "VkLayer_fossilize"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-debug-on",
+          "--show-only=json-v1"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-debug-on",
+          "--output-on-failure",
+          "--no-tests=error",
+          "--output-junit",
+          "/tmp/fossilize-56-refresh/v2-final-output/debug-on.xml"
+        ]
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "environment": {
+        "CMake_CTest": "4.4.0",
+        "LC_ALL": "C",
+        "OS": "Linux",
+        "compiler": "Ubuntu GCC13.3.0",
+        "default_spirv_validation": "ON"
+      },
+      "exit_code": 0,
+      "gate": "linux-debug-exceptions-on",
+      "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-linux-debug-exceptions-on.log",
+      "plan_version": 2,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "final-refresh-2",
+      "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+      "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+      "command": [
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "-S",
+          "/tmp/fossilize-56-refresh/v2-final",
+          "-B",
+          "/tmp/fossilize-56-refresh/build/v2-final-release-on",
+          "-G",
+          "Ninja",
+          "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+          "-DFOSSILIZE_TESTS=ON",
+          "-DFOSSILIZE_CLI=ON",
+          "-DFOSSILIZE_VULKAN_LAYER=ON",
+          "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "--build",
+          "/tmp/fossilize-56-refresh/build/v2-final-release-on",
+          "--parallel",
+          "4",
+          "--target",
+          "fossilize-test",
+          "varint-test",
+          "application-info-filter-test",
+          "object-cache-test",
+          "feature-filter-test",
+          "futex-test",
+          "replay-diagnostic-test",
+          "device-diagnostic-test",
+          "capture-diagnostic-test",
+          "diagnostic-compatibility-test",
+          "utility-parse-test",
+          "file-helper-test",
+          "file-helper-compatibility-test",
+          "fork-child-setup-test",
+          "replay-controller-test",
+          "replay-controller-compatibility-test",
+          "fossilize-replay",
+          "fossilize-list",
+          "fossilize-rehash",
+          "fossilize-prune",
+          "VkLayer_fossilize"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-release-on",
+          "--show-only=json-v1"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-release-on",
+          "--output-on-failure",
+          "--no-tests=error",
+          "--output-junit",
+          "/tmp/fossilize-56-refresh/v2-final-output/release-on.xml"
+        ]
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "environment": {
+        "CMake_CTest": "4.4.0",
+        "LC_ALL": "C",
+        "OS": "Linux",
+        "compiler": "Ubuntu GCC13.3.0",
+        "default_spirv_validation": "ON"
+      },
+      "exit_code": 0,
+      "gate": "linux-release-exceptions-on",
+      "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-linux-release-exceptions-on.log",
+      "plan_version": 2,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "final-refresh-2",
+      "base_sha": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+      "candidate_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+      "command": [
+        [
+          "env",
+          "LC_ALL=C",
+          "python3",
+          "-B",
+          "/tmp/fossilize-56-refresh/v2-final-audit.py",
+          "baseline"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "-S",
+          "/tmp/fossilize-56-refresh/v2-final-baseline",
+          "-B",
+          "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+          "-G",
+          "Ninja",
+          "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+          "-DFOSSILIZE_TESTS=ON",
+          "-DFOSSILIZE_CLI=ON",
+          "-DFOSSILIZE_VULKAN_LAYER=ON",
+          "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+          "--build",
+          "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+          "--parallel",
+          "4",
+          "--target",
+          "fork-child-setup-test"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+          "-V",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-initial-first-sigmask$"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+          "-V",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-initial-first-stdout-dup2$"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+          "-V",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-initial-first-stdin-dup2$"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-56-refresh/build/v2-final-baseline",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-healthy(-recovery)?$",
+          "--output-junit",
+          "/tmp/fossilize-56-refresh/v2-final-output/baseline-healthy.xml"
+        ],
+        [
+          "env",
+          "LC_ALL=C",
+          "python3",
+          "-B",
+          "/tmp/fossilize-56-refresh/v2-final-audit.py",
+          "runtime"
+        ]
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-56-refresh/v2-final",
+      "environment": {
+        "CMake_CTest": "4.4.0",
+        "LC_ALL": "C",
+        "OS": "Linux",
+        "compiler": "Ubuntu GCC13.3.0",
+        "default_spirv_validation": "ON"
+      },
+      "exit_code": 0,
+      "gate": "new-base-original-defect-controls",
+      "log": "runs/issue-56/issue56-refresh-20261031/evidence/v2f-new-base-original-defect-controls.log",
+      "plan_version": 2,
+      "result": "passed"
+    }
+  ],
+  "executed": [
+    "fossilize-system-test",
+    "varint-system-test",
+    "application-info-filter-test",
+    "object-cache-test",
+    "feature-filter-test",
+    "linux-futex-test",
+    "replay-diagnostic-test",
+    "device-diagnostic-test",
+    "capture-diagnostic-normal-graphics-reject",
+    "capture-diagnostic-normal-graphics-success",
+    "capture-diagnostic-normal-graphics-vulkan-error",
+    "capture-diagnostic-normal-compute-reject",
+    "capture-diagnostic-normal-compute-success",
+    "capture-diagnostic-normal-compute-vulkan-error",
+    "capture-diagnostic-normal-raytracing-reject",
+    "capture-diagnostic-normal-raytracing-success",
+    "capture-diagnostic-normal-raytracing-vulkan-error",
+    "capture-diagnostic-qa-graphics-reject",
+    "capture-diagnostic-qa-graphics-success",
+    "capture-diagnostic-qa-graphics-vulkan-error",
+    "capture-diagnostic-qa-compute-reject",
+    "capture-diagnostic-qa-compute-success",
+    "capture-diagnostic-qa-compute-vulkan-error",
+    "capture-diagnostic-qa-raytracing-reject",
+    "capture-diagnostic-qa-raytracing-success",
+    "capture-diagnostic-qa-raytracing-vulkan-error",
+    "capture-diagnostic-paranoid-graphics-reject",
+    "capture-diagnostic-paranoid-graphics-success",
+    "capture-diagnostic-paranoid-graphics-vulkan-error",
+    "capture-diagnostic-paranoid-compute-reject",
+    "capture-diagnostic-paranoid-compute-success",
+    "capture-diagnostic-paranoid-compute-vulkan-error",
+    "capture-diagnostic-paranoid-raytracing-reject",
+    "capture-diagnostic-paranoid-raytracing-success",
+    "capture-diagnostic-paranoid-raytracing-vulkan-error",
+    "capture-diagnostic-eager-graphics-reject",
+    "capture-diagnostic-eager-graphics-success",
+    "capture-diagnostic-eager-graphics-vulkan-error",
+    "capture-diagnostic-eager-compute-reject",
+    "capture-diagnostic-eager-compute-success",
+    "capture-diagnostic-eager-compute-vulkan-error",
+    "capture-diagnostic-eager-raytracing-reject",
+    "capture-diagnostic-eager-raytracing-success",
+    "capture-diagnostic-eager-raytracing-vulkan-error",
+    "capture-diagnostic-binary-graphics-reject",
+    "capture-diagnostic-binary-graphics-success",
+    "capture-diagnostic-binary-graphics-vulkan-error",
+    "capture-diagnostic-binary-compute-reject",
+    "capture-diagnostic-binary-compute-success",
+    "capture-diagnostic-binary-compute-vulkan-error",
+    "capture-diagnostic-binary-raytracing-reject",
+    "capture-diagnostic-binary-raytracing-success",
+    "capture-diagnostic-binary-raytracing-vulkan-error",
+    "diagnostic-compatibility-test",
+    "utility-parse-list-version",
+    "utility-parse-list-invalid-json",
+    "utility-parse-list-empty",
+    "utility-parse-list-populated",
+    "utility-parse-list-mixed",
+    "utility-parse-list-dependency-failure",
+    "utility-parse-list-empty-dependencies",
+    "utility-parse-list-legacy-invocations",
+    "utility-parse-rehash-version",
+    "utility-parse-rehash-invalid-json",
+    "utility-parse-rehash-empty",
+    "utility-parse-rehash-populated",
+    "utility-parse-rehash-mixed",
+    "utility-parse-prune-version",
+    "utility-parse-prune-invalid-json",
+    "utility-parse-prune-empty",
+    "utility-parse-prune-populated",
+    "utility-parse-prune-mixed",
+    "utility-parse-prune-rejected-application",
+    "file-helper-string-open",
+    "file-helper-string-short-write",
+    "file-helper-string-flush",
+    "file-helper-string-close",
+    "file-helper-string-first-error",
+    "file-helper-string-success",
+    "file-helper-string-filesystem",
+    "file-helper-string-dev-full",
+    "file-helper-buffer-open",
+    "file-helper-buffer-short-write",
+    "file-helper-buffer-flush",
+    "file-helper-buffer-close",
+    "file-helper-buffer-first-error",
+    "file-helper-buffer-success",
+    "file-helper-buffer-filesystem",
+    "file-helper-buffer-dev-full",
+    "file-helper-legacy-compatibility",
+    "file-helper-legacy-completion",
+    "fork-child-healthy",
+    "fork-child-healthy-recovery",
+    "fork-child-parent-death",
+    "fork-child-prctl-failure",
+    "fork-child-parent-race",
+    "fork-child-initial-first-sigmask",
+    "fork-child-initial-last-sigmask",
+    "fork-child-recovery-sigmask",
+    "fork-child-initial-first-stdout-dup2",
+    "fork-child-initial-last-stdout-dup2",
+    "fork-child-recovery-stdout-dup2",
+    "fork-child-initial-first-stdin-dup2",
+    "fork-child-initial-last-stdin-dup2",
+    "fork-child-recovery-stdin-dup2",
+    "replay-controller-clean",
+    "replay-controller-zero",
+    "replay-controller-empty-archive",
+    "replay-controller-lost",
+    "replay-controller-lost-progress",
+    "replay-controller-mixed-success-first",
+    "replay-controller-mixed-loss-first",
+    "replay-controller-recover",
+    "replay-controller-skip-graphics",
+    "replay-controller-skip-compute",
+    "replay-controller-skip-raytracing",
+    "replay-controller-skip-graphics-final",
+    "replay-controller-skip-compute-final",
+    "replay-controller-skip-raytracing-final",
+    "replay-controller-skip-graphics-progress",
+    "replay-controller-skip-graphics-final-progress",
+    "replay-controller-partial",
+    "replay-controller-loss-after-retry",
+    "replay-controller-held-sibling",
+    "replay-controller-signal",
+    "replay-controller-status-error",
+    "replay-controller-outcome-state",
+    "replay-controller-cli-normal",
+    "replay-controller-cli-master",
+    "replay-controller-cli-progress",
+    "replay-controller-cli-e5",
+    "replay-controller-cli-e6",
+    "replay-controller-cli-compatibility"
+  ],
+  "findings": [],
+  "input_revision": 374,
+  "input_sha": "bbbaedcd21c88500d6e380039e0dbee19bb935bb",
+  "limits": [
+    {
+      "platform": "Windows",
+      "reason": "Explicit inherited user exclusion, no native Windows claim.",
+      "status": "excluded_by_user"
+    },
+    {
+      "platform": "Apple/Android robust modes",
+      "reason": "NO_ROBUST_REPLAYER in current build.",
+      "status": "unsupported"
+    },
+    {
+      "checks": "GPU/Steam/runtime-layer/real driver caches/deployment",
+      "reason": "CPU-only child process lifecycle correction.",
+      "status": "not_applicable"
+    }
+  ],
+  "operation": "final",
+  "plan_version": 2,
+  "publication_gate": "Deferred to coordinator after this final acceptance; remote PR65 intentionally old head until authorized normal publication. Only56 eligible close; parent46 stays open. No merge approval inferred.",
+  "role": "checker",
+  "skipped": [],
+  "test_mapping": {
+    "fork-child-healthy": {
+      "assertions": [
+        "No injection or controlled crash; two initial controller-owned nonempty workers each exit zero through the actual worker path and are controller-reaped exactly once.",
+        "Readback-checked fixture contains shader 0x101, layout 0x102 and compute hashes 0x104/0x105; both pipelines are parsed and completed using the real null device.",
+        "Controller exits zero, progress_complete one, clean/dirty deaths zero, exact protocol EOF and setup sequence, expected inherited stream flush only by normal workers, no fallthrough/unexpected births/survivors."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-healthy"
+      ]
+    },
+    "fork-child-healthy-recovery": {
+      "assertions": [
+        "No setup fault. Generation one performs setup/protocol EOF then reports zero cursors and zero culprit hashes and exits two. Production process_shutdown and actual recovery launch generation two over the full original two-pipeline assignment.",
+        "Replacement executes real run_slave_process and successfully parses/completes both fixture pipelines; assert counters equal two, not number of normal workers one. Controller exits zero, progress_complete one, clean deaths one, dirty deaths zero.",
+        "Exactly two controller-owned births, original-controller reaps with statuses two then zero, no fatal sentinel callbacks/flush, exact protocol EOF and no descendants. This verifies a no-progress retry followed by real complete recovery, not a fictional completed prefix or skipped culprit."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-healthy-recovery"
+      ]
+    },
+    "fork-child-initial-first-sigmask": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-initial-first-sigmask"
+      ]
+    },
+    "fork-child-initial-first-stdin-dup2": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-initial-first-stdin-dup2"
+      ]
+    },
+    "fork-child-initial-first-stdout-dup2": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-initial-first-stdout-dup2"
+      ]
+    },
+    "fork-child-initial-last-sigmask": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-initial-last-sigmask"
+      ]
+    },
+    "fork-child-initial-last-stdin-dup2": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-initial-last-stdin-dup2"
+      ]
+    },
+    "fork-child-initial-last-stdout-dup2": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "The other initial worker completes its nonempty partition through real null-device replay and is successfully controller-reaped before releasing the selected fault; assert that event ordering, two initial births, exactly one completed/parsed pipeline, dirty deaths one and clean deaths zero."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-initial-last-stdout-dup2"
+      ]
+    },
+    "fork-child-parent-death": {
+      "assertions": [
+        "Single worker acknowledges after real PR_SET_PDEATHSIG, signal-mask restoration, stdout/stdin redirection and controller input EOF; only then observer SIGKILLs controller.",
+        "Subreaper collects controller and adopted worker, each by SIGKILL, exactly one worker birth and no controller worker reap; no survivors or unintended workers; bounded event EOF/ECHILD.",
+        "No real pipeline completion, normal WorkerExit or inherited-buffer flush before termination."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-parent-death"
+      ]
+    },
+    "fork-child-parent-race": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "Inject only adjacent getppid mismatch after successful real PDEATHSIG setup. Fatal child terminates before mask/redirect/worker entry.",
+        "Use the same initial-fault release barrier after the healthy sibling is actually controller-reaped. Healthy sibling completes one pipeline; clean deaths zero, dirty deaths one, controller failure, no protocol completion."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-parent-race"
+      ]
+    },
+    "fork-child-prctl-failure": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "Inject only adjacent PR_SET_PDEATHSIG failure with EPERM. Fatal child terminates before mask/redirect/worker entry.",
+        "Use the same initial-fault release barrier after the healthy sibling is actually controller-reaped. Healthy sibling completes one pipeline; clean deaths zero, dirty deaths one, controller failure, no protocol completion."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-prctl-failure"
+      ]
+    },
+    "fork-child-recovery-sigmask": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "Generation one completes setup, consumes real input EOF, writes GRAPHICS 0 0 / COMPUTE 0 0 / RAYTRACE 0 0 then _exit(2). Actual production shutdown/retry launches generation two, where the fault occurs. Neither generation completes a compute pipeline; clean deaths one and dirty deaths one."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-recovery-sigmask"
+      ]
+    },
+    "fork-child-recovery-stdin-dup2": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "Generation one completes setup, consumes real input EOF, writes GRAPHICS 0 0 / COMPUTE 0 0 / RAYTRACE 0 0 then _exit(2). Actual production shutdown/retry launches generation two, where the fault occurs. Neither generation completes a compute pipeline; clean deaths one and dirty deaths one."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-recovery-stdin-dup2"
+      ]
+    },
+    "fork-child-recovery-stdout-dup2": {
+      "assertions": [
+        "Exactly one injection at the intended production child syscall, PID and generation; failed child exits normally with EXIT_FAILURE, never returns through the Boolean launcher.",
+        "Every birth belongs to the original controller; exactly two births and one controller reap per worker, no worker-owned fork or worker epoll/controller operation, no observer-adopted descendants.",
+        "No inherited atexit/destructor invocation or buffered-stdio flush by fatal setup; no normal run_slave_process entry for the failed child.",
+        "Exact setup order and required protocol EOF; failed worker and controller are collected, every recorded PID is gone, observer obtains ECHILD, bounded event EOF and emergency group cleanup remain active on assertion failure.",
+        "Controller returns EXIT_FAILURE and shared progress_complete remains zero for lost required work, consistent with new master #13; no old aggregate-success oracle.",
+        "Generation one completes setup, consumes real input EOF, writes GRAPHICS 0 0 / COMPUTE 0 0 / RAYTRACE 0 0 then _exit(2). Actual production shutdown/retry launches generation two, where the fault occurs. Neither generation completes a compute pipeline; clean deaths one and dirty deaths one."
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Independent four full133 suites executed this ID with active assertions, failures0/skips0; DebugOFF also three actual repeat starts. See matrix gate records and inventory.",
+      "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt",
+      "tests": [
+        "fork-child-recovery-stdout-dup2"
+      ]
+    }
+  },
+  "verdict": "accepted",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/56",
+  "worker_id": "/root/final56_v2"
+}
