@@ -167,13 +167,14 @@
       "observations": [],
       "operation": "replan",
       "plan_version": 1,
+      "report": "runs/issue-56/issue56-refresh-20261031/reports/planner-refresh-2.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793438904.45396,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/56",
       "worker_id": "/root/planner56_v2"
     }
@@ -6184,8 +6185,8 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "replan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -6197,23 +6198,27 @@
     "output_directory": "/tmp/fossilize-56-refresh/output",
     "source_worktree": "/home/robin/dev/fossilize-issue-56"
   },
-  "phase": "planning",
+  "phase": "implementing",
   "plan": {
     "assumptions_and_risks": [
-      "Planner inspected immutable input/base source, live issue56 and PR65 plus saved issue46 shared acceptance; issue body matches immutable original. No builds/probes/tests run during planning.",
+      "Planner read live issue56 and parent46 through gh, immutable original acceptance, current candidate and desired-base source/diffs, required project documents and both old/new harness guidance. Issue56 body/title/node identity and open state match the retained snapshot. No builds/probes/tests were run by this planner.",
       "Detached planner submodules are absent; populate/reuse exact pinned dependencies in each build setup, recording source/path/SHA. Do not claim dependency/configuration errors as test evidence.",
       "Master cleanup may legitimately SIGKILL still-live siblings after loss. Initial-fault barrier chooses an ordering where the healthy sibling has already exited and been reaped, allowing the original exact-success oracle to remain strict. Existing #13 held-sibling/mixed-order cases independently cover cleanup ordering.",
       "Use Linux GCC/Clang compatible linker wrapping, CMake/CTest/Ninja (or an explicitly recorded generator), Python3 and subreaper/process-group support. Tool paths and role placeholders must be concretized and intent-published before execution.",
       "Events are PIPE_BUF-sized atomic writes; injection scoping excludes controller/library calls. pthread_sigmask returns an error number; dup2 uses -1/errno. Verify no barrier deadlock and unconditional group cleanup even on baseline failure.",
       "A successful recovery here is a deterministic pre-runtime no-progress crash followed by real complete replacement work; it does not claim real GPU crash recovery or successful prefix reuse.",
-      "All required failed/skipped/unavailable/incomplete gates block acceptance; native Windows exclusion does not become a passing platform claim."
+      "All required failed/skipped/unavailable/incomplete gates block acceptance; native Windows exclusion does not become a passing platform claim.",
+      "Desired master 6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807 has single parent 9804598fba84b747aeecd66c0e873f3f48c4c3cd; its only changes are AGENTS.md, CHANGELOG.md, local-docs/README.md, local-docs/changelog-guidelines.md and the harness SKILL/roles documents. Runtime/test/CMake code and Linux baseline header are unchanged, so the same three original wrong returns remain valid defect controls.",
+      "Historical candidate ad14/base980/plan1 four133-suite passes,42 repeats and defect controls remain observed facts only. All approvals were invalidated by base/plan movement; no old report or supplemental audit grants current acceptance. CR56-DOC-COUNT was resolved at133; preserve that corrected count. Prior final metadata audit1 failed only its CTest summary wording check, not a source/test execution; avoid brittle summary-only counting and retain discovered/executed IDs.",
+      "No mirrored test for the low-impact changelog prose is needed: independent semantic review against the authoritative guideline plus complete integration-source audit is appropriate. Inherited documentation-only harness guidance does not require changing or retesting the unchanged harness engine; every planned C++ CPU gate remains mandatory.",
+      "The single replan allowance is consumed by this v2; original deadline, command deadlines and implementation count2of4 remain unchanged. Only coordinator writes canonical state; this report does not update bound base or reset budgets."
     ],
     "boundaries": {
       "behavior": "Setup failures terminate immediately. Unresolved required work now has master #13 EXIT_FAILURE and cleanup semantics; this integration preserves that intentional base change. Healthy/recovery controls certify actual null-device work and terminal collection.",
       "binary": "No public layout or symbol changes; no general prebuilt C++ ABI claim.",
       "protocol": "Existing worker strings, shared-control layout/version and intentionally inherited protocol EOF remain exercised. No new production injection interface.",
-      "source": "Internal Linux header fix, regression fixture/CMake registration and scope-relevant verification documentation. Public declarations unchanged.",
-      "source_base": "9804598fba84b747aeecd66c0e873f3f48c4c3cd"
+      "source": "Preserve internal Linux fix, production-path regression fixture/registration and corrected scope-relevant verification documentation; inherit six master guidance/changelog files by normal merge and add only the scoped CHANGELOG.md entry. Public declarations unchanged.",
+      "source_base": "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807"
     },
     "cases": [
       {
@@ -6378,8 +6383,15 @@
         "location": "test/fork_child_setup_test.cpp; test/CMakeLists.txt"
       }
     ],
+    "changelog_design": {
+      "guideline": "local-docs/changelog-guidelines.md at 6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+      "path": "CHANGELOG.md",
+      "review": "Both fresh unit and separate combined-final checkers inspect exact committed bytes against actual source/test scope: factual Linux behavior, specific fallthrough-prevention benefit, meaningful epic-derived topic, one short sentence, correct full issue56 URL, Unreleased location, preserved inherited entries and no unsupported Steam/performance/platform or already-merged claim.",
+      "section": "Unreleased",
+      "suggested_entry": "- **[Worker lifecycle]** Made Linux replay children terminate on signal mask or stdin/stdout setup failure so failed workers cannot execute controller code. ([#56](https://github.com/robinwassen/Fossilize/issues/56))"
+    },
     "compile_target_completeness": {
-      "inventory": "Source predicts 133 CPU tests after combining previous105 and new master28 (22 replay-controller plus 6 replay-controller-cli), including exact14 fork-child IDs. Fresh ctest --show-only=json-v1 discovery is authoritative; verify every registration against this source inventory and explain any difference rather than filtering/omitting tests. layer-test stays disabled because it is GPU-dependent; multi-instance-and-device-test is unregistered GPU stress.",
+      "inventory": "Source and historical independent discovery agree on133 CPU tests for CLI/layer ON and runtime-layer OFF:14 fork-child and28 retained issue13 replay-controller cases included. Fresh ctest --show-only=json-v1 discovery is authoritative; compare every discovered ID with full execution and source registration. Explain any difference rather than filter or omit tests. layer-test remains disabled GPU integration; multi-instance-and-device-test is unregistered GPU stress.",
       "rationale": "Inspection of candidate test/CMakeLists and new-master additions finds 16 registered CPU-test executables. CMake script tests additionally invoke fossilize-replay, fossilize-list, fossilize-rehash and fossilize-prune; capture tests load VkLayer_fossilize by target-file path. Build all 21 targets explicitly because add_test generator expressions do not make a test-executable target build its external CLI/layer dependencies. CMake builds their library closure (fossilize, cli-utils, miniz, volk and SPIRV-Tools-static for normal default replay validation). Do not build all: fossilize-opt and unused CLI tools would pull unrelated expensive optimizer/Cross libraries. Keep FOSSILIZE_REPLAYER_SPIRV_VAL default ON.",
       "required_targets": [
         "fossilize-test",
@@ -6438,7 +6450,8 @@
         "cwd": "ROLE_WORKTREE",
         "expected": [
           "Merge contains new base plus original #56 history with all three fixes. No #13 reversal, swallowed loss or artificial old success policy.",
-          "All14 cases map to real discovered tests, strict Release-active assertions and required process/descriptor/recovery controls; no observation-only acceptance."
+          "All14 cases map to real discovered tests, strict Release-active assertions and required process/descriptor/recovery controls; no observation-only acceptance.",
+          "Desiredbase6ad9 is an ancestor; old candidate ancestry and all inherited entries/guidance survive, while only scope-relevant differences exist. Current candidate is clean and committed; desired base/live issue inputs remain current at checking/publication."
         ],
         "id": "integration-source-audit",
         "kind": "both",
@@ -6447,7 +6460,7 @@
             [
               "git",
               "diff",
-              "9804598fba84b747aeecd66c0e873f3f48c4c3cd",
+              "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
               "HEAD",
               "--"
             ],
@@ -6456,13 +6469,52 @@
               "log",
               "--oneline",
               "--parents",
-              "9804598fba84b747aeecd66c0e873f3f48c4c3cd..HEAD"
+              "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807..HEAD"
             ]
           ],
-          "review": "Inspect complete new-base-to-candidate diff, merge ancestry and old-head changes; audit entire fork child branch and both callers, fixture/oracles, current issue and parent shared acceptance. Verify _exit at three faults plus adjacent prctl/race; quiet stderr best effort, ordinary terminal exit(run_slave_process) and pre-fork bool returns remain distinct. Verify no public API/layout/grammar changes or unrelated edits."
+          "review": "Inspect complete new-base-to-candidate diff, merge ancestry and old-head changes; audit entire fork child branch and both callers, fixture/oracles, current issue and parent shared acceptance. Verify _exit at three faults plus adjacent prctl/race; quiet stderr best effort, ordinary terminal exit(run_slave_process) and pre-fork bool returns remain distinct. Verify no public API/layout/grammar changes or unrelated edits. Also compare ad14-to-result and verify the six desired-base guidance files were inherited without rewriting and only the planned scoped changelog addition was introduced. Confirm baseline header6ad9 is byte-identical980, and133 documentation remains correct; retained documentation980 historical baseline reference is compatible only because the actual controls use current6ad9 header. Review original full14case assertions and every original safety-barrier/no-progress-recovery oracle."
         },
         "prerequisites": [
           "Immutable original preserved exactly; live issue inputs and base unchanged; exact clean committed candidate."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "ROLE_WORKTREE",
+        "expected": [
+          "One relevant short sentence under Unreleased truthfully describes Linux signal mask/stdin/stdout fatal setup termination and concrete prevention of controller fallthrough, with meaningful [Worker lifecycle] topic and full https://github.com/robinwassen/Fossilize/issues/56 link.",
+          "All inherited entries and open-PR delivery qualification remain intact. No release/date invention, duplicate backlog/status tracking, unsupported Steam/performance/platform/general-recovery claim or statement that the open PR is already merged. Revise inaccurate or stale wording and renew affected acceptance.",
+          "Both unit and combined final reports contain independent current-candidate semantic evidence covering accuracy, scope, practical benefit, topic, brevity, full issue URL, Unreleased placement and inherited-entry preservation."
+        ],
+        "id": "changelog-semantic-review",
+        "kind": "both",
+        "method": {
+          "commands": [
+            [
+              "git",
+              "show",
+              "HEAD:CHANGELOG.md"
+            ],
+            [
+              "git",
+              "show",
+              "HEAD:local-docs/changelog-guidelines.md"
+            ],
+            [
+              "git",
+              "diff",
+              "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807",
+              "HEAD",
+              "--",
+              "CHANGELOG.md"
+            ]
+          ],
+          "review": "Independent human-style semantic review of the exact candidate entry against authoritative local guideline and the actual complete reviewed implementation. Unit checker reviews relevant entry; separate final checker reviews combined changelog and final scope again. Save concise reviewed quote and criterion-level observations in sanitized report evidence. This is a required prose review, not an added mirrored unit test."
+        },
+        "prerequisites": [
+          "Clean exact committed candidate contains desired master6ad9 plus the issue56 entry; read candidate local guideline and full source diff."
         ]
       },
       {
@@ -6478,14 +6530,14 @@
         "id": "linux-debug-exceptions-off",
         "kind": "both",
         "method": {
-          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default.",
+          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default. Use v2-ROLE paths never used by prior checks and fresh attempt-specific output paths. Record structured JUnit/executed IDs and inspect failures/skips; do not reject a healthy two-test control because installed CTest phrases its summary as \"100% tests passed out of2\". Default FOSSILIZE_REPLAYER_SPIRV_VAL must remain ON and its shipping compile/link definition/closure must be observed.",
           "commands": [
             [
               "cmake",
               "-S",
               "ROLE_WORKTREE",
               "-B",
-              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-off",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-debug-exceptions-off",
               "-G",
               "Ninja",
               "-DCMAKE_BUILD_TYPE=Debug",
@@ -6498,7 +6550,7 @@
             [
               "cmake",
               "--build",
-              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-off",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-debug-exceptions-off",
               "--parallel",
               "4",
               "--target",
@@ -6527,20 +6579,20 @@
             [
               "ctest",
               "--test-dir",
-              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-off",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-debug-exceptions-off",
               "--show-only=json-v1"
             ],
             [
               "ctest",
               "--test-dir",
-              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-off",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-debug-exceptions-off",
               "--output-on-failure",
               "--no-tests=error"
             ],
             [
               "ctest",
               "--test-dir",
-              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-off",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-debug-exceptions-off",
               "--output-on-failure",
               "--no-tests=error",
               "-R",
@@ -6571,14 +6623,14 @@
         "id": "linux-release-exceptions-off",
         "kind": "both",
         "method": {
-          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default.",
+          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default. Use v2-ROLE paths never used by prior checks and fresh attempt-specific output paths. Record structured JUnit/executed IDs and inspect failures/skips; do not reject a healthy two-test control because installed CTest phrases its summary as \"100% tests passed out of2\". Default FOSSILIZE_REPLAYER_SPIRV_VAL must remain ON and its shipping compile/link definition/closure must be observed.",
           "commands": [
             [
               "cmake",
               "-S",
               "ROLE_WORKTREE",
               "-B",
-              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-off",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-release-exceptions-off",
               "-G",
               "Ninja",
               "-DCMAKE_BUILD_TYPE=Release",
@@ -6591,7 +6643,7 @@
             [
               "cmake",
               "--build",
-              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-off",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-release-exceptions-off",
               "--parallel",
               "4",
               "--target",
@@ -6620,13 +6672,13 @@
             [
               "ctest",
               "--test-dir",
-              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-off",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-release-exceptions-off",
               "--show-only=json-v1"
             ],
             [
               "ctest",
               "--test-dir",
-              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-off",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-release-exceptions-off",
               "--output-on-failure",
               "--no-tests=error"
             ]
@@ -6653,14 +6705,14 @@
         "id": "linux-debug-exceptions-on",
         "kind": "both",
         "method": {
-          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default.",
+          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default. Use v2-ROLE paths never used by prior checks and fresh attempt-specific output paths. Record structured JUnit/executed IDs and inspect failures/skips; do not reject a healthy two-test control because installed CTest phrases its summary as \"100% tests passed out of2\". Default FOSSILIZE_REPLAYER_SPIRV_VAL must remain ON and its shipping compile/link definition/closure must be observed.",
           "commands": [
             [
               "cmake",
               "-S",
               "ROLE_WORKTREE",
               "-B",
-              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-on",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-debug-exceptions-on",
               "-G",
               "Ninja",
               "-DCMAKE_BUILD_TYPE=Debug",
@@ -6673,7 +6725,7 @@
             [
               "cmake",
               "--build",
-              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-on",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-debug-exceptions-on",
               "--parallel",
               "4",
               "--target",
@@ -6702,13 +6754,13 @@
             [
               "ctest",
               "--test-dir",
-              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-on",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-debug-exceptions-on",
               "--show-only=json-v1"
             ],
             [
               "ctest",
               "--test-dir",
-              "/tmp/fossilize-56-refresh/build/ROLE-debug-exceptions-on",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-debug-exceptions-on",
               "--output-on-failure",
               "--no-tests=error"
             ]
@@ -6735,14 +6787,14 @@
         "id": "linux-release-exceptions-on",
         "kind": "both",
         "method": {
-          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default.",
+          "binding": "ROLE = implementer, unit-checker-attempt or separate final-checker-attempt; use unique paths. All commands separately intent-published/locked. Full discovered CPU suite executes without regex filtering; expected133 includes all14 #56 and28 #13 cases. Record discovery/executed IDs, zero skips, compiler/options and CTest logs. Inspect compile flags/cache to confirm build type/exceptions and shipping validation default. Use v2-ROLE paths never used by prior checks and fresh attempt-specific output paths. Record structured JUnit/executed IDs and inspect failures/skips; do not reject a healthy two-test control because installed CTest phrases its summary as \"100% tests passed out of2\". Default FOSSILIZE_REPLAYER_SPIRV_VAL must remain ON and its shipping compile/link definition/closure must be observed.",
           "commands": [
             [
               "cmake",
               "-S",
               "ROLE_WORKTREE",
               "-B",
-              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-on",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-release-exceptions-on",
               "-G",
               "Ninja",
               "-DCMAKE_BUILD_TYPE=Release",
@@ -6755,7 +6807,7 @@
             [
               "cmake",
               "--build",
-              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-on",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-release-exceptions-on",
               "--parallel",
               "4",
               "--target",
@@ -6784,13 +6836,13 @@
             [
               "ctest",
               "--test-dir",
-              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-on",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-release-exceptions-on",
               "--show-only=json-v1"
             ],
             [
               "ctest",
               "--test-dir",
-              "/tmp/fossilize-56-refresh/build/ROLE-release-exceptions-on",
+              "/tmp/fossilize-56-refresh/build/v2-ROLE-release-exceptions-on",
               "--output-on-failure",
               "--no-tests=error"
             ]
@@ -6821,7 +6873,7 @@
             [
               "git",
               "show",
-              "9804598fba84b747aeecd66c0e873f3f48c4c3cd:cli/fossilize_replay_linux.hpp"
+              "6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807:cli/fossilize_replay_linux.hpp"
             ],
             [
               "cmake",
@@ -6887,10 +6939,10 @@
           "environment": {
             "LC_ALL": "C"
           },
-          "procedure": "Create isolated candidate source copy outside tracked worktrees and replace only cli/fossilize_replay_linux.hpp with unchanged git show 9804598fba84b747aeecd66c0e873f3f48c4c3cd:cli/fossilize_replay_linux.hpp. Keep same committed candidate tests, #13 worker-outcome/header/controller model and dependencies. Configure Debug exceptions OFF in separate baseline build, build fork-child-setup-test only. Run each three initial-first fault cases individually and require intended assertion failure, then both healthy controls must pass. Identical committed tests pass on candidate in matrix. Do not substitute old451 baseline."
+          "procedure": "Create isolated candidate source copy outside tracked worktrees and replace only cli/fossilize_replay_linux.hpp with unchanged git show 6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807:cli/fossilize_replay_linux.hpp. Keep same committed candidate tests, #13 worker-outcome/header/controller model and dependencies. Configure Debug exceptions OFF in separate baseline build, build fork-child-setup-test only. Run each three initial-first fault cases individually and require intended assertion failure, then both healthy controls must pass. Identical committed tests pass on candidate in matrix. Do not substitute old451 baseline."
         },
         "prerequisites": [
-          "Baseline exactly new master980 header with three original wrong returns, all other candidate source/tests unchanged.",
+          "Baseline exactly new master6ad9 header with three original wrong returns, all other candidate source/tests unchanged.",
           "Each role performs its own baseline execution, finite bounds/emergency cleanup retained."
         ]
       },
@@ -6907,29 +6959,30 @@
         "kind": "publication",
         "method": "Coordinator renews unit and separate final acceptance, supersedes stale issue readiness/PR verification text, rechecks live material issue/base inputs and exact source head, pushes existing branch without force, reads back and attaches existing PR65 only. Follow existing harness external journaling and exact artifact publication; issue56 and parent46 remain open until authorized delivery.",
         "prerequisites": [
-          "All mandatory exact-head Linux gates independently accepted; no unresolved findings; original unchanged; current base exact."
+          "All mandatory exact-head Linux gates independently accepted; no unresolved findings; original unchanged; current base exact.",
+          "Both independent changelog semantic reviews passed at exact candidate/base6ad9/plan2; no carried old approvals; stale readiness supersession/cleanup confirmed."
         ]
       }
     ],
     "implementation": [
       {
-        "change": "Merge immutable master 9804598fba84b747aeecd66c0e873f3f48c4c3cd into implementation branch in /home/robin/dev/fossilize-issue-56. Resolve integration by retaining all #13 production changes, current worker-outcome header, new master CTests and documentation plus #56 additions. Retain direct _exit(EXIT_FAILURE) at fatal child pthread_sigmask, stdout dup2 and stdin dup2. Do not revert the fail-fast controller/RAII cleanup. Preserve unrelated dirty files in primary checkout; source remains clean at committed candidate.",
+        "change": "After this plan is accepted, coordinator observes current candidate ad14d37f701e0ddd7cc9b20de36eb943ef1697ca with desired base 6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807 through the supported observe-source action. A fresh implementer normally merges 6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807 into codex/issue-56-child-setup in /home/robin/dev/fossilize-issue-56. Preserve ancestry and every inherited guidance/changelog entry; do not rewrite existing guidance, harness engine or source history. Preserve unrelated primary-checkout files.",
         "step": 1
       },
       {
-        "change": "Adapt existing fork_child_setup_test.cpp rather than replacing actual run_master_process/launcher/shutdown/recovery with a model or test_worker stub. Gate initial-slot and adjacent-fault release on explicit original-controller successful reap of the healthy sibling; a raw pipe barrier with exact reap/generation records avoids racing master fail-fast cleanup. No sleep-based readiness. Preserve exact exit, fallthrough, fork, collection, protocol and fatal-sentinel assertions.",
+        "change": "Retain candidate production source, all14 fixture cases, CMake registrations and corrected133-test verification documentation. In particular retain direct _exit(EXIT_FAILURE) at the three fatal child sites, successful-controller-reap barrier ordering, zero-cursor/zero-hash no-progress recovery, issue13 parent failure/cleanup and every process/status/EOF/sentinel/counter oracle. No runtime/test adaptation is required by the six-file guidance-only base advance; resolve any unexpected source difference before forward work.",
         "step": 2
       },
       {
-        "change": "For recovery scenarios use a controlled no-progress retry: first fully configured worker sends GRAPHICS 0 0, COMPUTE 0 0 and RAYTRACE 0 0 with zero hashes, then _exit(2). Replacement actually replays both known compute pipelines in healthy-recovery; injected recovery faults complete neither. Remove old COMPUTE 1 104: #13 correctly retains that hash as skipped required work. Update honest expected counters/status/progress_complete and explain the recovery scope.",
+        "change": "Add exactly one issue56 entry under CHANGELOG.md Unreleased in the same committed candidate, following local-docs/changelog-guidelines.md. Use meaningful [Worker lifecycle] topic, one short factual sentence naming Linux signal mask and stdin/stdout setup failure, the concrete prevention of controller fallthrough, and the full issue56 URL. Preserve all inherited entries, grouping and the open-PR delivery qualification. Revise wording if the actual reviewed scope changes.",
         "step": 3
       },
       {
-        "change": "Keep all nine first/last/recovery injections plus five healthy/PDEATHSIG/prctl/race controls individually CTest-registered on Linux. Keep explicit Release-active checks, private output, internal 12-second observation plus three-second emergency cleanup and 30-second CTest bounds. Add barrier ordering assertions and cleanup for barrier descriptors; retain no fault injection in shipping CLI.",
+        "change": "Run the preserved four full133-CPU-test configurations with complete21-target closure and shipping default SPIR-V validation ON, Debug OFF14-case triple repeat, and independent newbase three-failing/two-healthy controls. Fresh unit and separate final checkers execute all both gates in unique new worktree/build/output/baseline paths; their semantic changelog review is mandatory too. All current evidence binds the new committed candidate, base6ad9 and plan2.",
         "step": 4
       },
       {
-        "change": "Update only scope-relevant #56 verification documentation to describe master fail-fast semantics, true no-progress retry and current build/baseline procedure. Preserve #13 section and tracked guidance. Coordinator later replaces stale readiness/PR verification claims with current exact-head evidence and keeps parent epic open.",
+        "change": "Coordinator resolves FR56-BASE-ADVANCE only from a fresh active checker recheck, renews readiness and existing PR65 only after unit and separate final acceptance, and preserves old reports as historical facts. Stale readiness has already been superseded/cleaned; verify that observation. Only issue56 may close eventually; parent46 stays open and no new-head merge approval is inferred.",
         "step": 5
       }
     ],
@@ -6945,9 +6998,9 @@
         "requirement": "## Problem\n\nIn the fork-child branch of bool ProcessProgress::start_child_process, failed pthread_sigmask or dup2 returns EXIT_FAILURE. On the audited platform EXIT_FAILURE is 1, converted to true. The failed child can return into controller code after closing its controller descriptors instead of terminating.\n\n## Evidence level\n\nIndependently checked source-proven conditional branch. No actual pthread_sigmask/dup2 failure was injected during the audit; the consequences depend on the failing call and remaining slots.\n\n## Reproduction / verification status\n\nSource inspection: follow the return statements at Linux controller lines 576\u2013578 and 605\u2013609 back to the initial/recovery Boolean callers. Proposed regression: inject each child-only setup failure, assert child exit, no controller fallthrough and no child-created extra workers. That injection has not yet been run.\n\n## Required outcome and acceptance\n\n- Every post-fork fatal child setup error takes a terminal child-exit path, never a Boolean return into parent/controller execution.\n- Inject each covered failure and assert process tree, cleanup/reaping, parent status and absence of unintended worker spawning.\n- Audit neighboring child-return branches and use child-safe termination semantics. Keep rare fault branches distinct from ordinary launch behavior.\n\n## Scope and references\n\nFix/investigate the lifecycle boundary described above, including its regression coverage. Do not expand this into Steam scheduling policy, automatic deployment, a general scheduler rewrite or unrelated Vulkan behavior.\n\n[cli/fossilize_replay_linux.hpp:506](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L506) \u00b7 [cli/fossilize_replay_linux.hpp:576](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L576)\n\n## Shared acceptance and evidence\n\nThis is a child of the worker lifecycle epic through GitHub's native hierarchy. Its shared verification/compatibility gates apply. Add deterministic assertion-bearing regression coverage that fails before the fix where feasible; retain healthy controls. These research probes expose defects and are not passing product tests.\n\nAudit source: `556da9ff7d7616704dda515756219ab1dab693ec`; local audit baseline `2325a40846cceb9e053cc5b26aad4c030e07e1a2`. The relevant platform supervisor/owner headers remain unchanged in fork master `5eb2c496dde819c868fa3d7d1e52c51047d9adb8`. No claim is made about Steam's installed version, report frequency, or hardware cache behavior.\n\n[Checked audit](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit.md) \u00b7 [Evidence and independent checker reports](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/README.md)\n\n<!-- fossilize-worker-lifecycle-audit-2026-10-29:child-setup-return -->\n"
       }
     ],
-    "scope": "One unsplit renewal of https://github.com/robinwassen/Fossilize/issues/56 at base 9804598fba84b747aeecd66c0e873f3f48c4c3cd. Merge new master into existing branch codex/issue-56-child-setup without rewriting history, retain the three child-safe terminal fixes, adapt the committed production-path lifecycle regressions to #13 fail-fast worker outcomes/cleanup, and renew independent evidence for existing PR65.",
-    "verification_execution": "No planner build/probe/test execution. Before every configure/build/discovery/CTest/negative-control or other verification command, coordinator publishes unique intent_id, exact child_command argv, cwd/env and timeout. Execute via scripts/verification_lock.py --repo ROLE_WORKTREE --timeout 600 --intent-id ID --receipt UNIQUE_RECEIPT -- COMMAND, never nested. Return receipt/log/status unchanged for coordinator command-wait settlement. Bind all current evidence to exact candidate/base/plan/attempt. Role placeholders below must be replaced with actual committed worktree and unique role/build/output path before intent publication; no build reuse across roles/configs/baseline. Each checker performs actual execution independently, never accepts previous logs as its own results.",
-    "version": 1,
+    "scope": "One unsplit renewal of https://github.com/robinwassen/Fossilize/issues/56: normally merge desired master 6ad9ad4ca5cac3ef4f9b75c5739c9f982ce70807 into current candidate ad14d37f701e0ddd7cc9b20de36eb943ef1697ca on existing codex/issue-56-child-setup, add one scoped Unreleased changelog entry in that same candidate, and renew all candidate/base/plan-bound checks for existing PR65. Preserve the already-integrated issue13 fail-fast cleanup and all strict issue56 tests. The report envelope intentionally retains dispatched base980; newbase6ad9 is desired scope until coordinator observe-source.",
+    "verification_execution": "No planner build/probe/test execution. Before every configure/build/discovery/CTest/negative-control or other verification command, coordinator publishes unique intent_id, exact child_command argv, cwd/env and timeout. Execute via scripts/verification_lock.py --repo ROLE_WORKTREE --timeout 600 --intent-id ID --receipt UNIQUE_RECEIPT -- COMMAND, never nested. Return receipt/log/status unchanged for coordinator command-wait settlement. Bind all current evidence to exact candidate/base/plan/attempt. Role placeholders below must be replaced with actual committed worktree and unique role/build/output path before intent publication; no build reuse across roles/configs/baseline. Each checker performs actual execution independently, never accepts previous logs as its own results. v2 role-specific chains may be prepared independently but every verification child waits under the same common-directory lock, with no nested acquisition or deadline weakening. All evidence and semantic reviews bind result candidate/base6ad9/plan2; report envelope alone retains dispatch base980/inputda2/currentad14. Coordinator accepts plan2 first, then observe-source(currentad14,base6ad9), then dispatches fresh implementer to merge and add entry. No terminal/new run, canonical worker write or budget reset.",
+    "version": 2,
     "work_units": []
   },
   "provenance": [
@@ -7001,6 +7054,38 @@
         ]
       },
       "observation": "Read back managed superseding comment6541676845 with the exact prior readiness marker: master advanced to6ad9ad4 and now requires changelog entry/review. Plan1/base980 readiness is invalid; preserve all actual passed runtime observations and continue the active run through the allowed replan."
+    },
+    {
+      "superseded_plan": {
+        "version": 1,
+        "work_units": []
+      }
+    },
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/56"
+        ],
+        "digest": "1393d94eb5e43fa11f8f13dde913d0691cc8ae797ff42567e317b5b5f1fe82f5",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/56": {
+            "blocked_by": [],
+            "body": "## Problem\n\nIn the fork-child branch of bool ProcessProgress::start_child_process, failed pthread_sigmask or dup2 returns EXIT_FAILURE. On the audited platform EXIT_FAILURE is 1, converted to true. The failed child can return into controller code after closing its controller descriptors instead of terminating.\n\n## Evidence level\n\nIndependently checked source-proven conditional branch. No actual pthread_sigmask/dup2 failure was injected during the audit; the consequences depend on the failing call and remaining slots.\n\n## Reproduction / verification status\n\nSource inspection: follow the return statements at Linux controller lines 576\u2013578 and 605\u2013609 back to the initial/recovery Boolean callers. Proposed regression: inject each child-only setup failure, assert child exit, no controller fallthrough and no child-created extra workers. That injection has not yet been run.\n\n## Required outcome and acceptance\n\n- Every post-fork fatal child setup error takes a terminal child-exit path, never a Boolean return into parent/controller execution.\n- Inject each covered failure and assert process tree, cleanup/reaping, parent status and absence of unintended worker spawning.\n- Audit neighboring child-return branches and use child-safe termination semantics. Keep rare fault branches distinct from ordinary launch behavior.\n\n## Scope and references\n\nFix/investigate the lifecycle boundary described above, including its regression coverage. Do not expand this into Steam scheduling policy, automatic deployment, a general scheduler rewrite or unrelated Vulkan behavior.\n\n[cli/fossilize_replay_linux.hpp:506](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L506) \u00b7 [cli/fossilize_replay_linux.hpp:576](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L576)\n\n## Shared acceptance and evidence\n\nThis is a child of the worker lifecycle epic through GitHub's native hierarchy. Its shared verification/compatibility gates apply. Add deterministic assertion-bearing regression coverage that fails before the fix where feasible; retain healthy controls. These research probes expose defects and are not passing product tests.\n\nAudit source: `556da9ff7d7616704dda515756219ab1dab693ec`; local audit baseline `2325a40846cceb9e053cc5b26aad4c030e07e1a2`. The relevant platform supervisor/owner headers remain unchanged in fork master `5eb2c496dde819c868fa3d7d1e52c51047d9adb8`. No claim is made about Steam's installed version, report frequency, or hardware cache behavior.\n\n[Checked audit](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit.md) \u00b7 [Evidence and independent checker reports](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/README.md)\n\n<!-- fossilize-worker-lifecycle-audit-2026-10-29:child-setup-return -->\n",
+            "children": [],
+            "id": 6099038316,
+            "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
+            "number": 56,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/46",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "Terminate the fork child on setup failure instead of returning Boolean success",
+            "url": "https://github.com/robinwassen/Fossilize/issues/56"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/56"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
     }
   ],
   "publishing": {
@@ -7018,7 +7103,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 255,
+  "revision": 256,
   "root_issue": {
     "id": 6099038316,
     "node_id": "I_kwDOVZpjbc8AAAABa4fwbA",
@@ -7028,7 +7113,7 @@
   },
   "run_id": "issue56-refresh-20261031",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-56",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/56",
   "verification": [
@@ -9575,16 +9660,11 @@
   ],
   "work_units": [
     {
-      "accepted": {
-        "attempt_id": "checker-refresh-2",
-        "base_sha": "9804598fba84b747aeecd66c0e873f3f48c4c3cd",
-        "candidate_sha": "ad14d37f701e0ddd7cc9b20de36eb943ef1697ca",
-        "plan_version": 1
-      },
+      "accepted": null,
       "dependencies": [],
       "issue": "https://github.com/robinwassen/Fossilize/issues/56",
       "key": "https://github.com/robinwassen/Fossilize/issues/56",
-      "status": "accepted"
+      "status": "ready"
     }
   ]
 }
