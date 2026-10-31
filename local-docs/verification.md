@@ -562,14 +562,16 @@ actual CLI's unsuccessful exit, including `--progress --quiet-slave`. To reprodu
 original defect, invoke `test/replay_controller_cli.cmake` with `GENERATOR`,
 `REPLAY`, `WORK`, `CASE=e5` (then `e6`) and `BASELINE_REPLAY` set to an unchanged
 input Debug executable. The runner checks baseline false-success zero separately
-from candidate status one. Release exercises the historical fixture's distinct
-parser-rejection boundary: it currently exits zero without losing a worker.
-An `ExternalReplayer::Progress` control requires exactly one compute parse
+from candidate status one. Release exercises a distinct parser-rejection boundary without losing a worker.
+At the issue #13 delivery, this fixture exited zero despite rejected required
+work; issue [#14](https://github.com/robinwassen/Fossilize/issues/14) supersedes
+that behavior with status one for the orderly item failure. The current
+`ExternalReplayer::Progress` control still requires exactly one compute parse
 failure and skip, zero completed compute pipelines and zero clean/dirty worker
-deaths. This zero exit is a current parser-policy limitation, **not successful
-required replay** and not evidence of the child-loss fix. Mandatory deterministic
-real-controller loss cases require status one in every configuration. The E5/E6
-worker-loss defect and baseline contrast are established by Debug evidence.
+deaths. This Release case verifies item failure, not worker loss. Mandatory
+deterministic real-controller loss cases require status one in every
+configuration. The E5/E6 worker-loss defect and baseline contrast remain
+established by Debug evidence.
 
 `replay-controller-cli-compatibility` exercises `ExternalReplayer::Options{}`,
 `start`, `wait`, `is_process_complete`, and cached status for clean and failed
@@ -580,10 +582,14 @@ or overwrite the unsuccessful result with `-ECHILD`. Compile
 `test/replay_controller_compatibility_test.cpp` with the
 input public headers first on its include path and link candidate libraries for
 old-header source compatibility evidence. Existing diagnostic compatibility
-fixtures retain recorder/database and ordinary CLI checks. Public declarations,
-shared progress layout/version and worker grammar are unchanged. The intentional
-behavior change is that unresolved robust replay returns nonzero, including
-through `ExternalReplayer::wait`. This is no general binary ABI, driver/GPU,
+fixtures retain recorder/database and ordinary CLI checks. Issue #13 preserved
+public declarations, shared progress layout/version and worker grammar while
+making unresolved robust replay return nonzero, including through
+`ExternalReplayer::wait`. Issue #14 preserves those public declarations and
+shared progress layout/version, plus existing progress/resume message semantics,
+and adds the internal `REPLAY_FAILED <reason-mask> <drained>` terminal record for
+orderly item failures described above. These compatibility checks establish
+preserved caller source compatibility, not a general binary ABI, driver/GPU,
 output durability, full item-ledger or whole observability-standard guarantee.
 Apple/Android `NO_ROBUST_REPLAYER` paths remain outside this contract.
 
