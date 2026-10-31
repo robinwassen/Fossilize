@@ -398,6 +398,10 @@
       {
         "started": 1793435339.8958604,
         "wait_seconds": 5.8514850391075015
+      },
+      {
+        "started": 1793435351.1559434,
+        "wait_seconds": 5.945407040999271
       }
     ],
     "command_timeout": 600,
@@ -1982,9 +1986,30 @@
         "intent_id": "issue61-renew-final-1-delivery-ordinary",
         "started": 1793435347.1999066,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "python3",
+          "-B",
+          ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+          "--run-group",
+          "delivery-w09",
+          "--inventory",
+          "/tmp/fossilize-61-renewal/output/final-1/suite/inventory.json",
+          "--output",
+          "/tmp/fossilize-61-renewal/output/final-1/suite/delivery-w09.json"
+        ],
+        "command": "python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/final-1 --timeout 600 --intent-id issue61-renew-final-1-delivery-w09 --receipt /tmp/fossilize-61-renewal/output/final-1/delivery-w09.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w09 --inventory /tmp/fossilize-61-renewal/output/final-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/final-1/suite/delivery-w09.json",
+        "cwd": "/tmp/fossilize-61-renewal/final-1",
+        "eligible_deadline": 1793449392.4845576,
+        "intent_id": "issue61-renew-final-1-delivery-w09",
+        "started": 1793435358.5691688,
+        "timeout": 600
       }
     ],
-    "deadline": 1793449386.5391505,
+    "deadline": 1793449392.4845576,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -2499,7 +2524,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 105,
+  "revision": 106,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
