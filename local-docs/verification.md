@@ -184,7 +184,7 @@ redesign asynchronous persistence error reporting. Opt/disasm migration and the
 explicitly permitted optimizer fallback policy remain future scope; these tests
 make no claim to verify those tools or the complete observability standard.
 
-A normal Linux CLI/layer-enabled build registers 105 tests before optional layer integration (including 14 Linux fork-child cases); Windows registers 87. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
+A normal Linux CLI/layer-enabled build registers 133 tests before optional layer integration, including 14 Linux fork-child cases and 28 replay-controller cases retained from [issue #13](https://github.com/robinwassen/Fossilize/issues/13). Discover the current platform-specific inventory with CTest before reporting coverage; this Linux count does not establish native Windows execution. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
 
 The `*-library-only-*` presets disable **both CLI and tests**. They are build/package checks, not test coverage; their test presets/workflows must not be reported as a passing suite. To test the core without CLI/SPIR-V dependencies:
 
