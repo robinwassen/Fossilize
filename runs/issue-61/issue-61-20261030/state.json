@@ -3435,7 +3435,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "fetch target base, verify clean tuple, persist publication intent",
+  "next_action": "push implementation without force, then record remote head",
   "operation": "publish",
   "original": [
     {
@@ -4299,7 +4299,18 @@
   ],
   "publishing": {
     "ci_policy": "local",
-    "stage": "none"
+    "intent": {
+      "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
+      "branch": "codex/issue-61-changelog",
+      "candidate_sha": "168cd322d8742ae2d2a801bce4c527f5495bf3aa",
+      "plan_version": 1,
+      "pr_body": "## Problem\n\nCompleted changes had no shared changelog, and the change harness did not require an entry in the implementation PR.\n\n## What changes\n\nAdd `CHANGELOG.md` with the eight reviewed historical entries, an Unreleased entry for this change, and an explicit note that #35's former backlog mechanism was superseded by #37. Add one authoritative writing guideline, link it from the documentation index and changelog, and keep the `AGENTS.md` requirement short.\n\nThe harness now requires implementers to add or revise the relevant entry in the same candidate. Independent unit and final checkers review its accuracy, benefit, topic, brevity, issue link, and consistency with the final scope.\n\n## Why this matters\n\nReaders can see what changed and why it matters without treating the changelog as another task backlog.\n\n## Why this approach\n\nPreserve the user-reviewed wording and reconcile it against completed issues and merged PRs. Keep detailed writing guidance in one document. Unreleased entries are reviewed with their implementation PR, so merging needs no follow-up status edit or invented release date.\n\n## Verification and limits\n\nIndependent unit and separate final checking each passed all 16 harness groups: 138 tests and 103 scenarios, with no skips. Exact-suite accounting, skill metadata, whitespace, six-document rendered Markdown review, historical delivery reconciliation, and fresh issue/readiness checks passed. The installed skill was synchronized from the accepted candidate with its prior package backed up outside the repository and file-content equality verified.\n\nThis changes documentation and instructions only; no C++/Vulkan or harness Python runtime behavior changes. These checks do not establish product, GPU, Steam, native Windows, or hosted-CI behavior.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/61\n\nThe unfinished parent https://github.com/robinwassen/Fossilize/issues/9 remains open.\n",
+      "pr_title": "Add shared changelog and require entries in implementation PRs",
+      "target_branch": "master",
+      "target_remote": "origin",
+      "target_repository": "robinwassen/Fossilize"
+    },
+    "stage": "push"
   },
   "repository": {
     "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
@@ -4312,7 +4323,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 162,
+  "revision": 163,
   "root_issue": {
     "id": 6103641122,
     "node_id": "I_kwDOVZpjbc8AAAABa84sIg",
