@@ -1,0 +1,19 @@
+COMMAND python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/checker-1 --timeout 600 --intent-id issue61-renew-checker-1-regression-test_harness_issue_artifacts --receipt /tmp/fossilize-61-renewal/output/checker-1/regression-test_harness_issue_artifacts.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_artifacts --inventory /tmp/fossilize-61-renewal/output/checker-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/checker-1/suite/regression-test_harness_issue_artifacts.json
+CWD /tmp/fossilize-61-renewal/checker-1
+RECEIPT {"acquired": 1793433335.707666, "command": ["env", "PYTHONDONTWRITEBYTECODE=1", "python3", "-B", ".agents/skills/implement-change-harness/scripts/run_harness_tests.py", "--run-group", "regression-test_harness_issue_artifacts", "--inventory", "/tmp/fossilize-61-renewal/output/checker-1/suite/inventory.json", "--output", "/tmp/fossilize-61-renewal/output/checker-1/suite/regression-test_harness_issue_artifacts.json"], "cwd": "/tmp/fossilize-61-renewal/checker-1", "exit_code": 0, "finished": 1793433341.1320484, "intent_id": "issue61-renew-checker-1-regression-test_harness_issue_artifacts", "started": 1793433267.3999665, "timed_out": false, "timeout": 600.0, "wait_seconds": 68.30559986107983}
+STDOUT/STDERR
+test_P01_P05_live_initial_publication_and_idempotent_retry (test_harness_issue_artifacts.LiveArtifactTests.test_P01_P05_live_initial_publication_and_idempotent_retry) ... ok
+test_P04_stale_dirty_inspection_and_user_checkout_preserved (test_harness_issue_artifacts.LiveArtifactTests.test_P04_stale_dirty_inspection_and_user_checkout_preserved) ... ok
+test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state (test_harness_issue_artifacts.LiveArtifactTests.test_P06_live_rejection_bars_dispatch_and_recovery_preserves_state) ... ok
+test_P07_interruption_before_push_and_after_success_without_return (test_harness_issue_artifacts.LiveArtifactTests.test_P07_interruption_before_push_and_after_success_without_return) ... ok
+test_P08_live_evidence_descendant_adoption_and_divergence (test_harness_issue_artifacts.LiveArtifactTests.test_P08_live_evidence_descendant_adoption_and_divergence) ... ok
+test_P09b_pushurl_observation_uses_bound_push_endpoint (test_harness_issue_artifacts.LiveArtifactTests.test_P09b_pushurl_observation_uses_bound_push_endpoint) ... ok
+test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish (test_harness_issue_artifacts.LiveArtifactTests.test_P09c_invalid_ancestor_and_invalid_local_checkpoint_cannot_publish) ... ok
+test_P09d_concurrent_endpoint_reread_cannot_retarget_publication (test_harness_issue_artifacts.LiveArtifactTests.test_P09d_concurrent_endpoint_reread_cannot_retarget_publication) ... ok
+test_P10_actual_postpush_advance_beats_success_and_caller_sha (test_harness_issue_artifacts.LiveArtifactTests.test_P10_actual_postpush_advance_beats_success_and_caller_sha) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 5.116s
+
+OK
+{"candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a", "outcome": "recorded", "output": "/tmp/fossilize-61-renewal/output/checker-1/suite/regression-test_harness_issue_artifacts.json"}

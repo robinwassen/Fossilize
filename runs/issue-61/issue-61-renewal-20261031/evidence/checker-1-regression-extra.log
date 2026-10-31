@@ -1,0 +1,22 @@
+COMMAND python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo /tmp/fossilize-61-renewal/checker-1 --timeout 600 --intent-id issue61-renew-checker-1-regression-extra --receipt /tmp/fossilize-61-renewal/output/checker-1/regression-extra.receipt.json -- env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-extra --inventory /tmp/fossilize-61-renewal/output/checker-1/suite/inventory.json --output /tmp/fossilize-61-renewal/output/checker-1/suite/regression-extra.json
+CWD /tmp/fossilize-61-renewal/checker-1
+RECEIPT {"acquired": 1793434597.243101, "command": ["env", "PYTHONDONTWRITEBYTECODE=1", "python3", "-B", ".agents/skills/implement-change-harness/scripts/run_harness_tests.py", "--run-group", "regression-extra", "--inventory", "/tmp/fossilize-61-renewal/output/checker-1/suite/inventory.json", "--output", "/tmp/fossilize-61-renewal/output/checker-1/suite/regression-extra.json"], "cwd": "/tmp/fossilize-61-renewal/checker-1", "exit_code": 0, "finished": 1793434656.4508302, "intent_id": "issue61-renew-checker-1-regression-extra", "started": 1793434414.759355, "timed_out": false, "timeout": 600.0, "wait_seconds": 182.48173932998907}
+STDOUT/STDERR
+test_P01_selected_runs_interleave_and_complete (test_harness_parallel.ParallelTests.test_P01_selected_runs_interleave_and_complete) ... ok
+test_P02_unrelated_artifact_updates_reload_without_lost_records (test_harness_parallel.ParallelTests.test_P02_unrelated_artifact_updates_reload_without_lost_records) ... ok
+test_P03_blocking_wrapper_serializes_and_preserves_results (test_harness_parallel.ParallelTests.test_P03_blocking_wrapper_serializes_and_preserves_results) ... ok
+test_P04_wait_reloads_run_and_excludes_only_contention (test_harness_parallel.ParallelTests.test_P04_wait_reloads_run_and_excludes_only_contention) ... ok
+test_P05_retained_history_and_workflow_integration (test_harness_parallel.ParallelTests.test_P05_retained_history_and_workflow_integration) ... ok
+test_absent_selection_with_pre_issue_history_returns_none (test_harness_parallel.SelectedHistoryTests.test_absent_selection_with_pre_issue_history_returns_none) ... ok
+test_completed_selection_ignores_pre_issue_history (test_harness_parallel.SelectedHistoryTests.test_completed_selection_ignores_pre_issue_history) ... ok
+test_malformed_issue_state_is_not_hidden (test_harness_parallel.SelectedHistoryTests.test_malformed_issue_state_is_not_hidden) ... ok
+test_W15_actual_result_records_skip_failure_duplicate_and_success (test_harness_runner.RunnerTests.test_W15_actual_result_records_skip_failure_duplicate_and_success) ... ok
+test_W15_exclusive_output_rejects_stale_results_and_guidance_lists_all_groups (test_harness_runner.RunnerTests.test_W15_exclusive_output_rejects_stale_results_and_guidance_lists_all_groups) ... ok
+test_W15_real_full_discovery_has_unique_ownership_without_fixtures (test_harness_runner.RunnerTests.test_W15_real_full_discovery_has_unique_ownership_without_fixtures) ... ok
+test_W15_union_success_and_all_hostile_result_controls (test_harness_runner.RunnerTests.test_W15_union_success_and_all_hostile_result_controls) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 58.865s
+
+OK
+{"candidate_sha": "b86f35635a9ed7ffe5eaafed046bd74e3dd2679a", "outcome": "recorded", "output": "/tmp/fossilize-61-renewal/output/checker-1/suite/regression-extra.json"}
