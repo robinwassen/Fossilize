@@ -1,0 +1,171 @@
+Fresh exact-base replay-only Debug/Release configurations, SPIRV validation OFF as planned; current candidate generators/readback and CLI oracles.
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /tmp/fossilize-14/planner -B /tmp/fossilize-14/build/checker-2/baseline-debug -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=OFF -DFOSSILIZE_VULKAN_LAYER=OFF -DFOSSILIZE_REPLAYER_SPIRV_VAL=OFF
+CMake Warning (deprecated) at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+-- The CXX compiler identification is GNU 13.3.0
+-- The C compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Found Python3: /usr/bin/python3.12 (found version "3.12.3") found components: Interpreter
+-- Did not find googletest, tests will not be built. To enable tests place googletest in '<spirv-dir>/external/googletest'.
+-- SPIRV-Cross: Finding Git version for SPIRV-Cross.
+-- Found Git: /usr/bin/git (found version "2.43.0")
+-- SPIRV-Cross: Git hash: vulkan-sdk-1.4.341.0
+SPIRV-Cross:  Testing will be disabled for SPIRV-Cross. Could not find glslang or SPIRV-Tools build under external/. To enable testing, run ./checkout_glslang_spirv_tools.sh and ./build_glslang_spirv_tools.sh first.
+-- Configuring done (1.6s)
+-- Generating done (0.1s)
+-- Build files have been written to: /tmp/fossilize-14/build/checker-2/baseline-debug
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-14/build/checker-2/baseline-debug --parallel 4 --target fossilize-replay
+[1/18] Building C object cli/CMakeFiles/volk.dir/volk/volk.c.o
+[2/18] Building CXX object CMakeFiles/fossilize.dir/varint.cpp.o
+[3/18] Building C object CMakeFiles/miniz.dir/miniz/miniz.c.o
+[4/18] Linking C static library libminiz.a
+[5/18] Building CXX object CMakeFiles/fossilize.dir/path.cpp.o
+[6/18] Building CXX object CMakeFiles/fossilize.dir/fossilize_application_filter.cpp.o
+[7/18] Linking C static library cli/libvolk.a
+[8/18] Building CXX object CMakeFiles/fossilize.dir/fossilize_external_replayer.cpp.o
+[9/18] Building CXX object cli/CMakeFiles/cli-utils.dir/cli_parser.cpp.o
+[10/18] Building CXX object cli/CMakeFiles/cli-utils.dir/file.cpp.o
+[11/18] Building CXX object CMakeFiles/fossilize.dir/fossilize_db.cpp.o
+[12/18] Building CXX object cli/CMakeFiles/cli-utils.dir/device.cpp.o
+[13/18] Building CXX object cli/CMakeFiles/cli-utils.dir/fossilize_feature_filter.cpp.o
+[14/18] Linking CXX static library cli/libcli-utils.a
+[15/18] Building CXX object CMakeFiles/fossilize.dir/fossilize.cpp.o
+[16/18] Linking CXX static library libfossilize.a
+[17/18] Building CXX object cli/CMakeFiles/fossilize-replay.dir/fossilize_replay.cpp.o
+[18/18] Linking CXX executable cli/fossilize-replay
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-14/build/checker-2/debug-off/test/replay-outcome-test -DREPLAY=/tmp/fossilize-14/build/checker-2/debug-off/cli/fossilize-replay -DBASELINE_REPLAY=/tmp/fossilize-14/build/checker-2/baseline-debug/cli/fossilize-replay -DCASE=e7 -DWORK=/tmp/fossilize-14/output/checker-2/baseline-debug-e7 -P /tmp/fossilize-14/checker-2/test/replay_outcome_cli.cmake
+-- Executed R14/CLI/e7/normal/1: 1
+-- Executed R14/CLI/e7/normal/4: 1
+-- Executed R14/CLI/e7/child/1: 1
+-- Executed R14/CLI/e7/master/1: 1
+-- Executed R14/CLI/e7/master/4: 1
+-- Executed R14/CLI/e7/progress/1: 1
+-- Executed R14/CLI/e7/progress/4: 1
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-14/build/checker-2/debug-off/test/replay-outcome-test -DREPLAY=/tmp/fossilize-14/build/checker-2/debug-off/cli/fossilize-replay -DBASELINE_REPLAY=/tmp/fossilize-14/build/checker-2/baseline-debug/cli/fossilize-replay -DCASE=good -DWORK=/tmp/fossilize-14/output/checker-2/baseline-debug-good -P /tmp/fossilize-14/checker-2/test/replay_outcome_cli.cmake
+-- Executed R14/CLI/good/normal/1: 0
+-- Executed R14/CLI/good/normal/4: 0
+-- Executed R14/CLI/good/child/1: 0
+-- Executed R14/CLI/good/master/1: 0
+-- Executed R14/CLI/good/master/4: 0
+-- Executed R14/CLI/good/progress/1: 0
+-- Executed R14/CLI/good/progress/4: 0
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /tmp/fossilize-14/planner -B /tmp/fossilize-14/build/checker-2/baseline-release -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=OFF -DFOSSILIZE_VULKAN_LAYER=OFF -DFOSSILIZE_REPLAYER_SPIRV_VAL=OFF
+CMake Warning (deprecated) at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+-- The CXX compiler identification is GNU 13.3.0
+-- The C compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Found Python3: /usr/bin/python3.12 (found version "3.12.3") found components: Interpreter
+-- Did not find googletest, tests will not be built. To enable tests place googletest in '<spirv-dir>/external/googletest'.
+-- SPIRV-Cross: Finding Git version for SPIRV-Cross.
+-- Found Git: /usr/bin/git (found version "2.43.0")
+-- SPIRV-Cross: Git hash: vulkan-sdk-1.4.341.0
+SPIRV-Cross:  Testing will be disabled for SPIRV-Cross. Could not find glslang or SPIRV-Tools build under external/. To enable testing, run ./checkout_glslang_spirv_tools.sh and ./build_glslang_spirv_tools.sh first.
+-- Configuring done (1.5s)
+-- Generating done (0.1s)
+-- Build files have been written to: /tmp/fossilize-14/build/checker-2/baseline-release
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-14/build/checker-2/baseline-release --parallel 4 --target fossilize-replay
+[1/18] Building C object cli/CMakeFiles/volk.dir/volk/volk.c.o
+[2/18] Building CXX object CMakeFiles/fossilize.dir/varint.cpp.o
+[3/18] Building C object CMakeFiles/miniz.dir/miniz/miniz.c.o
+[4/18] Linking C static library libminiz.a
+[5/18] Building CXX object CMakeFiles/fossilize.dir/fossilize_application_filter.cpp.o
+[6/18] Building CXX object CMakeFiles/fossilize.dir/path.cpp.o
+[7/18] Linking C static library cli/libvolk.a
+[8/18] Building CXX object cli/CMakeFiles/cli-utils.dir/cli_parser.cpp.o
+[9/18] Building CXX object CMakeFiles/fossilize.dir/fossilize_db.cpp.o
+[10/18] Building CXX object cli/CMakeFiles/cli-utils.dir/file.cpp.o
+[11/18] Building CXX object CMakeFiles/fossilize.dir/fossilize_external_replayer.cpp.o
+[12/18] Building CXX object cli/CMakeFiles/cli-utils.dir/device.cpp.o
+[13/18] Building CXX object cli/CMakeFiles/cli-utils.dir/fossilize_feature_filter.cpp.o
+[14/18] Linking CXX static library cli/libcli-utils.a
+[15/18] Building CXX object CMakeFiles/fossilize.dir/fossilize.cpp.o
+[16/18] Linking CXX static library libfossilize.a
+[17/18] Building CXX object cli/CMakeFiles/fossilize-replay.dir/fossilize_replay.cpp.o
+[18/18] Linking CXX executable cli/fossilize-replay
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-14/build/checker-2/release-off/test/replay-outcome-test -DREPLAY=/tmp/fossilize-14/build/checker-2/release-off/cli/fossilize-replay -DBASELINE_REPLAY=/tmp/fossilize-14/build/checker-2/baseline-release/cli/fossilize-replay -DCASE=e7 -DWORK=/tmp/fossilize-14/output/checker-2/baseline-release-e7 -P /tmp/fossilize-14/checker-2/test/replay_outcome_cli.cmake
+-- Executed R14/CLI/e7/normal/1: 1
+-- Executed R14/CLI/e7/normal/4: 1
+-- Executed R14/CLI/e7/child/1: 1
+-- Executed R14/CLI/e7/master/1: 1
+-- Executed R14/CLI/e7/master/4: 1
+-- Executed R14/CLI/e7/progress/1: 1
+-- Executed R14/CLI/e7/progress/4: 1
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-14/build/checker-2/release-off/test/replay-outcome-test -DREPLAY=/tmp/fossilize-14/build/checker-2/release-off/cli/fossilize-replay -DBASELINE_REPLAY=/tmp/fossilize-14/build/checker-2/baseline-release/cli/fossilize-replay -DCASE=good -DWORK=/tmp/fossilize-14/output/checker-2/baseline-release-good -P /tmp/fossilize-14/checker-2/test/replay_outcome_cli.cmake
+-- Executed R14/CLI/good/normal/1: 0
+-- Executed R14/CLI/good/normal/4: 0
+-- Executed R14/CLI/good/child/1: 0
+-- Executed R14/CLI/good/master/1: 0
+-- Executed R14/CLI/good/master/4: 0
+-- Executed R14/CLI/good/progress/1: 0
+-- Executed R14/CLI/good/progress/4: 0
+
+debug/e7/normal/1: base status=0, candidate status=1 (asserted by current committed oracle).
+debug/e7/normal/4: base status=0, candidate status=1 (asserted by current committed oracle).
+debug/e7/child/1: base status=0, candidate status=1 (asserted by current committed oracle).
+debug/e7/master/1: base status=0, candidate status=1 (asserted by current committed oracle).
+debug/e7/master/4: base status=0, candidate status=1 (asserted by current committed oracle).
+debug/e7/progress/1: base status=0, candidate status=1 (asserted by current committed oracle).
+debug/e7/progress/4: base status=0, candidate status=1 (asserted by current committed oracle).
+debug/good/normal/1: base status=0, candidate status=0 (asserted by current committed oracle).
+debug/good/normal/4: base status=0, candidate status=0 (asserted by current committed oracle).
+debug/good/child/1: base status=0, candidate status=0 (asserted by current committed oracle).
+debug/good/master/1: base status=0, candidate status=0 (asserted by current committed oracle).
+debug/good/master/4: base status=0, candidate status=0 (asserted by current committed oracle).
+debug/good/progress/1: base status=0, candidate status=0 (asserted by current committed oracle).
+debug/good/progress/4: base status=0, candidate status=0 (asserted by current committed oracle).
+release/e7/normal/1: base status=0, candidate status=1 (asserted by current committed oracle).
+release/e7/normal/4: base status=0, candidate status=1 (asserted by current committed oracle).
+release/e7/child/1: base status=0, candidate status=1 (asserted by current committed oracle).
+release/e7/master/1: base status=0, candidate status=1 (asserted by current committed oracle).
+release/e7/master/4: base status=0, candidate status=1 (asserted by current committed oracle).
+release/e7/progress/1: base status=0, candidate status=1 (asserted by current committed oracle).
+release/e7/progress/4: base status=0, candidate status=1 (asserted by current committed oracle).
+release/good/normal/1: base status=0, candidate status=0 (asserted by current committed oracle).
+release/good/normal/4: base status=0, candidate status=0 (asserted by current committed oracle).
+release/good/child/1: base status=0, candidate status=0 (asserted by current committed oracle).
+release/good/master/1: base status=0, candidate status=0 (asserted by current committed oracle).
+release/good/master/4: base status=0, candidate status=0 (asserted by current committed oracle).
+release/good/progress/1: base status=0, candidate status=0 (asserted by current committed oracle).
+release/good/progress/4: base status=0, candidate status=0 (asserted by current committed oracle).

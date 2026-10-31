@@ -1,0 +1,134 @@
+Checker2 independently derived expectations from immutable AC1 and fresh gh issue14/parent8 reads before implementer claims. Entire base-to-candidate diff reviewed: 14 files, no helper or public header/layout edits. Thread-safe bounded reasons independent of optional progress; queue counts not modified. All read/parse/creation/support/validation/setup/dependency exits inspected. Linux/Windows controlled terminal parsing requires valid nonempty known mask plus drained bit and nonzero OS termination, routes Failed without crash counters or retries, waits orderly siblings, retains #13 unresolved fail-fast paths. Source review cannot establish native Windows runtime.
+New registered fixtures inspected line-by-line: Release-active DiagnosticChecks, real production parse/create/enqueue/thread/run_normal/main and controller/slave paths, injection only producer adapters, verified FOZ tag/hash/payload readback, one/four thread modes, optional progress absent/present and deterministic terminal-order barriers; direct child documented one-thread restriction and unsupported standalone whitelist interface. Seven distinct private reasons directly asserted; actual SPIRV-Tools fixture rejection compiled conditionally and mandatory ON matrix. Existing #10 diagnostics and #13 child loss/recovery tests unchanged except intentional parser-failure status and added assertions.
+Changelog exact current entry is one short factual [Observability] sentence with practical false-success benefit and full root14 URL; scoped to retained failures across threads/children, no delivery/ABI/GPU/cache claim. verification.md documents additive REPLAY_FAILED and intentional nonzero behavior with bounded overlapping observations rather than unique logical item counts; public declarations/layout/progress/resume semantics preserved, no mixed-version or general binary ABI promise.
+Mandatory CPU CTest matrix to be executed independently. Optional sanitizer not part of required acceptance; Windows explicitly excluded by user. Python harness component outside C++ slice; no helper source changed.
+
+Checker2 independently inspected repaired candidate 01f810ad6be415198775313891efe92ec3b1b5a2.
+diff --git a/local-docs/verification.md b/local-docs/verification.md
+index 45fa4792..dd46118c 100644
+--- a/local-docs/verification.md
++++ b/local-docs/verification.md
+@@ -562,14 +562,16 @@ actual CLI's unsuccessful exit, including `--progress --quiet-slave`. To reprodu
+ original defect, invoke `test/replay_controller_cli.cmake` with `GENERATOR`,
+ `REPLAY`, `WORK`, `CASE=e5` (then `e6`) and `BASELINE_REPLAY` set to an unchanged
+ input Debug executable. The runner checks baseline false-success zero separately
+-from candidate status one. Release exercises the historical fixture's distinct
+-parser-rejection boundary: it currently exits zero without losing a worker.
+-An `ExternalReplayer::Progress` control requires exactly one compute parse
++from candidate status one. Release exercises a distinct parser-rejection boundary without losing a worker.
++At the issue #13 delivery, this fixture exited zero despite rejected required
++work; issue [#14](https://github.com/robinwassen/Fossilize/issues/14) supersedes
++that behavior with status one for the orderly item failure. The current
++`ExternalReplayer::Progress` control still requires exactly one compute parse
+ failure and skip, zero completed compute pipelines and zero clean/dirty worker
+-deaths. This zero exit is a current parser-policy limitation, **not successful
+-required replay** and not evidence of the child-loss fix. Mandatory deterministic
+-real-controller loss cases require status one in every configuration. The E5/E6
+-worker-loss defect and baseline contrast are established by Debug evidence.
++deaths. This Release case verifies item failure, not worker loss. Mandatory
++deterministic real-controller loss cases require status one in every
++configuration. The E5/E6 worker-loss defect and baseline contrast remain
++established by Debug evidence.
+ 
+ `replay-controller-cli-compatibility` exercises `ExternalReplayer::Options{}`,
+ `start`, `wait`, `is_process_complete`, and cached status for clean and failed
+@@ -580,10 +582,14 @@ or overwrite the unsuccessful result with `-ECHILD`. Compile
+ `test/replay_controller_compatibility_test.cpp` with the
+ input public headers first on its include path and link candidate libraries for
+ old-header source compatibility evidence. Existing diagnostic compatibility
+-fixtures retain recorder/database and ordinary CLI checks. Public declarations,
+-shared progress layout/version and worker grammar are unchanged. The intentional
+-behavior change is that unresolved robust replay returns nonzero, including
+-through `ExternalReplayer::wait`. This is no general binary ABI, driver/GPU,
++fixtures retain recorder/database and ordinary CLI checks. Issue #13 preserved
++public declarations, shared progress layout/version and worker grammar while
++making unresolved robust replay return nonzero, including through
++`ExternalReplayer::wait`. Issue #14 preserves those public declarations and
++shared progress layout/version, plus existing progress/resume message semantics,
++and adds the internal `REPLAY_FAILED <reason-mask> <drained>` terminal record for
++orderly item failures described above. These compatibility checks establish
++preserved caller source compatibility, not a general binary ABI, driver/GPU,
+ output durability, full item-ledger or whole observability-standard guarantee.
+ Apple/Android `NO_ROBUST_REPLAYER` paths remain outside this contract.
+ 
+
+558: `replay-controller-cli-{normal,master,progress}` preserve successful null-device
+559: invocations on a dependency-complete known-hash fixture. `replay-controller-cli-
+560: {e5,e6}` use a readback-checked FOZ containing compute `{}`. Debug requires the
+561: actual CLI's unsuccessful exit, including `--progress --quiet-slave`. To reproduce the
+562: original defect, invoke `test/replay_controller_cli.cmake` with `GENERATOR`,
+563: `REPLAY`, `WORK`, `CASE=e5` (then `e6`) and `BASELINE_REPLAY` set to an unchanged
+564: input Debug executable. The runner checks baseline false-success zero separately
+565: from candidate status one. Release exercises a distinct parser-rejection boundary without losing a worker.
+566: At the issue #13 delivery, this fixture exited zero despite rejected required
+567: work; issue [#14](https://github.com/robinwassen/Fossilize/issues/14) supersedes
+568: that behavior with status one for the orderly item failure. The current
+569: `ExternalReplayer::Progress` control still requires exactly one compute parse
+570: failure and skip, zero completed compute pipelines and zero clean/dirty worker
+571: deaths. This Release case verifies item failure, not worker loss. Mandatory
+572: deterministic real-controller loss cases require status one in every
+573: configuration. The E5/E6 worker-loss defect and baseline contrast remain
+574: established by Debug evidence.
+575: 
+576: `replay-controller-cli-compatibility` exercises `ExternalReplayer::Options{}`,
+577: `start`, `wait`, `is_process_complete`, and cached status for clean and failed
+578: controllers. Kernel terminal-state barriers cover both query-first and wait-first
+579: completion, including a process already reaped by the initial progress poll.
+580: Progress pumping after a known terminal status does not reap it a second time
+581: or overwrite the unsuccessful result with `-ECHILD`. Compile
+582: `test/replay_controller_compatibility_test.cpp` with the
+583: input public headers first on its include path and link candidate libraries for
+584: old-header source compatibility evidence. Existing diagnostic compatibility
+585: fixtures retain recorder/database and ordinary CLI checks. Issue #13 preserved
+586: public declarations, shared progress layout/version and worker grammar while
+587: making unresolved robust replay return nonzero, including through
+588: `ExternalReplayer::wait`. Issue #14 preserves those public declarations and
+589: shared progress layout/version, plus existing progress/resume message semantics,
+590: and adds the internal `REPLAY_FAILED <reason-mask> <drained>` terminal record for
+591: orderly item failures described above. These compatibility checks establish
+592: preserved caller source compatibility, not a general binary ABI, driver/GPU,
+593: output durability, full item-ledger or whole observability-standard guarantee.
+594: Apple/Android `NO_ROBUST_REPLAYER` paths remain outside this contract.
+595: 
+596: Register the same portable controller cases on native Windows. Native Windows
+597: execution for the initial issue #13 run was explicitly waived by the user and
+
+COMMAND g++ -std=c++14 -pthread -fno-exceptions -I/tmp/fossilize-14/planner -I/tmp/fossilize-14/checker-2/test -I/tmp/fossilize-14/planner/khronos /tmp/fossilize-14/output/checker-2/old_header_caller.cpp /tmp/fossilize-14/build/checker-2/debug-off/libfossilize.a /tmp/fossilize-14/build/checker-2/debug-off/libminiz.a -lrt -o /tmp/fossilize-14/output/checker-2/old-header-caller
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake -DGENERATOR=/tmp/fossilize-14/build/checker-2/debug-off/test/replay-outcome-test -DREPLAY=/tmp/fossilize-14/build/checker-2/debug-off/cli/fossilize-replay -DCALLER=/tmp/fossilize-14/output/checker-2/old-header-caller -DCASE=compatibility -DWORK=/tmp/fossilize-14/output/checker-2/old-header-run -P /tmp/fossilize-14/checker-2/test/replay_outcome_cli.cmake
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Executed R14/old-source-ExternalReplayer; failures=0
+
+COMMAND git diff --check 0ada951c5925e3a5a8e4ef69b382713acd416fd0 01f810ad6be415198775313891efe92ec3b1b5a2
+
+Fresh gh REST issue 14: exact identity/title/body/state/reason equals frozen current snapshot; SHA256(body)=79c6ce48281e86ef0b67c4b42c31ed442274b7fcb6f66b8e8080b360a480ccb6
+Fresh gh REST issue 10: exact identity/title/body/state/reason equals frozen current snapshot; SHA256(body)=2ba9149fed5703ef281f63f1793c4baf5afc5bec558d5fe204e69128b4a90ce1
+Fresh gh REST issue 13: exact identity/title/body/state/reason equals frozen current snapshot; SHA256(body)=ed742d710553fee0c65db7ce4f3db95f271b6a9c86d0e664a223390ee44b045b
+Fresh shared parent8 exact identity/title/body/state/reason equals supplied material snapshot; SHA256(body)=dcc6a25680c93c892153524b6e902396b1b4f114aaf72348f0a0484494c0238d
+Fresh paginated native graph: root14 parent8, zero subissues, blocked-by10/13; states closed/completed match snapshot.
+Fresh explicit-repo PR42: merged 36b78637e847463c4f58758a907b33ce5bf07ce5, ancestor of run base; canonical prerequisite-delivery-recheck retains actual independent unit/final acceptance evidence.
+Fresh explicit-repo PR67: merged 9804598fba84b747aeecd66c0e873f3f48c4c3cd, ancestor of run base; canonical prerequisite-delivery-recheck retains actual independent unit/final acceptance evidence.
+Clean exact HEAD 01f810ad6be415198775313891efe92ec3b1b5a2 at /tmp/fossilize-14/checker-2; matching recursive populated submodules:
+ a0fba56c34a6700f1724bf9b751da5b488a3775c cli/SPIRV-Cross (vulkan-sdk-1.4.341.0)
+ 496543121ce6419f23d6fa5d7194ba66c36212d2 cli/SPIRV-Headers (v2026.08.0-2-g4965431)
+ d7ca4efbbe36709fc49e1a102cdbe1d970d5eb7e cli/SPIRV-Tools (v2022.4-1329-gd7ca4efb)
+ c885633e126a3a949ec0497273ec13e2c03e862c cli/dirent (1.23-38-gc885633)
+ 8a2387afabdf1336f132e0a8bf38701df9838130 cli/volk (vulkan-sdk-1.4.357.0-3-g8a2387a)
+ 8f4c021fa2f1e001d2376095928fc0532adf2ae6 rapidjson (v1.1.0-549-g8f4c021f)
+ ba96d0b1161f540656efdaed035b3c062b60e006 rapidjson/thirdparty/gtest (release-1.8.0-1003-gba96d0b1)
+
+Clean exact HEAD 0ada951c5925e3a5a8e4ef69b382713acd416fd0 at /tmp/fossilize-14/planner; matching recursive populated submodules:
+ a0fba56c34a6700f1724bf9b751da5b488a3775c cli/SPIRV-Cross (vulkan-sdk-1.4.341.0)
+ 496543121ce6419f23d6fa5d7194ba66c36212d2 cli/SPIRV-Headers (v2026.08.0-2-g4965431)
+ d7ca4efbbe36709fc49e1a102cdbe1d970d5eb7e cli/SPIRV-Tools (v2022.4-1329-gd7ca4efb)
+ c885633e126a3a949ec0497273ec13e2c03e862c cli/dirent (1.23-38-gc885633)
+ 8a2387afabdf1336f132e0a8bf38701df9838130 cli/volk (vulkan-sdk-1.4.357.0-3-g8a2387a)
+ 8f4c021fa2f1e001d2376095928fc0532adf2ae6 rapidjson (v1.1.0-549-g8f4c021f)
+ ba96d0b1161f540656efdaed035b3c062b60e006 rapidjson/thirdparty/gtest (release-1.8.0-1003-gba96d0b1)
+
+No base-to-candidate public ExternalReplayer header or SharedControlBlock header diff. All35 actual commands completed with zero status and own current-candidate/base bindings; all required test IDs/coverage independently reconciled in report generation.
