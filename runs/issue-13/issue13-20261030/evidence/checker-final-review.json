@@ -1,0 +1,59 @@
+{
+  "actual_gate_results": "All mandatory both/final gates independently executed at this exact candidate and passed. No unresolved findings.",
+  "attempt_id": "checker-final-1",
+  "base_sha": "451aabbafeb4b590aa936b7d5e3e38c306626955",
+  "candidate_sha": "770f48facb29fe444870a1016538b3ad499954e7",
+  "closeout": "Readiness generation267/marker/binding at comment6537199020, exact candidate770/base451/plan1/material digest and source compare reviewed. Only issue13 closing reference eligible; issue8 remains open/incomplete. PR body is draft pending final evidence, publication not yet performed by checker.",
+  "documents": [
+    "AGENTS.md",
+    "local-docs/README.md",
+    "local-docs/project-descriptor.md",
+    "local-docs/project-pillars.md",
+    "local-docs/issue-workflow.md",
+    "local-docs/verification.md",
+    "local-docs/specs/observability-standard.md",
+    "local-docs/specs/observability-validation.md",
+    "local-docs/specs/observability-adversarial-review.md",
+    ".agents/skills/implement-change-harness/SKILL.md",
+    ".agents/skills/implement-change-harness/references/roles.md",
+    ".agents/skills/implement-change-harness/references/state.md"
+  ],
+  "full_diff_reviewed": [
+    "cli/fossilize_replay_linux.hpp",
+    "cli/fossilize_replay_windows.hpp",
+    "cli/replay_worker_outcome.hpp",
+    "fossilize_external_replayer_linux.hpp",
+    "local-docs/verification.md",
+    "test/CMakeLists.txt",
+    "test/replay_controller.cmake",
+    "test/replay_controller_cli.cmake",
+    "test/replay_controller_compatibility_test.cpp",
+    "test/replay_controller_test.cpp"
+  ],
+  "limits": [
+    "Native Windows execution waived by explicit human instruction, remains unverified.",
+    "Release malformed-input parser rejection still returns0 outside this worker-loss fix; not successful required replay or proof of worker loss.",
+    "No real-driver/GPU/cache-reuse/durability/general binary ABI/whole-standard claim."
+  ],
+  "original": "Immutable AC1 verbatim issue13 worker-loss requirement plus issue8 shared testing/compatibility acceptance; original preserved. Desired observability pillars/specs are distinguished from implemented guarantees.",
+  "plan_version": 1,
+  "production": [
+    "WorkerDisposition separates Complete/Retry/Unresolved; ReplayWorkerOutcome records immutable assigned ranges independently of mutable attempt starts and optional shared progress.",
+    "Both OS shutdown paths invoke retained outcome, retain nonzero culprit hashes/indexes before optional forwarding, and return aggregate failure immediately for Unresolved. Clean fully recovered retries can succeed; known skipped required culprits cannot.",
+    "Linux poll children checks wait errors and ECHILD while active; scoped cleanup kills/reaps siblings, closes worker IPC and controller descriptors, and restores signal mask. Parent cleanup is not counted as a new dirty crash.",
+    "Windows terminal observation initializes status STILL_ACTIVE; WaitForSingleObject/GetExitCodeProcess failure cannot imply clean status. Possible-live handles remain for scoped cleanup. Normal and timeout shutdown callers both propagate Unresolved. Wait failure returns failure with retained native error. Both implementations and common test registration reviewed; native execution expressly unverified.",
+    "ExternalReplayer Linux status is preserved across final progress pumping: after known reap poll_progress(false) cannot reap again and wait checks pid after its initial poll. Public declarations/shared layout/version/message grammar unchanged; no general binary ABI claim."
+  ],
+  "requirements_derived_before_claims": true,
+  "test_assertion_review": [
+    "Dedicated executable includes actual production master, real fork/CreateProcess and IPC/wait loops; compile-time adapters affect only test translation unit. Shipping CLI remains unmodified by test macros.",
+    "DiagnosticChecks and CMake exit-status oracles stay active under NDEBUG. Tests use direct returned status and retained state independent of stderr; fixture payload/range assertions are nonvacuous.",
+    "Mixed orders use actual terminal kernel barriers, choose success-first/loss-first harvest, and assert clean sibling completion marker. Lost worker range and unknown remainder assertions apply to both orders.",
+    "Recovery checks exact second attempt range 2..6 and completion marker for every required item of each pipeline kind, preserving one failed attempt without poisoning success.",
+    "Known culprit tests cover all three kinds, clean tail and final-item no-restart boundaries; optional progress variants independently preserve legacy counters.",
+    "Partial/missing progress and loss after retry retain original ranges and known prefix. Held-sibling barrier verifies cleanup without waiting for useful sibling completion; kernel checks assert no live or unreaped children. Signal and status-error paths are direct unsuccessful controller checks.",
+    "State/protocol checks exercise current literals and shared ring forwarding plus unknown native error and no-work kinds. CTest registers the same cases for Linux and Windows with watchdogs/private paths.",
+    "Actual shipping CLI E5/E6 fixture readback requires compute hash0x605 with payload{}; Debug must return1, unchanged Debug baseline0. Release explicitly asserts separate parse-failure1/skip1/completed0/deaths0 boundary, not successful required replay. Deterministic actual controller loss must fail every configuration.",
+    "Baseline-header caller uses original ExternalReplayer options/start/wait/query declarations and kernel terminal barriers for wait-first, already-terminal and query-first cached status on clean and failed controllers."
+  ]
+}
