@@ -37,7 +37,11 @@ accept implementation or weaken requirements.
 ## Implementer
 
 Edit source and committed planned tests for one ready work unit in the dedicated
-implementation worktree. Run required checks with real process deadlines. Commit
+implementation worktree. Add or revise the relevant CHANGELOG.md entry alongside
+that change in the same candidate, using the selected worktree's authoritative
+`local-docs/changelog-guidelines.md` ([published guideline](https://github.com/robinwassen/Fossilize/blob/master/local-docs/changelog-guidelines.md)).
+Keep it accurate when scope changes during review and renew affected checking.
+Run required checks with real process deadlines. Commit
 the candidate and return result_candidate_sha, test_mapping and commands with
 exact command/cwd/status, discovered/executed IDs, logs and limitations. An omitted
 planned test is incomplete work. Explain meaningful original-defect detection.
@@ -57,7 +61,12 @@ immutable original issue/acceptance and project policy before reading implemente
 claims. Inspect the entire base-to-candidate diff, test assertions and registration;
 rerun decisive required gates and credible counterexamples. Reject missing,
 skipped, vacuous or weakened assertions. A prior passing report is not independent
-current verification. Read live material issue input and migration/audit evidence.
+current verification. Independently verify the changelog entry is included in the
+exact reviewed candidate and follows the authoritative changelog guideline:
+factual scope and specific practical benefit, meaningful optional topic,
+one short sentence and correct issue traceability. Check that review-driven scope
+changes are reflected and pending work is not presented as completed delivery.
+Read live material issue input and migration/audit evidence.
 
 Return verdict accepted, changes_required or unable_to_verify with criterion-level
 evidence. Acceptance includes evidence, discovered, executed, test_mapping, skipped
@@ -77,7 +86,8 @@ or incomplete checks block readiness.
 
 After all work units accept and managed issue readiness is prepared, a separate
 fresh final checker covers the combined branch, all planned cases and exact
-candidate/base/plan/current issue inputs. Review eligible closing references and
+candidate/base/plan/current issue inputs, including the combined changelog against
+the guideline and final scope. Review eligible closing references and
 open issue state; incomplete epics cannot close. Source/plan/base/task changes or
 rejection invalidate stale readiness and require superseding evidence/new checks.
 Only explicitly approved, bound wrap-up may merge. Accepted units, completed

@@ -19,3 +19,8 @@ Use [robinwassen/Fossilize Issues](https://github.com/robinwassen/Fossilize/issu
 ## Verification
 
 Before planning or running verification, read the [testing and verification guide](local-docs/verification.md). Select checks appropriate to the change and report what was actually verified, including limitations.
+
+## Changelog
+
+Update `CHANGELOG.md` with each change, following the
+[changelog writing guideline](local-docs/changelog-guidelines.md).
