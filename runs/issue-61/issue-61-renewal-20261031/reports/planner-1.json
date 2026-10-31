@@ -1,0 +1,460 @@
+{
+  "attempt_id": "planner-1",
+  "base_sha": "9804598fba84b747aeecd66c0e873f3f48c4c3cd",
+  "candidate_sha": null,
+  "input_revision": 2,
+  "input_sha": "168cd322d8742ae2d2a801bce4c527f5495bf3aa",
+  "operation": "plan",
+  "plan": {
+    "cases": [
+      {
+        "assertions": "Exact base-to-candidate files are six docs only; both old head and newbase are ancestors; all six candidate blobs equal old head; git diff --check clean. New base C++/tests/verification guide survive unchanged.",
+        "criteria": [
+          "AC1"
+        ],
+        "execution_ids": [
+          "scope-six-docs",
+          "old-and-new-base-ancestry",
+          "six-docs-byte-preserved",
+          "whitespace-clean"
+        ],
+        "id": "C1",
+        "location": "renewal_checks.py scope"
+      },
+      {
+        "assertions": "All eight reviewed initial sentences and issue URLs preserved; live issues closed/completed, paired PRs merged to intended fork master and their delivered scope supports prose. Record concrete scope facts; #35 historical backlog superseded by #37 explicitly, no invented release/date.",
+        "criteria": [
+          "AC1"
+        ],
+        "execution_ids": [
+          "manual-eight-entries",
+          "history-10-pr-42",
+          "history-11-pr-44",
+          "history-12-pr-45",
+          "history-34-pr-2",
+          "history-35-pr-5",
+          "history-36-pr-6",
+          "history-37-pr-38",
+          "history-39-pr-41"
+        ],
+        "id": "C2",
+        "location": "CHANGELOG.md; live GitHub historical issue/PR reads and diff evidence"
+      },
+      {
+        "assertions": "Full approved guideline: one short changed-what/benefit sentence, optional meaningful epic tags, plain language, scope, exact issue traceability and review scope correction. Short AGENTS paragraph only; index and changelog link one authoritative guideline; task authority remains GitHub.",
+        "criteria": [
+          "AC1"
+        ],
+        "execution_ids": [
+          "manual-guideline-contract"
+        ],
+        "id": "C3",
+        "location": "local-docs/changelog-guidelines.md; AGENTS.md; local-docs/README.md; CHANGELOG.md"
+      },
+      {
+        "assertions": "Tracked SKILL requires implementer add/revise entry in same candidate, checker factual/topic/brevity/issue/inclusion review and separate final combined changelog review. roles implements same; metadata validates. Existing issue61 Unreleased sentence factual for integrated candidate, not merged claim.",
+        "criteria": [
+          "AC1"
+        ],
+        "execution_ids": [
+          "manual-role-contract",
+          "skill-metadata"
+        ],
+        "id": "C4",
+        "location": ".agents/skills/implement-change-harness/SKILL.md and references/roles.md"
+      },
+      {
+        "assertions": "All changed-doc relative links resolve to tracked files; render actual candidate GFM and independently visually inspect all six pages/images. Record no broken list/heading/link markup and legible text; topic/one-sentence change-benefit read meaningfully.",
+        "criteria": [
+          "AC1"
+        ],
+        "execution_ids": [
+          "tracked-relative-links",
+          "six-gfm-pages-rendered",
+          "manual-render"
+        ],
+        "id": "C5",
+        "location": "renewal_checks.py links/render; candidate six docs"
+      },
+      {
+        "assertions": "Fresh actual unittest discovery partitions every ID once; all16 bounded groups and scenario unions pass, nonzero discovered/executed, no skips/failures/duplicates/stale/incomplete results. New base guide mandatory suite preserved.",
+        "criteria": [
+          "AC1"
+        ],
+        "execution_ids": [
+          "full-discovered-harness-union"
+        ],
+        "id": "C6",
+        "location": ".agents/skills/implement-change-harness/scripts/run_harness_tests.py"
+      },
+      {
+        "assertions": "Current issue61 exact title/body/identities/native parent/children/prerequisites match immutable snapshot. Parent9 staysopen; only eligible closing reference61; stale readiness superseded; fresh current binding before final/publication; samePR66 reused.",
+        "criteria": [
+          "AC1"
+        ],
+        "execution_ids": [
+          "current-issue61-material-input",
+          "issue61-and-parent9-open",
+          "same-pr66-only-closes61",
+          "manual-readiness"
+        ],
+        "id": "C7",
+        "location": "renewal_checks.py authority plus coordinator live snapshot/readiness evidence"
+      },
+      {
+        "assertions": "Independent review verifies publication design requires installed-skill backup/sync equality and exact samePR66/newacceptedhead, onlyCloses61, noforce, attachment/artifact readback and bound approved wrap-up. Actual external publication/delivery effects belong to publication gates and must not be claimed executed by prepublication checker.",
+        "criteria": [
+          "AC1"
+        ],
+        "execution_ids": [
+          "manual-publication-contract"
+        ],
+        "id": "C8",
+        "location": "Coordinator publication and supported wrap-up"
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C1 all four structural IDs pass; inspect complete base-to-candidate diff and no other scope.",
+        "id": "G-scope",
+        "kind": "both",
+        "method": "python3 -B /tmp/fossilize-61-renewal/renewal_checks.py scope --candidate FULL_CANDIDATE --output FRESH_ROLE_OUTPUT/scope",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C2 all eight completed/merged pairs and manual-eight-entries factual scope assertion; status alone insufficient.",
+        "id": "G-history",
+        "kind": "both",
+        "method": "python3 -B /tmp/fossilize-61-renewal/renewal_checks.py history --candidate FULL_CANDIDATE --output FRESH_ROLE_OUTPUT/history; independent read of each saved issue and actual mergedPR diff/source as needed, explicit gh --repo robinwassen/Fossilize / gh api --hostname github.com repos/robinwassen/Fossilize/...",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C2/C3/C4 include all five numbered original acceptance clauses, original approved wording and all nine entries; no unsupported completed claim; no permanent tests matching prose.",
+        "id": "G-semantic",
+        "kind": "both",
+        "method": "Read all six candidate docs against immutable original issue body and actual complete diff; record manual-guideline-contract, manual-role-contract, manual-eight-entries with concrete facts and locations.",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C5 tracked-relative-links passes, links to selected repo correct; issue URLs verified via history/authority.",
+        "id": "G-links",
+        "kind": "both",
+        "method": "python3 -B /tmp/fossilize-61-renewal/renewal_checks.py links --candidate FULL_CANDIDATE --output FRESH_ROLE_OUTPUT/links",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C5 six actual GFM pages render and all independently visually inspected for heading/list/link/text layout; generation alone insufficient.",
+        "id": "G-render",
+        "kind": "both",
+        "method": "python3 -B /tmp/fossilize-61-renewal/renewal_checks.py render --candidate FULL_CANDIDATE --output FRESH_ROLE_OUTPUT/render; view every emitted PNG or use rendered browser pages, record manual-render observations and artifacts outside source.",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C4 skill-metadata valid. PyYAML availability required; missing tool/dependency blocks.",
+        "id": "G-metadata",
+        "kind": "both",
+        "method": "python3 /home/robin/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/implement-change-harness",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 nonzero actual discovered IDs partitioned exactly once; fresh inventory current candidate and attempt. Suite directory must not exist before attempt.",
+        "id": "G-inventory",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --inventory --output FRESH_ROLE_SUITE/inventory.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-regression-test_harness_artifacts",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_artifacts --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/regression-test_harness_artifacts.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-regression-test_harness_closeout",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_closeout --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/regression-test_harness_closeout.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-regression-test_harness_issue_artifacts",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_artifacts --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/regression-test_harness_issue_artifacts.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-regression-test_harness_issue_closeout",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_issue_closeout --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/regression-test_harness_issue_closeout.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-regression-test_harness_migration",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_migration --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/regression-test_harness_migration.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-regression-test_harness_state",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_harness_state --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/regression-test_harness_state.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-regression-test_issue_guidance",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_guidance --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/regression-test_issue_guidance.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-regression-test_issue_migration",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_migration --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/regression-test_issue_migration.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-regression-test_issue_source",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-test_issue_source --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/regression-test_issue_source.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-delivery-ordinary",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-ordinary --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/delivery-ordinary.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-delivery-w09",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w09 --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/delivery-w09.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-delivery-w11-0",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-0 --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/delivery-w11-0.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-delivery-w11-1",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-1 --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/delivery-w11-1.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-delivery-w11-2",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-2 --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/delivery-w11-2.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-delivery-w11-3",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group delivery-w11-3 --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/delivery-w11-3.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 all owned unittest IDs and explicit owned scenarios executed/pass; record discovered/executed IDs, zero skips, exit0.",
+        "id": "G-regression-extra",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --run-group regression-extra --inventory FRESH_ROLE_SUITE/inventory.json --output FRESH_ROLE_SUITE/regression-extra.json",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. G-inventory completed; this checker fresh inventory and output directory; group isolated fixtures. Each group separate600s wrapper; at most3 concurrent independent groups."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C6 verifier fresh discovery exact disjoint executed+scenario unions of all16 groups; current candidate/attempt/digest; no missing/skipped/failed/stale/duplicate/unfinished/unexecuted result.",
+        "id": "G-union",
+        "kind": "both",
+        "method": "env PYTHONDONTWRITEBYTECODE=1 python3 -B .agents/skills/implement-change-harness/scripts/run_harness_tests.py --verify-results FRESH_ROLE_SUITE",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver. All16 group results available from this checker attempt, no reused old-run results."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C7 current original materially identical;61and9open; native parent9 no children/blockers, soleCloses61; samePR66 open non-draft master/codex-issue61 branch; final readiness exact candidate/base/plan/current input, old readiness superseded. G-authority prepush allows old remotehead; publication gate requires accepted updatedhead.",
+        "id": "G-authority",
+        "kind": "both",
+        "method": "python3 -B /tmp/fossilize-61-renewal/renewal_checks.py authority --candidate FULL_CANDIDATE --output FRESH_ROLE_OUTPUT/authority; coordinator supported live full snapshot and paginated managed-readiness readback; final checker independently reads exact readiness binding and sole closing eligibility.",
+        "prerequisites": "Exact committed clean renewed candidate at supplied base; fresh independent checkout/output per checker; Python3 Git gh credentials and POSIX flock; prepublished command intents and600s wrapper receipts. Any unavailable mandatory prerequisite blocks, with no quiet waiver."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C8 existing machine config preserved in backup and authoritative package equality, no claim mere copied files prove equality.",
+        "id": "G-installed-sync",
+        "kind": "publication",
+        "method": "Coordinator backup outside source, synchronize tracked .agents/skills/implement-change-harness to installed /home/robin/.codex/skills/implement-change-harness under existing policy; compare complete regular-file contents/set excluding generated __pycache__; log backup and equality.",
+        "prerequisites": "Final accepted exact candidate, applicable installed synchronization policy read; verification intent/wrapper for equality."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "Each role exact candidate checkout root (implementer /home/robin/dev/fossilize-issue-61; separate fresh detached unit/final checkouts)",
+        "expected": "C7/C8 exact candidate/base/plan/current input and acceptedhead all match; onlyCloses61; parent9open; samePR66 retained. Report ready versus merged delivery honestly; changedbase/head/checks blocks and renews verification.",
+        "id": "G-publication",
+        "kind": "publication",
+        "method": "Coordinator supported current issue snapshot, target master fetch, publish-intent, nonforce push, allstates exact existingPR66 lookup/readback, managed actualPR comment, attach, exact terminal artifact publication; approved supported wrap-up bound repositoryPR66/new accepted head/root/run/revision.",
+        "prerequisites": "All unit and separate final both gates pass, no unresolved finding, installed sync passes; renewed user scope authorization retained."
+      }
+    ],
+    "implementation": [
+      "Fresh implementer reads both old candidate and new-base guidance, checks clean dedicated implementation branch then merges exact recorded base normally; resolve only if preserving all six issue61 documentation blobs and full new-base tree is possible. If not, report a finding rather than widen scope. Commit integration candidate; record old/base ancestry.",
+      "Preserve CHANGELOG.md eight reviewed historical entries plus issue61 Unreleased entry, approved guideline, short AGENTS instruction, index link, tracked harness SKILL implementation/checker/final-review rules and roles contracts. No new permanent prose-matching tests. Planner external renewal_checks.py supplies assertion-bearing structural/live checks and GFM rendering; independent manual semantic review provides factual assertions.",
+      "Implementer runs scope, links, skill metadata, and reviews six document scope at committed candidate; no third mandatory suite run because runtime/package execution source unchanged. Both independent unit and separate final checker each execute all both gates from exact clean candidate in separate detached worktree with fresh outputs and inventories.",
+      "Before every verification/probe publish exact child argv/cwd/600s command-intent; execute each command under verification_lock.py --repo ABS_CHECKOUT --timeout600 --intent-id UNIQUE --receipt UNIQUE_JSON -- CHILD_ARGV. Coordinator settles receipt exactly once before budget gates; no nested lock; source and output paths isolated.",
+      "After unit acceptance coordinator supersedes any stale readiness, records current candidate/base/plan/input readiness with samePR66 context, then fresh final checker. Coordinator backs up/synchronizes installed package and verifies equality before publication; repeat if candidate changes. Publish updated same branch without force; samePR66 exact readback, only Closes full issue61, current master check, attachment, exact artifact publication, then supported bound wrap-up under renewed user approval. If master moves again invalidate readiness and reconcile; do not claim delivery."
+    ],
+    "non_goals": [
+      "No C++/Vulkan/runtime/test source modifications or new release automation; no worker-loss implementation changes or new #13 backfill.",
+      "No new issue/task ledger, changed original acceptance, force push, PR replacement, product/GPU/Steam/Windows verification claim, or historical evidence reused as current acceptance."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "## Problem\n\nCompleted changes have no shared changelog or established writing guideline, and the change harness does not require a changelog entry in the implementation PR. Readers need a concise account of what changed and why it matters.\n\n## Required outcome\n\nCreate `CHANGELOG.md` with the already solved issues below, document the approved writing guideline separately, and make changelog maintenance part of the harness's implementation and review workflow. Add only a short instruction and guideline reference to `AGENTS.md`.\n\n## Approved changelog guideline\n\n> Write each changelog entry as one short, clear sentence stating what changed and the specific problem it fixes or benefit it provides. Prefix the entry with a topic tag, using the associated epic's name where applicable; omit the tag when no meaningful topic fits. Describe delivered behavior and avoid unsupported claims.\n\nSuggested pattern: **[Topic] [Changed what] so [practical benefit].** Use plain language and name the affected behavior or component. Describe the delivered behavior rather than simply rephrasing the issue title, and keep the benefit within the change's actual scope. Topic tags are useful grouping, not mandatory invented categories; use concise epic-derived names such as **[Observability]** and **[Harness]**. Include a link to the associated issue for traceability.\n\n## Initial entries reviewed with the user\n\n- **[Observability]** Improved Vulkan and cache error logs to preserve error codes and affected resources so failures are easier to diagnose. ([#10](https://github.com/robinwassen/Fossilize/issues/10))\n- **[Observability]** Fixed list, rehash and prune commands to report failure when resource parsing fails so incomplete processing cannot appear successful. ([#11](https://github.com/robinwassen/Fossilize/issues/11))\n- **[Observability]** Fixed file write helpers to report write, flush and close errors so callers can detect incomplete output. ([#12](https://github.com/robinwassen/Fossilize/issues/12))\n- **[Harness]** Added a resumable change workflow with independent checks so interrupted implementation work can continue with its progress and review evidence preserved. ([#34](https://github.com/robinwassen/Fossilize/issues/34))\n- **[Harness]** Included verified backlog completion in implementation PRs so merged changes update task status without a separate follow-up. ([#35](https://github.com/robinwassen/Fossilize/issues/35))\n- **[Harness]** Added remote publication of change workflow records so plans, reports and recovery checkpoints remain available beyond the local checkout. ([#36](https://github.com/robinwassen/Fossilize/issues/36))\n- **[Harness]** Moved task tracking to GitHub Issues so contributors can find requirements, progress and blocking dependencies in one place. ([#37](https://github.com/robinwassen/Fossilize/issues/37))\n- **[Harness]** Added one-command delivery after explicit approval so merging, branch cleanup and task closeout can resume after interruptions. ([#39](https://github.com/robinwassen/Fossilize/issues/39))\n\nThese describe delivered changes, checked in this conversation against merged PRs #42, #44, #45, #2, #5, #6, #38 and #41 respectively. Entry #35 is historical behavior subsequently replaced by GitHub issue tracking in #37; preserve that distinction rather than presenting the old backlog mechanism as current behavior. Recheck completion and delivery evidence during implementation; closed-but-not-planned or incomplete work must not be represented as delivered.\n\n## Acceptance criteria\n\n1. Add root `CHANGELOG.md`, seeded with all eight reviewed entries and their issue links; use an understandable historical ordering/grouping without inventing release versions or release dates.\n2. Store the full guideline in a dedicated tracked document, preferably `local-docs/changelog-guidelines.md`, and link it from the documentation index and changelog as appropriate. Include the approved sentence pattern, optional topic tags, accurate scope and issue traceability.\n3. Update the tracked harness instructions so each implementation PR includes the relevant changelog entry alongside the change. Ensure implementers add or revise the entry and independent checkers verify its accuracy, topic, brevity and inclusion in the reviewed candidate; final review covers the changelog too. Follow any existing installed-skill synchronization policy where applicable.\n4. Add a short `AGENTS.md` instruction requiring changelog updates with changes and linking to the dedicated guideline. Keep detailed writing rules and examples out of `AGENTS.md`.\n5. Changelog wording follows the final delivered scope if implementation changes during review, and does not claim unsupported, failed or incomplete work as completed. Maintain GitHub Issues as task authority; the changelog is a historical change record, not a second backlog.\n\n## Verification expectations\n\n- Reconcile the eight initial entries with completed issue state and actual merged PR evidence; verify issue links and historical scope, especially #35 versus #37.\n- Review Markdown rendering, links, topic consistency and the one-sentence change-and-benefit format.\n- Check the harness instructions cover implementation, independent checking and final review, with `AGENTS.md` pointing to one authoritative guideline.\n- Run applicable documentation/skill validation and whitespace checks under `local-docs/verification.md`; run meaningful harness regression checks if runtime behavior changes. Report actual checks and limitations without claiming product verification for documentation changes.\n\n## Scope\n\nChangelog creation and backfill, contributor guidance and harness instructions. This issue files the requested work; it does not implement it. No C++/Vulkan behavior changes or new release automation are requested. Related parent: https://github.com/robinwassen/Fossilize/issues/9.\n\n<!-- fossilize-changelog-guideline-v1 -->\n"
+      }
+    ],
+    "scope": [
+      "Renew issue61 acceptance at new master9804598fba84b747aeecd66c0e873f3f48c4c3cd by merging it into existing codex/issue-61-changelog without force or history rewrite; preserve old168cd322d8742ae2d2a801bce4c527f5495bf3aa six documentation blobs exactly.",
+      "Reuse existing PR https://github.com/robinwassen/Fossilize/pull/66; original issue61 body remains exact AC1 authority; root issue9 stays open. User execution context: Update the branch and i reapprove merging. Approval is for this scoped update and samePR accepted renewed candidate; it does not rewrite acceptance."
+    ],
+    "verification_execution_notes": {
+      "budget": "Four-hour selectedrun, repairs3/replans1, perchild600s; only measured lockwait excluded; no nested delegation.",
+      "implementer_required": [
+        "G-scope",
+        "G-links",
+        "G-metadata"
+      ],
+      "implementer_review": [
+        "C2",
+        "C3",
+        "C4",
+        "C5 prose/links inspection without mandatory suite repeat"
+      ],
+      "independent_checker_required": "Both unit and separate final checker each execute every kind=both gate at exact new candidate, including full16-group suite. Map every planned case to actual execution/manual IDs; C8 publication mapping may use coordinator evidence, not claim prepublication execution.",
+      "original_defect_detection": "Original newbase lacks root changelog, dedicated guideline and changelog workflow instructions; G-semantic must explicitly contrast these missing original requirements with six candidate documents. G-scope rejects newbase itself (empty six-file diff, missing oldcandidate ancestry) or any drifted document/blob; G-history rejects cancelled/not-planned or unmerged delivery. No source/runtime fault injection needed for documentation scope.",
+      "reporting": "Small sanitized logs staged separately; reports reference records with exact candidate/base/plan/attempt/cwd/command/environment/exit and IDs. No full rawlogs in canonical report. Manual review IDs require concrete reviewed facts."
+    },
+    "version": 1,
+    "work_units": []
+  },
+  "plan_version": 0,
+  "role": "planner",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/61",
+  "worker_id": "/root/planner61renew"
+}
