@@ -1,0 +1,87 @@
+Issue #36 closed/completed; merged PR #6 commit 7217f91b0cd961178b61071f3647ca3023ab1da9 at 2026-10-28T12:12:28Z. Actual skill/state/helper add non-force artifact checkpoint publication and independent bound remote-ref confirmation/recovery. Entry accurately says workflow records remain available remotely without implying distributed ownership.
+{
+  "issue": {
+    "id": 6079922724,
+    "node_id": "I_kwDOVZpjbc8AAAABamRCJA",
+    "number": 36,
+    "html_url": "https://github.com/robinwassen/Fossilize/issues/36",
+    "title": "FOS-000027 \u2014 Commit and publish harness artifacts to the remote orphan branch",
+    "state": "closed",
+    "state_reason": "completed",
+    "body": "Legacy identity: `FOS-000027`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/harness-backlog.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/9. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n## FOS-000027 \u2014 Commit and publish harness artifacts to the remote orphan branch\n\n**Status:** Done (verified proposed branch state; not landed on master).\n**Completion evidence:** Independent unit checker passed 51/51 Python/Git tests with no skips, metadata validation, original-criteria review and allocation-history counterexamples. Required exact-candidate renewal and separate final review follow bookkeeping; no C++/GPU/Steam coverage claimed. https://github.com/robinwassen/Fossilize/compare/master...codex/FOS-000027-artifact-publication\n\n**Depends on:** FOS-000025 (existing harness checkpoint and publication mechanics).\n\n### Problem and reviewed evidence\n\nHarness state, reports, evidence and allocation records remain in the local\n`harness-artifacts` orphan history. A pushed implementation branch and an open PR\ntherefore do not make the run records available remotely.\n\nReview on 2026-10-28 found that the installed `implement-change-harness` skill\nexplicitly selects local-only artifacts. Its `scripts/harness_state.py`\n`checkpoint()` already writes a complete records tree with a temporary index,\ncreates a commit with `commit-tree`, and advances `refs/heads/harness-artifacts`\nwith an expected-tip `update-ref`. The publication workflow pushes the\nimplementation branch, but has no equivalent artifact publication step.\n`git ls-remote --heads origin harness-artifacts` returned no branch, while the\nlocal artifact tip was `5c0c6e5` (FOS-000026 publication revision 33).\n\nThe artifact inspection worktree can show modified/deleted records because ref\nupdates intentionally leave its index/files untouched; `references/state.md`\ndocuments this. Its apparent dirtiness is not proof those records lack commits.\nInspect the committed tree rather than blindly staging that worktree or resetting\nit. The original [proposal](../specs/basic-change-harness-plan.md) also specifies\nlocal-only retention; this item deliberately changes that policy.\n\n### Required outcome and acceptance criteria\n\n- Make committing and publishing the allowed harness records to\n  `origin`'s `refs/heads/harness-artifacts` part of the normal workflow. Record the\n  repository/remote identity explicitly, keep the branch orphaned and separate\n  from source history, and update the skill, state guidance and helper as needed.\n- Define and enforce publication checkpoints covering initialization, state\n  transitions and reports/evidence, permanent allocation changes, interruption\n  and terminal run state. Distinguish locally committed from remotely confirmed\n  records; retain a precise retry action when publication is incomplete. A run\n  cannot claim successful artifact publication or full workflow completion while\n  required records exist only locally.\n- Publish the authoritative committed ref, including existing valid local run\n  history. Preserve the records-only tree and existing validation. Do not stage\n  stale inspection files, copy source trees, or include build outputs, binaries,\n  private configuration, secrets or full transcripts. Preserve unexpected local\n  edits when inspecting or refreshing a worktree.\n- Use explicit non-force pushes to the recorded artifact destination. Verify the\n  remote ref against the checkpoint being published; command success alone is\n  insufficient. Never merge artifact history into the implementation PR or\n  `master`, and never push to `upstream` merely because it exists.\n- Handle an absent remote branch, already published checkpoints, remote advances\n  and divergent history without overwriting either writer's work. Validate any\n  adopted remote artifact history. Reconcile remote state before continuing;\n  unresolved conflicts retain local records and a concrete recovery action.\n  A repository-local lock must not be described as cross-machine coordination.\n- Network/authentication/rejection failures and ambiguous push outcomes preserve\n  the local checkpoint and remain recoverable. Resume checks the actual remote\n  ref before retrying, without rerunning accepted implementation work, duplicating\n  a PR or dropping allocation reservations. Define terminal publication ordering\n  so the final state/active-pointer update is also published, without an endless\n  cycle of commits acknowledging their own publication.\n\n### Verification expectations\n\nUse the [verification guide](../verification.md) to select meaningful behavioral\nchecks in isolated repositories with a bare remote. Cover first publication,\nsubsequent checkpoints, existing local history, idempotent retry, push rejection,\nremote divergence, and interruption before/after a successful push but before its\nacknowledgement. Fetch the artifact branch into a fresh clone and assert the\nexpected state, reports/evidence, allocation journal and terminal active pointer\nare present in committed records. Check orphan ancestry, source/artifact separation\nand preservation of stale inspection-worktree edits. Assert failed publication is\nreported as incomplete and resume completes publication without recreating a PR.\nThese are future acceptance checks, not checks already performed for this item.\n\n### Scope\n\nHarness artifact persistence/publication, recovery, documentation and regression\ncoverage. No Fossilize C++ changes, automatic merge, background scheduler or claim\nthat remote retention alone solves distributed task-key allocation.\n\n\n## Supporting links (resolved from the immutable original)\n\n- [proposal](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/specs/basic-change-harness-plan.md)\n- [verification guide](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/verification.md)\n\n<!-- fossilize-migration-v1:FOS-000027 -->\n"
+  },
+  "merged_pr": {
+    "body": "## Problem\n\nThe change harness committed run records only locally. Opening an implementation PR left plans, reports, evidence and allocation reservations unavailable on the remote, and interruption could leave publication status unclear.\n\n## What changes\n\nThe harness now publishes each authoritative artifact checkpoint to the separate orphan `origin/harness-artifacts` branch with a non-force push and independent remote-ref verification. It binds the destination, supports explicit adoption of reviewed existing history, preserves local checkpoints after failures, and blocks forward work until publication is reconciled.\n\nTerminal state and the cleared active pointer are published in one final checkpoint. Recovery verifies or retries that checkpoint without repeating accepted implementation or creating another PR. FOS-000027 completion bookkeeping is included in this reviewed source branch.\n\n## Why this matters\n\nRun evidence and permanent allocation records remain available remotely alongside the proposed implementation, with an honest distinction between local commits and confirmed publication.\n\n## Why this approach\n\nThe committed Git ref remains authoritative. Publication derives confirmation from the actual remote instead of creating commits acknowledging themselves. Conservative handling of remote advances and divergence preserves both writers' records and requires explicit reconciliation when run state has evolved. The local lock coordinates worktrees on one machine; distributed ownership remains separately coordinated.\n\n## Verification and limits\n\nIndependent unit, bookkeeping-renewal and separate final reviews passed all 51 Python/Git tests without skips, plus skill metadata validation and original-criteria review. Tests use real disposable bare remotes and clones for publication, rejection, endpoint binding, competing history, interruption and terminal recovery. The independently found historical-reservation-loss defect was fixed and checked against its original counterexample. Existing artifact history was published and its remote SHA verified; terminal checkpoint confirmation follows PR attachment.\n\nNo Fossilize C++, GPU, Steam or hosted-CI verification is claimed. Existing history receives a structural and semantic privacy review before first publication. Artifact history stays separate from this source PR; the harness does not merge the PR.\n\n## Task references\n\n[FOS-000027 \u2014 Commit and publish harness artifacts to the remote orphan branch](https://github.com/robinwassen/Fossilize/blob/codex/FOS-000027-artifact-publication/local-docs/reviews/harness-backlog.md#fos-000027--commit-and-publish-harness-artifacts-to-the-remote-orphan-branch).\n",
+    "closingIssuesReferences": [],
+    "files": [
+      {
+        "path": ".agents/skills/implement-change-harness/SKILL.md",
+        "additions": 19,
+        "deletions": 5,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/references/roles.md",
+        "additions": 4,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/references/state.md",
+        "additions": 108,
+        "deletions": 3,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/harness_state.py",
+        "additions": 274,
+        "deletions": 5,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/test_harness_artifacts.py",
+        "additions": 611,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/test_harness_closeout.py",
+        "additions": 3,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/test_harness_state.py",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "local-docs/backlog-keys.md",
+        "additions": 2,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "local-docs/reviews/harness-backlog.md",
+        "additions": 82,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "local-docs/verification.md",
+        "additions": 8,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
+    ],
+    "mergeCommit": {
+      "oid": "7217f91b0cd961178b61071f3647ca3023ab1da9"
+    },
+    "mergedAt": "2026-10-28T12:12:28Z",
+    "number": 6,
+    "state": "MERGED",
+    "title": "FOS-000027: Publish recoverable harness artifact checkpoints",
+    "url": "https://github.com/robinwassen/Fossilize/pull/6"
+  }
+}

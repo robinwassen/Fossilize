@@ -1,0 +1,107 @@
+Issue #10 closed/completed; merged PR #42 commit 36b78637e847463c4f58758a907b33ce5bf07ce5 at 2026-10-29T05:27:58Z. PR actual cli/device.cpp checked VkResult, cli/fossilize_replay.cpp pipeline result/hash and cache-export errno/operation diagnostics, layer/dispatch.cpp correct pipeline names/unknown context. Entry claims scoped error-code/resource diagnostic improvement only.
+{
+  "issue": {
+    "id": 6079794262,
+    "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
+    "number": 10,
+    "html_url": "https://github.com/robinwassen/Fossilize/issues/10",
+    "title": "FOS-000001 \u2014 Preserve precise context in existing diagnostics",
+    "state": "closed",
+    "state_reason": "completed",
+    "body": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n"
+  },
+  "merged_pr": {
+    "body": "## Problem\n\nPipeline replay and Vulkan device setup diagnostics discard raw failure results. Some compute and ray-tracing capture messages name the wrong pipeline type and speculate about unsupported pNext chains. Cache export errors lose the originating OS error during cleanup.\n\n## What changes\n\n- Preserve numeric VkResult, operation/phase and available pipeline hash or device context in replay/setup failures, including compile-required paths.\n- Correct pipeline capture resource names across normal, QA, paranoid, eager and binary modes, and report unknown recording causes honestly.\n- Snapshot errno at cache open/write/close failures before cleanup can overwrite it; distinguish pipeline and validation caches.\n- Register GPU-independent tests through production replay, device and exported layer call paths, with successful controls and compatibility fixtures.\n\n## Why this matters\n\nFailure reports retain the evidence needed to distinguish controlled API errors, capture rejection and cache export failure without treating them as driver crashes or unsupported features.\n\n## Why this approach\n\nThis is the initial diagnostic-context slice requested in #10. It retains public interfaces, Vulkan return/handle behavior and existing CLI exit policy while improving existing human diagnostics. It introduces no common result schema, process-controller redesign or persistence guarantee.\n\n## Verification and limits\n\nCandidate: `a24e8afd8b584a3ad95d049885c3445ba3f1fa9c`; base: `b42b22c2e73bcfed731ee17752c244e2be7e737f`.\n\nLinux GCC 13.3, full CLI/layer builds, Debug and Release with exceptions OFF and ON: all 54 registered CTests passed in each configuration. Independent checking reruns the applicable gates. Baseline-header callers and an unchanged layer consumer exercise source compatibility and the limited Vulkan layer C ABI. Compiled defect controls check that missing raw results, overwritten errno, incorrect pipeline names and unsupported-feature speculation trigger assertion failures; the clean candidate passes.\n\nNative Windows verification is explicitly deferred and remains unverified under the user's authorization for this run. Linux CPU mocks do not prove native Windows behavior, real driver compilation, Steam integration, durable cache output or a general C++ ABI guarantee. Human diagnostic wording intentionally changes.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/10\n\nShared requirements: https://github.com/robinwassen/Fossilize/issues/8 (remains open).\n",
+    "closingIssuesReferences": [
+      {
+        "id": "I_kwDOVZpjbc8AAAABamJMVg",
+        "number": 10,
+        "repository": {
+          "id": "R_kgDOVZpjbQ",
+          "name": "Fossilize",
+          "owner": {
+            "id": "MDQ6VXNlcjMwMjE1MQ==",
+            "login": "robinwassen"
+          }
+        },
+        "url": "https://github.com/robinwassen/Fossilize/issues/10"
+      }
+    ],
+    "files": [
+      {
+        "path": "cli/device.cpp",
+        "additions": 23,
+        "deletions": 18,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "cli/fossilize_replay.cpp",
+        "additions": 53,
+        "deletions": 18,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "layer/dispatch.cpp",
+        "additions": 15,
+        "deletions": 15,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "local-docs/verification.md",
+        "additions": 26,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "test/CMakeLists.txt",
+        "additions": 48,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "test/capture_diagnostic_test.cpp",
+        "additions": 184,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "test/device_diagnostic_test.cpp",
+        "additions": 155,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "test/diagnostic_compatibility.cmake",
+        "additions": 20,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "test/diagnostic_compatibility_test.cpp",
+        "additions": 65,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "test/diagnostic_test.hpp",
+        "additions": 71,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "test/replay_diagnostic_test.cpp",
+        "additions": 179,
+        "deletions": 0,
+        "changeType": "ADDED"
+      }
+    ],
+    "mergeCommit": {
+      "oid": "36b78637e847463c4f58758a907b33ce5bf07ce5"
+    },
+    "mergedAt": "2026-10-29T05:27:58Z",
+    "number": 42,
+    "state": "MERGED",
+    "title": "Preserve precise Vulkan and OS failure diagnostics",
+    "url": "https://github.com/robinwassen/Fossilize/pull/42"
+  }
+}

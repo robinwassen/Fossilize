@@ -1,0 +1,119 @@
+Issue #39 closed/completed; merged PR #41 commit b42b22c2e73bcfed731ee17752c244e2be7e737f at 2026-10-28T18:25:25Z. Actual skill and CLI introduce supported harness_state.py wrap-up with explicit repository/PR/head/run approval and durable merge/cleanup/closeout recovery. Entry preserves explicit-approval condition and resumability without automatic approval claims.
+{
+  "issue": {
+    "id": 6083245574,
+    "node_id": "I_kwDOVZpjbc8AAAABapb2Bg",
+    "number": 39,
+    "html_url": "https://github.com/robinwassen/Fossilize/issues/39",
+    "title": "Prompt for PR approval and run delivery wrap-up with one command",
+    "state": "closed",
+    "state_reason": "completed",
+    "body": "## Problem\n\nThe approved wrap-up of [PR #38](https://github.com/robinwassen/Fossilize/pull/38) required repeated AI reasoning, individual Git/GitHub calls, temporary Python scripts, and manual post-delivery state updates. Squash merge, branch cleanup, ticket closeout and evidence reconciliation are a mechanical process. Reconstructing that process in each conversation wastes tokens and adds opportunities for mistakes.\n\n## Required outcome\n\nOnce the verified PR is open and attached, the harness prompts the user for approval. After explicit approval, the agent invokes **one supported wrap-up command**. That command performs the complete approved delivery workflow and returns a compact result. AI reasoning is reserved for review, the approval conversation and exceptional decisions.\n\n## Acceptance criteria\n\n- Update the skill to present the PR link and a concise verification summary, then request approval to squash-merge and wrap up. Decline/defer leaves the PR open. Honor approval already given in the conversation without asking again; opening a PR alone is not approval.\n- Bind approval to the repository, PR and accepted head. The script checks eligibility and stops for a meaningful decision if the head, required verification or merge conditions changed. Preserve existing independent-checking gates.\n- After approval, a single repository-owned command performs the squash merge, verifies the resulting commit/tree against the accepted candidate, deletes the intended remote/local source branch safely, confirms eligible tickets are closed as completed, and posts concise delivery evidence. Preserve unrelated worktrees, user edits and unfinished parent issues.\n- Add a supported post-delivery state transition. Record the merge commit separately from the original accepted candidate; preserve acceptance, reports, budgets and history. Update PR/delivery status, keep the active pointer correct, and publish/confirm the exact orphan artifact checkpoint. No ad-hoc scripts or direct coordinator state surgery are needed.\n- The command owns durable intent, returned identities, readback and recovery for its steps. Restarting the same command reconciles partial/uncertain outcomes without duplicate merges/comments, incorrect deletion or fabricated completion. Already-merged PRs, already-deleted branches and already-closed tickets are handled explicitly.\n- Return one compact structured result and human summary: delivered, incomplete with the same resumption command, or a specific decision needed. The agent does not reason through or narrate each successful mechanical step. Avoid repeatedly reading or copying unchanged full history; retain the existing publication and integrity guarantees.\n\n## Verification\n\nUse assertion-bearing fake-gh and real disposable Git/bare-remote tests for the approved happy path, no approval, stale head, merge rejection, dirty/unrelated work preservation, interruption/response loss at each mutation boundary, retry/idempotence, completed-run state updates and artifact publication failure. Verify the normal agent workflow requires one approval interaction and one wrap-up command invocation.\n\n## Scope and context\n\nHarness command, approval handoff, policy/skill guidance and regression tests. Builds on the delivered issue-based harness in [#37](https://github.com/robinwassen/Fossilize/issues/37). No implementation work is requested by filing this issue; no automatic approval, new scheduler, or changes to Fossilize C++ behavior.\n\n<!-- harness-followup:approval-wrapup-command-v1 -->\n"
+  },
+  "merged_pr": {
+    "body": "## Problem\n\nApproved PR delivery required agents to reconstruct squash merging, branch cleanup, issue closeout and harness reconciliation through individual commands. Partial failures could leave those steps difficult to resume safely.\n\n## What changes\n\nAdd a supported `harness_state.py wrap-up` command and `Harness.wrap_up` API. Explicit approval binds the repository, PR, accepted head and completed run revision. The command journals delivery, verifies the squash parent and tree, safely deletes the recorded source refs, confirms eligible issues completed and records delivery evidence. It preserves the accepted candidate separately from the merge commit and confirms the exact orphan artifact checkpoint.\n\nUpdate the skill to present verification and request approval once, honor existing scoped approval, and use the same command for recovery. A compact result distinguishes delivery, incomplete work and decisions.\n\n## Why this matters\n\nThe routine approved workflow becomes one command, with durable recovery after interrupted or uncertain external operations. Unrelated worktrees, edits and unfinished parent issues remain protected.\n\n## Why this approach\n\nDelivery extends the existing lock, artifact CAS and integrity checks while retaining independent unit/final acceptance. Head, base, check or task drift requires a decision. Each destructive operation uses intent, authoritative readback and conditional source identities.\n\n## Verification and limits\n\nThe implementer, fresh independent unit checker, and separate fresh final checker each passed all 19 bounded plan-2 gates on `48ac3bdd418d3473689f978ecfc8ab298704d753`: 130 discovered/executed tests, 103 boundary scenarios, and all 113 original direct methods accounted for, with no skipped checks. The unit checker also independently reproduced the four repaired no-send publication cases and two ambiguous crash cases. The longest final-check group took 323 seconds against its 600-second deadline. Live issue inputs and the exact eligible closing target were re-read before final acceptance.\n\nTests use fake GitHub transport and real disposable Git repositories/bare remotes for mutation-boundary recovery, publication failure, approval fencing, squash identity and preservation checks. Read-only probes confirm installed `gh` behavior for zero checks. Production GitHub merge/deletion/closure behavior was not exercised. No C++/Vulkan behavior changes.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/39\n\n<!-- harness-pr-create:issue39-20261028:48ac3bdd418d3473689f978ecfc8ab298704d753 -->\n",
+    "closingIssuesReferences": [
+      {
+        "id": "I_kwDOVZpjbc8AAAABapb2Bg",
+        "number": 39,
+        "repository": {
+          "id": "R_kgDOVZpjbQ",
+          "name": "Fossilize",
+          "owner": {
+            "id": "MDQ6VXNlcjMwMjE1MQ==",
+            "login": "robinwassen"
+          }
+        },
+        "url": "https://github.com/robinwassen/Fossilize/issues/39"
+      }
+    ],
+    "files": [
+      {
+        "path": ".agents/skills/implement-change-harness/SKILL.md",
+        "additions": 13,
+        "deletions": 4,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/references/roles.md",
+        "additions": 2,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/references/state.md",
+        "additions": 66,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/delivery_wrapup.py",
+        "additions": 420,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/fake_gh_fixture.py",
+        "additions": 41,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/harness_original_tests.json",
+        "additions": 135,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/harness_state.py",
+        "additions": 43,
+        "deletions": 6,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/run_harness_tests.py",
+        "additions": 250,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/test_delivery_wrapup.py",
+        "additions": 720,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": ".agents/skills/implement-change-harness/scripts/test_harness_runner.py",
+        "additions": 105,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "local-docs/issue-workflow.md",
+        "additions": 3,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "local-docs/specs/basic-change-harness-plan.md",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "local-docs/verification.md",
+        "additions": 52,
+        "deletions": 7,
+        "changeType": "MODIFIED"
+      }
+    ],
+    "mergeCommit": {
+      "oid": "b42b22c2e73bcfed731ee17752c244e2be7e737f"
+    },
+    "mergedAt": "2026-10-28T18:25:25Z",
+    "number": 41,
+    "state": "MERGED",
+    "title": "Add approved one-command squash delivery wrap-up",
+    "url": "https://github.com/robinwassen/Fossilize/pull/41"
+  }
+}

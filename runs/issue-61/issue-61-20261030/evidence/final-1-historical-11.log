@@ -1,0 +1,83 @@
+Issue #11 closed/completed; merged PR #44 commit a97dfec075a52e69a6ad517071c08b2b292983e5 at 2026-10-29T09:10:09Z. Actual list parse returnsfalse; prune/rehash parser rejection returnsEXIT_FAILURE and identifies incomplete output. Entry accurately names these three commands and parse failure without opt/disasm or transactional claims.
+{
+  "issue": {
+    "id": 6079799745,
+    "node_id": "I_kwDOVZpjbc8AAAABamJhwQ",
+    "number": 11,
+    "html_url": "https://github.com/robinwassen/Fossilize/issues/11",
+    "title": "FOS-000002 \u2014 Make utility parse failure affect the command result",
+    "state": "closed",
+    "state_reason": "completed",
+    "body": "Legacy identity: `FOS-000002`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n2. **FOS-000002 \u2014 Make utility parse failure affect the command result.** **S per tool; no dependencies; \u00a72\u2013\u00a73.** Start with [list:266](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_list.cpp#L266), then [rehash:226](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_rehash.cpp#L226) and [prune:1003](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_prune.cpp#L1003), one small change each. Each logs a failed parse and proceeds toward success (E8). Retain partial output if useful, but return nonzero and identify incomplete scope; never print an ordinary empty connectivity row as a verified empty dependency set. **Check:** version rejection and invalid JSON; valid empty databases still succeed. Later apply the same rule to opt/disasm. Keep fallback optimization policy explicit rather than making an error-level message alone decide failure.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **CLI subprocess regression tests, per migrated tool:** E8 version rejection and invalid JSON return nonzero and identify incomplete scope; valid populated and valid empty inputs return zero. List connectivity does not emit a rejected item as an ordinary verified empty dependency row.\n   - **Partial-output and policy tests:** A valid item followed by an invalid item preserves any promised partial output but never returns success. An explicitly permitted optimizer fallback returns the declared outcome and remains distinguishable from an unhandled parse failure when that tool is migrated.\n\n<!-- fossilize-migration-v1:FOS-000002 -->\n"
+  },
+  "merged_pr": {
+    "body": "## Problem\n\n`fossilize-list --connectivity`, `fossilize-rehash`, and `fossilize-prune` logged rejected resource blobs but could still exit successfully. List could present a rejected item as an ordinary empty dependency row, and prune could copy rejected application metadata.\n\n## What changes\n\nStop at the first parser failure, return failure, and identify the resource tag/hash and incomplete scope. List emits no connectivity rows after a parse failure. Rehash can retain previously accepted resources; prune can retain previously accepted application metadata and stops before copying the rejected item or computing pipeline closure.\n\nAdd 19 portable CTest cases covering incompatible versions, invalid JSON, populated/empty inputs, mixed inputs, dependency failures, legacy list invocations, and prune rejection after an application callback. Document the exact partial-output policies.\n\n## Why this matters\n\nA successful utility result should not conceal incomplete processing or imply that rejected dependency data was verified empty.\n\n## Why this approach\n\nThe parser's boolean result directly determines the command outcome. Stopping immediately avoids continuing with dependency state that a failing parse may already have changed. This preserves existing CLI syntax and successful input behavior, including rehash's synthesized metadata for empty input.\n\n## Verification and limits\n\nThe implementer, an independent work-unit checker, and a separate final checker each verified the unchanged candidate:\n\n- Linux/GCC 13.3 Debug and Release, exceptions OFF and ON: 73/73 CTests per configuration, including 19 new utility cases; effective compiler flags checked.\n- Six original-defect controls failed against unchanged baseline utilities specifically because those utilities incorrectly exited zero; six populated/empty baseline controls passed.\n- All 130 harness methods and 103 explicit scenarios passed across 16 bounded groups, followed by exact-union verification and skill validation.\n\nThe final checker also re-read unchanged issue requirements, shared acceptance, source/submodule identities, and managed readiness evidence. Both independent checkers accepted with no findings or skipped mandatory checks.\n\nNative Windows execution is unverified. These GPU-free checks establish utility/parser/database behavior; they do not establish GPU, Steam, or cache behavior. Opt/disasm migration and optimizer fallback policy remain future scope. The failure policy does not promise transactional rollback or new persistence guarantees.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/11\n",
+    "closingIssuesReferences": [
+      {
+        "id": "I_kwDOVZpjbc8AAAABamJhwQ",
+        "number": 11,
+        "repository": {
+          "id": "R_kgDOVZpjbQ",
+          "name": "Fossilize",
+          "owner": {
+            "id": "MDQ6VXNlcjMwMjE1MQ==",
+            "login": "robinwassen"
+          }
+        },
+        "url": "https://github.com/robinwassen/Fossilize/issues/11"
+      }
+    ],
+    "files": [
+      {
+        "path": "cli/fossilize_list.cpp",
+        "additions": 4,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "cli/fossilize_prune.cpp",
+        "additions": 4,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "cli/fossilize_rehash.cpp",
+        "additions": 4,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "local-docs/verification.md",
+        "additions": 36,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "test/CMakeLists.txt",
+        "additions": 27,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "test/utility_parse.cmake",
+        "additions": 156,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "test/utility_parse_test.cpp",
+        "additions": 261,
+        "deletions": 0,
+        "changeType": "ADDED"
+      }
+    ],
+    "mergeCommit": {
+      "oid": "a97dfec075a52e69a6ad517071c08b2b292983e5"
+    },
+    "mergedAt": "2026-10-29T09:10:09Z",
+    "number": 44,
+    "state": "MERGED",
+    "title": "Fail utility commands when resource parsing is incomplete",
+    "url": "https://github.com/robinwassen/Fossilize/pull/44"
+  }
+}
