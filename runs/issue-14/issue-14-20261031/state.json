@@ -7953,7 +7953,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "fetch target base, verify clean tuple, persist publication intent",
+  "next_action": "push implementation without force, then record remote head",
   "operation": "publish",
   "original": [
     {
@@ -8431,7 +8431,21 @@
   ],
   "publishing": {
     "ci_policy": "local",
-    "stage": "none"
+    "intent": {
+      "base_sha": "0ada951c5925e3a5a8e4ef69b382713acd416fd0",
+      "body_sha256": "953800a8d912414741bedeadf9fdc5f9cbefcd1c85bf4f0cae509f54e5bef738",
+      "branch": "codex/issue-14-replay-item-outcomes",
+      "candidate_sha": "01f810ad6be415198775313891efe92ec3b1b5a2",
+      "expected_prior_observation": "Accepted exact candidate/base/plan; source branch publication pending; one exact all-state PR lookup required before creation.",
+      "operation_marker": "<!-- harness-pr-create:issue-14-20261031:01f810ad6be415198775313891efe92ec3b1b5a2 -->",
+      "plan_version": 1,
+      "pr_body": "## Problem\n\n`fossilize-replay` could return zero after its queue drained even when required input parsing or object creation failed. Queue completion did not retain item success, and controllers needed to distinguish orderly item failures from lost workers.\n\n## What changes\n\n- Retain bounded, thread-safe read, parse, creation, unsupported, validation, setup and dependency failure facts independently of optional shared progress.\n- Propagate unsuccessful required work through normal replay, children, controllers and progress mode while preserving processed-job queue counts.\n- Give paired children/controllers an authoritative orderly-failure terminal record, drain orderly siblings, and retain the existing worker-loss recovery and cleanup policy.\n- Honor hash selection in progress mode and reject missing requested hashes before the master's zero-child completion path.\n- Register 32 CPU regression cases and update compatibility expectations, verification guidance and the changelog.\n\n## Why this matters\n\nCLI and `ExternalReplayer::wait` callers can detect unsuccessful required replay even when processing reaches its expected queue count. Unsupported work remains unsuccessful, and dependency-blocked items retain their own failure category.\n\n## Why this approach\n\nThe private outcome accumulator owns failure facts; existing progress fields retain their processed-work meanings. Current paired processes add `REPLAY_FAILED <reason-mask> <drained>` plus a nonzero OS exit to distinguish controlled item failure from disappearance or recovery. Public declarations, shared-progress layout/version and existing progress/resume message meanings are preserved. The additive internal terminal grammar is not a mixed-version interoperability guarantee.\n\n## Verification and limits\n\n- Linux GCC 13.3, Debug/Release \u00d7 exceptions OFF/ON, CLI/layer/tests and real SPIR-V validation enabled: 165/165 CPU CTests per configuration, including all 32 new cases.\n- E7 baseline/candidate oracles assert the original false-success zero versus candidate nonzero in Debug and Release across normal, child, master and progress contexts; valid controls return zero on both.\n- Actual base-header callers compile, link and run against candidate libraries. Tests cover exact failure categories, queue counts, creation fallbacks/loops, dependencies, controller completion orders, terminal-proof loss, and existing diagnostic/worker-loss compatibility.\n- Native Windows execution was explicitly skipped at the user's request and remains unverified; both platform implementations were reviewed. Null-device and controlled-producer evidence does not establish real driver compilation, Steam integration, cache durability or a general binary ABI guarantee.\n\nCandidate: `01f810ad6be415198775313891efe92ec3b1b5a2`; base: `0ada951c5925e3a5a8e4ef69b382713acd416fd0`.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/14\n\nParent [#8](https://github.com/robinwassen/Fossilize/issues/8) remains open.\n\n<!-- harness-pr-create:issue-14-20261031:01f810ad6be415198775313891efe92ec3b1b5a2 -->\n",
+      "pr_title": "Propagate replay item failures across threads and processes",
+      "target_branch": "master",
+      "target_remote": "origin",
+      "target_repository": "robinwassen/Fossilize"
+    },
+    "stage": "push"
   },
   "repository": {
     "base_sha": "0ada951c5925e3a5a8e4ef69b382713acd416fd0",
@@ -8444,7 +8458,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 412,
+  "revision": 413,
   "root_issue": {
     "id": 6079814916,
     "node_id": "I_kwDOVZpjbc8AAAABamKdBA",
