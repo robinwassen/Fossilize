@@ -407,3 +407,72 @@ record native platform evidence or its unavailable/incomplete status separately.
 - **Dependency changes:** use the dependency's documented test/corpus/build workflow (SPIRV-Tools, SPIRV-Cross, RapidJSON, volk/miniz as applicable) plus Fossilize integration. Top-level CTest does not run every vendored suite; do not label dependency coverage as first-party behavioral verification.
 
 External references: [Khronos layer discovery](https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderLayerInterface.md), [loader environment variables](https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderInterfaceArchitecture.md), [CMake presets/workflows](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html), [upstream Linux wrapper](https://github.com/ValveSoftware/Fossilize/blob/master/cli/fossilize_replay_linux.hpp). Local source is authoritative for this checkout; external documentation does not establish a particular installed runtime supports a feature.
+
+## Robust replay worker outcome
+
+Issue [#13](https://github.com/robinwassen/Fossilize/issues/13) separates a worker's
+restart disposition from its retained required-work outcome. Robust controllers
+return `EXIT_FAILURE` immediately after an unrecoverable loss, then terminate and
+reap remaining children. Immutable assigned graphics/compute/ray-tracing ranges,
+observed termination, known skipped culprit, completed prefix and unknown
+remainder survive retry-start changes and optional progress forwarding. A clean
+retry can succeed after a failed attempt when no required culprit was skipped;
+a skipped culprit remains unsuccessful even when its tail completes. Cancelled
+required work is unresolved and unsuccessful; existing child termination
+mechanisms remain in use.
+
+`replay-controller-{clean,zero,empty-archive,lost,lost-progress,mixed-success-first,mixed-loss-first,
+recover,skip-graphics,skip-compute,skip-raytracing,skip-graphics-final,
+skip-compute-final,skip-raytracing-final,skip-graphics-progress,
+skip-graphics-final-progress,partial,loss-after-retry,held-sibling,
+signal,status-error,outcome-state}` use explicit checks active under `NDEBUG`.
+`zero` preserves empty selected ranges on the populated known-hash fixture;
+`empty-archive` additionally reads back zero resources for every tag in a valid
+empty FOZ and runs that archive through the production master.
+The dedicated test executable includes the production controller with adapters
+compiled only in its translation unit. Actual fork/CreateProcess, pipes,
+epoll/native waits, shutdown parsing, restarts and cleanup remain in use.
+Barriers select both terminal report orders and hold a still-live sibling;
+process status and retained state are the oracle. Per-attempt artifacts record
+ranges and item completions, and kernel checks establish reaping/termination.
+Progress-enabled controls preserve the legacy clean/dirty crash-counter meanings
+independently of final required-work failure; expected sibling cleanup is not
+counted as another crash. The state/protocol case also verifies unchanged current message literals and
+shared-ring forwarding, unknown native status, and empty-kind recovery.
+
+`replay-controller-cli-{normal,master,progress}` preserve successful null-device
+invocations on a dependency-complete known-hash fixture. `replay-controller-cli-
+{e5,e6}` use a readback-checked FOZ containing compute `{}`. Debug requires the
+actual CLI's unsuccessful exit, including `--progress --quiet-slave`. To reproduce the
+original defect, invoke `test/replay_controller_cli.cmake` with `GENERATOR`,
+`REPLAY`, `WORK`, `CASE=e5` (then `e6`) and `BASELINE_REPLAY` set to an unchanged
+input Debug executable. The runner checks baseline false-success zero separately
+from candidate status one. Release exercises the historical fixture's distinct
+parser-rejection boundary: it currently exits zero without losing a worker.
+An `ExternalReplayer::Progress` control requires exactly one compute parse
+failure and skip, zero completed compute pipelines and zero clean/dirty worker
+deaths. This zero exit is a current parser-policy limitation, **not successful
+required replay** and not evidence of the child-loss fix. Mandatory deterministic
+real-controller loss cases require status one in every configuration. The E5/E6
+worker-loss defect and baseline contrast are established by Debug evidence.
+
+`replay-controller-cli-compatibility` exercises `ExternalReplayer::Options{}`,
+`start`, `wait`, `is_process_complete`, and cached status for clean and failed
+controllers. Kernel terminal-state barriers cover both query-first and wait-first
+completion, including a process already reaped by the initial progress poll.
+Progress pumping after a known terminal status does not reap it a second time
+or overwrite the unsuccessful result with `-ECHILD`. Compile
+`test/replay_controller_compatibility_test.cpp` with the
+input public headers first on its include path and link candidate libraries for
+old-header source compatibility evidence. Existing diagnostic compatibility
+fixtures retain recorder/database and ordinary CLI checks. Public declarations,
+shared progress layout/version and worker grammar are unchanged. The intentional
+behavior change is that unresolved robust replay returns nonzero, including
+through `ExternalReplayer::wait`. This is no general binary ABI, driver/GPU,
+output durability, full item-ledger or whole observability-standard guarantee.
+Apple/Android `NO_ROBUST_REPLAYER` paths remain outside this contract.
+
+Register the same portable controller cases on native Windows. Native Windows
+execution for the initial issue #13 run was explicitly waived by the user and
+remains unverified; Linux results do not establish Windows process/IPC behavior.
+Record subsequent platform/configuration evidence separately.

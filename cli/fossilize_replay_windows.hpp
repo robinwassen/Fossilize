@@ -29,6 +29,7 @@
 #include <signal.h>
 #include "fossilize_external_replayer.hpp"
 #include <inttypes.h>
+#include "replay_worker_outcome.hpp"
 
 static bool write_all(HANDLE file, const char *str)
 {
@@ -69,6 +70,7 @@ static HANDLE metadata_handle;
 
 struct ProcessProgress
 {
+	ReplayWorkerOutcome outcome;
 	unsigned start_graphics_index = 0u;
 	unsigned start_compute_index = 0u;
 	unsigned start_raytracing_index = 0u;
@@ -88,12 +90,13 @@ struct ProcessProgress
 	int raytracing_progress = -1;
 
 	bool process_once();
-	bool process_shutdown();
+	WorkerDisposition process_shutdown();
 	bool start_child_process();
 	void parse(const char *cmd);
 	bool kick_overlapped_io();
 
 	uint32_t index = 0;
+	bool expect_kill = false;
 
 	char module_uuid_path[2 * VK_UUID_SIZE + 1] = {};
 };
@@ -160,6 +163,7 @@ void ProcessProgress::parse(const char *cmd)
 		if (end)
 		{
 			Hash graphics_pipeline = strtoull(end, nullptr, 16);
+			outcome.culprit(0, graphics_progress, graphics_pipeline);
 			// graphics_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && graphics_progress > 0 && graphics_pipeline != 0)
 			{
@@ -181,6 +185,7 @@ void ProcessProgress::parse(const char *cmd)
 		if (end)
 		{
 			Hash raytracing_pipeline = strtoull(end, nullptr, 16);
+			outcome.culprit(2, raytracing_progress, raytracing_pipeline);
 			// raytracing_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && raytracing_progress > 0 && raytracing_pipeline != 0)
 			{
@@ -202,6 +207,7 @@ void ProcessProgress::parse(const char *cmd)
 		if (end)
 		{
 			Hash compute_pipeline = strtoull(end, nullptr, 16);
+			outcome.culprit(1, compute_progress, compute_pipeline);
 			// compute_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && compute_progress > 0 && compute_pipeline)
 			{
@@ -275,10 +281,32 @@ bool ProcessProgress::process_once()
 		return false;
 }
 
-bool ProcessProgress::process_shutdown()
+WorkerDisposition ProcessProgress::process_shutdown()
 {
+	DWORD code = STILL_ACTIVE;
+	bool observed = false;
+	bool terminated = false;
+	if (process)
+	{
+		DWORD waited = WaitForSingleObject(process, 5000);
+		if (waited == WAIT_OBJECT_0)
+		{
+			terminated = true;
+			observed = GetExitCodeProcess(process, &code) != FALSE;
+			if (!observed) outcome.native_error = GetLastError();
+		}
+		else outcome.native_error = waited == WAIT_FAILED ? GetLastError() : ERROR_TIMEOUT;
+		// Keep a possibly-live handle for scoped cleanup after an observation error.
+		if (waited == WAIT_OBJECT_0)
+		{
+			CloseHandle(process);
+			process = nullptr;
+			Global::active_processes--;
+		}
+	}
 	// Flush out all messages we got.
-	while (process_once());
+	if (terminated) while (process_once());
+	else if (crash_file_handle != INVALID_HANDLE_VALUE) CancelIoEx(crash_file_handle, nullptr);
 	if (crash_file_handle != INVALID_HANDLE_VALUE)
 		CloseHandle(crash_file_handle);
 	crash_file_handle = INVALID_HANDLE_VALUE;
@@ -296,54 +324,34 @@ bool ProcessProgress::process_shutdown()
 		pipe_event = nullptr;
 	}
 
-	// Reap child process.
-	DWORD code = 0;
-	if (process)
+	outcome.termination = code;
+	auto disposition = outcome.finish(observed && code == 0, observed && !expect_kill,
+	                                  graphics_progress, compute_progress, raytracing_progress);
+	if (disposition == WorkerDisposition::Retry)
 	{
-		if (WaitForSingleObject(process, INFINITE) != WAIT_OBJECT_0)
-			return false;
-		if (!GetExitCodeProcess(process, &code))
-			LOGE("Failed to get exit code of process.\n");
-		CloseHandle(process);
-		process = nullptr;
-		Global::active_processes--;
-	}
-
-	// If application exited in normal manner, we are done.
-	if (code == 0)
-		return false;
-
-	// We might have crashed, but we never saw any progress marker.
-	// We do not know what to do from here, so we just terminate.
-	if (graphics_progress < 0 || compute_progress < 0 || raytracing_progress < 0)
-	{
-		LOGE("Child process terminated before we could receive progress. Cannot continue.\n");
-		if (Global::control_block)
-			Global::control_block->dirty_process_deaths.fetch_add(1, std::memory_order_relaxed);
-		return false;
-	}
-
-	if (Global::control_block)
-		Global::control_block->clean_process_deaths.fetch_add(1, std::memory_order_relaxed);
-
-	start_graphics_index = uint32_t(graphics_progress);
-	start_compute_index = uint32_t(compute_progress);
-	start_raytracing_index = uint32_t(raytracing_progress);
-	if (start_graphics_index >= end_graphics_index &&
-	    start_compute_index >= end_compute_index &&
-	    start_raytracing_index >= end_raytracing_index)
-	{
-		LOGE("Process index %u crashed, but there is nothing more to replay.\n", index);
-		return false;
-	}
-	else
-	{
-		LOGE("Process index %u crashed, but will retry.\n", index);
+		start_graphics_index = graphics_progress < 0 ? end_graphics_index : unsigned(graphics_progress);
+		start_compute_index = compute_progress < 0 ? end_compute_index : unsigned(compute_progress);
+		start_raytracing_index = raytracing_progress < 0 ? end_raytracing_index : unsigned(raytracing_progress);
+		LOGE("Process index %u crashed with status %lu, but will retry.\n", index, code);
 		LOGE("  New graphics range (%u, %u)\n", start_graphics_index, end_graphics_index);
 		LOGE("  New compute range (%u, %u)\n", start_compute_index, end_compute_index);
 		LOGE("  New raytracing range (%u, %u)\n", start_raytracing_index, end_raytracing_index);
-		return true;
 	}
+	if (terminated && (!observed || code != 0) && !expect_kill && Global::control_block)
+	{
+		if (observed && graphics_progress >= 0 && compute_progress >= 0 && raytracing_progress >= 0)
+			Global::control_block->clean_process_deaths.fetch_add(1, std::memory_order_relaxed);
+		else Global::control_block->dirty_process_deaths.fetch_add(1, std::memory_order_relaxed);
+	}
+	if (disposition == WorkerDisposition::Unresolved)
+		LOGE("Worker %u unresolved: assigned graphics [%u, %u), compute [%u, %u), raytracing [%u, %u); "
+		     "remainder %s; skipped required culprit %s; status %lu, native error %u.\n", index,
+		     outcome.assigned[0].begin, outcome.assigned[0].end,
+		     outcome.assigned[1].begin, outcome.assigned[1].end,
+		     outcome.assigned[2].begin, outcome.assigned[2].end,
+		     outcome.unknown_remainder ? "unknown" : "known", outcome.skipped() ? "yes" : "unknown",
+		     code, outcome.native_error);
+	return disposition;
 }
 
 static void send_faulty_modules_and_close(HANDLE file)
@@ -387,6 +395,8 @@ static bool CreateCustomPipe(HANDLE *read_pipe, HANDLE *write_pipe, LPSECURITY_A
 
 bool ProcessProgress::start_child_process()
 {
+	outcome.assign(start_graphics_index, end_graphics_index, start_compute_index, end_compute_index,
+	               start_raytracing_index, end_raytracing_index);
 	graphics_progress = -1;
 	compute_progress = -1;
 	raytracing_progress = -1;
@@ -396,8 +406,11 @@ bool ProcessProgress::start_child_process()
 	    start_raytracing_index >= end_raytracing_index)
 	{
 		// Nothing to do.
+		outcome.complete = !outcome.skipped();
 		return true;
 	}
+
+	outcome.attempts++;
 
 	// We cannot use fork() on Windows, so we need to create a new process which references ourselves.
 
@@ -620,6 +633,9 @@ bool ProcessProgress::start_child_process()
 		si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
 	}
 
+	#ifdef FOSSILIZE_REPLAY_TEST_CHILD_COMMAND
+	FOSSILIZE_REPLAY_TEST_CHILD_COMMAND(cmdline, filename, *this);
+#endif
 	// For whatever reason, this string must be mutable. Dupe it.
 	char *duped_string = _strdup(cmdline.c_str());
 	if (!CreateProcessA(nullptr, duped_string, nullptr, nullptr, TRUE, CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr, nullptr, &si, &pi))
@@ -734,6 +750,30 @@ static bool open_shm(const char *shm_path, const char *shm_mutex_path)
 
 	return true;
 }
+
+struct ControllerChildrenCleanup
+{
+	vector<ProcessProgress> &children;
+	~ControllerChildrenCleanup()
+	{
+		for (auto &child : children)
+			if (child.process) { child.expect_kill = true; TerminateProcess(child.process, 3); }
+		for (auto &child : children)
+		{
+			if (child.process)
+			{
+				WaitForSingleObject(child.process, 5000);
+				child.process_shutdown();
+				if (child.process) { CloseHandle(child.process); child.process = nullptr; }
+			}
+		}
+#ifdef FOSSILIZE_REPLAY_TEST_OBSERVE
+		FOSSILIZE_REPLAY_TEST_OBSERVE(children);
+#endif
+		if (Global::job_handle) CloseHandle(Global::job_handle);
+		Global::job_handle = nullptr;
+	}
+};
 
 static int run_master_process(const VulkanDevice::Options &opts,
                               const ThreadedReplayer::Options &replayer_opts,
@@ -879,6 +919,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 
 	Global::active_processes = 0;
 	vector<ProcessProgress> child_processes(processes);
+	ControllerChildrenCleanup cleanup{child_processes};
 	vector<HANDLE> wait_handles;
 
 	// CreateProcess for our children.
@@ -922,11 +963,18 @@ static int run_master_process(const VulkanDevice::Options &opts,
 		}
 
 		// Basically like poll(), except we had to a lot of work to get here ...
-		DWORD ret = WaitForMultipleObjects(wait_handles.size(), wait_handles.data(), FALSE, INFINITE);
+		DWORD ret;
+#ifdef FOSSILIZE_REPLAY_TEST_WAIT
+		ret = FOSSILIZE_REPLAY_TEST_WAIT(wait_handles, child_processes);
+#else
+		ret = WaitForMultipleObjects(wait_handles.size(), wait_handles.data(), FALSE, INFINITE);
+#endif
 		if (ret == WAIT_FAILED)
 		{
-			LOGE("WaitForMultipleObjects failed.\n");
-			log_and_die();
+			DWORD error = GetLastError();
+			LOGE("WaitForMultipleObjects failed (native error %lu).\n", error);
+			for (auto &child : child_processes)
+				if (child.process) child.outcome.native_error = error;
 			return EXIT_FAILURE;
 		}
 		else if (ret == WAIT_TIMEOUT)
@@ -952,7 +1000,10 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			if (process_itr != end(child_processes))
 			{
 				// The process finished.
-				if (process_itr->process_shutdown() && !process_itr->start_child_process())
+				auto disposition = process_itr->process_shutdown();
+				if (disposition == WorkerDisposition::Unresolved)
+					return EXIT_FAILURE;
+				if (disposition == WorkerDisposition::Retry && !process_itr->start_child_process())
 				{
 					LOGE("Failed to start child process.\n");
 					return EXIT_FAILURE;
@@ -973,7 +1024,10 @@ static int run_master_process(const VulkanDevice::Options &opts,
 				}
 
 				// Process should terminate immediately, so clean up here.
-				if (timer_itr->process_shutdown() && !timer_itr->start_child_process())
+				auto disposition = timer_itr->process_shutdown();
+				if (disposition == WorkerDisposition::Unresolved)
+					return EXIT_FAILURE;
+				if (disposition == WorkerDisposition::Retry && !timer_itr->start_child_process())
 				{
 					LOGE("Failed to start child process.\n");
 					return EXIT_FAILURE;
@@ -981,9 +1035,6 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			}
 		}
 	}
-
-	if (Global::job_handle)
-		CloseHandle(Global::job_handle);
 
 	if (!replayer_opts.on_disk_module_identifier_path.empty())
 	{
