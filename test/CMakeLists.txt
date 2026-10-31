@@ -175,3 +175,42 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set_tests_properties(file-helper-legacy-completion PROPERTIES TIMEOUT 60
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/file-helper-legacy")
 endif()
+
+# Test-only adapters retain real master loops, fork/CreateProcess, pipes and OS
+# waits. They are compiled into this executable alone, never the shipping CLI.
+if(FOSSILIZE_CLI AND (WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Linux"))
+    add_executable(replay-controller-test replay_controller_test.cpp)
+    target_link_libraries(replay-controller-test PRIVATE fossilize cli-utils)
+    target_compile_options(replay-controller-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
+    set_target_properties(replay-controller-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
+    foreach(case clean zero empty-archive lost lost-progress mixed-success-first mixed-loss-first recover
+                 skip-graphics skip-compute skip-raytracing skip-graphics-final skip-compute-final
+                 skip-raytracing-final skip-graphics-progress skip-graphics-final-progress
+                 partial loss-after-retry held-sibling signal status-error outcome-state)
+        set(name replay-controller-${case})
+        set(work "${CMAKE_CURRENT_BINARY_DIR}/${name}")
+        file(MAKE_DIRECTORY "${work}")
+        add_test(NAME ${name} COMMAND ${CMAKE_COMMAND}
+            -DCONTROLLER=$<TARGET_FILE:replay-controller-test> -DCASE=${case}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/replay_controller.cmake)
+        set_tests_properties(${name} PROPERTIES TIMEOUT 45 WORKING_DIRECTORY "${work}")
+    endforeach()
+endif()
+if(TARGET replay-controller-test)
+    add_executable(replay-controller-compatibility-test replay_controller_compatibility_test.cpp)
+    target_link_libraries(replay-controller-compatibility-test PRIVATE fossilize)
+    target_compile_options(replay-controller-compatibility-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
+    set_target_properties(replay-controller-compatibility-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
+    foreach(case normal master progress e5 e6 compatibility)
+        set(name replay-controller-cli-${case})
+        set(work "${CMAKE_CURRENT_BINARY_DIR}/${name}")
+        file(MAKE_DIRECTORY "${work}")
+        add_test(NAME ${name} COMMAND ${CMAKE_COMMAND}
+            -DGENERATOR=$<TARGET_FILE:replay-controller-test>
+            -DREPLAY=$<TARGET_FILE:fossilize-replay>
+            -DCALLER=$<TARGET_FILE:replay-controller-compatibility-test>
+            -DCASE=${case} -DWORK=${work}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/replay_controller_cli.cmake)
+        set_tests_properties(${name} PROPERTIES TIMEOUT 90 WORKING_DIRECTORY "${work}")
+    endforeach()
+endif()
