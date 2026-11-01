@@ -885,7 +885,13 @@ struct ThreadedReplayer : StateCreatorInterface
 			uuid[2 * i + 1] = to_hex((props.pipelineCacheUUID[i] >> 4) & 0xf);
 		}
 
-		replayer_cache_db.reset(create_concurrent_database((opts.replayer_cache_path + "." + uuid).c_str(), DatabaseMode::Append, nullptr, 0));
+		// v1 records successful creation of every requested iteration with no
+		// observed validation error. It is only an optional selection hint;
+		// it certifies neither persisted driver output nor driver cache reuse.
+		// Legacy UUID-only archives have no such provenance and remain untouched.
+		string cache_base = opts.replayer_cache_path + ".replay-v1." +
+		                    (device_opts.null_device ? "null." : "vulkan.") + uuid;
+		replayer_cache_db.reset(create_concurrent_database(cache_base.c_str(), DatabaseMode::Append, nullptr, 0));
 		if (!replayer_cache_db || !replayer_cache_db->prepare())
 			return false;
 		return true;
@@ -1227,7 +1233,10 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (replayer_cache_db)
 		{
 			lock_guard<mutex> holder{replayer_cache_mutex};
-			replayer_cache_db->write_entry(tag, hash, nullptr, 0, 0);
+			if (!replayer_cache_db->write_entry(tag, hash, nullptr, 0, 0))
+				LOGE("Replay/marker write rejected: tag=%u, hash=0x%016" PRIx64
+				     "; optional replay-cache hint unavailable, item remains eligible on next lookup.\n",
+				     unsigned(tag), hash);
 		}
 	}
 
@@ -1805,7 +1814,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (valid_type)
 		{
-			if (!per_thread.triggered_validation_error && per_thread.creation_succeeded)
+			if (loop_count > 0 && !per_thread.triggered_validation_error && per_thread.creation_succeeded)
 			{
 				whitelist_resource(work_item.tag, work_item.hash);
 				mark_replayed_resource(work_item.tag, work_item.hash);
@@ -3841,7 +3850,7 @@ static void print_help()
 	     "\t[--null-device]\n"
 	     "\t[--timeout-seconds]\n"
 	     "\t[--implicit-whitelist <index>]\n"
-	     "\t[--replayer-cache <path>]\n"
+	     "\t[--replayer-cache <path>] (versioned creation hints, separate null/Vulkan namespaces)\n"
 	     "\t[--fail-on-pipeline-compile-required]\n"
 	     "\t[--skip-pipelines-on-compile-required]\n"
 	     EXTRA_OPTIONS

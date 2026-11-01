@@ -184,7 +184,7 @@ redesign asynchronous persistence error reporting. Opt/disasm migration and the
 explicitly permitted optimizer fallback policy remain future scope; these tests
 make no claim to verify those tools or the complete observability standard.
 
-A normal Linux CLI/layer-enabled build with SPIR-V validation registers 165 tests before optional layer integration, including 14 Linux fork-child cases and 28 replay-controller cases retained from [issue #13](https://github.com/robinwassen/Fossilize/issues/13), plus 32 replay item-outcome cases. Discover the current platform-specific inventory with CTest before reporting coverage; this Linux count does not establish native Windows execution. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
+A normal Linux CLI/layer-enabled build with SPIR-V validation registers 174 tests before optional layer integration, including 14 Linux fork-child cases and 28 replay-controller cases retained from [issue #13](https://github.com/robinwassen/Fossilize/issues/13), plus 32 replay item-outcome cases. Discover the current platform-specific inventory with CTest before reporting coverage; this Linux count does not establish native Windows execution. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
 
 The replay outcome regressions for [issue #14](https://github.com/robinwassen/Fossilize/issues/14)
 register `replay-outcome-{state,parse-read,creation,compile-required-loop,support,validation,setup-dependency,worker-queue,matrix}`,
@@ -212,8 +212,8 @@ blacklisted work and skipped compile-required work are unsuccessful; a successfu
 compile-required fallback remains successful, while a failed required loop
 iteration cannot be erased by a later success. Explicit ranges/whitelists exclude
 work from the requested scope; failed or invalid creation cannot add successful
-replay-cache/validation-whitelist markers, and existing reuse selection policy is
-unchanged.
+replay-cache/validation-whitelist markers; issue #15 further isolates replay hints
+by policy/device mode and prevents zero-iteration hints as described below.
 
 Normal replay now returns nonzero for retained required failures. Current paired
 children/controllers add an internal `REPLAY_FAILED <reason-mask> <drained>`
@@ -597,3 +597,65 @@ Register the same portable controller cases on native Windows. Native Windows
 execution for the initial issue #13 run was explicitly waived by the user and
 remains unverified; Linux results do not establish Windows process/IPC behavior.
 Record subsequent platform/configuration evidence separately.
+
+
+## Replay creation hints
+
+Issue [#15](https://github.com/robinwassen/Fossilize/issues/15) narrows
+`--replayer-cache <path>` to optional creation hints in
+`path.replay-v1.<null|vulkan>.<pipelineCacheUUID>`. The UUID encoding is retained.
+The concurrent database writes `.N.foz` fragments and reads a harvested `.foz`
+base; ordinary explicit harvesting (for example `fossilize-merge-db`) is still
+required before fragments can suppress later selection. UUID-only legacy files
+and unknown policy namespaces are ignored and left untouched, intentionally
+causing a one-time replay when switching from legacy hints. No automatic migration
+or stronger provenance is assigned to old entries.
+
+A v1 hint means every requested creation iteration succeeded, at least one
+iteration ran, and no validation error callback was observed for that item, in
+the selected device mode and pipeline cache UUID context. A permitted
+compile-required probe followed by successful fallback completes one iteration;
+a skipped or failed fallback does not. Failure remains sticky across `--loop`
+iterations. Zero iterations retain the existing invocation status but cannot
+write creation or validation hints. Validation whitelists remain independent
+observed-no-validation-error hints under their existing success gate, including
+prior explicit/implicit entries; they neither select compiled output nor prove
+that validation actually ran. Hints never establish driver-output persistence,
+flush/close durability, successful hardware compilation in null mode, or an
+observed driver cache hit. Cache export/finalization is a separate contract.
+
+`write_entry` rejection is visible as `Replay/marker write rejected`, with tag
+and hash and the unavailable optional hint. It does not change a successful
+Vulkan creation into a compilation failure or change the optional-output CLI
+success policy. The Boolean only reports write acceptance; `flush()` has no
+result and supplies no durability evidence.
+
+Nine registered `replay-cache-{creation-rerun,success-policy,loop,compile-required,
+write-failure,legacy-provenance,null-provenance,whitelist,legacy-invocation}` cases
+extend the production-including outcome fixture. They assert real recorder FOZ
+hashes/payloads, actual worker creation attempts and outcomes for all three
+pipeline kinds, teardown/reopen, explicit fragment harvesting and actual
+suppression by the successful control. Release-active checks cover final dispatch,
+loop/fallback counters and flags, retained library handles and cleanup, independent
+per-item state, zero attempts, rejecting adapters and a missing-parent filesystem
+failure, untouched legacy base/fragments, unknown policy namespaces, and independent
+whitelist use. The Vulkan-mode provenance check retains production device options
+but privately adapts device initialization to null dispatch; it is CPU control-flow
+evidence, not physical Vulkan/driver evidence. Ordinary CLI cache and validation
+whitelist invocations remain registered alongside existing compatibility tests.
+
+Run the full CPU CTest matrix in Debug/Release with exceptions OFF/ON and SPIR-V
+validation ON, retaining discovered/executed IDs. For original-defect controls,
+copy the committed fixture and candidate source to an isolated tree, replace only
+`cli/fossilize_replay.cpp` with input revision
+`a6b22d65badc61907060028514dc5e86c5ce6c3e`, and build `replay-outcome-test`.
+`cache-write-failure`, `cache-legacy-provenance` and `cache-loop` must fail explicit
+`M15` runtime assertions (rejected-write visibility, current-policy namespace and
+zero-iteration gate). Build failures, deadlines and crashes are not defect
+reproduction. The unchanged input already contains issue #14 creation-failure
+gating: its `creation` control must pass and is not a newly fixed #15 defect.
+Preserved old-header caller compilation/linking and the existing diagnostic and
+controller/outcome compatibility tests provide source/invocation evidence, not a
+general binary ABI guarantee. Native Windows execution is explicitly excluded by
+the user's run instruction and remains unverified; no GPU or Steam claim follows
+from this Linux CPU matrix.

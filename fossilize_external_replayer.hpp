@@ -91,9 +91,11 @@ public:
 		// Path to store pipeline stats in.
 		const char *pipeline_stats_path;
 
-		// Path to a replayer cache.
-		// path.$pipelineCacheUUID.*.foz will be written and any pipelines in
-		// path.$pipelineCacheUUID.foz will be skipped.
+		// Base path for optional successful-creation hints (not durable driver output).
+		// path.replay-v1.<null|vulkan>.$pipelineCacheUUID.N.foz is written;
+		// pipelines in the corresponding harvested .foz base may be skipped.
+		// UUID-only legacy hints are ignored and left untouched. Validation
+		// whitelist entries remain independent of these creation hints.
 		const char *replayer_cache_path;
 
 		// Extra environment variables which will be added to the child process tree.
