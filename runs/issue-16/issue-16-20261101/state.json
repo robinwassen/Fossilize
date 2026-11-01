@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/issue-16/issue-16-20261101/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1793553328.3943753,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/16",
       "worker_id": "/root/issue16_planner"
     }
@@ -87,8 +88,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -100,9 +101,244 @@
     "output_directory": "/tmp/fossilize-16/output",
     "source_worktree": "/home/robin/.codex/worktrees/8022/fossilize"
   },
-  "phase": "planning",
-  "plan": null,
-  "provenance": [],
+  "phase": "implementing",
+  "plan": {
+    "cases": [
+      {
+        "assertions": "For each no-progress, heartbeat and cleanup clock: not expired below threshold, expires exactly at threshold, records stable distinct origin with configured threshold and actual monotonic elapsed (including an overshoot) BEFORE a termination adapter is invoked; the adapter inspects already-retained evidence. Test disabled no-progress separately. All checks remain active with NDEBUG.",
+        "id": "T16-U1",
+        "location": "New private portable timeout-state/termination-adapter unit fixture, registered as replay-timeout-unit-deadlines (or equivalent explicit CTest names).",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "Use independent fake timestamps: real item completion resets only the work-no-progress clock; heartbeat resets only heartbeat; entering crash cleanup starts only cleanup. Heartbeats/spurious wakes/queue notifications do not indefinitely postpone no-progress. Progress and heartbeats after crash do not postpone cleanup. Include stopped-worker/resume heartbeat behavior matching current Linux suspension semantics, and fresh-attempt clock reset without erasing previous trigger history.",
+        "id": "T16-U2",
+        "location": "Portable unit fixture: replay-timeout-unit-resets; production dispatcher wait loop shares the exercised clock policy.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "Spontaneous crash/fault starts possible cleanup observation but has no timeout origin until an actual cleanup deadline expires. External observed SIGKILL alone has unknown origin, no timeout/OOM claim and no invented threshold. Multiple worker threads without independent item evidence have unknown item identity; explicit independent valid resource evidence remains identifiable. Origin, requested mechanism, adapter success/raw error, observed native termination, recovery action and final work effect are independently queryable.",
+        "id": "T16-U3",
+        "location": "Portable unit fixture: replay-timeout-unit-unknown and replay-timeout-unit-delivery.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "Termination adapter receives persisted origin/elapsed first, can return success or a native error without a false claim of delivered termination; subsequent escalation retains original no-progress origin and records cleanup deadline as additional causal evidence rather than overwriting it. Repeated notifications and subsequent attempts do not overwrite earlier observed termination/errors; retention is bounded. Malformed/truncated/overflow/new timeout protocol records cannot manufacture a timeout or item attribution.",
+        "id": "T16-U4",
+        "location": "Portable state/protocol fixture: replay-timeout-unit-delivery and replay-timeout-unit-protocol; test actual parser where feasible.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "In a production-including Linux controller fixture with real fork/pipes/epoll/shutdown/reaping, block a real production worker creation using a barrier; drive dispatcher time deterministically to expire configured --timeout-seconds. Parent must receive/store the no-progress trigger, exact threshold and measured elapsed before a test-observed pthread_kill(SIGABRT) delivery. Exercise actual recovery reporting and retained worker state, not only a synthetic CRASH line. A successful clean control executes/reads back the known input and completes normally with no trigger.",
+        "id": "T16-I1",
+        "location": "New replay-timeout-controller-no-progress and replay-timeout-controller-clean CTests, extending existing controller/outcome fixture or adding a private production-TU fixture.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "Real controller heartbeat loss: child acknowledges BEGIN_HEARTBEAT then blocks; test clock/event adapter exposes exactly the configured Linux watchdog expiration after a barrier. Retained heartbeat origin/threshold/actual elapsed exists before controller SIGKILL; final native SIGKILL is recorded separately. A heartbeat delivered just before expiration rearms only heartbeat, and a stopped worker is not falsely killed. No wall-clock sleeps determine ordering.",
+        "id": "T16-I2",
+        "location": "replay-timeout-controller-heartbeat and replay-timeout-controller-heartbeat-reset CTests; actual run_master_process event branch.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "Child reports a spontaneous fault or receives actual SIGABRT with no dispatcher timeout, begins real recovery, then is barrier-held during teardown. Before cleanup expiry it has no invented no-progress/heartbeat trigger. On deterministic cleanup expiry controller records cleanup origin/3-second threshold/actual elapsed before SIGKILL. Actual fault+completed cleanup control never invents cleanup timeout. In no-progress followed by hung teardown, preserve both originating no-progress and later cleanup escalation with distinct mechanism/final effect.",
+        "id": "T16-I3",
+        "location": "replay-timeout-controller-cleanup, replay-timeout-controller-spontaneous and replay-timeout-controller-escalation CTests; production CRASH parser, timer event and shutdown path.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "Private adapters force initial abort/signal delivery failure with a known native error, then test actual controller failure handling and/or bounded kill escalation. Force controller cleanup/watchdog kill failure independently; record attempted mechanism plus failure, preserve originating evidence and unsuccessful/incomplete work, do not claim termination until independently observed. Restore a real delivery for cleanup and verify every child reaped. Synchronization barriers establish first attempt, failure, escalation and reap order; a test watchdog only bounds hangs.",
+        "id": "T16-I4",
+        "location": "replay-timeout-controller-delivery-failure and replay-timeout-controller-kill-failure CTests; private pthread_kill/kill adapters and production controller.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "Kill a barrier-ready child externally with SIGKILL before any timeout; native termination retained, origin and exact item remain unknown, required assigned work unresolved/nonzero. Repeat relevant no-progress path with >1 worker thread and no resource evidence: no arbitrary pipeline hash/cursor assigned as culprit. Positive independent-evidence case confirms known attribution is not discarded. Separate worker attempt identity from a retry; a later clean attempt may satisfy all required work without rewriting prior timeout evidence.",
+        "id": "T16-I5",
+        "location": "replay-timeout-controller-external-kill, replay-timeout-controller-multithread and replay-timeout-controller-recovery CTests; state checks active in Release.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "Preserve current ordinary/null-device CLI invocations, existing controller outcome/recovery behavior, legacy child grammar CRASH/GRAPHICS/COMPUTE/RAYTRACE/BEGIN_HEARTBEAT/HEARTBEAT/REPLAY_FAILED and shared progress version/layout. New paired child/controller timeout messages, if needed, are additive internal protocol extensions: unchanged old records retain semantics, unknown/absent extension means unknown origin, not spontaneous-crash proof. No new source API or binary ABI promise; old-header ExternalReplayer caller compiles/links candidate and succeeds/fails as before. Test ordinary --timeout-seconds invocation and zero timeout.",
+        "id": "T16-C1",
+        "location": "Existing diagnostic-compatibility, replay-controller-cli-* and replay-outcome-cli-compatibility CTests plus replay-timeout-unit-protocol and a new timeout legacy-invocation control as necessary.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "Portable timeout logic and its CTest registration compile on supported Windows source paths; Windows existing no-progress CRASH recovery and cleanup TerminateProcess path record origin before recovery/termination, retain native delivery errors and avoid invented multithread attribution. Do not add a Windows heartbeat watchdog: none exists at input. Native Windows execution is explicitly user-waived/unverified, never labelled passed. Linux evidence makes no native Windows or hardware claim.",
+        "id": "T16-C2",
+        "location": "Shared portable units and platform-conditioned controller fixture; source review of cli/fossilize_replay_windows.hpp and test/CMakeLists.txt, mapped to executed portable/compatibility tests with the separate native execution waiver stated in limitations.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      },
+      {
+        "assertions": "CHANGELOG.md contains one short factual Unreleased [Observability] sentence with full issue link and practical benefit matching final scope; verification guidance explains deadline origins/units, adapter/real-controller boundary, compatibility and native Windows waiver. Entire diff contains no temporary outputs/private config and preserves tracked AGENTS.md/local-docs.",
+        "id": "T16-D1",
+        "location": "CHANGELOG.md, local-docs/verification.md, and full base-to-candidate review; assertion tests above establish the described delivered behavior.",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ]
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/8022/fossilize",
+        "expected": "Four Linux configurations pass nonempty discovered/executed full CPU suites, including every new timeout case and existing controller/fork/outcome/cache/diagnostic cases. Assertions are Release-active, exception settings verified, test registry and execution counts match without hidden skips. Hardware layer-test remains disabled by design, not claimed as verified. Record compiler/options/candidate/base, actual commands/status and limitations.",
+        "id": "G16-MATRIX",
+        "kind": "work_unit",
+        "method": "For each TYPE in Debug,Release and EXC in OFF,ON use isolated B=/tmp/fossilize-16/build/<role>/${TYPE}-${EXC}, S=exact candidate source. Individually lock: /tmp/fossilize-10/tools/cmake/data/bin/cmake -S S -B B -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=TYPE -DFOSSILIZE_TESTS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_ENABLE_EXCEPTIONS=EXC -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF ; /tmp/fossilize-10/tools/cmake/data/bin/cmake --build B --parallel 4 ; /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir B --show-only=json-v1 ; /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir B --output-on-failure --no-tests=error. Each configure/build/test invocation is its own <=600-second child with unique command-intent/receipt; if full build legitimately needs bounded target stages, lock and log each stage separately. Preserve JSON inventory and full CTest logs outside source. Independent unit checker reruns all four suites, not just reads implementer claims; exact candidate-bound build directories may be reused after inspecting source/configuration provenance and independently rebuilding affected targets.",
+        "prerequisites": "Exact committed candidate/base/plan; live unchanged issue #16 and parent #8; populated CLI submodules in implementation/build source; GCC/Python; supplied CMake/CTest/Ninja; coordinator-published unique command intents and verification_lock receipt for every build/probe/test command."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/8022/fossilize",
+        "expected": "T16-U1 through T16-I5 and compatibility/documentation cases mapped to executed IDs; actual pre-termination causal ordering, three origins with measured overshoot, reset independence, spontaneous/external unknowns, failed delivery and escalation, >1-thread unknown attribution, safe retry and reaping all asserted. A unit-only timer simulation or synthetic CRASH message alone cannot satisfy production no-progress integration.",
+        "id": "G16-DECISIVE",
+        "kind": "both",
+        "method": "From exact candidate, independently run /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir DEBUG_OFF_BUILD --output-on-failure --no-tests=error -R ^replay-timeout- ; repeat this focused deterministic set with --repeat until-fail:3. Inspect complete base-to-candidate diff and every planned assertion, real-controller inclusion and private hook registration. If fixture names differ use the exact corresponding nonempty regex/list and record IDs. Checkers use fresh detached source contexts; independently build affected timeout targets in a fresh Debug/OFF build at least once per checking role (reuse immutable dependency build outputs only with exact provenance).",
+        "prerequisites": "Exact committed candidate/base/plan; live unchanged issue #16 and parent #8; populated CLI submodules in implementation/build source; GCC/Python; supplied CMake/CTest/Ninja; coordinator-published unique command intents and verification_lock receipt for every build/probe/test command."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/8022/fossilize",
+        "expected": "Meaningful defect controls fail the intended explicit runtime assertions with the intended event injected, while healthy candidate controls pass. At least dispatcher ordering and controller causal-loss paths demonstrate the original defect where feasible; targeted mutation controls demonstrate that reset/unknown assertions can reject broken behavior, without misrepresenting new API compile failure as baseline evidence. The final checker independently reruns the decisive original/mutation controls or recreates equivalent controls.",
+        "id": "G16-DEFECT-CONTROLS",
+        "kind": "both",
+        "method": "At candidate Debug/OFF, run isolated source-copy controls with candidate tests retained and only the relevant causal production behavior restored to input semantics (or targeted bounded mutations). Prefer unchanged baseline production source with a minimal test-only observation bridge where fixture interfaces changed; disclose the bridge. At minimum restore timeout_handler-before-record/send ordering, restore counted-wakeup/no-progress policy, remove heartbeat/cleanup causal record before kill, and conflate unexplained SIGKILL or multi-thread unknown with a claimed timeout/item. Record exact patch/diff and candidate SHA for each disposable variant. Individually verification-lock configure/build/probe/test commands. Original baseline tests must compile and reach explicit M16/diagnostic assertion failures; compilation failures, killed watchdogs, deadline expiry and crashes are not reproduction. Candidate corresponding healthy controls still pass.",
+        "prerequisites": "Exact committed candidate/base/plan; live unchanged issue #16 and parent #8; populated CLI submodules in implementation/build source; GCC/Python; supplied CMake/CTest/Ninja; coordinator-published unique command intents and verification_lock receipt for every build/probe/test command."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/8022/fossilize",
+        "expected": "Preserved public declarations, ordinary old calls/invocations and shared progress semantics have compile/run evidence. Additive internal timeout messages are bounded/strictly parsed and their absence remains unknown. Windows native runtime is separately user-waived/unverified, with portable tests passing and Windows source review recorded; do not put a waived native test into mandatory skipped list or call it a pass. No C++ prebuilt binary ABI claim.",
+        "id": "G16-COMPAT",
+        "kind": "both",
+        "method": "Run existing diagnostic-compatibility-test, replay-controller-cli-* and replay-outcome-cli-compatibility with /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir B --output-on-failure --no-tests=error -R <anchored applicable expression>; execute new zero-timeout/legacy protocol tests and inspect shipped CLI for absent injection options. Compile existing ExternalReplayer compatibility caller with input public headers first and candidate libraries (same compiler/configuration), run clean and failed controls; document exact compile/link/invocation commands and status. Inspect old progress layout/version and grammar plus Windows no-progress/cleanup paths against base.",
+        "prerequisites": "Exact committed candidate/base/plan; live unchanged issue #16 and parent #8; populated CLI submodules in implementation/build source; GCC/Python; supplied CMake/CTest/Ninja; coordinator-published unique command intents and verification_lock receipt for every build/probe/test command."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/8022/fossilize",
+        "expected": "All four current matrix executions pass with every planned case mapped; no unresolved findings or unexplained skips. Final checker confirms changelog factual benefit/full #16 link, protocol/source compatibility limits, native Windows waiver, and that only #16 is eligible for Closes. Parent #8 stays open.",
+        "id": "G16-FINAL-MATRIX",
+        "kind": "final",
+        "method": "Separate fresh final checker after unit acceptance and managed readiness: reread live root/parent/prerequisite inputs and inspect unchanged exact combined candidate/base/plan and full diff/changelog. Independently rerun all four full CPU CTest matrix suites using /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir B --output-on-failure --no-tests=error and discovery for each exact candidate-bound configuration. May reuse verified existing immutable candidate build trees for full repeats; independently rebuild affected targets from detached candidate for G16-DECISIVE and verify build provenance before use. All commands separately intent/lock/receipt bounded.",
+        "prerequisites": "Exact committed candidate/base/plan; live unchanged issue #16 and parent #8; populated CLI submodules in implementation/build source; GCC/Python; supplied CMake/CTest/Ninja; coordinator-published unique command intents and verification_lock receipt for every build/probe/test command."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/8022/fossilize",
+        "expected": "One real open reviewed implementation PR at the accepted head with passing actual Linux matrix/causal evidence and explicit native Windows execution waiver/unverified limit; issue remains open pending approved merge/delivery. No publication from stale acceptance.",
+        "id": "G16-PUBLISH",
+        "kind": "publication",
+        "method": "Coordinator re-reads live material issue graph and target master, confirms clean exact accepted candidate/base/plan, exact source push/PR head/base/repository, non-force publication and actual PR attachment/readback plus confirmed orphan artifacts using supported harness operations. PR has exact Closes https://github.com/robinwassen/Fossilize/issues/16 and evidence/limitations; no Closes #8. Source/base/requirements drift invalidates affected acceptance and requires reconciliation.",
+        "prerequisites": "Exact committed candidate/base/plan; live unchanged issue #16 and parent #8; populated CLI submodules in implementation/build source; GCC/Python; supplied CMake/CTest/Ninja; coordinator-published unique command intents and verification_lock receipt for every build/probe/test command."
+      }
+    ],
+    "implementation": [
+      "1. Read immutable original and live issue/parent before editing. Keep exact original acceptance. Inspect the private ReplayWorkerOutcome and both platform controllers; retain issue #13 unresolved-work aggregation and issue #14 orderly failure accounting. Commit one coherent candidate including source, registered tests and changelog.",
+      "2. Add a small bounded private causal/deadline model shared by production paths and unit tests. Use monotonic duration fields with documented units and checked/saturating conversion for --timeout-seconds. Distinguish originating trigger(s), configured threshold, actual elapsed, requested termination and delivery status/raw error from observed terminal status and retry/final effect. Retain enough per-attempt evidence for originating timeout plus cleanup escalation without unbounded tracing; do not overwrite first cause with final signal. A stale event for closed/restarted attempt must not terminate a new child.",
+      "3. Replace one-second-wakeup counting in sync_worker_memory_context with actual no-progress monotonic elapsed since last observed applicable completion. Healthy dispatcher records/formats/sends bounded timeout origin before calling timeout_handler; terminal handlers need not allocate/log invented causes. Preserve heartbeat cadence and disabled timeout behavior. Avoid lock lifetime changes or signal-handler unsafe new allocation/locking. Test hooks exist only in private test translation units.",
+      "4. Linux parser retains additive child-origin records independently of optional shared progress. Heartbeat and CRASH cleanup arm/reset their own measured clock; controller timer branches capture threshold and elapsed before kill and record syscall success/error. Keep stopped/resumed behavior. Check signal delivery failure explicitly; ensure fail-fast/cleanup remains bounded and retained evidence truthful. Preserve observed native wait status without labelling unexplained SIGKILL as timeout or OOM.",
+      "5. Update Windows configured no-progress recovery and existing cleanup TerminateProcess causal propagation using the same portable model; no Windows watchdog is added. Review current native error handling. Portable units and platform-conditioned fixtures preserve source/registration, while native execution remains explicitly waived/unverified.",
+      "6. Add deterministic portable fake-clock/termination-adapter units and assertion-bearing Linux production-controller tests described below. Prefer extending existing private production-TU fixtures; new hooks must not become shipping CLI options. Real fork/IPC/controller/event/shutdown paths remain under test, with barriers and controllable clocks/events rather than 3/10-second sleeps. Real signal delivery/escalation and observed OS reaping are integration oracles. Build fixtures create and re-read a known dependency-complete FOZ, record unique output paths, and verify actual completed work for clean/recovery controls.",
+      "7. Register all cases with CTest, explicit checks active under NDEBUG, per-case private directories and finite process/CTest deadlines (suggest internal watchdog 12-20 seconds plus emergency cleanup; CTest 45-90 seconds). Adapters record ordered effects and native errors; preserve descendants/cleanup even when assertions fail. Names can differ from suggested names but reports must map every plan case to committed executed test IDs.",
+      "8. Add factual CHANGELOG.md entry and concise verification.md procedure/limitations. Declare preserved public source declarations/shared layout/old protocol semantics, additive private timeout-message contract, intentional causal diagnostics, and no general C++ binary ABI claim. Implementer returns clean committed candidate plus test mapping, exact commands, logs, discovered/executed IDs and original-defect evidence."
+    ],
+    "non_goals": [
+      "No general structured-result API/schema project, complete item ledger, full observability-standard compliance, OOM diagnosis, driver/GPU/Steam evidence or cache persistence redesign.",
+      "No change-harness package changes; its Python suite is required only if that package actually changes.",
+      "No new Windows heartbeat watchdog and no native Windows execution under the explicit user waiver; preserve Windows source behavior and portable tests.",
+      "No merge, issue closure, unrelated backlog item, or persistent split sub-issue."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000007`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n7. **FOS-000007 \u2014 Record timeout origin before invoking crash recovery.** **S\u2013M; depends on `FOS-000004`; \u00a74\u2013\u00a75.** [no-progress wait:965](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L965) invokes the timeout handler before its diagnostic. [Linux:1589](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1589) sends SIGABRT; [Windows:1203](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1203) writes `CRASH`. Store/send a distinct trigger from the healthy dispatcher before termination. Distinguish configured work-no-progress timeout, controller heartbeat timeout, and post-crash cleanup timeout. Include actual monotonic elapsed time and configured threshold. **Check:** deterministic no-progress injection, spontaneous fault, heartbeat loss, failed signal delivery and escalation. An externally observed SIGKILL alone does not prove a controller timeout or OOM. Multiple threads imply unknown individual attribution unless independently established.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Fake-clock and termination-adapter unit tests:** Each configured no-progress, heartbeat and cleanup deadline records its own trigger, threshold and monotonic elapsed time before requesting termination. Progress resets only the applicable deadline; a spontaneous fault has no invented timeout trigger.\n   - **Controller integration tests:** Injected SIGABRT/Windows recovery, failed termination delivery and escalation preserve trigger, mechanism and final effect separately. An unexplained external SIGKILL remains unattributed; multi-thread cases without item evidence retain unknown attribution. Use synchronization barriers, not timing races, to order events.\n\n<!-- fossilize-migration-v1:FOS-000007 -->\n"
+      }
+    ],
+    "scope": "One unsplit implementation/checking unit for all remaining criteria of https://github.com/robinwassen/Fossilize/issues/16. Record causal timeout evidence from healthy dispatcher/controller before fault recovery or termination; distinct configured work-no-progress, Linux heartbeat watchdog and existing post-crash cleanup deadlines, actual steady-clock elapsed/threshold, delivery/mechanism/native effect/recovery/work outcome, honest unknown attribution, deterministic portable and real-controller regression coverage.",
+    "version": 1,
+    "work_units": []
+  },
+  "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/16"
+        ],
+        "digest": "50812091915c234dcacb36026b29ffc68ac056e2347051ab4a19ee6bbe232218",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/13": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n",
+            "children": [],
+            "id": 6079809809,
+            "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
+            "number": 13,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000004 \u2014 Retain unrecoverable child loss in the controller",
+            "url": "https://github.com/robinwassen/Fossilize/issues/13"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/16": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/13"
+            ],
+            "body": "Legacy identity: `FOS-000007`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n7. **FOS-000007 \u2014 Record timeout origin before invoking crash recovery.** **S\u2013M; depends on `FOS-000004`; \u00a74\u2013\u00a75.** [no-progress wait:965](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L965) invokes the timeout handler before its diagnostic. [Linux:1589](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1589) sends SIGABRT; [Windows:1203](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1203) writes `CRASH`. Store/send a distinct trigger from the healthy dispatcher before termination. Distinguish configured work-no-progress timeout, controller heartbeat timeout, and post-crash cleanup timeout. Include actual monotonic elapsed time and configured threshold. **Check:** deterministic no-progress injection, spontaneous fault, heartbeat loss, failed signal delivery and escalation. An externally observed SIGKILL alone does not prove a controller timeout or OOM. Multiple threads imply unknown individual attribution unless independently established.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Fake-clock and termination-adapter unit tests:** Each configured no-progress, heartbeat and cleanup deadline records its own trigger, threshold and monotonic elapsed time before requesting termination. Progress resets only the applicable deadline; a spontaneous fault has no invented timeout trigger.\n   - **Controller integration tests:** Injected SIGABRT/Windows recovery, failed termination delivery and escalation preserve trigger, mechanism and final effect separately. An unexplained external SIGKILL remains unattributed; multi-thread cases without item evidence retain unknown attribution. Use synchronization barriers, not timing races, to order events.\n\n<!-- fossilize-migration-v1:FOS-000007 -->\n",
+            "children": [],
+            "id": 6079824724,
+            "node_id": "I_kwDOVZpjbc8AAAABamLDVA",
+            "number": 16,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "FOS-000007 \u2014 Record timeout origin before invoking crash recovery",
+            "url": "https://github.com/robinwassen/Fossilize/issues/16"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/16"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    }
+  ],
   "publishing": {
     "ci_policy": "local",
     "stage": "none"
@@ -118,7 +354,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 3,
+  "revision": 4,
   "root_issue": {
     "id": 6079824724,
     "node_id": "I_kwDOVZpjbc8AAAABamLDVA",
@@ -128,9 +364,17 @@
   },
   "run_id": "issue-16-20261101",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-16",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/16",
   "verification": [],
-  "work_units": []
+  "work_units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/16",
+      "key": "https://github.com/robinwassen/Fossilize/issues/16",
+      "status": "ready"
+    }
+  ]
 }
