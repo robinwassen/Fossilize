@@ -1,0 +1,1848 @@
+Independent checker1 candidate=dbdb3232f4d0e39127aec1939a98f7a0821bbc7f base=2e0dfbfb4f7606523e0c4209279c48e6af4523ba plan=1
+Gate=G16-MATRIX
+
+INTENT c1-provenance
+COMMAND python3 /tmp/fossilize-16/checker_provenance.py
+CWD /tmp/fossilize-16/checker-1-dbdb32
+EXIT 0
+[{"config": "debug-off", "manifest": "/tmp/fossilize-16/build/implementer-1/Debug-OFF", "hashes_match": true}, {"config": "debug-on", "manifest": "/tmp/fossilize-16/build/implementer-1/Debug-ON", "hashes_match": true}, {"config": "release-off", "manifest": "/tmp/fossilize-16/build/implementer-1/Release-OFF", "hashes_match": true}, {"config": "release-on", "manifest": "/tmp/fossilize-16/build/implementer-1/Release-ON", "hashes_match": true}]
+
+INTENT c1-matrix-debug-off
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Debug-OFF --output-on-failure --no-tests=error --output-junit /tmp/fossilize-16/output/checker-1/Debug-OFF.xml
+CWD /tmp/fossilize-16/checker-1-dbdb32
+EXIT 0
+Test project /tmp/fossilize-16/build/implementer-1/Debug-OFF
+        Start   1: fossilize-system-test
+  1/204 Test   #1: fossilize-system-test ........................................   Passed    0.29 sec
+        Start   2: varint-system-test
+  2/204 Test   #2: varint-system-test ...........................................   Passed    1.49 sec
+        Start   3: application-info-filter-test
+  3/204 Test   #3: application-info-filter-test .................................   Passed    0.00 sec
+        Start   4: object-cache-test
+  4/204 Test   #4: object-cache-test ............................................   Passed    0.01 sec
+        Start   5: feature-filter-test
+  5/204 Test   #5: feature-filter-test ..........................................   Passed    0.00 sec
+        Start   6: linux-futex-test
+  6/204 Test   #6: linux-futex-test .............................................   Passed    0.65 sec
+        Start   7: replay-diagnostic-test
+  7/204 Test   #7: replay-diagnostic-test .......................................   Passed    0.00 sec
+        Start   8: device-diagnostic-test
+  8/204 Test   #8: device-diagnostic-test .......................................   Passed    0.00 sec
+        Start   9: capture-diagnostic-normal-graphics-reject
+  9/204 Test   #9: capture-diagnostic-normal-graphics-reject ....................   Passed    0.00 sec
+        Start  10: capture-diagnostic-normal-graphics-success
+ 10/204 Test  #10: capture-diagnostic-normal-graphics-success ...................   Passed    0.00 sec
+        Start  11: capture-diagnostic-normal-graphics-vulkan-error
+ 11/204 Test  #11: capture-diagnostic-normal-graphics-vulkan-error ..............   Passed    0.00 sec
+        Start  12: capture-diagnostic-normal-compute-reject
+ 12/204 Test  #12: capture-diagnostic-normal-compute-reject .....................   Passed    0.00 sec
+        Start  13: capture-diagnostic-normal-compute-success
+ 13/204 Test  #13: capture-diagnostic-normal-compute-success ....................   Passed    0.00 sec
+        Start  14: capture-diagnostic-normal-compute-vulkan-error
+ 14/204 Test  #14: capture-diagnostic-normal-compute-vulkan-error ...............   Passed    0.00 sec
+        Start  15: capture-diagnostic-normal-raytracing-reject
+ 15/204 Test  #15: capture-diagnostic-normal-raytracing-reject ..................   Passed    0.00 sec
+        Start  16: capture-diagnostic-normal-raytracing-success
+ 16/204 Test  #16: capture-diagnostic-normal-raytracing-success .................   Passed    0.00 sec
+        Start  17: capture-diagnostic-normal-raytracing-vulkan-error
+ 17/204 Test  #17: capture-diagnostic-normal-raytracing-vulkan-error ............   Passed    0.00 sec
+        Start  18: capture-diagnostic-qa-graphics-reject
+ 18/204 Test  #18: capture-diagnostic-qa-graphics-reject ........................   Passed    0.00 sec
+        Start  19: capture-diagnostic-qa-graphics-success
+ 19/204 Test  #19: capture-diagnostic-qa-graphics-success .......................   Passed    0.00 sec
+        Start  20: capture-diagnostic-qa-graphics-vulkan-error
+ 20/204 Test  #20: capture-diagnostic-qa-graphics-vulkan-error ..................   Passed    0.00 sec
+        Start  21: capture-diagnostic-qa-compute-reject
+ 21/204 Test  #21: capture-diagnostic-qa-compute-reject .........................   Passed    0.00 sec
+        Start  22: capture-diagnostic-qa-compute-success
+ 22/204 Test  #22: capture-diagnostic-qa-compute-success ........................   Passed    0.00 sec
+        Start  23: capture-diagnostic-qa-compute-vulkan-error
+ 23/204 Test  #23: capture-diagnostic-qa-compute-vulkan-error ...................   Passed    0.00 sec
+        Start  24: capture-diagnostic-qa-raytracing-reject
+ 24/204 Test  #24: capture-diagnostic-qa-raytracing-reject ......................   Passed    0.00 sec
+        Start  25: capture-diagnostic-qa-raytracing-success
+ 25/204 Test  #25: capture-diagnostic-qa-raytracing-success .....................   Passed    0.00 sec
+        Start  26: capture-diagnostic-qa-raytracing-vulkan-error
+ 26/204 Test  #26: capture-diagnostic-qa-raytracing-vulkan-error ................   Passed    0.00 sec
+        Start  27: capture-diagnostic-paranoid-graphics-reject
+ 27/204 Test  #27: capture-diagnostic-paranoid-graphics-reject ..................   Passed    0.00 sec
+        Start  28: capture-diagnostic-paranoid-graphics-success
+ 28/204 Test  #28: capture-diagnostic-paranoid-graphics-success .................   Passed    0.00 sec
+        Start  29: capture-diagnostic-paranoid-graphics-vulkan-error
+ 29/204 Test  #29: capture-diagnostic-paranoid-graphics-vulkan-error ............   Passed    0.00 sec
+        Start  30: capture-diagnostic-paranoid-compute-reject
+ 30/204 Test  #30: capture-diagnostic-paranoid-compute-reject ...................   Passed    0.00 sec
+        Start  31: capture-diagnostic-paranoid-compute-success
+ 31/204 Test  #31: capture-diagnostic-paranoid-compute-success ..................   Passed    0.00 sec
+        Start  32: capture-diagnostic-paranoid-compute-vulkan-error
+ 32/204 Test  #32: capture-diagnostic-paranoid-compute-vulkan-error .............   Passed    0.00 sec
+        Start  33: capture-diagnostic-paranoid-raytracing-reject
+ 33/204 Test  #33: capture-diagnostic-paranoid-raytracing-reject ................   Passed    0.00 sec
+        Start  34: capture-diagnostic-paranoid-raytracing-success
+ 34/204 Test  #34: capture-diagnostic-paranoid-raytracing-success ...............   Passed    0.00 sec
+        Start  35: capture-diagnostic-paranoid-raytracing-vulkan-error
+ 35/204 Test  #35: capture-diagnostic-paranoid-raytracing-vulkan-error ..........   Passed    0.00 sec
+        Start  36: capture-diagnostic-eager-graphics-reject
+ 36/204 Test  #36: capture-diagnostic-eager-graphics-reject .....................   Passed    0.00 sec
+        Start  37: capture-diagnostic-eager-graphics-success
+ 37/204 Test  #37: capture-diagnostic-eager-graphics-success ....................   Passed    0.00 sec
+        Start  38: capture-diagnostic-eager-graphics-vulkan-error
+ 38/204 Test  #38: capture-diagnostic-eager-graphics-vulkan-error ...............   Passed    0.00 sec
+        Start  39: capture-diagnostic-eager-compute-reject
+ 39/204 Test  #39: capture-diagnostic-eager-compute-reject ......................   Passed    0.00 sec
+        Start  40: capture-diagnostic-eager-compute-success
+ 40/204 Test  #40: capture-diagnostic-eager-compute-success .....................   Passed    0.00 sec
+        Start  41: capture-diagnostic-eager-compute-vulkan-error
+ 41/204 Test  #41: capture-diagnostic-eager-compute-vulkan-error ................   Passed    0.00 sec
+        Start  42: capture-diagnostic-eager-raytracing-reject
+ 42/204 Test  #42: capture-diagnostic-eager-raytracing-reject ...................   Passed    0.00 sec
+        Start  43: capture-diagnostic-eager-raytracing-success
+ 43/204 Test  #43: capture-diagnostic-eager-raytracing-success ..................   Passed    0.00 sec
+        Start  44: capture-diagnostic-eager-raytracing-vulkan-error
+ 44/204 Test  #44: capture-diagnostic-eager-raytracing-vulkan-error .............   Passed    0.00 sec
+        Start  45: capture-diagnostic-binary-graphics-reject
+ 45/204 Test  #45: capture-diagnostic-binary-graphics-reject ....................   Passed    0.00 sec
+        Start  46: capture-diagnostic-binary-graphics-success
+ 46/204 Test  #46: capture-diagnostic-binary-graphics-success ...................   Passed    0.00 sec
+        Start  47: capture-diagnostic-binary-graphics-vulkan-error
+ 47/204 Test  #47: capture-diagnostic-binary-graphics-vulkan-error ..............   Passed    0.00 sec
+        Start  48: capture-diagnostic-binary-compute-reject
+ 48/204 Test  #48: capture-diagnostic-binary-compute-reject .....................   Passed    0.00 sec
+        Start  49: capture-diagnostic-binary-compute-success
+ 49/204 Test  #49: capture-diagnostic-binary-compute-success ....................   Passed    0.00 sec
+        Start  50: capture-diagnostic-binary-compute-vulkan-error
+ 50/204 Test  #50: capture-diagnostic-binary-compute-vulkan-error ...............   Passed    0.00 sec
+        Start  51: capture-diagnostic-binary-raytracing-reject
+ 51/204 Test  #51: capture-diagnostic-binary-raytracing-reject ..................   Passed    0.00 sec
+        Start  52: capture-diagnostic-binary-raytracing-success
+ 52/204 Test  #52: capture-diagnostic-binary-raytracing-success .................   Passed    0.00 sec
+        Start  53: capture-diagnostic-binary-raytracing-vulkan-error
+ 53/204 Test  #53: capture-diagnostic-binary-raytracing-vulkan-error ............   Passed    0.00 sec
+        Start  54: diagnostic-compatibility-test
+ 54/204 Test  #54: diagnostic-compatibility-test ................................   Passed    0.01 sec
+        Start  55: utility-parse-list-version
+ 55/204 Test  #55: utility-parse-list-version ...................................   Passed    0.01 sec
+        Start  56: utility-parse-list-invalid-json
+ 56/204 Test  #56: utility-parse-list-invalid-json ..............................   Passed    0.01 sec
+        Start  57: utility-parse-list-empty
+ 57/204 Test  #57: utility-parse-list-empty .....................................   Passed    0.02 sec
+        Start  58: utility-parse-list-populated
+ 58/204 Test  #58: utility-parse-list-populated .................................   Passed    0.01 sec
+        Start  59: utility-parse-list-mixed
+ 59/204 Test  #59: utility-parse-list-mixed .....................................   Passed    0.02 sec
+        Start  60: utility-parse-list-dependency-failure
+ 60/204 Test  #60: utility-parse-list-dependency-failure ........................   Passed    0.02 sec
+        Start  61: utility-parse-list-empty-dependencies
+ 61/204 Test  #61: utility-parse-list-empty-dependencies ........................   Passed    0.01 sec
+        Start  62: utility-parse-list-legacy-invocations
+ 62/204 Test  #62: utility-parse-list-legacy-invocations ........................   Passed    0.03 sec
+        Start  63: utility-parse-rehash-version
+ 63/204 Test  #63: utility-parse-rehash-version .................................   Passed    0.02 sec
+        Start  64: utility-parse-rehash-invalid-json
+ 64/204 Test  #64: utility-parse-rehash-invalid-json ............................   Passed    0.01 sec
+        Start  65: utility-parse-rehash-empty
+ 65/204 Test  #65: utility-parse-rehash-empty ...................................   Passed    0.02 sec
+        Start  66: utility-parse-rehash-populated
+ 66/204 Test  #66: utility-parse-rehash-populated ...............................   Passed    0.02 sec
+        Start  67: utility-parse-rehash-mixed
+ 67/204 Test  #67: utility-parse-rehash-mixed ...................................   Passed    0.03 sec
+        Start  68: utility-parse-prune-version
+ 68/204 Test  #68: utility-parse-prune-version ..................................   Passed    0.01 sec
+        Start  69: utility-parse-prune-invalid-json
+ 69/204 Test  #69: utility-parse-prune-invalid-json .............................   Passed    0.01 sec
+        Start  70: utility-parse-prune-empty
+ 70/204 Test  #70: utility-parse-prune-empty ....................................   Passed    0.02 sec
+        Start  71: utility-parse-prune-populated
+ 71/204 Test  #71: utility-parse-prune-populated ................................   Passed    0.02 sec
+        Start  72: utility-parse-prune-mixed
+ 72/204 Test  #72: utility-parse-prune-mixed ....................................   Passed    0.02 sec
+        Start  73: utility-parse-prune-rejected-application
+ 73/204 Test  #73: utility-parse-prune-rejected-application .....................   Passed    0.03 sec
+        Start  74: file-helper-string-open
+ 74/204 Test  #74: file-helper-string-open ......................................   Passed    0.00 sec
+        Start  75: file-helper-string-short-write
+ 75/204 Test  #75: file-helper-string-short-write ...............................   Passed    0.00 sec
+        Start  76: file-helper-string-flush
+ 76/204 Test  #76: file-helper-string-flush .....................................   Passed    0.00 sec
+        Start  77: file-helper-string-close
+ 77/204 Test  #77: file-helper-string-close .....................................   Passed    0.00 sec
+        Start  78: file-helper-string-first-error
+ 78/204 Test  #78: file-helper-string-first-error ...............................   Passed    0.00 sec
+        Start  79: file-helper-string-success
+ 79/204 Test  #79: file-helper-string-success ...................................   Passed    0.00 sec
+        Start  80: file-helper-string-filesystem
+ 80/204 Test  #80: file-helper-string-filesystem ................................   Passed    0.00 sec
+        Start  81: file-helper-string-dev-full
+ 81/204 Test  #81: file-helper-string-dev-full ..................................   Passed    0.00 sec
+        Start  82: file-helper-buffer-open
+ 82/204 Test  #82: file-helper-buffer-open ......................................   Passed    0.00 sec
+        Start  83: file-helper-buffer-short-write
+ 83/204 Test  #83: file-helper-buffer-short-write ...............................   Passed    0.00 sec
+        Start  84: file-helper-buffer-flush
+ 84/204 Test  #84: file-helper-buffer-flush .....................................   Passed    0.00 sec
+        Start  85: file-helper-buffer-close
+ 85/204 Test  #85: file-helper-buffer-close .....................................   Passed    0.00 sec
+        Start  86: file-helper-buffer-first-error
+ 86/204 Test  #86: file-helper-buffer-first-error ...............................   Passed    0.00 sec
+        Start  87: file-helper-buffer-success
+ 87/204 Test  #87: file-helper-buffer-success ...................................   Passed    0.00 sec
+        Start  88: file-helper-buffer-filesystem
+ 88/204 Test  #88: file-helper-buffer-filesystem ................................   Passed    0.00 sec
+        Start  89: file-helper-buffer-dev-full
+ 89/204 Test  #89: file-helper-buffer-dev-full ..................................   Passed    0.00 sec
+        Start  90: file-helper-legacy-compatibility
+ 90/204 Test  #90: file-helper-legacy-compatibility .............................   Passed    0.00 sec
+        Start  91: file-helper-legacy-completion
+ 91/204 Test  #91: file-helper-legacy-completion ................................   Passed    0.01 sec
+        Start  92: fork-child-healthy
+ 92/204 Test  #92: fork-child-healthy ...........................................   Passed    0.01 sec
+        Start  93: fork-child-healthy-recovery
+ 93/204 Test  #93: fork-child-healthy-recovery ..................................   Passed    0.00 sec
+        Start  94: fork-child-parent-death
+ 94/204 Test  #94: fork-child-parent-death ......................................   Passed    0.00 sec
+        Start  95: fork-child-prctl-failure
+ 95/204 Test  #95: fork-child-prctl-failure .....................................   Passed    0.01 sec
+        Start  96: fork-child-parent-race
+ 96/204 Test  #96: fork-child-parent-race .......................................   Passed    0.01 sec
+        Start  97: fork-child-initial-first-sigmask
+ 97/204 Test  #97: fork-child-initial-first-sigmask .............................   Passed    0.01 sec
+        Start  98: fork-child-initial-last-sigmask
+ 98/204 Test  #98: fork-child-initial-last-sigmask ..............................   Passed    0.00 sec
+        Start  99: fork-child-recovery-sigmask
+ 99/204 Test  #99: fork-child-recovery-sigmask ..................................   Passed    0.00 sec
+        Start 100: fork-child-initial-first-stdout-dup2
+100/204 Test #100: fork-child-initial-first-stdout-dup2 .........................   Passed    0.01 sec
+        Start 101: fork-child-initial-last-stdout-dup2
+101/204 Test #101: fork-child-initial-last-stdout-dup2 ..........................   Passed    0.00 sec
+        Start 102: fork-child-recovery-stdout-dup2
+102/204 Test #102: fork-child-recovery-stdout-dup2 ..............................   Passed    0.00 sec
+        Start 103: fork-child-initial-first-stdin-dup2
+103/204 Test #103: fork-child-initial-first-stdin-dup2 ..........................   Passed    0.00 sec
+        Start 104: fork-child-initial-last-stdin-dup2
+104/204 Test #104: fork-child-initial-last-stdin-dup2 ...........................   Passed    0.01 sec
+        Start 105: fork-child-recovery-stdin-dup2
+105/204 Test #105: fork-child-recovery-stdin-dup2 ...............................   Passed    0.00 sec
+        Start 106: replay-controller-clean
+106/204 Test #106: replay-controller-clean ......................................   Passed    0.01 sec
+        Start 107: replay-controller-zero
+107/204 Test #107: replay-controller-zero .......................................   Passed    0.01 sec
+        Start 108: replay-controller-empty-archive
+108/204 Test #108: replay-controller-empty-archive ..............................   Passed    0.01 sec
+        Start 109: replay-controller-lost
+109/204 Test #109: replay-controller-lost .......................................   Passed    0.01 sec
+        Start 110: replay-controller-lost-progress
+110/204 Test #110: replay-controller-lost-progress ..............................   Passed    0.01 sec
+        Start 111: replay-controller-mixed-success-first
+111/204 Test #111: replay-controller-mixed-success-first ........................   Passed    0.01 sec
+        Start 112: replay-controller-mixed-loss-first
+112/204 Test #112: replay-controller-mixed-loss-first ...........................   Passed    0.01 sec
+        Start 113: replay-controller-recover
+113/204 Test #113: replay-controller-recover ....................................   Passed    0.01 sec
+        Start 114: replay-controller-skip-graphics
+114/204 Test #114: replay-controller-skip-graphics ..............................   Passed    0.01 sec
+        Start 115: replay-controller-skip-compute
+115/204 Test #115: replay-controller-skip-compute ...............................   Passed    0.01 sec
+        Start 116: replay-controller-skip-raytracing
+116/204 Test #116: replay-controller-skip-raytracing ............................   Passed    0.01 sec
+        Start 117: replay-controller-skip-graphics-final
+117/204 Test #117: replay-controller-skip-graphics-final ........................   Passed    0.01 sec
+        Start 118: replay-controller-skip-compute-final
+118/204 Test #118: replay-controller-skip-compute-final .........................   Passed    0.01 sec
+        Start 119: replay-controller-skip-raytracing-final
+119/204 Test #119: replay-controller-skip-raytracing-final ......................   Passed    0.01 sec
+        Start 120: replay-controller-skip-graphics-progress
+120/204 Test #120: replay-controller-skip-graphics-progress .....................   Passed    0.01 sec
+        Start 121: replay-controller-skip-graphics-final-progress
+121/204 Test #121: replay-controller-skip-graphics-final-progress ...............   Passed    0.01 sec
+        Start 122: replay-controller-partial
+122/204 Test #122: replay-controller-partial ....................................   Passed    0.01 sec
+        Start 123: replay-controller-loss-after-retry
+123/204 Test #123: replay-controller-loss-after-retry ...........................   Passed    0.01 sec
+        Start 124: replay-controller-held-sibling
+124/204 Test #124: replay-controller-held-sibling ...............................   Passed    0.01 sec
+        Start 125: replay-controller-signal
+125/204 Test #125: replay-controller-signal .....................................   Passed    0.14 sec
+        Start 126: replay-controller-status-error
+126/204 Test #126: replay-controller-status-error ...............................   Passed    0.01 sec
+        Start 127: replay-controller-outcome-state
+127/204 Test #127: replay-controller-outcome-state ..............................   Passed    0.01 sec
+        Start 128: replay-controller-cli-normal
+128/204 Test #128: replay-controller-cli-normal .................................   Passed    0.01 sec
+        Start 129: replay-controller-cli-master
+129/204 Test #129: replay-controller-cli-master .................................   Passed    0.01 sec
+        Start 130: replay-controller-cli-progress
+130/204 Test #130: replay-controller-cli-progress ...............................   Passed    0.11 sec
+        Start 131: replay-controller-cli-e5
+131/204 Test #131: replay-controller-cli-e5 .....................................   Passed    0.02 sec
+        Start 132: replay-controller-cli-e6
+132/204 Test #132: replay-controller-cli-e6 .....................................   Passed    0.12 sec
+        Start 133: replay-controller-cli-compatibility
+133/204 Test #133: replay-controller-cli-compatibility ..........................   Passed    0.04 sec
+        Start 134: replay-cache-creation-rerun
+134/204 Test #134: replay-cache-creation-rerun ..................................   Passed    0.02 sec
+        Start 135: replay-cache-success-policy
+135/204 Test #135: replay-cache-success-policy ..................................   Passed    0.00 sec
+        Start 136: replay-cache-loop
+136/204 Test #136: replay-cache-loop ............................................   Passed    0.00 sec
+        Start 137: replay-cache-compile-required
+137/204 Test #137: replay-cache-compile-required ................................   Passed    0.00 sec
+        Start 138: replay-cache-write-failure
+138/204 Test #138: replay-cache-write-failure ...................................   Passed    0.02 sec
+        Start 139: replay-cache-legacy-provenance
+139/204 Test #139: replay-cache-legacy-provenance ...............................   Passed    0.01 sec
+        Start 140: replay-cache-null-provenance
+140/204 Test #140: replay-cache-null-provenance .................................   Passed    0.01 sec
+        Start 141: replay-cache-whitelist
+141/204 Test #141: replay-cache-whitelist .......................................   Passed    0.00 sec
+        Start 142: replay-cache-legacy-invocation
+142/204 Test #142: replay-cache-legacy-invocation ...............................   Passed    0.01 sec
+        Start 143: replay-outcome-state
+143/204 Test #143: replay-outcome-state .........................................   Passed    0.02 sec
+        Start 144: replay-outcome-parse-read
+144/204 Test #144: replay-outcome-parse-read ....................................   Passed    0.00 sec
+        Start 145: replay-outcome-creation
+145/204 Test #145: replay-outcome-creation ......................................   Passed    0.00 sec
+        Start 146: replay-outcome-compile-required-loop
+146/204 Test #146: replay-outcome-compile-required-loop .........................   Passed    0.00 sec
+        Start 147: replay-outcome-support
+147/204 Test #147: replay-outcome-support .......................................   Passed    0.00 sec
+        Start 148: replay-outcome-setup-dependency
+148/204 Test #148: replay-outcome-setup-dependency ..............................   Passed    0.00 sec
+        Start 149: replay-outcome-worker-queue
+149/204 Test #149: replay-outcome-worker-queue ..................................   Passed    0.01 sec
+        Start 150: replay-outcome-matrix
+150/204 Test #150: replay-outcome-matrix ........................................   Passed    0.02 sec
+        Start 151: replay-outcome-validation
+151/204 Test #151: replay-outcome-validation ....................................   Passed    0.00 sec
+        Start 152: replay-outcome-entry-good
+152/204 Test #152: replay-outcome-entry-good ....................................   Passed    0.00 sec
+        Start 153: replay-outcome-entry-create
+153/204 Test #153: replay-outcome-entry-create ..................................   Passed    0.00 sec
+        Start 154: replay-outcome-entry-layout
+154/204 Test #154: replay-outcome-entry-layout ..................................   Passed    0.00 sec
+        Start 155: replay-outcome-entry-device
+155/204 Test #155: replay-outcome-entry-device ..................................   Passed    0.00 sec
+        Start 156: replay-outcome-cli-e7
+156/204 Test #156: replay-outcome-cli-e7 ........................................   Passed    0.23 sec
+        Start 157: replay-outcome-cli-missing
+157/204 Test #157: replay-outcome-cli-missing ...................................   Passed    0.24 sec
+        Start 158: replay-outcome-cli-unsupported
+158/204 Test #158: replay-outcome-cli-unsupported ...............................   Passed    0.24 sec
+        Start 159: replay-outcome-cli-unsupported-shader
+159/204 Test #159: replay-outcome-cli-unsupported-shader ........................   Passed    0.24 sec
+        Start 160: replay-outcome-cli-library
+160/204 Test #160: replay-outcome-cli-library ...................................   Passed    0.24 sec
+        Start 161: replay-outcome-cli-mixed
+161/204 Test #161: replay-outcome-cli-mixed .....................................   Passed    0.25 sec
+        Start 162: replay-outcome-cli-good
+162/204 Test #162: replay-outcome-cli-good ......................................   Passed    0.24 sec
+        Start 163: replay-outcome-cli-empty
+163/204 Test #163: replay-outcome-cli-empty .....................................   Passed    0.24 sec
+        Start 164: replay-outcome-cli-missinghash
+164/204 Test #164: replay-outcome-cli-missinghash ...............................   Passed    0.03 sec
+        Start 165: replay-outcome-cli-emptyhash
+165/204 Test #165: replay-outcome-cli-emptyhash .................................   Passed    0.03 sec
+        Start 166: replay-outcome-cli-selection
+166/204 Test #166: replay-outcome-cli-selection .................................   Passed    0.23 sec
+        Start 167: replay-outcome-cli-hashselection
+167/204 Test #167: replay-outcome-cli-hashselection .............................   Passed    0.24 sec
+        Start 168: replay-outcome-cli-whitelist
+168/204 Test #168: replay-outcome-cli-whitelist .................................   Passed    0.24 sec
+        Start 169: replay-outcome-cli-compatibility
+169/204 Test #169: replay-outcome-cli-compatibility .............................   Passed    0.04 sec
+        Start 170: replay-outcome-cli-validation
+170/204 Test #170: replay-outcome-cli-validation ................................   Passed    0.24 sec
+        Start 171: replay-outcome-controller-success-first-absent
+171/204 Test #171: replay-outcome-controller-success-first-absent ...............   Passed    0.02 sec
+        Start 172: replay-outcome-controller-success-first-progress
+172/204 Test #172: replay-outcome-controller-success-first-progress .............   Passed    0.01 sec
+        Start 173: replay-outcome-controller-failure-first-absent
+173/204 Test #173: replay-outcome-controller-failure-first-absent ...............   Passed    0.01 sec
+        Start 174: replay-outcome-controller-failure-first-progress
+174/204 Test #174: replay-outcome-controller-failure-first-progress .............   Passed    0.01 sec
+        Start 175: replay-timeout-unit-deadlines
+175/204 Test #175: replay-timeout-unit-deadlines ................................   Passed    0.00 sec
+        Start 176: replay-timeout-unit-reset
+176/204 Test #176: replay-timeout-unit-reset ....................................   Passed    0.00 sec
+        Start 177: replay-timeout-unit-delivery
+177/204 Test #177: replay-timeout-unit-delivery .................................   Passed    0.00 sec
+        Start 178: replay-timeout-unit-unknown
+178/204 Test #178: replay-timeout-unit-unknown ..................................   Passed    0.00 sec
+        Start 179: replay-timeout-unit-protocol
+179/204 Test #179: replay-timeout-unit-protocol .................................   Passed    0.00 sec
+        Start 180: replay-timeout-controller-clean
+180/204 Test #180: replay-timeout-controller-clean ..............................   Passed    0.00 sec
+        Start 181: replay-timeout-controller-no-progress
+181/204 Test #181: replay-timeout-controller-no-progress ........................   Passed    0.01 sec
+        Start 182: replay-timeout-controller-heartbeat
+182/204 Test #182: replay-timeout-controller-heartbeat ..........................   Passed    0.00 sec
+        Start 183: replay-timeout-controller-heartbeat-reset
+183/204 Test #183: replay-timeout-controller-heartbeat-reset ....................   Passed    0.00 sec
+        Start 184: replay-timeout-controller-cleanup
+184/204 Test #184: replay-timeout-controller-cleanup ............................   Passed    0.01 sec
+        Start 185: replay-timeout-controller-spontaneous
+185/204 Test #185: replay-timeout-controller-spontaneous ........................   Passed    0.01 sec
+        Start 186: replay-timeout-controller-escalation
+186/204 Test #186: replay-timeout-controller-escalation .........................   Passed    0.01 sec
+        Start 187: replay-timeout-controller-delivery-failure
+187/204 Test #187: replay-timeout-controller-delivery-failure ...................   Passed    0.00 sec
+        Start 188: replay-timeout-controller-kill-failure
+188/204 Test #188: replay-timeout-controller-kill-failure .......................   Passed    0.00 sec
+        Start 189: replay-timeout-controller-external-kill
+189/204 Test #189: replay-timeout-controller-external-kill ......................   Passed    0.00 sec
+        Start 190: replay-timeout-controller-multithread
+190/204 Test #190: replay-timeout-controller-multithread ........................   Passed    0.01 sec
+        Start 191: replay-timeout-controller-recovery
+191/204 Test #191: replay-timeout-controller-recovery ...........................   Passed    0.01 sec
+        Start 192: replay-timeout-controller-protocol
+192/204 Test #192: replay-timeout-controller-protocol ...........................   Passed    0.00 sec
+        Start 193: replay-timeout-controller-dispatcher-reset
+193/204 Test #193: replay-timeout-controller-dispatcher-reset ...................   Passed    0.00 sec
+        Start 194: replay-timeout-controller-dispatcher-disabled
+194/204 Test #194: replay-timeout-controller-dispatcher-disabled ................   Passed    0.00 sec
+        Start 195: replay-timeout-controller-ordinary-no-progress
+195/204 Test #195: replay-timeout-controller-ordinary-no-progress ...............   Passed    0.00 sec
+        Start 196: replay-timeout-controller-ordinary-delivery-failure
+196/204 Test #196: replay-timeout-controller-ordinary-delivery-failure ..........   Passed    0.00 sec
+        Start 197: replay-timeout-controller-timer-create-failure
+197/204 Test #197: replay-timeout-controller-timer-create-failure ...............   Passed    0.00 sec
+        Start 198: replay-timeout-controller-timer-arm-failure
+198/204 Test #198: replay-timeout-controller-timer-arm-failure ..................   Passed    0.00 sec
+        Start 199: replay-timeout-controller-timer-register-failure
+199/204 Test #199: replay-timeout-controller-timer-register-failure .............   Passed    0.00 sec
+        Start 200: replay-timeout-controller-heartbeat-timer-create-failure
+200/204 Test #200: replay-timeout-controller-heartbeat-timer-create-failure .....   Passed    0.00 sec
+        Start 201: replay-timeout-controller-heartbeat-timer-arm-failure
+201/204 Test #201: replay-timeout-controller-heartbeat-timer-arm-failure ........   Passed    0.00 sec
+        Start 202: replay-timeout-controller-heartbeat-timer-register-failure
+202/204 Test #202: replay-timeout-controller-heartbeat-timer-register-failure ...   Passed    0.00 sec
+        Start 203: replay-timeout-controller-heartbeat-timer-read-failure
+203/204 Test #203: replay-timeout-controller-heartbeat-timer-read-failure .......   Passed    0.00 sec
+        Start 204: replay-timeout-controller-heartbeat-timer-rearm-failure
+204/204 Test #204: replay-timeout-controller-heartbeat-timer-rearm-failure ......   Passed    0.00 sec
+
+100% tests passed out of 204
+
+Total Test time (real) =   7.20 sec
+
+INTENT c1-matrix-debug-on
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Debug-ON --output-on-failure --no-tests=error --output-junit /tmp/fossilize-16/output/checker-1/Debug-ON.xml
+CWD /tmp/fossilize-16/checker-1-dbdb32
+EXIT 0
+Test project /tmp/fossilize-16/build/implementer-1/Debug-ON
+        Start   1: fossilize-system-test
+  1/204 Test   #1: fossilize-system-test ........................................   Passed    0.30 sec
+        Start   2: varint-system-test
+  2/204 Test   #2: varint-system-test ...........................................   Passed    1.46 sec
+        Start   3: application-info-filter-test
+  3/204 Test   #3: application-info-filter-test .................................   Passed    0.00 sec
+        Start   4: object-cache-test
+  4/204 Test   #4: object-cache-test ............................................   Passed    0.01 sec
+        Start   5: feature-filter-test
+  5/204 Test   #5: feature-filter-test ..........................................   Passed    0.00 sec
+        Start   6: linux-futex-test
+  6/204 Test   #6: linux-futex-test .............................................   Passed    0.64 sec
+        Start   7: replay-diagnostic-test
+  7/204 Test   #7: replay-diagnostic-test .......................................   Passed    0.00 sec
+        Start   8: device-diagnostic-test
+  8/204 Test   #8: device-diagnostic-test .......................................   Passed    0.00 sec
+        Start   9: capture-diagnostic-normal-graphics-reject
+  9/204 Test   #9: capture-diagnostic-normal-graphics-reject ....................   Passed    0.00 sec
+        Start  10: capture-diagnostic-normal-graphics-success
+ 10/204 Test  #10: capture-diagnostic-normal-graphics-success ...................   Passed    0.00 sec
+        Start  11: capture-diagnostic-normal-graphics-vulkan-error
+ 11/204 Test  #11: capture-diagnostic-normal-graphics-vulkan-error ..............   Passed    0.00 sec
+        Start  12: capture-diagnostic-normal-compute-reject
+ 12/204 Test  #12: capture-diagnostic-normal-compute-reject .....................   Passed    0.00 sec
+        Start  13: capture-diagnostic-normal-compute-success
+ 13/204 Test  #13: capture-diagnostic-normal-compute-success ....................   Passed    0.00 sec
+        Start  14: capture-diagnostic-normal-compute-vulkan-error
+ 14/204 Test  #14: capture-diagnostic-normal-compute-vulkan-error ...............   Passed    0.00 sec
+        Start  15: capture-diagnostic-normal-raytracing-reject
+ 15/204 Test  #15: capture-diagnostic-normal-raytracing-reject ..................   Passed    0.00 sec
+        Start  16: capture-diagnostic-normal-raytracing-success
+ 16/204 Test  #16: capture-diagnostic-normal-raytracing-success .................   Passed    0.00 sec
+        Start  17: capture-diagnostic-normal-raytracing-vulkan-error
+ 17/204 Test  #17: capture-diagnostic-normal-raytracing-vulkan-error ............   Passed    0.00 sec
+        Start  18: capture-diagnostic-qa-graphics-reject
+ 18/204 Test  #18: capture-diagnostic-qa-graphics-reject ........................   Passed    0.00 sec
+        Start  19: capture-diagnostic-qa-graphics-success
+ 19/204 Test  #19: capture-diagnostic-qa-graphics-success .......................   Passed    0.00 sec
+        Start  20: capture-diagnostic-qa-graphics-vulkan-error
+ 20/204 Test  #20: capture-diagnostic-qa-graphics-vulkan-error ..................   Passed    0.00 sec
+        Start  21: capture-diagnostic-qa-compute-reject
+ 21/204 Test  #21: capture-diagnostic-qa-compute-reject .........................   Passed    0.00 sec
+        Start  22: capture-diagnostic-qa-compute-success
+ 22/204 Test  #22: capture-diagnostic-qa-compute-success ........................   Passed    0.00 sec
+        Start  23: capture-diagnostic-qa-compute-vulkan-error
+ 23/204 Test  #23: capture-diagnostic-qa-compute-vulkan-error ...................   Passed    0.00 sec
+        Start  24: capture-diagnostic-qa-raytracing-reject
+ 24/204 Test  #24: capture-diagnostic-qa-raytracing-reject ......................   Passed    0.00 sec
+        Start  25: capture-diagnostic-qa-raytracing-success
+ 25/204 Test  #25: capture-diagnostic-qa-raytracing-success .....................   Passed    0.00 sec
+        Start  26: capture-diagnostic-qa-raytracing-vulkan-error
+ 26/204 Test  #26: capture-diagnostic-qa-raytracing-vulkan-error ................   Passed    0.00 sec
+        Start  27: capture-diagnostic-paranoid-graphics-reject
+ 27/204 Test  #27: capture-diagnostic-paranoid-graphics-reject ..................   Passed    0.00 sec
+        Start  28: capture-diagnostic-paranoid-graphics-success
+ 28/204 Test  #28: capture-diagnostic-paranoid-graphics-success .................   Passed    0.00 sec
+        Start  29: capture-diagnostic-paranoid-graphics-vulkan-error
+ 29/204 Test  #29: capture-diagnostic-paranoid-graphics-vulkan-error ............   Passed    0.00 sec
+        Start  30: capture-diagnostic-paranoid-compute-reject
+ 30/204 Test  #30: capture-diagnostic-paranoid-compute-reject ...................   Passed    0.00 sec
+        Start  31: capture-diagnostic-paranoid-compute-success
+ 31/204 Test  #31: capture-diagnostic-paranoid-compute-success ..................   Passed    0.00 sec
+        Start  32: capture-diagnostic-paranoid-compute-vulkan-error
+ 32/204 Test  #32: capture-diagnostic-paranoid-compute-vulkan-error .............   Passed    0.00 sec
+        Start  33: capture-diagnostic-paranoid-raytracing-reject
+ 33/204 Test  #33: capture-diagnostic-paranoid-raytracing-reject ................   Passed    0.00 sec
+        Start  34: capture-diagnostic-paranoid-raytracing-success
+ 34/204 Test  #34: capture-diagnostic-paranoid-raytracing-success ...............   Passed    0.00 sec
+        Start  35: capture-diagnostic-paranoid-raytracing-vulkan-error
+ 35/204 Test  #35: capture-diagnostic-paranoid-raytracing-vulkan-error ..........   Passed    0.00 sec
+        Start  36: capture-diagnostic-eager-graphics-reject
+ 36/204 Test  #36: capture-diagnostic-eager-graphics-reject .....................   Passed    0.00 sec
+        Start  37: capture-diagnostic-eager-graphics-success
+ 37/204 Test  #37: capture-diagnostic-eager-graphics-success ....................   Passed    0.00 sec
+        Start  38: capture-diagnostic-eager-graphics-vulkan-error
+ 38/204 Test  #38: capture-diagnostic-eager-graphics-vulkan-error ...............   Passed    0.00 sec
+        Start  39: capture-diagnostic-eager-compute-reject
+ 39/204 Test  #39: capture-diagnostic-eager-compute-reject ......................   Passed    0.00 sec
+        Start  40: capture-diagnostic-eager-compute-success
+ 40/204 Test  #40: capture-diagnostic-eager-compute-success .....................   Passed    0.00 sec
+        Start  41: capture-diagnostic-eager-compute-vulkan-error
+ 41/204 Test  #41: capture-diagnostic-eager-compute-vulkan-error ................   Passed    0.00 sec
+        Start  42: capture-diagnostic-eager-raytracing-reject
+ 42/204 Test  #42: capture-diagnostic-eager-raytracing-reject ...................   Passed    0.00 sec
+        Start  43: capture-diagnostic-eager-raytracing-success
+ 43/204 Test  #43: capture-diagnostic-eager-raytracing-success ..................   Passed    0.00 sec
+        Start  44: capture-diagnostic-eager-raytracing-vulkan-error
+ 44/204 Test  #44: capture-diagnostic-eager-raytracing-vulkan-error .............   Passed    0.01 sec
+        Start  45: capture-diagnostic-binary-graphics-reject
+ 45/204 Test  #45: capture-diagnostic-binary-graphics-reject ....................   Passed    0.00 sec
+        Start  46: capture-diagnostic-binary-graphics-success
+ 46/204 Test  #46: capture-diagnostic-binary-graphics-success ...................   Passed    0.00 sec
+        Start  47: capture-diagnostic-binary-graphics-vulkan-error
+ 47/204 Test  #47: capture-diagnostic-binary-graphics-vulkan-error ..............   Passed    0.00 sec
+        Start  48: capture-diagnostic-binary-compute-reject
+ 48/204 Test  #48: capture-diagnostic-binary-compute-reject .....................   Passed    0.00 sec
+        Start  49: capture-diagnostic-binary-compute-success
+ 49/204 Test  #49: capture-diagnostic-binary-compute-success ....................   Passed    0.00 sec
+        Start  50: capture-diagnostic-binary-compute-vulkan-error
+ 50/204 Test  #50: capture-diagnostic-binary-compute-vulkan-error ...............   Passed    0.00 sec
+        Start  51: capture-diagnostic-binary-raytracing-reject
+ 51/204 Test  #51: capture-diagnostic-binary-raytracing-reject ..................   Passed    0.01 sec
+        Start  52: capture-diagnostic-binary-raytracing-success
+ 52/204 Test  #52: capture-diagnostic-binary-raytracing-success .................   Passed    0.00 sec
+        Start  53: capture-diagnostic-binary-raytracing-vulkan-error
+ 53/204 Test  #53: capture-diagnostic-binary-raytracing-vulkan-error ............   Passed    0.00 sec
+        Start  54: diagnostic-compatibility-test
+ 54/204 Test  #54: diagnostic-compatibility-test ................................   Passed    0.01 sec
+        Start  55: utility-parse-list-version
+ 55/204 Test  #55: utility-parse-list-version ...................................   Passed    0.01 sec
+        Start  56: utility-parse-list-invalid-json
+ 56/204 Test  #56: utility-parse-list-invalid-json ..............................   Passed    0.01 sec
+        Start  57: utility-parse-list-empty
+ 57/204 Test  #57: utility-parse-list-empty .....................................   Passed    0.01 sec
+        Start  58: utility-parse-list-populated
+ 58/204 Test  #58: utility-parse-list-populated .................................   Passed    0.01 sec
+        Start  59: utility-parse-list-mixed
+ 59/204 Test  #59: utility-parse-list-mixed .....................................   Passed    0.02 sec
+        Start  60: utility-parse-list-dependency-failure
+ 60/204 Test  #60: utility-parse-list-dependency-failure ........................   Passed    0.02 sec
+        Start  61: utility-parse-list-empty-dependencies
+ 61/204 Test  #61: utility-parse-list-empty-dependencies ........................   Passed    0.01 sec
+        Start  62: utility-parse-list-legacy-invocations
+ 62/204 Test  #62: utility-parse-list-legacy-invocations ........................   Passed    0.03 sec
+        Start  63: utility-parse-rehash-version
+ 63/204 Test  #63: utility-parse-rehash-version .................................   Passed    0.02 sec
+        Start  64: utility-parse-rehash-invalid-json
+ 64/204 Test  #64: utility-parse-rehash-invalid-json ............................   Passed    0.01 sec
+        Start  65: utility-parse-rehash-empty
+ 65/204 Test  #65: utility-parse-rehash-empty ...................................   Passed    0.02 sec
+        Start  66: utility-parse-rehash-populated
+ 66/204 Test  #66: utility-parse-rehash-populated ...............................   Passed    0.02 sec
+        Start  67: utility-parse-rehash-mixed
+ 67/204 Test  #67: utility-parse-rehash-mixed ...................................   Passed    0.03 sec
+        Start  68: utility-parse-prune-version
+ 68/204 Test  #68: utility-parse-prune-version ..................................   Passed    0.01 sec
+        Start  69: utility-parse-prune-invalid-json
+ 69/204 Test  #69: utility-parse-prune-invalid-json .............................   Passed    0.02 sec
+        Start  70: utility-parse-prune-empty
+ 70/204 Test  #70: utility-parse-prune-empty ....................................   Passed    0.01 sec
+        Start  71: utility-parse-prune-populated
+ 71/204 Test  #71: utility-parse-prune-populated ................................   Passed    0.02 sec
+        Start  72: utility-parse-prune-mixed
+ 72/204 Test  #72: utility-parse-prune-mixed ....................................   Passed    0.02 sec
+        Start  73: utility-parse-prune-rejected-application
+ 73/204 Test  #73: utility-parse-prune-rejected-application .....................   Passed    0.03 sec
+        Start  74: file-helper-string-open
+ 74/204 Test  #74: file-helper-string-open ......................................   Passed    0.00 sec
+        Start  75: file-helper-string-short-write
+ 75/204 Test  #75: file-helper-string-short-write ...............................   Passed    0.00 sec
+        Start  76: file-helper-string-flush
+ 76/204 Test  #76: file-helper-string-flush .....................................   Passed    0.00 sec
+        Start  77: file-helper-string-close
+ 77/204 Test  #77: file-helper-string-close .....................................   Passed    0.00 sec
+        Start  78: file-helper-string-first-error
+ 78/204 Test  #78: file-helper-string-first-error ...............................   Passed    0.00 sec
+        Start  79: file-helper-string-success
+ 79/204 Test  #79: file-helper-string-success ...................................   Passed    0.00 sec
+        Start  80: file-helper-string-filesystem
+ 80/204 Test  #80: file-helper-string-filesystem ................................   Passed    0.00 sec
+        Start  81: file-helper-string-dev-full
+ 81/204 Test  #81: file-helper-string-dev-full ..................................   Passed    0.00 sec
+        Start  82: file-helper-buffer-open
+ 82/204 Test  #82: file-helper-buffer-open ......................................   Passed    0.00 sec
+        Start  83: file-helper-buffer-short-write
+ 83/204 Test  #83: file-helper-buffer-short-write ...............................   Passed    0.00 sec
+        Start  84: file-helper-buffer-flush
+ 84/204 Test  #84: file-helper-buffer-flush .....................................   Passed    0.00 sec
+        Start  85: file-helper-buffer-close
+ 85/204 Test  #85: file-helper-buffer-close .....................................   Passed    0.00 sec
+        Start  86: file-helper-buffer-first-error
+ 86/204 Test  #86: file-helper-buffer-first-error ...............................   Passed    0.00 sec
+        Start  87: file-helper-buffer-success
+ 87/204 Test  #87: file-helper-buffer-success ...................................   Passed    0.00 sec
+        Start  88: file-helper-buffer-filesystem
+ 88/204 Test  #88: file-helper-buffer-filesystem ................................   Passed    0.00 sec
+        Start  89: file-helper-buffer-dev-full
+ 89/204 Test  #89: file-helper-buffer-dev-full ..................................   Passed    0.00 sec
+        Start  90: file-helper-legacy-compatibility
+ 90/204 Test  #90: file-helper-legacy-compatibility .............................   Passed    0.00 sec
+        Start  91: file-helper-legacy-completion
+ 91/204 Test  #91: file-helper-legacy-completion ................................   Passed    0.01 sec
+        Start  92: fork-child-healthy
+ 92/204 Test  #92: fork-child-healthy ...........................................   Passed    0.01 sec
+        Start  93: fork-child-healthy-recovery
+ 93/204 Test  #93: fork-child-healthy-recovery ..................................   Passed    0.01 sec
+        Start  94: fork-child-parent-death
+ 94/204 Test  #94: fork-child-parent-death ......................................   Passed    0.00 sec
+        Start  95: fork-child-prctl-failure
+ 95/204 Test  #95: fork-child-prctl-failure .....................................   Passed    0.01 sec
+        Start  96: fork-child-parent-race
+ 96/204 Test  #96: fork-child-parent-race .......................................   Passed    0.00 sec
+        Start  97: fork-child-initial-first-sigmask
+ 97/204 Test  #97: fork-child-initial-first-sigmask .............................   Passed    0.01 sec
+        Start  98: fork-child-initial-last-sigmask
+ 98/204 Test  #98: fork-child-initial-last-sigmask ..............................   Passed    0.01 sec
+        Start  99: fork-child-recovery-sigmask
+ 99/204 Test  #99: fork-child-recovery-sigmask ..................................   Passed    0.00 sec
+        Start 100: fork-child-initial-first-stdout-dup2
+100/204 Test #100: fork-child-initial-first-stdout-dup2 .........................   Passed    0.01 sec
+        Start 101: fork-child-initial-last-stdout-dup2
+101/204 Test #101: fork-child-initial-last-stdout-dup2 ..........................   Passed    0.01 sec
+        Start 102: fork-child-recovery-stdout-dup2
+102/204 Test #102: fork-child-recovery-stdout-dup2 ..............................   Passed    0.00 sec
+        Start 103: fork-child-initial-first-stdin-dup2
+103/204 Test #103: fork-child-initial-first-stdin-dup2 ..........................   Passed    0.00 sec
+        Start 104: fork-child-initial-last-stdin-dup2
+104/204 Test #104: fork-child-initial-last-stdin-dup2 ...........................   Passed    0.01 sec
+        Start 105: fork-child-recovery-stdin-dup2
+105/204 Test #105: fork-child-recovery-stdin-dup2 ...............................   Passed    0.00 sec
+        Start 106: replay-controller-clean
+106/204 Test #106: replay-controller-clean ......................................   Passed    0.01 sec
+        Start 107: replay-controller-zero
+107/204 Test #107: replay-controller-zero .......................................   Passed    0.01 sec
+        Start 108: replay-controller-empty-archive
+108/204 Test #108: replay-controller-empty-archive ..............................   Passed    0.01 sec
+        Start 109: replay-controller-lost
+109/204 Test #109: replay-controller-lost .......................................   Passed    0.01 sec
+        Start 110: replay-controller-lost-progress
+110/204 Test #110: replay-controller-lost-progress ..............................   Passed    0.01 sec
+        Start 111: replay-controller-mixed-success-first
+111/204 Test #111: replay-controller-mixed-success-first ........................   Passed    0.02 sec
+        Start 112: replay-controller-mixed-loss-first
+112/204 Test #112: replay-controller-mixed-loss-first ...........................   Passed    0.01 sec
+        Start 113: replay-controller-recover
+113/204 Test #113: replay-controller-recover ....................................   Passed    0.02 sec
+        Start 114: replay-controller-skip-graphics
+114/204 Test #114: replay-controller-skip-graphics ..............................   Passed    0.01 sec
+        Start 115: replay-controller-skip-compute
+115/204 Test #115: replay-controller-skip-compute ...............................   Passed    0.02 sec
+        Start 116: replay-controller-skip-raytracing
+116/204 Test #116: replay-controller-skip-raytracing ............................   Passed    0.02 sec
+        Start 117: replay-controller-skip-graphics-final
+117/204 Test #117: replay-controller-skip-graphics-final ........................   Passed    0.01 sec
+        Start 118: replay-controller-skip-compute-final
+118/204 Test #118: replay-controller-skip-compute-final .........................   Passed    0.01 sec
+        Start 119: replay-controller-skip-raytracing-final
+119/204 Test #119: replay-controller-skip-raytracing-final ......................   Passed    0.01 sec
+        Start 120: replay-controller-skip-graphics-progress
+120/204 Test #120: replay-controller-skip-graphics-progress .....................   Passed    0.02 sec
+        Start 121: replay-controller-skip-graphics-final-progress
+121/204 Test #121: replay-controller-skip-graphics-final-progress ...............   Passed    0.01 sec
+        Start 122: replay-controller-partial
+122/204 Test #122: replay-controller-partial ....................................   Passed    0.01 sec
+        Start 123: replay-controller-loss-after-retry
+123/204 Test #123: replay-controller-loss-after-retry ...........................   Passed    0.01 sec
+        Start 124: replay-controller-held-sibling
+124/204 Test #124: replay-controller-held-sibling ...............................   Passed    0.01 sec
+        Start 125: replay-controller-signal
+125/204 Test #125: replay-controller-signal .....................................   Passed    0.14 sec
+        Start 126: replay-controller-status-error
+126/204 Test #126: replay-controller-status-error ...............................   Passed    0.01 sec
+        Start 127: replay-controller-outcome-state
+127/204 Test #127: replay-controller-outcome-state ..............................   Passed    0.01 sec
+        Start 128: replay-controller-cli-normal
+128/204 Test #128: replay-controller-cli-normal .................................   Passed    0.01 sec
+        Start 129: replay-controller-cli-master
+129/204 Test #129: replay-controller-cli-master .................................   Passed    0.02 sec
+        Start 130: replay-controller-cli-progress
+130/204 Test #130: replay-controller-cli-progress ...............................   Passed    0.11 sec
+        Start 131: replay-controller-cli-e5
+131/204 Test #131: replay-controller-cli-e5 .....................................   Passed    0.02 sec
+        Start 132: replay-controller-cli-e6
+132/204 Test #132: replay-controller-cli-e6 .....................................   Passed    0.12 sec
+        Start 133: replay-controller-cli-compatibility
+133/204 Test #133: replay-controller-cli-compatibility ..........................   Passed    0.05 sec
+        Start 134: replay-cache-creation-rerun
+134/204 Test #134: replay-cache-creation-rerun ..................................   Passed    0.02 sec
+        Start 135: replay-cache-success-policy
+135/204 Test #135: replay-cache-success-policy ..................................   Passed    0.00 sec
+        Start 136: replay-cache-loop
+136/204 Test #136: replay-cache-loop ............................................   Passed    0.00 sec
+        Start 137: replay-cache-compile-required
+137/204 Test #137: replay-cache-compile-required ................................   Passed    0.00 sec
+        Start 138: replay-cache-write-failure
+138/204 Test #138: replay-cache-write-failure ...................................   Passed    0.02 sec
+        Start 139: replay-cache-legacy-provenance
+139/204 Test #139: replay-cache-legacy-provenance ...............................   Passed    0.01 sec
+        Start 140: replay-cache-null-provenance
+140/204 Test #140: replay-cache-null-provenance .................................   Passed    0.01 sec
+        Start 141: replay-cache-whitelist
+141/204 Test #141: replay-cache-whitelist .......................................   Passed    0.01 sec
+        Start 142: replay-cache-legacy-invocation
+142/204 Test #142: replay-cache-legacy-invocation ...............................   Passed    0.01 sec
+        Start 143: replay-outcome-state
+143/204 Test #143: replay-outcome-state .........................................   Passed    0.02 sec
+        Start 144: replay-outcome-parse-read
+144/204 Test #144: replay-outcome-parse-read ....................................   Passed    0.00 sec
+        Start 145: replay-outcome-creation
+145/204 Test #145: replay-outcome-creation ......................................   Passed    0.00 sec
+        Start 146: replay-outcome-compile-required-loop
+146/204 Test #146: replay-outcome-compile-required-loop .........................   Passed    0.00 sec
+        Start 147: replay-outcome-support
+147/204 Test #147: replay-outcome-support .......................................   Passed    0.00 sec
+        Start 148: replay-outcome-setup-dependency
+148/204 Test #148: replay-outcome-setup-dependency ..............................   Passed    0.00 sec
+        Start 149: replay-outcome-worker-queue
+149/204 Test #149: replay-outcome-worker-queue ..................................   Passed    0.01 sec
+        Start 150: replay-outcome-matrix
+150/204 Test #150: replay-outcome-matrix ........................................   Passed    0.02 sec
+        Start 151: replay-outcome-validation
+151/204 Test #151: replay-outcome-validation ....................................   Passed    0.00 sec
+        Start 152: replay-outcome-entry-good
+152/204 Test #152: replay-outcome-entry-good ....................................   Passed    0.00 sec
+        Start 153: replay-outcome-entry-create
+153/204 Test #153: replay-outcome-entry-create ..................................   Passed    0.00 sec
+        Start 154: replay-outcome-entry-layout
+154/204 Test #154: replay-outcome-entry-layout ..................................   Passed    0.00 sec
+        Start 155: replay-outcome-entry-device
+155/204 Test #155: replay-outcome-entry-device ..................................   Passed    0.00 sec
+        Start 156: replay-outcome-cli-e7
+156/204 Test #156: replay-outcome-cli-e7 ........................................   Passed    0.24 sec
+        Start 157: replay-outcome-cli-missing
+157/204 Test #157: replay-outcome-cli-missing ...................................   Passed    0.24 sec
+        Start 158: replay-outcome-cli-unsupported
+158/204 Test #158: replay-outcome-cli-unsupported ...............................   Passed    0.24 sec
+        Start 159: replay-outcome-cli-unsupported-shader
+159/204 Test #159: replay-outcome-cli-unsupported-shader ........................   Passed    0.24 sec
+        Start 160: replay-outcome-cli-library
+160/204 Test #160: replay-outcome-cli-library ...................................   Passed    0.25 sec
+        Start 161: replay-outcome-cli-mixed
+161/204 Test #161: replay-outcome-cli-mixed .....................................   Passed    0.24 sec
+        Start 162: replay-outcome-cli-good
+162/204 Test #162: replay-outcome-cli-good ......................................   Passed    0.24 sec
+        Start 163: replay-outcome-cli-empty
+163/204 Test #163: replay-outcome-cli-empty .....................................   Passed    0.23 sec
+        Start 164: replay-outcome-cli-missinghash
+164/204 Test #164: replay-outcome-cli-missinghash ...............................   Passed    0.03 sec
+        Start 165: replay-outcome-cli-emptyhash
+165/204 Test #165: replay-outcome-cli-emptyhash .................................   Passed    0.03 sec
+        Start 166: replay-outcome-cli-selection
+166/204 Test #166: replay-outcome-cli-selection .................................   Passed    0.24 sec
+        Start 167: replay-outcome-cli-hashselection
+167/204 Test #167: replay-outcome-cli-hashselection .............................   Passed    0.24 sec
+        Start 168: replay-outcome-cli-whitelist
+168/204 Test #168: replay-outcome-cli-whitelist .................................   Passed    0.24 sec
+        Start 169: replay-outcome-cli-compatibility
+169/204 Test #169: replay-outcome-cli-compatibility .............................   Passed    0.05 sec
+        Start 170: replay-outcome-cli-validation
+170/204 Test #170: replay-outcome-cli-validation ................................   Passed    0.24 sec
+        Start 171: replay-outcome-controller-success-first-absent
+171/204 Test #171: replay-outcome-controller-success-first-absent ...............   Passed    0.02 sec
+        Start 172: replay-outcome-controller-success-first-progress
+172/204 Test #172: replay-outcome-controller-success-first-progress .............   Passed    0.01 sec
+        Start 173: replay-outcome-controller-failure-first-absent
+173/204 Test #173: replay-outcome-controller-failure-first-absent ...............   Passed    0.01 sec
+        Start 174: replay-outcome-controller-failure-first-progress
+174/204 Test #174: replay-outcome-controller-failure-first-progress .............   Passed    0.01 sec
+        Start 175: replay-timeout-unit-deadlines
+175/204 Test #175: replay-timeout-unit-deadlines ................................   Passed    0.00 sec
+        Start 176: replay-timeout-unit-reset
+176/204 Test #176: replay-timeout-unit-reset ....................................   Passed    0.00 sec
+        Start 177: replay-timeout-unit-delivery
+177/204 Test #177: replay-timeout-unit-delivery .................................   Passed    0.00 sec
+        Start 178: replay-timeout-unit-unknown
+178/204 Test #178: replay-timeout-unit-unknown ..................................   Passed    0.00 sec
+        Start 179: replay-timeout-unit-protocol
+179/204 Test #179: replay-timeout-unit-protocol .................................   Passed    0.00 sec
+        Start 180: replay-timeout-controller-clean
+180/204 Test #180: replay-timeout-controller-clean ..............................   Passed    0.00 sec
+        Start 181: replay-timeout-controller-no-progress
+181/204 Test #181: replay-timeout-controller-no-progress ........................   Passed    0.01 sec
+        Start 182: replay-timeout-controller-heartbeat
+182/204 Test #182: replay-timeout-controller-heartbeat ..........................   Passed    0.00 sec
+        Start 183: replay-timeout-controller-heartbeat-reset
+183/204 Test #183: replay-timeout-controller-heartbeat-reset ....................   Passed    0.00 sec
+        Start 184: replay-timeout-controller-cleanup
+184/204 Test #184: replay-timeout-controller-cleanup ............................   Passed    0.01 sec
+        Start 185: replay-timeout-controller-spontaneous
+185/204 Test #185: replay-timeout-controller-spontaneous ........................   Passed    0.01 sec
+        Start 186: replay-timeout-controller-escalation
+186/204 Test #186: replay-timeout-controller-escalation .........................   Passed    0.01 sec
+        Start 187: replay-timeout-controller-delivery-failure
+187/204 Test #187: replay-timeout-controller-delivery-failure ...................   Passed    0.00 sec
+        Start 188: replay-timeout-controller-kill-failure
+188/204 Test #188: replay-timeout-controller-kill-failure .......................   Passed    0.00 sec
+        Start 189: replay-timeout-controller-external-kill
+189/204 Test #189: replay-timeout-controller-external-kill ......................   Passed    0.00 sec
+        Start 190: replay-timeout-controller-multithread
+190/204 Test #190: replay-timeout-controller-multithread ........................   Passed    0.00 sec
+        Start 191: replay-timeout-controller-recovery
+191/204 Test #191: replay-timeout-controller-recovery ...........................   Passed    0.01 sec
+        Start 192: replay-timeout-controller-protocol
+192/204 Test #192: replay-timeout-controller-protocol ...........................   Passed    0.00 sec
+        Start 193: replay-timeout-controller-dispatcher-reset
+193/204 Test #193: replay-timeout-controller-dispatcher-reset ...................   Passed    0.00 sec
+        Start 194: replay-timeout-controller-dispatcher-disabled
+194/204 Test #194: replay-timeout-controller-dispatcher-disabled ................   Passed    0.00 sec
+        Start 195: replay-timeout-controller-ordinary-no-progress
+195/204 Test #195: replay-timeout-controller-ordinary-no-progress ...............   Passed    0.00 sec
+        Start 196: replay-timeout-controller-ordinary-delivery-failure
+196/204 Test #196: replay-timeout-controller-ordinary-delivery-failure ..........   Passed    0.00 sec
+        Start 197: replay-timeout-controller-timer-create-failure
+197/204 Test #197: replay-timeout-controller-timer-create-failure ...............   Passed    0.00 sec
+        Start 198: replay-timeout-controller-timer-arm-failure
+198/204 Test #198: replay-timeout-controller-timer-arm-failure ..................   Passed    0.00 sec
+        Start 199: replay-timeout-controller-timer-register-failure
+199/204 Test #199: replay-timeout-controller-timer-register-failure .............   Passed    0.00 sec
+        Start 200: replay-timeout-controller-heartbeat-timer-create-failure
+200/204 Test #200: replay-timeout-controller-heartbeat-timer-create-failure .....   Passed    0.00 sec
+        Start 201: replay-timeout-controller-heartbeat-timer-arm-failure
+201/204 Test #201: replay-timeout-controller-heartbeat-timer-arm-failure ........   Passed    0.00 sec
+        Start 202: replay-timeout-controller-heartbeat-timer-register-failure
+202/204 Test #202: replay-timeout-controller-heartbeat-timer-register-failure ...   Passed    0.00 sec
+        Start 203: replay-timeout-controller-heartbeat-timer-read-failure
+203/204 Test #203: replay-timeout-controller-heartbeat-timer-read-failure .......   Passed    0.00 sec
+        Start 204: replay-timeout-controller-heartbeat-timer-rearm-failure
+204/204 Test #204: replay-timeout-controller-heartbeat-timer-rearm-failure ......   Passed    0.00 sec
+
+100% tests passed out of 204
+
+Total Test time (real) =   7.17 sec
+
+INTENT c1-matrix-release-off
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Release-OFF --output-on-failure --no-tests=error --output-junit /tmp/fossilize-16/output/checker-1/Release-OFF.xml
+CWD /tmp/fossilize-16/checker-1-dbdb32
+EXIT 0
+Test project /tmp/fossilize-16/build/implementer-1/Release-OFF
+        Start   1: fossilize-system-test
+  1/204 Test   #1: fossilize-system-test ........................................   Passed    0.18 sec
+        Start   2: varint-system-test
+  2/204 Test   #2: varint-system-test ...........................................   Passed    0.46 sec
+        Start   3: application-info-filter-test
+  3/204 Test   #3: application-info-filter-test .................................   Passed    0.00 sec
+        Start   4: object-cache-test
+  4/204 Test   #4: object-cache-test ............................................   Passed    0.00 sec
+        Start   5: feature-filter-test
+  5/204 Test   #5: feature-filter-test ..........................................   Passed    0.00 sec
+        Start   6: linux-futex-test
+  6/204 Test   #6: linux-futex-test .............................................   Passed    0.50 sec
+        Start   7: replay-diagnostic-test
+  7/204 Test   #7: replay-diagnostic-test .......................................   Passed    0.00 sec
+        Start   8: device-diagnostic-test
+  8/204 Test   #8: device-diagnostic-test .......................................   Passed    0.01 sec
+        Start   9: capture-diagnostic-normal-graphics-reject
+  9/204 Test   #9: capture-diagnostic-normal-graphics-reject ....................   Passed    0.00 sec
+        Start  10: capture-diagnostic-normal-graphics-success
+ 10/204 Test  #10: capture-diagnostic-normal-graphics-success ...................   Passed    0.00 sec
+        Start  11: capture-diagnostic-normal-graphics-vulkan-error
+ 11/204 Test  #11: capture-diagnostic-normal-graphics-vulkan-error ..............   Passed    0.00 sec
+        Start  12: capture-diagnostic-normal-compute-reject
+ 12/204 Test  #12: capture-diagnostic-normal-compute-reject .....................   Passed    0.00 sec
+        Start  13: capture-diagnostic-normal-compute-success
+ 13/204 Test  #13: capture-diagnostic-normal-compute-success ....................   Passed    0.00 sec
+        Start  14: capture-diagnostic-normal-compute-vulkan-error
+ 14/204 Test  #14: capture-diagnostic-normal-compute-vulkan-error ...............   Passed    0.00 sec
+        Start  15: capture-diagnostic-normal-raytracing-reject
+ 15/204 Test  #15: capture-diagnostic-normal-raytracing-reject ..................   Passed    0.00 sec
+        Start  16: capture-diagnostic-normal-raytracing-success
+ 16/204 Test  #16: capture-diagnostic-normal-raytracing-success .................   Passed    0.00 sec
+        Start  17: capture-diagnostic-normal-raytracing-vulkan-error
+ 17/204 Test  #17: capture-diagnostic-normal-raytracing-vulkan-error ............   Passed    0.00 sec
+        Start  18: capture-diagnostic-qa-graphics-reject
+ 18/204 Test  #18: capture-diagnostic-qa-graphics-reject ........................   Passed    0.00 sec
+        Start  19: capture-diagnostic-qa-graphics-success
+ 19/204 Test  #19: capture-diagnostic-qa-graphics-success .......................   Passed    0.00 sec
+        Start  20: capture-diagnostic-qa-graphics-vulkan-error
+ 20/204 Test  #20: capture-diagnostic-qa-graphics-vulkan-error ..................   Passed    0.00 sec
+        Start  21: capture-diagnostic-qa-compute-reject
+ 21/204 Test  #21: capture-diagnostic-qa-compute-reject .........................   Passed    0.00 sec
+        Start  22: capture-diagnostic-qa-compute-success
+ 22/204 Test  #22: capture-diagnostic-qa-compute-success ........................   Passed    0.00 sec
+        Start  23: capture-diagnostic-qa-compute-vulkan-error
+ 23/204 Test  #23: capture-diagnostic-qa-compute-vulkan-error ...................   Passed    0.00 sec
+        Start  24: capture-diagnostic-qa-raytracing-reject
+ 24/204 Test  #24: capture-diagnostic-qa-raytracing-reject ......................   Passed    0.00 sec
+        Start  25: capture-diagnostic-qa-raytracing-success
+ 25/204 Test  #25: capture-diagnostic-qa-raytracing-success .....................   Passed    0.00 sec
+        Start  26: capture-diagnostic-qa-raytracing-vulkan-error
+ 26/204 Test  #26: capture-diagnostic-qa-raytracing-vulkan-error ................   Passed    0.00 sec
+        Start  27: capture-diagnostic-paranoid-graphics-reject
+ 27/204 Test  #27: capture-diagnostic-paranoid-graphics-reject ..................   Passed    0.00 sec
+        Start  28: capture-diagnostic-paranoid-graphics-success
+ 28/204 Test  #28: capture-diagnostic-paranoid-graphics-success .................   Passed    0.00 sec
+        Start  29: capture-diagnostic-paranoid-graphics-vulkan-error
+ 29/204 Test  #29: capture-diagnostic-paranoid-graphics-vulkan-error ............   Passed    0.00 sec
+        Start  30: capture-diagnostic-paranoid-compute-reject
+ 30/204 Test  #30: capture-diagnostic-paranoid-compute-reject ...................   Passed    0.00 sec
+        Start  31: capture-diagnostic-paranoid-compute-success
+ 31/204 Test  #31: capture-diagnostic-paranoid-compute-success ..................   Passed    0.00 sec
+        Start  32: capture-diagnostic-paranoid-compute-vulkan-error
+ 32/204 Test  #32: capture-diagnostic-paranoid-compute-vulkan-error .............   Passed    0.00 sec
+        Start  33: capture-diagnostic-paranoid-raytracing-reject
+ 33/204 Test  #33: capture-diagnostic-paranoid-raytracing-reject ................   Passed    0.00 sec
+        Start  34: capture-diagnostic-paranoid-raytracing-success
+ 34/204 Test  #34: capture-diagnostic-paranoid-raytracing-success ...............   Passed    0.00 sec
+        Start  35: capture-diagnostic-paranoid-raytracing-vulkan-error
+ 35/204 Test  #35: capture-diagnostic-paranoid-raytracing-vulkan-error ..........   Passed    0.00 sec
+        Start  36: capture-diagnostic-eager-graphics-reject
+ 36/204 Test  #36: capture-diagnostic-eager-graphics-reject .....................   Passed    0.00 sec
+        Start  37: capture-diagnostic-eager-graphics-success
+ 37/204 Test  #37: capture-diagnostic-eager-graphics-success ....................   Passed    0.00 sec
+        Start  38: capture-diagnostic-eager-graphics-vulkan-error
+ 38/204 Test  #38: capture-diagnostic-eager-graphics-vulkan-error ...............   Passed    0.00 sec
+        Start  39: capture-diagnostic-eager-compute-reject
+ 39/204 Test  #39: capture-diagnostic-eager-compute-reject ......................   Passed    0.00 sec
+        Start  40: capture-diagnostic-eager-compute-success
+ 40/204 Test  #40: capture-diagnostic-eager-compute-success .....................   Passed    0.00 sec
+        Start  41: capture-diagnostic-eager-compute-vulkan-error
+ 41/204 Test  #41: capture-diagnostic-eager-compute-vulkan-error ................   Passed    0.00 sec
+        Start  42: capture-diagnostic-eager-raytracing-reject
+ 42/204 Test  #42: capture-diagnostic-eager-raytracing-reject ...................   Passed    0.00 sec
+        Start  43: capture-diagnostic-eager-raytracing-success
+ 43/204 Test  #43: capture-diagnostic-eager-raytracing-success ..................   Passed    0.00 sec
+        Start  44: capture-diagnostic-eager-raytracing-vulkan-error
+ 44/204 Test  #44: capture-diagnostic-eager-raytracing-vulkan-error .............   Passed    0.00 sec
+        Start  45: capture-diagnostic-binary-graphics-reject
+ 45/204 Test  #45: capture-diagnostic-binary-graphics-reject ....................   Passed    0.00 sec
+        Start  46: capture-diagnostic-binary-graphics-success
+ 46/204 Test  #46: capture-diagnostic-binary-graphics-success ...................   Passed    0.00 sec
+        Start  47: capture-diagnostic-binary-graphics-vulkan-error
+ 47/204 Test  #47: capture-diagnostic-binary-graphics-vulkan-error ..............   Passed    0.00 sec
+        Start  48: capture-diagnostic-binary-compute-reject
+ 48/204 Test  #48: capture-diagnostic-binary-compute-reject .....................   Passed    0.00 sec
+        Start  49: capture-diagnostic-binary-compute-success
+ 49/204 Test  #49: capture-diagnostic-binary-compute-success ....................   Passed    0.00 sec
+        Start  50: capture-diagnostic-binary-compute-vulkan-error
+ 50/204 Test  #50: capture-diagnostic-binary-compute-vulkan-error ...............   Passed    0.00 sec
+        Start  51: capture-diagnostic-binary-raytracing-reject
+ 51/204 Test  #51: capture-diagnostic-binary-raytracing-reject ..................   Passed    0.00 sec
+        Start  52: capture-diagnostic-binary-raytracing-success
+ 52/204 Test  #52: capture-diagnostic-binary-raytracing-success .................   Passed    0.00 sec
+        Start  53: capture-diagnostic-binary-raytracing-vulkan-error
+ 53/204 Test  #53: capture-diagnostic-binary-raytracing-vulkan-error ............   Passed    0.00 sec
+        Start  54: diagnostic-compatibility-test
+ 54/204 Test  #54: diagnostic-compatibility-test ................................   Passed    0.01 sec
+        Start  55: utility-parse-list-version
+ 55/204 Test  #55: utility-parse-list-version ...................................   Passed    0.01 sec
+        Start  56: utility-parse-list-invalid-json
+ 56/204 Test  #56: utility-parse-list-invalid-json ..............................   Passed    0.01 sec
+        Start  57: utility-parse-list-empty
+ 57/204 Test  #57: utility-parse-list-empty .....................................   Passed    0.01 sec
+        Start  58: utility-parse-list-populated
+ 58/204 Test  #58: utility-parse-list-populated .................................   Passed    0.01 sec
+        Start  59: utility-parse-list-mixed
+ 59/204 Test  #59: utility-parse-list-mixed .....................................   Passed    0.02 sec
+        Start  60: utility-parse-list-dependency-failure
+ 60/204 Test  #60: utility-parse-list-dependency-failure ........................   Passed    0.02 sec
+        Start  61: utility-parse-list-empty-dependencies
+ 61/204 Test  #61: utility-parse-list-empty-dependencies ........................   Passed    0.01 sec
+        Start  62: utility-parse-list-legacy-invocations
+ 62/204 Test  #62: utility-parse-list-legacy-invocations ........................   Passed    0.03 sec
+        Start  63: utility-parse-rehash-version
+ 63/204 Test  #63: utility-parse-rehash-version .................................   Passed    0.02 sec
+        Start  64: utility-parse-rehash-invalid-json
+ 64/204 Test  #64: utility-parse-rehash-invalid-json ............................   Passed    0.01 sec
+        Start  65: utility-parse-rehash-empty
+ 65/204 Test  #65: utility-parse-rehash-empty ...................................   Passed    0.02 sec
+        Start  66: utility-parse-rehash-populated
+ 66/204 Test  #66: utility-parse-rehash-populated ...............................   Passed    0.02 sec
+        Start  67: utility-parse-rehash-mixed
+ 67/204 Test  #67: utility-parse-rehash-mixed ...................................   Passed    0.02 sec
+        Start  68: utility-parse-prune-version
+ 68/204 Test  #68: utility-parse-prune-version ..................................   Passed    0.01 sec
+        Start  69: utility-parse-prune-invalid-json
+ 69/204 Test  #69: utility-parse-prune-invalid-json .............................   Passed    0.01 sec
+        Start  70: utility-parse-prune-empty
+ 70/204 Test  #70: utility-parse-prune-empty ....................................   Passed    0.01 sec
+        Start  71: utility-parse-prune-populated
+ 71/204 Test  #71: utility-parse-prune-populated ................................   Passed    0.01 sec
+        Start  72: utility-parse-prune-mixed
+ 72/204 Test  #72: utility-parse-prune-mixed ....................................   Passed    0.02 sec
+        Start  73: utility-parse-prune-rejected-application
+ 73/204 Test  #73: utility-parse-prune-rejected-application .....................   Passed    0.03 sec
+        Start  74: file-helper-string-open
+ 74/204 Test  #74: file-helper-string-open ......................................   Passed    0.00 sec
+        Start  75: file-helper-string-short-write
+ 75/204 Test  #75: file-helper-string-short-write ...............................   Passed    0.00 sec
+        Start  76: file-helper-string-flush
+ 76/204 Test  #76: file-helper-string-flush .....................................   Passed    0.00 sec
+        Start  77: file-helper-string-close
+ 77/204 Test  #77: file-helper-string-close .....................................   Passed    0.00 sec
+        Start  78: file-helper-string-first-error
+ 78/204 Test  #78: file-helper-string-first-error ...............................   Passed    0.00 sec
+        Start  79: file-helper-string-success
+ 79/204 Test  #79: file-helper-string-success ...................................   Passed    0.00 sec
+        Start  80: file-helper-string-filesystem
+ 80/204 Test  #80: file-helper-string-filesystem ................................   Passed    0.00 sec
+        Start  81: file-helper-string-dev-full
+ 81/204 Test  #81: file-helper-string-dev-full ..................................   Passed    0.00 sec
+        Start  82: file-helper-buffer-open
+ 82/204 Test  #82: file-helper-buffer-open ......................................   Passed    0.00 sec
+        Start  83: file-helper-buffer-short-write
+ 83/204 Test  #83: file-helper-buffer-short-write ...............................   Passed    0.00 sec
+        Start  84: file-helper-buffer-flush
+ 84/204 Test  #84: file-helper-buffer-flush .....................................   Passed    0.00 sec
+        Start  85: file-helper-buffer-close
+ 85/204 Test  #85: file-helper-buffer-close .....................................   Passed    0.00 sec
+        Start  86: file-helper-buffer-first-error
+ 86/204 Test  #86: file-helper-buffer-first-error ...............................   Passed    0.00 sec
+        Start  87: file-helper-buffer-success
+ 87/204 Test  #87: file-helper-buffer-success ...................................   Passed    0.00 sec
+        Start  88: file-helper-buffer-filesystem
+ 88/204 Test  #88: file-helper-buffer-filesystem ................................   Passed    0.00 sec
+        Start  89: file-helper-buffer-dev-full
+ 89/204 Test  #89: file-helper-buffer-dev-full ..................................   Passed    0.00 sec
+        Start  90: file-helper-legacy-compatibility
+ 90/204 Test  #90: file-helper-legacy-compatibility .............................   Passed    0.00 sec
+        Start  91: file-helper-legacy-completion
+ 91/204 Test  #91: file-helper-legacy-completion ................................   Passed    0.01 sec
+        Start  92: fork-child-healthy
+ 92/204 Test  #92: fork-child-healthy ...........................................   Passed    0.01 sec
+        Start  93: fork-child-healthy-recovery
+ 93/204 Test  #93: fork-child-healthy-recovery ..................................   Passed    0.01 sec
+        Start  94: fork-child-parent-death
+ 94/204 Test  #94: fork-child-parent-death ......................................   Passed    0.00 sec
+        Start  95: fork-child-prctl-failure
+ 95/204 Test  #95: fork-child-prctl-failure .....................................   Passed    0.00 sec
+        Start  96: fork-child-parent-race
+ 96/204 Test  #96: fork-child-parent-race .......................................   Passed    0.00 sec
+        Start  97: fork-child-initial-first-sigmask
+ 97/204 Test  #97: fork-child-initial-first-sigmask .............................   Passed    0.00 sec
+        Start  98: fork-child-initial-last-sigmask
+ 98/204 Test  #98: fork-child-initial-last-sigmask ..............................   Passed    0.00 sec
+        Start  99: fork-child-recovery-sigmask
+ 99/204 Test  #99: fork-child-recovery-sigmask ..................................   Passed    0.00 sec
+        Start 100: fork-child-initial-first-stdout-dup2
+100/204 Test #100: fork-child-initial-first-stdout-dup2 .........................   Passed    0.00 sec
+        Start 101: fork-child-initial-last-stdout-dup2
+101/204 Test #101: fork-child-initial-last-stdout-dup2 ..........................   Passed    0.00 sec
+        Start 102: fork-child-recovery-stdout-dup2
+102/204 Test #102: fork-child-recovery-stdout-dup2 ..............................   Passed    0.00 sec
+        Start 103: fork-child-initial-first-stdin-dup2
+103/204 Test #103: fork-child-initial-first-stdin-dup2 ..........................   Passed    0.00 sec
+        Start 104: fork-child-initial-last-stdin-dup2
+104/204 Test #104: fork-child-initial-last-stdin-dup2 ...........................   Passed    0.00 sec
+        Start 105: fork-child-recovery-stdin-dup2
+105/204 Test #105: fork-child-recovery-stdin-dup2 ...............................   Passed    0.00 sec
+        Start 106: replay-controller-clean
+106/204 Test #106: replay-controller-clean ......................................   Passed    0.01 sec
+        Start 107: replay-controller-zero
+107/204 Test #107: replay-controller-zero .......................................   Passed    0.01 sec
+        Start 108: replay-controller-empty-archive
+108/204 Test #108: replay-controller-empty-archive ..............................   Passed    0.01 sec
+        Start 109: replay-controller-lost
+109/204 Test #109: replay-controller-lost .......................................   Passed    0.01 sec
+        Start 110: replay-controller-lost-progress
+110/204 Test #110: replay-controller-lost-progress ..............................   Passed    0.01 sec
+        Start 111: replay-controller-mixed-success-first
+111/204 Test #111: replay-controller-mixed-success-first ........................   Passed    0.01 sec
+        Start 112: replay-controller-mixed-loss-first
+112/204 Test #112: replay-controller-mixed-loss-first ...........................   Passed    0.01 sec
+        Start 113: replay-controller-recover
+113/204 Test #113: replay-controller-recover ....................................   Passed    0.01 sec
+        Start 114: replay-controller-skip-graphics
+114/204 Test #114: replay-controller-skip-graphics ..............................   Passed    0.01 sec
+        Start 115: replay-controller-skip-compute
+115/204 Test #115: replay-controller-skip-compute ...............................   Passed    0.01 sec
+        Start 116: replay-controller-skip-raytracing
+116/204 Test #116: replay-controller-skip-raytracing ............................   Passed    0.01 sec
+        Start 117: replay-controller-skip-graphics-final
+117/204 Test #117: replay-controller-skip-graphics-final ........................   Passed    0.01 sec
+        Start 118: replay-controller-skip-compute-final
+118/204 Test #118: replay-controller-skip-compute-final .........................   Passed    0.01 sec
+        Start 119: replay-controller-skip-raytracing-final
+119/204 Test #119: replay-controller-skip-raytracing-final ......................   Passed    0.01 sec
+        Start 120: replay-controller-skip-graphics-progress
+120/204 Test #120: replay-controller-skip-graphics-progress .....................   Passed    0.01 sec
+        Start 121: replay-controller-skip-graphics-final-progress
+121/204 Test #121: replay-controller-skip-graphics-final-progress ...............   Passed    0.01 sec
+        Start 122: replay-controller-partial
+122/204 Test #122: replay-controller-partial ....................................   Passed    0.01 sec
+        Start 123: replay-controller-loss-after-retry
+123/204 Test #123: replay-controller-loss-after-retry ...........................   Passed    0.01 sec
+        Start 124: replay-controller-held-sibling
+124/204 Test #124: replay-controller-held-sibling ...............................   Passed    0.01 sec
+        Start 125: replay-controller-signal
+125/204 Test #125: replay-controller-signal .....................................   Passed    0.14 sec
+        Start 126: replay-controller-status-error
+126/204 Test #126: replay-controller-status-error ...............................   Passed    0.02 sec
+        Start 127: replay-controller-outcome-state
+127/204 Test #127: replay-controller-outcome-state ..............................   Passed    0.01 sec
+        Start 128: replay-controller-cli-normal
+128/204 Test #128: replay-controller-cli-normal .................................   Passed    0.01 sec
+        Start 129: replay-controller-cli-master
+129/204 Test #129: replay-controller-cli-master .................................   Passed    0.01 sec
+        Start 130: replay-controller-cli-progress
+130/204 Test #130: replay-controller-cli-progress ...............................   Passed    0.11 sec
+        Start 131: replay-controller-cli-e5
+131/204 Test #131: replay-controller-cli-e5 .....................................   Passed    0.02 sec
+        Start 132: replay-controller-cli-e6
+132/204 Test #132: replay-controller-cli-e6 .....................................   Passed    0.12 sec
+        Start 133: replay-controller-cli-compatibility
+133/204 Test #133: replay-controller-cli-compatibility ..........................   Passed    0.04 sec
+        Start 134: replay-cache-creation-rerun
+134/204 Test #134: replay-cache-creation-rerun ..................................   Passed    0.01 sec
+        Start 135: replay-cache-success-policy
+135/204 Test #135: replay-cache-success-policy ..................................   Passed    0.00 sec
+        Start 136: replay-cache-loop
+136/204 Test #136: replay-cache-loop ............................................   Passed    0.00 sec
+        Start 137: replay-cache-compile-required
+137/204 Test #137: replay-cache-compile-required ................................   Passed    0.00 sec
+        Start 138: replay-cache-write-failure
+138/204 Test #138: replay-cache-write-failure ...................................   Passed    0.01 sec
+        Start 139: replay-cache-legacy-provenance
+139/204 Test #139: replay-cache-legacy-provenance ...............................   Passed    0.00 sec
+        Start 140: replay-cache-null-provenance
+140/204 Test #140: replay-cache-null-provenance .................................   Passed    0.01 sec
+        Start 141: replay-cache-whitelist
+141/204 Test #141: replay-cache-whitelist .......................................   Passed    0.00 sec
+        Start 142: replay-cache-legacy-invocation
+142/204 Test #142: replay-cache-legacy-invocation ...............................   Passed    0.01 sec
+        Start 143: replay-outcome-state
+143/204 Test #143: replay-outcome-state .........................................   Passed    0.01 sec
+        Start 144: replay-outcome-parse-read
+144/204 Test #144: replay-outcome-parse-read ....................................   Passed    0.00 sec
+        Start 145: replay-outcome-creation
+145/204 Test #145: replay-outcome-creation ......................................   Passed    0.00 sec
+        Start 146: replay-outcome-compile-required-loop
+146/204 Test #146: replay-outcome-compile-required-loop .........................   Passed    0.00 sec
+        Start 147: replay-outcome-support
+147/204 Test #147: replay-outcome-support .......................................   Passed    0.00 sec
+        Start 148: replay-outcome-setup-dependency
+148/204 Test #148: replay-outcome-setup-dependency ..............................   Passed    0.00 sec
+        Start 149: replay-outcome-worker-queue
+149/204 Test #149: replay-outcome-worker-queue ..................................   Passed    0.01 sec
+        Start 150: replay-outcome-matrix
+150/204 Test #150: replay-outcome-matrix ........................................   Passed    0.01 sec
+        Start 151: replay-outcome-validation
+151/204 Test #151: replay-outcome-validation ....................................   Passed    0.00 sec
+        Start 152: replay-outcome-entry-good
+152/204 Test #152: replay-outcome-entry-good ....................................   Passed    0.00 sec
+        Start 153: replay-outcome-entry-create
+153/204 Test #153: replay-outcome-entry-create ..................................   Passed    0.00 sec
+        Start 154: replay-outcome-entry-layout
+154/204 Test #154: replay-outcome-entry-layout ..................................   Passed    0.00 sec
+        Start 155: replay-outcome-entry-device
+155/204 Test #155: replay-outcome-entry-device ..................................   Passed    0.00 sec
+        Start 156: replay-outcome-cli-e7
+156/204 Test #156: replay-outcome-cli-e7 ........................................   Passed    0.23 sec
+        Start 157: replay-outcome-cli-missing
+157/204 Test #157: replay-outcome-cli-missing ...................................   Passed    0.24 sec
+        Start 158: replay-outcome-cli-unsupported
+158/204 Test #158: replay-outcome-cli-unsupported ...............................   Passed    0.24 sec
+        Start 159: replay-outcome-cli-unsupported-shader
+159/204 Test #159: replay-outcome-cli-unsupported-shader ........................   Passed    0.24 sec
+        Start 160: replay-outcome-cli-library
+160/204 Test #160: replay-outcome-cli-library ...................................   Passed    0.24 sec
+        Start 161: replay-outcome-cli-mixed
+161/204 Test #161: replay-outcome-cli-mixed .....................................   Passed    0.24 sec
+        Start 162: replay-outcome-cli-good
+162/204 Test #162: replay-outcome-cli-good ......................................   Passed    0.24 sec
+        Start 163: replay-outcome-cli-empty
+163/204 Test #163: replay-outcome-cli-empty .....................................   Passed    0.23 sec
+        Start 164: replay-outcome-cli-missinghash
+164/204 Test #164: replay-outcome-cli-missinghash ...............................   Passed    0.03 sec
+        Start 165: replay-outcome-cli-emptyhash
+165/204 Test #165: replay-outcome-cli-emptyhash .................................   Passed    0.03 sec
+        Start 166: replay-outcome-cli-selection
+166/204 Test #166: replay-outcome-cli-selection .................................   Passed    0.24 sec
+        Start 167: replay-outcome-cli-hashselection
+167/204 Test #167: replay-outcome-cli-hashselection .............................   Passed    0.24 sec
+        Start 168: replay-outcome-cli-whitelist
+168/204 Test #168: replay-outcome-cli-whitelist .................................   Passed    0.24 sec
+        Start 169: replay-outcome-cli-compatibility
+169/204 Test #169: replay-outcome-cli-compatibility .............................   Passed    0.04 sec
+        Start 170: replay-outcome-cli-validation
+170/204 Test #170: replay-outcome-cli-validation ................................   Passed    0.24 sec
+        Start 171: replay-outcome-controller-success-first-absent
+171/204 Test #171: replay-outcome-controller-success-first-absent ...............   Passed    0.01 sec
+        Start 172: replay-outcome-controller-success-first-progress
+172/204 Test #172: replay-outcome-controller-success-first-progress .............   Passed    0.01 sec
+        Start 173: replay-outcome-controller-failure-first-absent
+173/204 Test #173: replay-outcome-controller-failure-first-absent ...............   Passed    0.01 sec
+        Start 174: replay-outcome-controller-failure-first-progress
+174/204 Test #174: replay-outcome-controller-failure-first-progress .............   Passed    0.01 sec
+        Start 175: replay-timeout-unit-deadlines
+175/204 Test #175: replay-timeout-unit-deadlines ................................   Passed    0.00 sec
+        Start 176: replay-timeout-unit-reset
+176/204 Test #176: replay-timeout-unit-reset ....................................   Passed    0.00 sec
+        Start 177: replay-timeout-unit-delivery
+177/204 Test #177: replay-timeout-unit-delivery .................................   Passed    0.00 sec
+        Start 178: replay-timeout-unit-unknown
+178/204 Test #178: replay-timeout-unit-unknown ..................................   Passed    0.00 sec
+        Start 179: replay-timeout-unit-protocol
+179/204 Test #179: replay-timeout-unit-protocol .................................   Passed    0.00 sec
+        Start 180: replay-timeout-controller-clean
+180/204 Test #180: replay-timeout-controller-clean ..............................   Passed    0.00 sec
+        Start 181: replay-timeout-controller-no-progress
+181/204 Test #181: replay-timeout-controller-no-progress ........................   Passed    0.01 sec
+        Start 182: replay-timeout-controller-heartbeat
+182/204 Test #182: replay-timeout-controller-heartbeat ..........................   Passed    0.00 sec
+        Start 183: replay-timeout-controller-heartbeat-reset
+183/204 Test #183: replay-timeout-controller-heartbeat-reset ....................   Passed    0.00 sec
+        Start 184: replay-timeout-controller-cleanup
+184/204 Test #184: replay-timeout-controller-cleanup ............................   Passed    0.00 sec
+        Start 185: replay-timeout-controller-spontaneous
+185/204 Test #185: replay-timeout-controller-spontaneous ........................   Passed    0.00 sec
+        Start 186: replay-timeout-controller-escalation
+186/204 Test #186: replay-timeout-controller-escalation .........................   Passed    0.01 sec
+        Start 187: replay-timeout-controller-delivery-failure
+187/204 Test #187: replay-timeout-controller-delivery-failure ...................   Passed    0.00 sec
+        Start 188: replay-timeout-controller-kill-failure
+188/204 Test #188: replay-timeout-controller-kill-failure .......................   Passed    0.00 sec
+        Start 189: replay-timeout-controller-external-kill
+189/204 Test #189: replay-timeout-controller-external-kill ......................   Passed    0.00 sec
+        Start 190: replay-timeout-controller-multithread
+190/204 Test #190: replay-timeout-controller-multithread ........................   Passed    0.00 sec
+        Start 191: replay-timeout-controller-recovery
+191/204 Test #191: replay-timeout-controller-recovery ...........................   Passed    0.01 sec
+        Start 192: replay-timeout-controller-protocol
+192/204 Test #192: replay-timeout-controller-protocol ...........................   Passed    0.00 sec
+        Start 193: replay-timeout-controller-dispatcher-reset
+193/204 Test #193: replay-timeout-controller-dispatcher-reset ...................   Passed    0.00 sec
+        Start 194: replay-timeout-controller-dispatcher-disabled
+194/204 Test #194: replay-timeout-controller-dispatcher-disabled ................   Passed    0.00 sec
+        Start 195: replay-timeout-controller-ordinary-no-progress
+195/204 Test #195: replay-timeout-controller-ordinary-no-progress ...............   Passed    0.00 sec
+        Start 196: replay-timeout-controller-ordinary-delivery-failure
+196/204 Test #196: replay-timeout-controller-ordinary-delivery-failure ..........   Passed    0.00 sec
+        Start 197: replay-timeout-controller-timer-create-failure
+197/204 Test #197: replay-timeout-controller-timer-create-failure ...............   Passed    0.00 sec
+        Start 198: replay-timeout-controller-timer-arm-failure
+198/204 Test #198: replay-timeout-controller-timer-arm-failure ..................   Passed    0.00 sec
+        Start 199: replay-timeout-controller-timer-register-failure
+199/204 Test #199: replay-timeout-controller-timer-register-failure .............   Passed    0.00 sec
+        Start 200: replay-timeout-controller-heartbeat-timer-create-failure
+200/204 Test #200: replay-timeout-controller-heartbeat-timer-create-failure .....   Passed    0.00 sec
+        Start 201: replay-timeout-controller-heartbeat-timer-arm-failure
+201/204 Test #201: replay-timeout-controller-heartbeat-timer-arm-failure ........   Passed    0.00 sec
+        Start 202: replay-timeout-controller-heartbeat-timer-register-failure
+202/204 Test #202: replay-timeout-controller-heartbeat-timer-register-failure ...   Passed    0.00 sec
+        Start 203: replay-timeout-controller-heartbeat-timer-read-failure
+203/204 Test #203: replay-timeout-controller-heartbeat-timer-read-failure .......   Passed    0.00 sec
+        Start 204: replay-timeout-controller-heartbeat-timer-rearm-failure
+204/204 Test #204: replay-timeout-controller-heartbeat-timer-rearm-failure ......   Passed    0.00 sec
+
+100% tests passed out of 204
+
+Total Test time (real) =   5.70 sec
+
+INTENT c1-matrix-release-on
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Release-ON --output-on-failure --no-tests=error --output-junit /tmp/fossilize-16/output/checker-1/Release-ON.xml
+CWD /tmp/fossilize-16/checker-1-dbdb32
+EXIT 0
+Test project /tmp/fossilize-16/build/implementer-1/Release-ON
+        Start   1: fossilize-system-test
+  1/204 Test   #1: fossilize-system-test ........................................   Passed    0.18 sec
+        Start   2: varint-system-test
+  2/204 Test   #2: varint-system-test ...........................................   Passed    0.52 sec
+        Start   3: application-info-filter-test
+  3/204 Test   #3: application-info-filter-test .................................   Passed    0.00 sec
+        Start   4: object-cache-test
+  4/204 Test   #4: object-cache-test ............................................   Passed    0.00 sec
+        Start   5: feature-filter-test
+  5/204 Test   #5: feature-filter-test ..........................................   Passed    0.00 sec
+        Start   6: linux-futex-test
+  6/204 Test   #6: linux-futex-test .............................................   Passed    0.47 sec
+        Start   7: replay-diagnostic-test
+  7/204 Test   #7: replay-diagnostic-test .......................................   Passed    0.00 sec
+        Start   8: device-diagnostic-test
+  8/204 Test   #8: device-diagnostic-test .......................................   Passed    0.00 sec
+        Start   9: capture-diagnostic-normal-graphics-reject
+  9/204 Test   #9: capture-diagnostic-normal-graphics-reject ....................   Passed    0.00 sec
+        Start  10: capture-diagnostic-normal-graphics-success
+ 10/204 Test  #10: capture-diagnostic-normal-graphics-success ...................   Passed    0.00 sec
+        Start  11: capture-diagnostic-normal-graphics-vulkan-error
+ 11/204 Test  #11: capture-diagnostic-normal-graphics-vulkan-error ..............   Passed    0.00 sec
+        Start  12: capture-diagnostic-normal-compute-reject
+ 12/204 Test  #12: capture-diagnostic-normal-compute-reject .....................   Passed    0.00 sec
+        Start  13: capture-diagnostic-normal-compute-success
+ 13/204 Test  #13: capture-diagnostic-normal-compute-success ....................   Passed    0.00 sec
+        Start  14: capture-diagnostic-normal-compute-vulkan-error
+ 14/204 Test  #14: capture-diagnostic-normal-compute-vulkan-error ...............   Passed    0.00 sec
+        Start  15: capture-diagnostic-normal-raytracing-reject
+ 15/204 Test  #15: capture-diagnostic-normal-raytracing-reject ..................   Passed    0.00 sec
+        Start  16: capture-diagnostic-normal-raytracing-success
+ 16/204 Test  #16: capture-diagnostic-normal-raytracing-success .................   Passed    0.00 sec
+        Start  17: capture-diagnostic-normal-raytracing-vulkan-error
+ 17/204 Test  #17: capture-diagnostic-normal-raytracing-vulkan-error ............   Passed    0.00 sec
+        Start  18: capture-diagnostic-qa-graphics-reject
+ 18/204 Test  #18: capture-diagnostic-qa-graphics-reject ........................   Passed    0.00 sec
+        Start  19: capture-diagnostic-qa-graphics-success
+ 19/204 Test  #19: capture-diagnostic-qa-graphics-success .......................   Passed    0.00 sec
+        Start  20: capture-diagnostic-qa-graphics-vulkan-error
+ 20/204 Test  #20: capture-diagnostic-qa-graphics-vulkan-error ..................   Passed    0.00 sec
+        Start  21: capture-diagnostic-qa-compute-reject
+ 21/204 Test  #21: capture-diagnostic-qa-compute-reject .........................   Passed    0.00 sec
+        Start  22: capture-diagnostic-qa-compute-success
+ 22/204 Test  #22: capture-diagnostic-qa-compute-success ........................   Passed    0.00 sec
+        Start  23: capture-diagnostic-qa-compute-vulkan-error
+ 23/204 Test  #23: capture-diagnostic-qa-compute-vulkan-error ...................   Passed    0.00 sec
+        Start  24: capture-diagnostic-qa-raytracing-reject
+ 24/204 Test  #24: capture-diagnostic-qa-raytracing-reject ......................   Passed    0.00 sec
+        Start  25: capture-diagnostic-qa-raytracing-success
+ 25/204 Test  #25: capture-diagnostic-qa-raytracing-success .....................   Passed    0.00 sec
+        Start  26: capture-diagnostic-qa-raytracing-vulkan-error
+ 26/204 Test  #26: capture-diagnostic-qa-raytracing-vulkan-error ................   Passed    0.00 sec
+        Start  27: capture-diagnostic-paranoid-graphics-reject
+ 27/204 Test  #27: capture-diagnostic-paranoid-graphics-reject ..................   Passed    0.00 sec
+        Start  28: capture-diagnostic-paranoid-graphics-success
+ 28/204 Test  #28: capture-diagnostic-paranoid-graphics-success .................   Passed    0.00 sec
+        Start  29: capture-diagnostic-paranoid-graphics-vulkan-error
+ 29/204 Test  #29: capture-diagnostic-paranoid-graphics-vulkan-error ............   Passed    0.00 sec
+        Start  30: capture-diagnostic-paranoid-compute-reject
+ 30/204 Test  #30: capture-diagnostic-paranoid-compute-reject ...................   Passed    0.00 sec
+        Start  31: capture-diagnostic-paranoid-compute-success
+ 31/204 Test  #31: capture-diagnostic-paranoid-compute-success ..................   Passed    0.00 sec
+        Start  32: capture-diagnostic-paranoid-compute-vulkan-error
+ 32/204 Test  #32: capture-diagnostic-paranoid-compute-vulkan-error .............   Passed    0.00 sec
+        Start  33: capture-diagnostic-paranoid-raytracing-reject
+ 33/204 Test  #33: capture-diagnostic-paranoid-raytracing-reject ................   Passed    0.00 sec
+        Start  34: capture-diagnostic-paranoid-raytracing-success
+ 34/204 Test  #34: capture-diagnostic-paranoid-raytracing-success ...............   Passed    0.00 sec
+        Start  35: capture-diagnostic-paranoid-raytracing-vulkan-error
+ 35/204 Test  #35: capture-diagnostic-paranoid-raytracing-vulkan-error ..........   Passed    0.00 sec
+        Start  36: capture-diagnostic-eager-graphics-reject
+ 36/204 Test  #36: capture-diagnostic-eager-graphics-reject .....................   Passed    0.00 sec
+        Start  37: capture-diagnostic-eager-graphics-success
+ 37/204 Test  #37: capture-diagnostic-eager-graphics-success ....................   Passed    0.00 sec
+        Start  38: capture-diagnostic-eager-graphics-vulkan-error
+ 38/204 Test  #38: capture-diagnostic-eager-graphics-vulkan-error ...............   Passed    0.00 sec
+        Start  39: capture-diagnostic-eager-compute-reject
+ 39/204 Test  #39: capture-diagnostic-eager-compute-reject ......................   Passed    0.00 sec
+        Start  40: capture-diagnostic-eager-compute-success
+ 40/204 Test  #40: capture-diagnostic-eager-compute-success .....................   Passed    0.00 sec
+        Start  41: capture-diagnostic-eager-compute-vulkan-error
+ 41/204 Test  #41: capture-diagnostic-eager-compute-vulkan-error ................   Passed    0.00 sec
+        Start  42: capture-diagnostic-eager-raytracing-reject
+ 42/204 Test  #42: capture-diagnostic-eager-raytracing-reject ...................   Passed    0.00 sec
+        Start  43: capture-diagnostic-eager-raytracing-success
+ 43/204 Test  #43: capture-diagnostic-eager-raytracing-success ..................   Passed    0.00 sec
+        Start  44: capture-diagnostic-eager-raytracing-vulkan-error
+ 44/204 Test  #44: capture-diagnostic-eager-raytracing-vulkan-error .............   Passed    0.00 sec
+        Start  45: capture-diagnostic-binary-graphics-reject
+ 45/204 Test  #45: capture-diagnostic-binary-graphics-reject ....................   Passed    0.00 sec
+        Start  46: capture-diagnostic-binary-graphics-success
+ 46/204 Test  #46: capture-diagnostic-binary-graphics-success ...................   Passed    0.00 sec
+        Start  47: capture-diagnostic-binary-graphics-vulkan-error
+ 47/204 Test  #47: capture-diagnostic-binary-graphics-vulkan-error ..............   Passed    0.00 sec
+        Start  48: capture-diagnostic-binary-compute-reject
+ 48/204 Test  #48: capture-diagnostic-binary-compute-reject .....................   Passed    0.00 sec
+        Start  49: capture-diagnostic-binary-compute-success
+ 49/204 Test  #49: capture-diagnostic-binary-compute-success ....................   Passed    0.00 sec
+        Start  50: capture-diagnostic-binary-compute-vulkan-error
+ 50/204 Test  #50: capture-diagnostic-binary-compute-vulkan-error ...............   Passed    0.00 sec
+        Start  51: capture-diagnostic-binary-raytracing-reject
+ 51/204 Test  #51: capture-diagnostic-binary-raytracing-reject ..................   Passed    0.00 sec
+        Start  52: capture-diagnostic-binary-raytracing-success
+ 52/204 Test  #52: capture-diagnostic-binary-raytracing-success .................   Passed    0.00 sec
+        Start  53: capture-diagnostic-binary-raytracing-vulkan-error
+ 53/204 Test  #53: capture-diagnostic-binary-raytracing-vulkan-error ............   Passed    0.00 sec
+        Start  54: diagnostic-compatibility-test
+ 54/204 Test  #54: diagnostic-compatibility-test ................................   Passed    0.01 sec
+        Start  55: utility-parse-list-version
+ 55/204 Test  #55: utility-parse-list-version ...................................   Passed    0.01 sec
+        Start  56: utility-parse-list-invalid-json
+ 56/204 Test  #56: utility-parse-list-invalid-json ..............................   Passed    0.01 sec
+        Start  57: utility-parse-list-empty
+ 57/204 Test  #57: utility-parse-list-empty .....................................   Passed    0.01 sec
+        Start  58: utility-parse-list-populated
+ 58/204 Test  #58: utility-parse-list-populated .................................   Passed    0.01 sec
+        Start  59: utility-parse-list-mixed
+ 59/204 Test  #59: utility-parse-list-mixed .....................................   Passed    0.02 sec
+        Start  60: utility-parse-list-dependency-failure
+ 60/204 Test  #60: utility-parse-list-dependency-failure ........................   Passed    0.02 sec
+        Start  61: utility-parse-list-empty-dependencies
+ 61/204 Test  #61: utility-parse-list-empty-dependencies ........................   Passed    0.01 sec
+        Start  62: utility-parse-list-legacy-invocations
+ 62/204 Test  #62: utility-parse-list-legacy-invocations ........................   Passed    0.03 sec
+        Start  63: utility-parse-rehash-version
+ 63/204 Test  #63: utility-parse-rehash-version .................................   Passed    0.01 sec
+        Start  64: utility-parse-rehash-invalid-json
+ 64/204 Test  #64: utility-parse-rehash-invalid-json ............................   Passed    0.02 sec
+        Start  65: utility-parse-rehash-empty
+ 65/204 Test  #65: utility-parse-rehash-empty ...................................   Passed    0.02 sec
+        Start  66: utility-parse-rehash-populated
+ 66/204 Test  #66: utility-parse-rehash-populated ...............................   Passed    0.01 sec
+        Start  67: utility-parse-rehash-mixed
+ 67/204 Test  #67: utility-parse-rehash-mixed ...................................   Passed    0.02 sec
+        Start  68: utility-parse-prune-version
+ 68/204 Test  #68: utility-parse-prune-version ..................................   Passed    0.01 sec
+        Start  69: utility-parse-prune-invalid-json
+ 69/204 Test  #69: utility-parse-prune-invalid-json .............................   Passed    0.01 sec
+        Start  70: utility-parse-prune-empty
+ 70/204 Test  #70: utility-parse-prune-empty ....................................   Passed    0.02 sec
+        Start  71: utility-parse-prune-populated
+ 71/204 Test  #71: utility-parse-prune-populated ................................   Passed    0.01 sec
+        Start  72: utility-parse-prune-mixed
+ 72/204 Test  #72: utility-parse-prune-mixed ....................................   Passed    0.03 sec
+        Start  73: utility-parse-prune-rejected-application
+ 73/204 Test  #73: utility-parse-prune-rejected-application .....................   Passed    0.03 sec
+        Start  74: file-helper-string-open
+ 74/204 Test  #74: file-helper-string-open ......................................   Passed    0.00 sec
+        Start  75: file-helper-string-short-write
+ 75/204 Test  #75: file-helper-string-short-write ...............................   Passed    0.00 sec
+        Start  76: file-helper-string-flush
+ 76/204 Test  #76: file-helper-string-flush .....................................   Passed    0.00 sec
+        Start  77: file-helper-string-close
+ 77/204 Test  #77: file-helper-string-close .....................................   Passed    0.00 sec
+        Start  78: file-helper-string-first-error
+ 78/204 Test  #78: file-helper-string-first-error ...............................   Passed    0.00 sec
+        Start  79: file-helper-string-success
+ 79/204 Test  #79: file-helper-string-success ...................................   Passed    0.00 sec
+        Start  80: file-helper-string-filesystem
+ 80/204 Test  #80: file-helper-string-filesystem ................................   Passed    0.00 sec
+        Start  81: file-helper-string-dev-full
+ 81/204 Test  #81: file-helper-string-dev-full ..................................   Passed    0.00 sec
+        Start  82: file-helper-buffer-open
+ 82/204 Test  #82: file-helper-buffer-open ......................................   Passed    0.00 sec
+        Start  83: file-helper-buffer-short-write
+ 83/204 Test  #83: file-helper-buffer-short-write ...............................   Passed    0.00 sec
+        Start  84: file-helper-buffer-flush
+ 84/204 Test  #84: file-helper-buffer-flush .....................................   Passed    0.00 sec
+        Start  85: file-helper-buffer-close
+ 85/204 Test  #85: file-helper-buffer-close .....................................   Passed    0.00 sec
+        Start  86: file-helper-buffer-first-error
+ 86/204 Test  #86: file-helper-buffer-first-error ...............................   Passed    0.00 sec
+        Start  87: file-helper-buffer-success
+ 87/204 Test  #87: file-helper-buffer-success ...................................   Passed    0.00 sec
+        Start  88: file-helper-buffer-filesystem
+ 88/204 Test  #88: file-helper-buffer-filesystem ................................   Passed    0.00 sec
+        Start  89: file-helper-buffer-dev-full
+ 89/204 Test  #89: file-helper-buffer-dev-full ..................................   Passed    0.00 sec
+        Start  90: file-helper-legacy-compatibility
+ 90/204 Test  #90: file-helper-legacy-compatibility .............................   Passed    0.00 sec
+        Start  91: file-helper-legacy-completion
+ 91/204 Test  #91: file-helper-legacy-completion ................................   Passed    0.01 sec
+        Start  92: fork-child-healthy
+ 92/204 Test  #92: fork-child-healthy ...........................................   Passed    0.01 sec
+        Start  93: fork-child-healthy-recovery
+ 93/204 Test  #93: fork-child-healthy-recovery ..................................   Passed    0.01 sec
+        Start  94: fork-child-parent-death
+ 94/204 Test  #94: fork-child-parent-death ......................................   Passed    0.00 sec
+        Start  95: fork-child-prctl-failure
+ 95/204 Test  #95: fork-child-prctl-failure .....................................   Passed    0.00 sec
+        Start  96: fork-child-parent-race
+ 96/204 Test  #96: fork-child-parent-race .......................................   Passed    0.00 sec
+        Start  97: fork-child-initial-first-sigmask
+ 97/204 Test  #97: fork-child-initial-first-sigmask .............................   Passed    0.00 sec
+        Start  98: fork-child-initial-last-sigmask
+ 98/204 Test  #98: fork-child-initial-last-sigmask ..............................   Passed    0.00 sec
+        Start  99: fork-child-recovery-sigmask
+ 99/204 Test  #99: fork-child-recovery-sigmask ..................................   Passed    0.00 sec
+        Start 100: fork-child-initial-first-stdout-dup2
+100/204 Test #100: fork-child-initial-first-stdout-dup2 .........................   Passed    0.00 sec
+        Start 101: fork-child-initial-last-stdout-dup2
+101/204 Test #101: fork-child-initial-last-stdout-dup2 ..........................   Passed    0.00 sec
+        Start 102: fork-child-recovery-stdout-dup2
+102/204 Test #102: fork-child-recovery-stdout-dup2 ..............................   Passed    0.00 sec
+        Start 103: fork-child-initial-first-stdin-dup2
+103/204 Test #103: fork-child-initial-first-stdin-dup2 ..........................   Passed    0.01 sec
+        Start 104: fork-child-initial-last-stdin-dup2
+104/204 Test #104: fork-child-initial-last-stdin-dup2 ...........................   Passed    0.00 sec
+        Start 105: fork-child-recovery-stdin-dup2
+105/204 Test #105: fork-child-recovery-stdin-dup2 ...............................   Passed    0.00 sec
+        Start 106: replay-controller-clean
+106/204 Test #106: replay-controller-clean ......................................   Passed    0.01 sec
+        Start 107: replay-controller-zero
+107/204 Test #107: replay-controller-zero .......................................   Passed    0.01 sec
+        Start 108: replay-controller-empty-archive
+108/204 Test #108: replay-controller-empty-archive ..............................   Passed    0.01 sec
+        Start 109: replay-controller-lost
+109/204 Test #109: replay-controller-lost .......................................   Passed    0.01 sec
+        Start 110: replay-controller-lost-progress
+110/204 Test #110: replay-controller-lost-progress ..............................   Passed    0.01 sec
+        Start 111: replay-controller-mixed-success-first
+111/204 Test #111: replay-controller-mixed-success-first ........................   Passed    0.01 sec
+        Start 112: replay-controller-mixed-loss-first
+112/204 Test #112: replay-controller-mixed-loss-first ...........................   Passed    0.01 sec
+        Start 113: replay-controller-recover
+113/204 Test #113: replay-controller-recover ....................................   Passed    0.01 sec
+        Start 114: replay-controller-skip-graphics
+114/204 Test #114: replay-controller-skip-graphics ..............................   Passed    0.01 sec
+        Start 115: replay-controller-skip-compute
+115/204 Test #115: replay-controller-skip-compute ...............................   Passed    0.02 sec
+        Start 116: replay-controller-skip-raytracing
+116/204 Test #116: replay-controller-skip-raytracing ............................   Passed    0.01 sec
+        Start 117: replay-controller-skip-graphics-final
+117/204 Test #117: replay-controller-skip-graphics-final ........................   Passed    0.01 sec
+        Start 118: replay-controller-skip-compute-final
+118/204 Test #118: replay-controller-skip-compute-final .........................   Passed    0.01 sec
+        Start 119: replay-controller-skip-raytracing-final
+119/204 Test #119: replay-controller-skip-raytracing-final ......................   Passed    0.01 sec
+        Start 120: replay-controller-skip-graphics-progress
+120/204 Test #120: replay-controller-skip-graphics-progress .....................   Passed    0.02 sec
+        Start 121: replay-controller-skip-graphics-final-progress
+121/204 Test #121: replay-controller-skip-graphics-final-progress ...............   Passed    0.01 sec
+        Start 122: replay-controller-partial
+122/204 Test #122: replay-controller-partial ....................................   Passed    0.01 sec
+        Start 123: replay-controller-loss-after-retry
+123/204 Test #123: replay-controller-loss-after-retry ...........................   Passed    0.01 sec
+        Start 124: replay-controller-held-sibling
+124/204 Test #124: replay-controller-held-sibling ...............................   Passed    0.01 sec
+        Start 125: replay-controller-signal
+125/204 Test #125: replay-controller-signal .....................................   Passed    0.15 sec
+        Start 126: replay-controller-status-error
+126/204 Test #126: replay-controller-status-error ...............................   Passed    0.01 sec
+        Start 127: replay-controller-outcome-state
+127/204 Test #127: replay-controller-outcome-state ..............................   Passed    0.01 sec
+        Start 128: replay-controller-cli-normal
+128/204 Test #128: replay-controller-cli-normal .................................   Passed    0.01 sec
+        Start 129: replay-controller-cli-master
+129/204 Test #129: replay-controller-cli-master .................................   Passed    0.01 sec
+        Start 130: replay-controller-cli-progress
+130/204 Test #130: replay-controller-cli-progress ...............................   Passed    0.11 sec
+        Start 131: replay-controller-cli-e5
+131/204 Test #131: replay-controller-cli-e5 .....................................   Passed    0.02 sec
+        Start 132: replay-controller-cli-e6
+132/204 Test #132: replay-controller-cli-e6 .....................................   Passed    0.12 sec
+        Start 133: replay-controller-cli-compatibility
+133/204 Test #133: replay-controller-cli-compatibility ..........................   Passed    0.03 sec
+        Start 134: replay-cache-creation-rerun
+134/204 Test #134: replay-cache-creation-rerun ..................................   Passed    0.01 sec
+        Start 135: replay-cache-success-policy
+135/204 Test #135: replay-cache-success-policy ..................................   Passed    0.00 sec
+        Start 136: replay-cache-loop
+136/204 Test #136: replay-cache-loop ............................................   Passed    0.00 sec
+        Start 137: replay-cache-compile-required
+137/204 Test #137: replay-cache-compile-required ................................   Passed    0.00 sec
+        Start 138: replay-cache-write-failure
+138/204 Test #138: replay-cache-write-failure ...................................   Passed    0.02 sec
+        Start 139: replay-cache-legacy-provenance
+139/204 Test #139: replay-cache-legacy-provenance ...............................   Passed    0.01 sec
+        Start 140: replay-cache-null-provenance
+140/204 Test #140: replay-cache-null-provenance .................................   Passed    0.01 sec
+        Start 141: replay-cache-whitelist
+141/204 Test #141: replay-cache-whitelist .......................................   Passed    0.00 sec
+        Start 142: replay-cache-legacy-invocation
+142/204 Test #142: replay-cache-legacy-invocation ...............................   Passed    0.00 sec
+        Start 143: replay-outcome-state
+143/204 Test #143: replay-outcome-state .........................................   Passed    0.01 sec
+        Start 144: replay-outcome-parse-read
+144/204 Test #144: replay-outcome-parse-read ....................................   Passed    0.00 sec
+        Start 145: replay-outcome-creation
+145/204 Test #145: replay-outcome-creation ......................................   Passed    0.00 sec
+        Start 146: replay-outcome-compile-required-loop
+146/204 Test #146: replay-outcome-compile-required-loop .........................   Passed    0.00 sec
+        Start 147: replay-outcome-support
+147/204 Test #147: replay-outcome-support .......................................   Passed    0.00 sec
+        Start 148: replay-outcome-setup-dependency
+148/204 Test #148: replay-outcome-setup-dependency ..............................   Passed    0.00 sec
+        Start 149: replay-outcome-worker-queue
+149/204 Test #149: replay-outcome-worker-queue ..................................   Passed    0.01 sec
+        Start 150: replay-outcome-matrix
+150/204 Test #150: replay-outcome-matrix ........................................   Passed    0.01 sec
+        Start 151: replay-outcome-validation
+151/204 Test #151: replay-outcome-validation ....................................   Passed    0.00 sec
+        Start 152: replay-outcome-entry-good
+152/204 Test #152: replay-outcome-entry-good ....................................   Passed    0.00 sec
+        Start 153: replay-outcome-entry-create
+153/204 Test #153: replay-outcome-entry-create ..................................   Passed    0.00 sec
+        Start 154: replay-outcome-entry-layout
+154/204 Test #154: replay-outcome-entry-layout ..................................   Passed    0.00 sec
+        Start 155: replay-outcome-entry-device
+155/204 Test #155: replay-outcome-entry-device ..................................   Passed    0.00 sec
+        Start 156: replay-outcome-cli-e7
+156/204 Test #156: replay-outcome-cli-e7 ........................................   Passed    0.23 sec
+        Start 157: replay-outcome-cli-missing
+157/204 Test #157: replay-outcome-cli-missing ...................................   Passed    0.23 sec
+        Start 158: replay-outcome-cli-unsupported
+158/204 Test #158: replay-outcome-cli-unsupported ...............................   Passed    0.23 sec
+        Start 159: replay-outcome-cli-unsupported-shader
+159/204 Test #159: replay-outcome-cli-unsupported-shader ........................   Passed    0.23 sec
+        Start 160: replay-outcome-cli-library
+160/204 Test #160: replay-outcome-cli-library ...................................   Passed    0.23 sec
+        Start 161: replay-outcome-cli-mixed
+161/204 Test #161: replay-outcome-cli-mixed .....................................   Passed    0.24 sec
+        Start 162: replay-outcome-cli-good
+162/204 Test #162: replay-outcome-cli-good ......................................   Passed    0.24 sec
+        Start 163: replay-outcome-cli-empty
+163/204 Test #163: replay-outcome-cli-empty .....................................   Passed    0.23 sec
+        Start 164: replay-outcome-cli-missinghash
+164/204 Test #164: replay-outcome-cli-missinghash ...............................   Passed    0.03 sec
+        Start 165: replay-outcome-cli-emptyhash
+165/204 Test #165: replay-outcome-cli-emptyhash .................................   Passed    0.03 sec
+        Start 166: replay-outcome-cli-selection
+166/204 Test #166: replay-outcome-cli-selection .................................   Passed    0.24 sec
+        Start 167: replay-outcome-cli-hashselection
+167/204 Test #167: replay-outcome-cli-hashselection .............................   Passed    0.23 sec
+        Start 168: replay-outcome-cli-whitelist
+168/204 Test #168: replay-outcome-cli-whitelist .................................   Passed    0.24 sec
+        Start 169: replay-outcome-cli-compatibility
+169/204 Test #169: replay-outcome-cli-compatibility .............................   Passed    0.04 sec
+        Start 170: replay-outcome-cli-validation
+170/204 Test #170: replay-outcome-cli-validation ................................   Passed    0.24 sec
+        Start 171: replay-outcome-controller-success-first-absent
+171/204 Test #171: replay-outcome-controller-success-first-absent ...............   Passed    0.01 sec
+        Start 172: replay-outcome-controller-success-first-progress
+172/204 Test #172: replay-outcome-controller-success-first-progress .............   Passed    0.01 sec
+        Start 173: replay-outcome-controller-failure-first-absent
+173/204 Test #173: replay-outcome-controller-failure-first-absent ...............   Passed    0.01 sec
+        Start 174: replay-outcome-controller-failure-first-progress
+174/204 Test #174: replay-outcome-controller-failure-first-progress .............   Passed    0.01 sec
+        Start 175: replay-timeout-unit-deadlines
+175/204 Test #175: replay-timeout-unit-deadlines ................................   Passed    0.00 sec
+        Start 176: replay-timeout-unit-reset
+176/204 Test #176: replay-timeout-unit-reset ....................................   Passed    0.00 sec
+        Start 177: replay-timeout-unit-delivery
+177/204 Test #177: replay-timeout-unit-delivery .................................   Passed    0.00 sec
+        Start 178: replay-timeout-unit-unknown
+178/204 Test #178: replay-timeout-unit-unknown ..................................   Passed    0.00 sec
+        Start 179: replay-timeout-unit-protocol
+179/204 Test #179: replay-timeout-unit-protocol .................................   Passed    0.00 sec
+        Start 180: replay-timeout-controller-clean
+180/204 Test #180: replay-timeout-controller-clean ..............................   Passed    0.00 sec
+        Start 181: replay-timeout-controller-no-progress
+181/204 Test #181: replay-timeout-controller-no-progress ........................   Passed    0.01 sec
+        Start 182: replay-timeout-controller-heartbeat
+182/204 Test #182: replay-timeout-controller-heartbeat ..........................   Passed    0.00 sec
+        Start 183: replay-timeout-controller-heartbeat-reset
+183/204 Test #183: replay-timeout-controller-heartbeat-reset ....................   Passed    0.00 sec
+        Start 184: replay-timeout-controller-cleanup
+184/204 Test #184: replay-timeout-controller-cleanup ............................   Passed    0.01 sec
+        Start 185: replay-timeout-controller-spontaneous
+185/204 Test #185: replay-timeout-controller-spontaneous ........................   Passed    0.01 sec
+        Start 186: replay-timeout-controller-escalation
+186/204 Test #186: replay-timeout-controller-escalation .........................   Passed    0.01 sec
+        Start 187: replay-timeout-controller-delivery-failure
+187/204 Test #187: replay-timeout-controller-delivery-failure ...................   Passed    0.00 sec
+        Start 188: replay-timeout-controller-kill-failure
+188/204 Test #188: replay-timeout-controller-kill-failure .......................   Passed    0.00 sec
+        Start 189: replay-timeout-controller-external-kill
+189/204 Test #189: replay-timeout-controller-external-kill ......................   Passed    0.00 sec
+        Start 190: replay-timeout-controller-multithread
+190/204 Test #190: replay-timeout-controller-multithread ........................   Passed    0.00 sec
+        Start 191: replay-timeout-controller-recovery
+191/204 Test #191: replay-timeout-controller-recovery ...........................   Passed    0.01 sec
+        Start 192: replay-timeout-controller-protocol
+192/204 Test #192: replay-timeout-controller-protocol ...........................   Passed    0.00 sec
+        Start 193: replay-timeout-controller-dispatcher-reset
+193/204 Test #193: replay-timeout-controller-dispatcher-reset ...................   Passed    0.00 sec
+        Start 194: replay-timeout-controller-dispatcher-disabled
+194/204 Test #194: replay-timeout-controller-dispatcher-disabled ................   Passed    0.00 sec
+        Start 195: replay-timeout-controller-ordinary-no-progress
+195/204 Test #195: replay-timeout-controller-ordinary-no-progress ...............   Passed    0.00 sec
+        Start 196: replay-timeout-controller-ordinary-delivery-failure
+196/204 Test #196: replay-timeout-controller-ordinary-delivery-failure ..........   Passed    0.00 sec
+        Start 197: replay-timeout-controller-timer-create-failure
+197/204 Test #197: replay-timeout-controller-timer-create-failure ...............   Passed    0.00 sec
+        Start 198: replay-timeout-controller-timer-arm-failure
+198/204 Test #198: replay-timeout-controller-timer-arm-failure ..................   Passed    0.00 sec
+        Start 199: replay-timeout-controller-timer-register-failure
+199/204 Test #199: replay-timeout-controller-timer-register-failure .............   Passed    0.00 sec
+        Start 200: replay-timeout-controller-heartbeat-timer-create-failure
+200/204 Test #200: replay-timeout-controller-heartbeat-timer-create-failure .....   Passed    0.00 sec
+        Start 201: replay-timeout-controller-heartbeat-timer-arm-failure
+201/204 Test #201: replay-timeout-controller-heartbeat-timer-arm-failure ........   Passed    0.00 sec
+        Start 202: replay-timeout-controller-heartbeat-timer-register-failure
+202/204 Test #202: replay-timeout-controller-heartbeat-timer-register-failure ...   Passed    0.00 sec
+        Start 203: replay-timeout-controller-heartbeat-timer-read-failure
+203/204 Test #203: replay-timeout-controller-heartbeat-timer-read-failure .......   Passed    0.00 sec
+        Start 204: replay-timeout-controller-heartbeat-timer-rearm-failure
+204/204 Test #204: replay-timeout-controller-heartbeat-timer-rearm-failure ......   Passed    0.00 sec
+
+100% tests passed out of 204
+
+Total Test time (real) =   5.69 sec
+
+INTENT c1-final-audit
+COMMAND python3 /tmp/fossilize-16/checker_final_audit.py
+CWD /tmp/fossilize-16/checker-1-dbdb32
+EXIT 0
+{
+  "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+  "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
+  "material_issue_parent_unchanged": true,
+  "public_shared_headers_unchanged": [
+    "fossilize_external_replayer.hpp",
+    "fossilize_types.hpp",
+    "fossilize_external_replayer_control_block.hpp"
+  ],
+  "CLI_option_set_unchanged": true,
+  "matrix": [
+    {
+      "configuration": "Debug-OFF",
+      "discovered": 204,
+      "executed": 204,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "configuration": "Debug-ON",
+      "discovered": 204,
+      "executed": 204,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "configuration": "Release-OFF",
+      "discovered": 204,
+      "executed": 204,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "configuration": "Release-ON",
+      "discovered": 204,
+      "executed": 204,
+      "failures": 0,
+      "skipped": 0
+    }
+  ],
+  "controls": [
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "causal-loss",
+      "case": "heartbeat",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/heartbeat-cause-before-kill",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "causal-loss",
+      "case": "cleanup",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/cleanup-cause-before-kill",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "reset",
+      "case": "dispatcher-reset",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/production-completion-resets-only-work-deadline",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "healthy",
+      "case": "no-progress",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "healthy",
+      "case": "heartbeat",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "healthy",
+      "case": "heartbeat-reset",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "healthy",
+      "case": "multithread",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "healthy",
+      "case": "external-kill",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "healthy",
+      "case": "cleanup",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "healthy",
+      "case": "dispatcher-reset",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "ordering",
+      "case": "no-progress",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/cause-missing-before-abort-adapter",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "nonblocking",
+      "case": "heartbeat-reset",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/nonblocking-deadline-timer",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "external-attribution",
+      "case": "external-kill",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/no-invented-no-progress",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "multithread-attribution",
+      "case": "multithread",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/unknown-individual-attribution",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "variant": "counted-wakeups",
+      "case": "no-progress",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/dispatcher-measured-elapsed-before-abort",
+      "control_verified": true
+    }
+  ]
+}
