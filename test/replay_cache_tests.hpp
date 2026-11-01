@@ -73,7 +73,11 @@ static void cache_input(const std::string &path, unsigned kind)
 	{
 		std::unique_ptr<DatabaseInterface> db(create_database(path.c_str(),DatabaseMode::OverWrite));
 		checks.require(db && db->prepare(),"M15/input/open");
-		StateRecorder recorder; recorder.init_recording_synchronized(db.get());
+		StateRecorder recorder;
+		// Links are unrelated to selection; keep this fixture's exact dependency
+		// closure small. The recorder's synthesized application context is checked.
+		recorder.set_database_enable_application_feature_links(false);
+		recorder.init_recording_synchronized(db.get());
 		VkShaderModuleCreateInfo sm = {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO}; sm.codeSize = sizeof(valid_code); sm.pCode = valid_code;
 		checks.require(recorder.record_shader_module((VkShaderModule)1,sm,0x101),"M15/input/record-shader");
 		VkPipelineLayoutCreateInfo layout_info = {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
@@ -90,14 +94,19 @@ static void cache_input(const std::string &path, unsigned kind)
 	for (unsigned t = 0; t < RESOURCE_COUNT; t++)
 	{
 		size_t n = 0; checks.require(db->get_hash_list_for_resource_tag(ResourceTag(t),&n,nullptr),"M15/input/count");
-		bool expected = t == RESOURCE_SHADER_MODULE || t == RESOURCE_PIPELINE_LAYOUT || t == unsigned(cache_tags[kind]);
+		bool expected = t == RESOURCE_APPLICATION_INFO || t == RESOURCE_SHADER_MODULE || t == RESOURCE_PIPELINE_LAYOUT || t == unsigned(cache_tags[kind]);
 		checks.require(n == (expected ? 1u : 0u),"M15/input/exact-resource-count");
 		if (expected)
 		{
 			Hash h = 0; checks.require(db->get_hash_list_for_resource_tag(ResourceTag(t),&n,&h),"M15/input/hash");
-			checks.require(h == (t == RESOURCE_SHADER_MODULE ? 0x101u : t == RESOURCE_PIPELINE_LAYOUT ? 0x102u : cache_hash(kind)),"M15/input/exact-known-hash");
+			Hash expected_hash = t == RESOURCE_APPLICATION_INFO ? Hashing::compute_combined_application_feature_hash({}) :
+			                     t == RESOURCE_SHADER_MODULE ? 0x101u : t == RESOURCE_PIPELINE_LAYOUT ? 0x102u : cache_hash(kind);
+			checks.require(h == expected_hash,"M15/input/exact-known-hash");
 			size_t size = 0; checks.require(db->read_entry(ResourceTag(t),h,&size,nullptr,0) && size > 0,"M15/input/payload-size");
 			std::vector<uint8_t> bytes(size); checks.require(db->read_entry(ResourceTag(t),h,&size,bytes.data(),0),"M15/input/payload");
+			if (t == RESOURCE_APPLICATION_INFO)
+				checks.require(std::string(bytes.begin(),bytes.end()) == "{\"version\":6,\"applicationInfo\":{},\"physicalDeviceFeatures\":{}}",
+				               "M15/input/exact-synthesized-null-application-and-features");
 		}
 	}
 }
