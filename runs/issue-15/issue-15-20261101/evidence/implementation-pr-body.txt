@@ -1,0 +1,29 @@
+## Problem
+
+Replay caches can contain UUID-only markers written before creation-success gating. Treating those entries as current success hints can suppress work without trustworthy provenance. Marker writes also discard rejection, and zero requested iterations can reach the final marker gate.
+
+## What changes
+
+Use `path.replay-v1.<null|vulkan>.<pipelineCacheUUID>` for current creation hints, retaining the concurrent database's explicit fragment harvesting. Leave legacy and unknown-policy files untouched. Require at least one pipeline creation iteration and retain the existing sticky creation/validation gate. Report rejected marker writes with the resource tag and hash.
+
+## Why this matters
+
+Failed or unattempted pipeline work cannot gain a new creation hint, and legacy or null-device hints cannot silently stand in for current Vulkan-mode creation. A missing optional hint is visible without turning successful Vulkan creation into a compilation failure.
+
+## Why this approach
+
+A versioned namespace gives the existing zero-payload marker format an explicit policy boundary without changing public declarations, FOZ encoding or controller messages. A hint records successful requested creation iterations with no observed validation error; it does not prove validation ran, driver output persisted, or a driver cache hit occurred. Validation whitelists retain their independent meaning.
+
+## Verification and limits
+
+Independent work-unit checking rebuilt Linux Debug/Release with exceptions OFF/ON, CLI/layer enabled and SPIR-V validation enabled: all 174 registered CPU CTests passed in every configuration (696 executions). A separate fresh final checker passed all 174 again, independently reran the original-input contrast and old-header caller, and passed its 330-assertion evidence/scope oracle. The three original-input controls reached their intended named runtime failures; the existing creation-failure control passed, preserving issue #14 behavior. Every new replay-cache case is registered and checks real archive readback/harvesting or controlled production dispatch.
+
+The filename convention intentionally changes: harvesters must use the new namespace. Legacy files are preserved and ignored, causing a one-time replay when switching policies. Native Windows verification is skipped at the user's request. CPU tests do not establish real GPU compilation, Steam integration, driver-cache persistence or general binary ABI compatibility.
+
+## Task references
+
+Closes https://github.com/robinwassen/Fossilize/issues/15
+
+Shared requirements: https://github.com/robinwassen/Fossilize/issues/8 (remains open).
+
+<!-- harness-implementation:issue-15-20261101:4f223c867b43ee3f01d643c0a77484c0cd4fd53a -->

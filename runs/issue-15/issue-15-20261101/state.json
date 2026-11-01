@@ -2899,7 +2899,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "fetch target base, verify clean tuple, persist publication intent",
+  "next_action": "push implementation without force, then record remote head",
   "operation": "publish",
   "original": [
     {
@@ -3524,7 +3524,24 @@
   ],
   "publishing": {
     "ci_policy": "local",
-    "stage": "none"
+    "intent": {
+      "base_sha": "a6b22d65badc61907060028514dc5e86c5ce6c3e",
+      "branch": "codex/issue-15-replay-cache-markers",
+      "candidate_sha": "4f223c867b43ee3f01d643c0a77484c0cd4fd53a",
+      "expected_prior_remote_head": null,
+      "marker": "<!-- harness-implementation:issue-15-20261101:4f223c867b43ee3f01d643c0a77484c0cd4fd53a -->",
+      "observation": "Fresh origin/master fetch equals accepted base; source clean at accepted candidate; branch remote head absent; live root/prerequisite snapshot and shared parent unchanged",
+      "plan_version": 1,
+      "pr_body_sha256": "5059756097d8b8b97a0515c4283c6b7b47845b2c10304a130ca1f0567d7adbad",
+      "pr_title": "Keep replay cache hints within their creation policy",
+      "records": {
+        "runs/issue-15/issue-15-20261101/evidence/implementation-pr-body.txt": "## Problem\n\nReplay caches can contain UUID-only markers written before creation-success gating. Treating those entries as current success hints can suppress work without trustworthy provenance. Marker writes also discard rejection, and zero requested iterations can reach the final marker gate.\n\n## What changes\n\nUse `path.replay-v1.<null|vulkan>.<pipelineCacheUUID>` for current creation hints, retaining the concurrent database's explicit fragment harvesting. Leave legacy and unknown-policy files untouched. Require at least one pipeline creation iteration and retain the existing sticky creation/validation gate. Report rejected marker writes with the resource tag and hash.\n\n## Why this matters\n\nFailed or unattempted pipeline work cannot gain a new creation hint, and legacy or null-device hints cannot silently stand in for current Vulkan-mode creation. A missing optional hint is visible without turning successful Vulkan creation into a compilation failure.\n\n## Why this approach\n\nA versioned namespace gives the existing zero-payload marker format an explicit policy boundary without changing public declarations, FOZ encoding or controller messages. A hint records successful requested creation iterations with no observed validation error; it does not prove validation ran, driver output persisted, or a driver cache hit occurred. Validation whitelists retain their independent meaning.\n\n## Verification and limits\n\nIndependent work-unit checking rebuilt Linux Debug/Release with exceptions OFF/ON, CLI/layer enabled and SPIR-V validation enabled: all 174 registered CPU CTests passed in every configuration (696 executions). A separate fresh final checker passed all 174 again, independently reran the original-input contrast and old-header caller, and passed its 330-assertion evidence/scope oracle. The three original-input controls reached their intended named runtime failures; the existing creation-failure control passed, preserving issue #14 behavior. Every new replay-cache case is registered and checks real archive readback/harvesting or controlled production dispatch.\n\nThe filename convention intentionally changes: harvesters must use the new namespace. Legacy files are preserved and ignored, causing a one-time replay when switching policies. Native Windows verification is skipped at the user's request. CPU tests do not establish real GPU compilation, Steam integration, driver-cache persistence or general binary ABI compatibility.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/15\n\nShared requirements: https://github.com/robinwassen/Fossilize/issues/8 (remains open).\n\n<!-- harness-implementation:issue-15-20261101:4f223c867b43ee3f01d643c0a77484c0cd4fd53a -->\n"
+      },
+      "target_branch": "master",
+      "target_remote": "origin",
+      "target_repository": "robinwassen/Fossilize"
+    },
+    "stage": "push"
   },
   "repository": {
     "base_sha": "a6b22d65badc61907060028514dc5e86c5ce6c3e",
@@ -3537,7 +3554,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 153,
+  "revision": 154,
   "root_issue": {
     "id": 6079819579,
     "node_id": "I_kwDOVZpjbc8AAAABamKvOw",
