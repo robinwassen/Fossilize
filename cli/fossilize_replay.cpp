@@ -1235,7 +1235,7 @@ struct ThreadedReplayer : StateCreatorInterface
 			lock_guard<mutex> holder{replayer_cache_mutex};
 			if (!replayer_cache_db->write_entry(tag, hash, nullptr, 0, 0))
 				LOGE("Replay/marker write rejected: tag=%u, hash=0x%016" PRIx64
-				     "; optional replay-cache hint unavailable, item remains eligible on next lookup.\n",
+				     "; optional replay-cache hint unavailable.\n",
 				     unsigned(tag), hash);
 		}
 	}

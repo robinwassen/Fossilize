@@ -617,7 +617,8 @@ the selected device mode and pipeline cache UUID context. A permitted
 compile-required probe followed by successful fallback completes one iteration;
 a skipped or failed fallback does not. Failure remains sticky across `--loop`
 iterations. Zero iterations retain the existing invocation status but cannot
-write creation or validation hints. Validation whitelists remain independent
+write pipeline creation or pipeline validation hints (shader setup may still
+write its own validation whitelist entries). Validation whitelists remain independent
 observed-no-validation-error hints under their existing success gate, including
 prior explicit/implicit entries; they neither select compiled output nor prove
 that validation actually ran. Hints never establish driver-output persistence,
