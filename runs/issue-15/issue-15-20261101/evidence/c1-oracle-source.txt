@@ -1,0 +1,42 @@
+import collections,json,pathlib,re,subprocess
+S=pathlib.Path('/tmp/fossilize-15/checker-1');O=pathlib.Path('/tmp/fossilize-15/output/checker-1')
+B='a6b22d65badc61907060028514dc5e86c5ce6c3e';C='4f223c867b43ee3f01d643c0a77484c0cd4fd53a';passed=[]
+intents={p['intent_id']:p for f in ['matrix-intents.json','controls-intents.json','baseline-retry-intent.json'] for p in json.loads((O/f).read_text())}
+def need(test,name):
+ if not test: raise AssertionError(name)
+ passed.append(name)
+def git(*a):return subprocess.check_output(['git','-C',str(S),*a])
+def receipt(id):
+ r=json.loads((O/(id+'.receipt.json')).read_text());need(r['command']==intents[id]['child_command'],id+'/exact-command');need(r['cwd']==str(S) and r['timeout']==600 and not r['timed_out'],id+'/receipt-boundary');return r
+need(git('rev-parse','HEAD').decode().strip()==C,'candidate/identity');need(not git('status','--porcelain'),'candidate/clean')
+for rel in ['cli/fossilize_replay.cpp','cli/replay_item_outcome.hpp','fossilize_external_replayer.hpp','fossilize_types.hpp','fossilize_external_replayer_control_block.hpp','test/replay_outcome_test.cpp','test/replay_cache_tests.hpp','test/diagnostic_test.hpp']:
+ rev=C if rel.startswith('test/') else B
+ need((O/'baseline-source'/rel).read_bytes()==git('show',rev+':'+rel),'baseline/exact-source/'+rel)
+for h in ['fossilize_external_replayer.hpp','fossilize_types.hpp']:need((O/'old-headers'/h).read_bytes()==git('show',B+':'+h),'caller/old-header/'+h)
+need(git('diff',B,C,'--','fossilize_external_replayer.hpp').decode().count('@@')==2,'caller/public-boundary-comment-only-reviewed')
+configs=['debug-exceptions-off','debug-exceptions-on','release-exceptions-off','release-exceptions-on'];inventories={}
+for config in configs:
+ for action in ['configure','build','inventory','test']:need(receipt('c1-'+config+'-'+action)['exit_code']==0,config+'/'+action+'/pass')
+ inv=json.loads((O/('c1-'+config+'-inventory.log')).read_text()); names=[x['name'] for x in inv['tests']];need(len(names)==len(set(names))==174,config+'/174-discovered')
+ log=(O/('c1-'+config+'-test.log')).read_text();actual=re.findall(r'Test\s+#\d+:\s+(\S+)\s+\.*\s*Passed',log)
+ need(collections.Counter(actual)==collections.Counter(names),config+'/all-discovered-executed-pass');need('100% tests passed' in log,config+'/complete')
+ inventories[config]=names
+expected={
+'cache-write-failure':{'M15/write/rejected-operation-and-tag':3,'M15/write/rejected-hash':3,'M15/write/filesystem-rejection-visible-on-fresh-rerun':2,'M15/success/one-real-marker':3,'M15/integration/exact-pipeline-attempts':3,'M15/success/harvested-hint-actually-suppresses':3},
+'cache-legacy-provenance':{'M15/integration/exact-status':1,'M15/integration/exact-pipeline-attempts':2,'reason/exact-evidence/2':1,'reason/nonzero-independent-of-progress':1,'M15/legacy/new-policy-control':1},
+'cache-loop':{'M15/final/exact-one-marker-and-independent-whitelist':3,'M15/final/exact-item-marker':3},'creation':{}}
+raw=[]
+for case,failures in expected.items():
+ id='c1-baseline-'+case;r=receipt(id);need(r['exit_code']==(0 if case=='creation' else 1),case+'/expected-raw-status');need(r['command'][3]==str(O/('baseline-'+case)) and r['command'][-1]==case,case+'/isolated-cwd-shim')
+ log=(O/(id+'.log')).read_text();found=collections.Counter(x[5:].split(' expected:')[0] for x in log.splitlines() if x.startswith('FAIL '));need(found==collections.Counter(failures),case+'/exact-runtime-assertions');need('Executed R14/'+case+'; failures='+str(sum(failures.values())) in log,case+'/runtime-complete')
+ raw.append({'case':case,'exit_code':r['exit_code'],'assertions':dict(found)})
+for id in ['c1-baseline-compile-r2','c1-old-header-compile','c1-old-header-run']:need(receipt(id)['exit_code']==0,id+'/pass')
+state=json.loads(pathlib.Path('/tmp/fossilize-15/control/current.json').read_text())['state'];need(state['plan']['version']==1 and state['repository']['candidate_sha']==C and state['repository']['base_sha']==B,'current-state/exact-candidate-base-plan');need(state['original']==state['plan']['original'],'immutable-original/plan-preserved');retained=json.loads(pathlib.Path('/tmp/fossilize-15/shared-parent-8.json').read_text())
+for n in [15,8]:
+ live=json.loads(subprocess.check_output(['gh','issue','view',str(n),'--repo','robinwassen/Fossilize','--json','id,title,body,state,url']))
+ baseline=retained if n==8 else state['issue_snapshot']['nodes']['https://github.com/robinwassen/Fossilize/issues/15']
+ for key in ['title','body','url']:need(live[key]==baseline[key],'issue'+str(n)+'/unchanged-'+key)
+ need(live['state']=='OPEN','issue'+str(n)+'/remains-open')
+ (O/('live-issue-'+str(n)+'.json')).write_text(json.dumps(live,indent=2))
+result={'passed':True,'candidate_sha':C,'base_sha':B,'plan_version':1,'attempt_id':'checker-1','assertions':passed,'raw_controls':raw,'inventories':inventories}
+(O/'verification-summary.json').write_text(json.dumps(result,indent=2));print('PASS independent candidate matrix/control/compatibility/scope oracle: '+str(len(passed))+' assertions; 696 passing CTests, 3 baseline runtime failures, original creation control passes; #8 remains open.')
