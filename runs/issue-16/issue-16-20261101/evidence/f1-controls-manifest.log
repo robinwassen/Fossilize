@@ -1,0 +1,492 @@
+controls/causal-loss/cleanup/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "causal-loss",
+  "case": "cleanup",
+  "observed_exit": 1,
+  "required_assertion": "FAIL M16/cleanup-cause-before-kill",
+  "control_verified": true
+}
+controls/causal-loss/compile.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "argv": [
+    "/usr/bin/c++",
+    "-fvisibility=hidden",
+    "-g",
+    "-std=gnu++14",
+    "-fno-exceptions",
+    "-pthread",
+    "-I/tmp/fossilize-16/output/final-1/controls/causal-loss/source",
+    "-I/tmp/fossilize-16/checker-final-09be98",
+    "-I/tmp/fossilize-16/checker-final-09be98/rapidjson/include",
+    "-I/tmp/fossilize-16/checker-final-09be98/khronos",
+    "-I/tmp/fossilize-16/checker-final-09be98/miniz",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli/volk",
+    "/tmp/fossilize-16/output/final-1/controls/causal-loss/source/test/replay_timeout_controller_test.cpp",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libfossilize.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libcli-utils.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libminiz.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libvolk.a",
+    "-ldl",
+    "-lrt",
+    "-Wl,--wrap=_ZNSt6chrono3_V212steady_clock3nowEv,--wrap=pthread_cond_clockwait,--wrap=pthread_kill,--wrap=kill,--wrap=epoll_wait,--wrap=epoll_ctl,--wrap=timerfd_settime,--wrap=timerfd_create,--wrap=read",
+    "-o",
+    "/tmp/fossilize-16/output/final-1/controls/causal-loss/fixture"
+  ],
+  "exit_code": 0,
+  "patch_sha256": "c925bd0069569f6d013abe5d2e3ce840748dc0ea9810770a361605f9adf2312e"
+}
+controls/causal-loss/heartbeat/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "causal-loss",
+  "case": "heartbeat",
+  "observed_exit": 1,
+  "required_assertion": "FAIL M16/heartbeat-cause-before-kill",
+  "control_verified": true
+}
+controls/causal-loss/mutation.patch:
+--- a/cli/fossilize_replay_linux.hpp
++++ b/cli/fossilize_replay_linux.hpp
+@@ -371,7 +371,7 @@
+ 	auto now = replay_monotonic_ns();
+ 	if (pid <= 0 || !deadline.expired(now) || (origin == ReplayTimeoutOrigin::Heartbeat && stopped)) return true;
+ 	auto trigger = deadline.trigger(now);
+-	outcome.timeout.current.record(origin, trigger);
++	(void)trigger;
+ 	LOGE("Worker %u attempt %u timeout origin=%s threshold_ns=%" PRIu64 " elapsed_ns=%" PRIu64 ".\n",
+ 	     index, outcome.attempts, replay_timeout_name(origin), trigger.threshold_ns, trigger.elapsed_ns);
+ 	deadline.armed = false;
+
+controls/counted-wakeups/compile.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "argv": [
+    "/usr/bin/c++",
+    "-fvisibility=hidden",
+    "-g",
+    "-std=gnu++14",
+    "-fno-exceptions",
+    "-pthread",
+    "-I/tmp/fossilize-16/output/final-1/controls/counted-wakeups/source",
+    "-I/tmp/fossilize-16/checker-final-09be98",
+    "-I/tmp/fossilize-16/checker-final-09be98/rapidjson/include",
+    "-I/tmp/fossilize-16/checker-final-09be98/khronos",
+    "-I/tmp/fossilize-16/checker-final-09be98/miniz",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli/volk",
+    "/tmp/fossilize-16/output/final-1/controls/counted-wakeups/source/test/replay_timeout_controller_test.cpp",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libfossilize.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libcli-utils.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libminiz.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libvolk.a",
+    "-ldl",
+    "-lrt",
+    "-Wl,--wrap=_ZNSt6chrono3_V212steady_clock3nowEv,--wrap=pthread_cond_clockwait,--wrap=pthread_kill,--wrap=kill,--wrap=epoll_wait,--wrap=epoll_ctl,--wrap=timerfd_settime,--wrap=timerfd_create,--wrap=read",
+    "-o",
+    "/tmp/fossilize-16/output/final-1/controls/counted-wakeups/fixture"
+  ],
+  "exit_code": 0,
+  "patch_sha256": "b89e1e701cf5bd6fcc20e5593362237aab385c572c1b3f906af19f8ca45af538"
+}
+controls/counted-wakeups/mutation.patch:
+--- a/cli/fossilize_replay.cpp
++++ b/cli/fossilize_replay.cpp
+@@ -969,6 +969,7 @@
+ 		}
+ 
+ 		unsigned current_completed = completed_count[index];
++		unsigned wakeups = 0;
+ 		ReplayDeadline no_progress;
+ 		no_progress.arm(replay_monotonic_ns(), replay_seconds_ns(opts.timeout_seconds));
+ 
+@@ -991,7 +992,7 @@
+ 			if (completed_count[index] != current_completed)
+ 				no_progress.arm(now, replay_seconds_ns(opts.timeout_seconds));
+ 
+-			if (no_progress.expired(now))
++			if (opts.timeout_seconds && (completed_count[index] == current_completed ? ++wakeups : (wakeups = 0)) >= opts.timeout_seconds)
+ 			{
+ 				auto trigger = no_progress.trigger(now);
+ 				LOGE("Replay timeout origin=work-no-progress threshold_ns=%" PRIu64 " elapsed_ns=%" PRIu64 ".\n",
+
+controls/counted-wakeups/no-progress/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "counted-wakeups",
+  "case": "no-progress",
+  "observed_exit": 1,
+  "required_assertion": "FAIL M16/dispatcher-measured-elapsed-before-abort",
+  "control_verified": true
+}
+controls/external-attribution/compile.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "argv": [
+    "/usr/bin/c++",
+    "-fvisibility=hidden",
+    "-g",
+    "-std=gnu++14",
+    "-fno-exceptions",
+    "-pthread",
+    "-I/tmp/fossilize-16/output/final-1/controls/external-attribution/source",
+    "-I/tmp/fossilize-16/checker-final-09be98",
+    "-I/tmp/fossilize-16/checker-final-09be98/rapidjson/include",
+    "-I/tmp/fossilize-16/checker-final-09be98/khronos",
+    "-I/tmp/fossilize-16/checker-final-09be98/miniz",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli/volk",
+    "/tmp/fossilize-16/output/final-1/controls/external-attribution/source/test/replay_timeout_controller_test.cpp",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libfossilize.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libcli-utils.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libminiz.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libvolk.a",
+    "-ldl",
+    "-lrt",
+    "-Wl,--wrap=_ZNSt6chrono3_V212steady_clock3nowEv,--wrap=pthread_cond_clockwait,--wrap=pthread_kill,--wrap=kill,--wrap=epoll_wait,--wrap=epoll_ctl,--wrap=timerfd_settime,--wrap=timerfd_create,--wrap=read",
+    "-o",
+    "/tmp/fossilize-16/output/final-1/controls/external-attribution/fixture"
+  ],
+  "exit_code": 0,
+  "patch_sha256": "86a795e232f27b3f0b32456d06ae5491c8c1df5ee467864695a9e8d56ba4076f"
+}
+controls/external-attribution/external-kill/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "external-attribution",
+  "case": "external-kill",
+  "observed_exit": 1,
+  "required_assertion": "FAIL M16/no-invented-no-progress",
+  "control_verified": true
+}
+controls/external-attribution/mutation.patch:
+--- a/cli/fossilize_replay_linux.hpp
++++ b/cli/fossilize_replay_linux.hpp
+@@ -441,6 +441,7 @@
+ 	pid = -1;
+ 
+ 	outcome.termination = uint64_t(wstatus);
++	if (WIFSIGNALED(wstatus) && WTERMSIG(wstatus) == SIGKILL) outcome.timeout.current.record(ReplayTimeoutOrigin::NoProgress, {true, 2000000000ull, 2000000000ull});
+ 	outcome.timeout.current.native_observed = true;
+ 	outcome.timeout.current.native_status = uint64_t(wstatus);
+ 	if (WIFSIGNALED(wstatus))
+
+controls/healthy/cleanup/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "healthy",
+  "case": "cleanup",
+  "observed_exit": 0,
+  "required_assertion": null,
+  "control_verified": true
+}
+controls/healthy/compile.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "argv": [
+    "/usr/bin/c++",
+    "-fvisibility=hidden",
+    "-g",
+    "-std=gnu++14",
+    "-fno-exceptions",
+    "-pthread",
+    "-I/tmp/fossilize-16/output/final-1/controls/healthy/source",
+    "-I/tmp/fossilize-16/checker-final-09be98",
+    "-I/tmp/fossilize-16/checker-final-09be98/rapidjson/include",
+    "-I/tmp/fossilize-16/checker-final-09be98/khronos",
+    "-I/tmp/fossilize-16/checker-final-09be98/miniz",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli/volk",
+    "/tmp/fossilize-16/output/final-1/controls/healthy/source/test/replay_timeout_controller_test.cpp",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libfossilize.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libcli-utils.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libminiz.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libvolk.a",
+    "-ldl",
+    "-lrt",
+    "-Wl,--wrap=_ZNSt6chrono3_V212steady_clock3nowEv,--wrap=pthread_cond_clockwait,--wrap=pthread_kill,--wrap=kill,--wrap=epoll_wait,--wrap=epoll_ctl,--wrap=timerfd_settime,--wrap=timerfd_create,--wrap=read",
+    "-o",
+    "/tmp/fossilize-16/output/final-1/controls/healthy/fixture"
+  ],
+  "exit_code": 0,
+  "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
+controls/healthy/dispatcher-reset/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "healthy",
+  "case": "dispatcher-reset",
+  "observed_exit": 0,
+  "required_assertion": null,
+  "control_verified": true
+}
+controls/healthy/external-kill/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "healthy",
+  "case": "external-kill",
+  "observed_exit": 0,
+  "required_assertion": null,
+  "control_verified": true
+}
+controls/healthy/heartbeat/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "healthy",
+  "case": "heartbeat",
+  "observed_exit": 0,
+  "required_assertion": null,
+  "control_verified": true
+}
+controls/healthy/heartbeat-reset/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "healthy",
+  "case": "heartbeat-reset",
+  "observed_exit": 0,
+  "required_assertion": null,
+  "control_verified": true
+}
+controls/healthy/multithread/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "healthy",
+  "case": "multithread",
+  "observed_exit": 0,
+  "required_assertion": null,
+  "control_verified": true
+}
+controls/healthy/mutation.patch:
+
+controls/healthy/no-progress/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "healthy",
+  "case": "no-progress",
+  "observed_exit": 0,
+  "required_assertion": null,
+  "control_verified": true
+}
+controls/multithread-attribution/compile.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "argv": [
+    "/usr/bin/c++",
+    "-fvisibility=hidden",
+    "-g",
+    "-std=gnu++14",
+    "-fno-exceptions",
+    "-pthread",
+    "-I/tmp/fossilize-16/output/final-1/controls/multithread-attribution/source",
+    "-I/tmp/fossilize-16/checker-final-09be98",
+    "-I/tmp/fossilize-16/checker-final-09be98/rapidjson/include",
+    "-I/tmp/fossilize-16/checker-final-09be98/khronos",
+    "-I/tmp/fossilize-16/checker-final-09be98/miniz",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli/volk",
+    "/tmp/fossilize-16/output/final-1/controls/multithread-attribution/source/test/replay_timeout_controller_test.cpp",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libfossilize.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libcli-utils.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libminiz.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libvolk.a",
+    "-ldl",
+    "-lrt",
+    "-Wl,--wrap=_ZNSt6chrono3_V212steady_clock3nowEv,--wrap=pthread_cond_clockwait,--wrap=pthread_kill,--wrap=kill,--wrap=epoll_wait,--wrap=epoll_ctl,--wrap=timerfd_settime,--wrap=timerfd_create,--wrap=read",
+    "-o",
+    "/tmp/fossilize-16/output/final-1/controls/multithread-attribution/fixture"
+  ],
+  "exit_code": 0,
+  "patch_sha256": "d6856d0535b346ccd172f47923051052a2853df13e98fd6a9c59c220a2511749"
+}
+controls/multithread-attribution/multithread/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "multithread-attribution",
+  "case": "multithread",
+  "observed_exit": 1,
+  "required_assertion": "FAIL M16/unknown-individual-attribution",
+  "control_verified": true
+}
+controls/multithread-attribution/mutation.patch:
+--- a/cli/replay_worker_outcome.hpp
++++ b/cli/replay_worker_outcome.hpp
+@@ -104,6 +104,7 @@
+ 			return complete ? WorkerDisposition::Complete : WorkerDisposition::Unresolved;
+ 		}
+ 		failed_attempts++;
++		if (!skipped()) culprit(1, int(assigned[1].begin + 1), 0xbad);
+ 		int progress[] = { graphics, compute, raytracing };
+ 		bool remaining = false;
+ 		for (unsigned i = 0; i < 3; i++)
+
+controls/nonblocking/compile.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "argv": [
+    "/usr/bin/c++",
+    "-fvisibility=hidden",
+    "-g",
+    "-std=gnu++14",
+    "-fno-exceptions",
+    "-pthread",
+    "-I/tmp/fossilize-16/output/final-1/controls/nonblocking/source",
+    "-I/tmp/fossilize-16/checker-final-09be98",
+    "-I/tmp/fossilize-16/checker-final-09be98/rapidjson/include",
+    "-I/tmp/fossilize-16/checker-final-09be98/khronos",
+    "-I/tmp/fossilize-16/checker-final-09be98/miniz",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli/volk",
+    "/tmp/fossilize-16/output/final-1/controls/nonblocking/source/test/replay_timeout_controller_test.cpp",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libfossilize.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libcli-utils.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libminiz.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libvolk.a",
+    "-ldl",
+    "-lrt",
+    "-Wl,--wrap=_ZNSt6chrono3_V212steady_clock3nowEv,--wrap=pthread_cond_clockwait,--wrap=pthread_kill,--wrap=kill,--wrap=epoll_wait,--wrap=epoll_ctl,--wrap=timerfd_settime,--wrap=timerfd_create,--wrap=read",
+    "-o",
+    "/tmp/fossilize-16/output/final-1/controls/nonblocking/fixture"
+  ],
+  "exit_code": 0,
+  "patch_sha256": "ce1faf84e1aa62af98f50bc17366723366878f55b2ed7dbdae9979c28fa30f4e"
+}
+controls/nonblocking/heartbeat-reset/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "nonblocking",
+  "case": "heartbeat-reset",
+  "observed_exit": 1,
+  "required_assertion": "FAIL M16/nonblocking-deadline-timer",
+  "control_verified": true
+}
+controls/nonblocking/mutation.patch:
+--- a/cli/fossilize_replay_linux.hpp
++++ b/cli/fossilize_replay_linux.hpp
+@@ -327,7 +327,7 @@
+ 	if (cleanup_deadline.armed || pid <= 0) return;
+ 	outcome.timeout.current.recovery = ReplayRecovery::CrashCleanup;
+ 	cleanup_deadline.arm(replay_monotonic_ns(), replay_seconds_ns(3));
+-	timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
++	timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+ 	bool armed = false;
+ 	if (timer_fd >= 0)
+ 	{
+@@ -383,7 +383,7 @@
+ 	if (cleanup_deadline.armed || pid <= 0) return;
+ 	heartbeat_deadline.arm(replay_monotonic_ns(), replay_seconds_ns(10));
+ 	close_and_remove_epoll_entry(watchdog_timer_fd);
+-	watchdog_timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
++	watchdog_timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+ 	bool armed = false;
+ 	if (watchdog_timer_fd >= 0)
+ 	{
+
+controls/ordering/compile.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "argv": [
+    "/usr/bin/c++",
+    "-fvisibility=hidden",
+    "-g",
+    "-std=gnu++14",
+    "-fno-exceptions",
+    "-pthread",
+    "-I/tmp/fossilize-16/output/final-1/controls/ordering/source",
+    "-I/tmp/fossilize-16/checker-final-09be98",
+    "-I/tmp/fossilize-16/checker-final-09be98/rapidjson/include",
+    "-I/tmp/fossilize-16/checker-final-09be98/khronos",
+    "-I/tmp/fossilize-16/checker-final-09be98/miniz",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli/volk",
+    "/tmp/fossilize-16/output/final-1/controls/ordering/source/test/replay_timeout_controller_test.cpp",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libfossilize.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libcli-utils.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libminiz.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libvolk.a",
+    "-ldl",
+    "-lrt",
+    "-Wl,--wrap=_ZNSt6chrono3_V212steady_clock3nowEv,--wrap=pthread_cond_clockwait,--wrap=pthread_kill,--wrap=kill,--wrap=epoll_wait,--wrap=epoll_ctl,--wrap=timerfd_settime,--wrap=timerfd_create,--wrap=read",
+    "-o",
+    "/tmp/fossilize-16/output/final-1/controls/ordering/fixture"
+  ],
+  "exit_code": 0,
+  "patch_sha256": "3510deff98c4d46e0ed881dc204ee28afed7366d6eef24aed6d46a1a7a896935"
+}
+controls/ordering/mutation.patch:
+--- a/cli/fossilize_replay.cpp
++++ b/cli/fossilize_replay.cpp
+@@ -996,8 +996,8 @@
+ 				auto trigger = no_progress.trigger(now);
+ 				LOGE("Replay timeout origin=work-no-progress threshold_ns=%" PRIu64 " elapsed_ns=%" PRIu64 ".\n",
+ 				     trigger.threshold_ns, trigger.elapsed_ns);
++				timeout_handler();
+ 				report_timeout(trigger);
+-				timeout_handler();
+ 				exit(2);
+ 			}
+ 
+
+controls/ordering/no-progress/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "ordering",
+  "case": "no-progress",
+  "observed_exit": 1,
+  "required_assertion": "FAIL M16/cause-missing-before-abort-adapter",
+  "control_verified": true
+}
+controls/reset/compile.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "argv": [
+    "/usr/bin/c++",
+    "-fvisibility=hidden",
+    "-g",
+    "-std=gnu++14",
+    "-fno-exceptions",
+    "-pthread",
+    "-I/tmp/fossilize-16/output/final-1/controls/reset/source",
+    "-I/tmp/fossilize-16/checker-final-09be98",
+    "-I/tmp/fossilize-16/checker-final-09be98/rapidjson/include",
+    "-I/tmp/fossilize-16/checker-final-09be98/khronos",
+    "-I/tmp/fossilize-16/checker-final-09be98/miniz",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli",
+    "-I/tmp/fossilize-16/checker-final-09be98/cli/volk",
+    "/tmp/fossilize-16/output/final-1/controls/reset/source/test/replay_timeout_controller_test.cpp",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libfossilize.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libcli-utils.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/libminiz.a",
+    "/tmp/fossilize-16/build/final-1/Debug-OFF/cli/libvolk.a",
+    "-ldl",
+    "-lrt",
+    "-Wl,--wrap=_ZNSt6chrono3_V212steady_clock3nowEv,--wrap=pthread_cond_clockwait,--wrap=pthread_kill,--wrap=kill,--wrap=epoll_wait,--wrap=epoll_ctl,--wrap=timerfd_settime,--wrap=timerfd_create,--wrap=read",
+    "-o",
+    "/tmp/fossilize-16/output/final-1/controls/reset/fixture"
+  ],
+  "exit_code": 0,
+  "patch_sha256": "6ecba13630ada750eb38f802a92b7d9d0b51b1fe414df4dc753b766a7b51a80f"
+}
+controls/reset/dispatcher-reset/result.json:
+{
+  "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+  "variant": "reset",
+  "case": "dispatcher-reset",
+  "observed_exit": 1,
+  "required_assertion": "FAIL M16/production-completion-resets-only-work-deadline",
+  "control_verified": true
+}
+controls/reset/mutation.patch:
+--- a/cli/fossilize_replay.cpp
++++ b/cli/fossilize_replay.cpp
+@@ -988,8 +988,7 @@
+ 			}
+ 
+ 			auto now = replay_monotonic_ns();
+-			if (completed_count[index] != current_completed)
+-				no_progress.arm(now, replay_seconds_ns(opts.timeout_seconds));
++			(void)now;
+ 
+ 			if (no_progress.expired(now))
+ 			{

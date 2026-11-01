@@ -1,0 +1,306 @@
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake -S /tmp/fossilize-16/checker-final-09be98 -B /tmp/fossilize-16/build/final-1/Debug-OFF -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_TESTS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF
+STATUS 0
+CMake Warning (deprecated) at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+-- The CXX compiler identification is GNU 13.3.0
+-- The C compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Found Python3: /usr/bin/python3.12 (found version "3.12.3") found components: Interpreter
+-- Did not find googletest, tests will not be built. To enable tests place googletest in '<spirv-dir>/external/googletest'.
+-- SPIRV-Cross: Finding Git version for SPIRV-Cross.
+-- Found Git: /usr/bin/git (found version "2.43.0")
+-- SPIRV-Cross: Git hash: vulkan-sdk-1.4.341.0
+SPIRV-Cross:  Testing will be disabled for SPIRV-Cross. Could not find glslang or SPIRV-Tools build under external/. To enable testing, run ./checkout_glslang_spirv_tools.sh and ./build_glslang_spirv_tools.sh first.
+-- Configuring done (1.7s)
+-- Generating done (0.2s)
+-- Build files have been written to: /tmp/fossilize-16/build/final-1/Debug-OFF
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-16/build/final-1/Debug-OFF --parallel 4 --target replay-timeout-test replay-timeout-controller-test
+STATUS 0
+[1/20] Building C object cli/CMakeFiles/volk.dir/volk/volk.c.o
+[2/20] Building CXX object CMakeFiles/fossilize.dir/varint.cpp.o
+[3/20] Building C object CMakeFiles/miniz.dir/miniz/miniz.c.o
+[4/20] Linking C static library libminiz.a
+[5/20] Building CXX object CMakeFiles/fossilize.dir/path.cpp.o
+[6/20] Building CXX object CMakeFiles/fossilize.dir/fossilize_application_filter.cpp.o
+[7/20] Linking C static library cli/libvolk.a
+[8/20] Building CXX object CMakeFiles/fossilize.dir/fossilize_external_replayer.cpp.o
+[9/20] Building CXX object cli/CMakeFiles/cli-utils.dir/cli_parser.cpp.o
+[10/20] Building CXX object CMakeFiles/fossilize.dir/fossilize_db.cpp.o
+[11/20] Building CXX object cli/CMakeFiles/cli-utils.dir/file.cpp.o
+[12/20] Building CXX object cli/CMakeFiles/cli-utils.dir/device.cpp.o
+[13/20] Building CXX object test/CMakeFiles/replay-timeout-test.dir/replay_timeout_test.cpp.o
+[14/20] Building CXX object cli/CMakeFiles/cli-utils.dir/fossilize_feature_filter.cpp.o
+[15/20] Linking CXX static library cli/libcli-utils.a
+[16/20] Building CXX object CMakeFiles/fossilize.dir/fossilize.cpp.o
+[17/20] Linking CXX static library libfossilize.a
+[18/20] Linking CXX executable test/replay-timeout-test
+[19/20] Building CXX object test/CMakeFiles/replay-timeout-controller-test.dir/replay_timeout_controller_test.cpp.o
+[20/20] Linking CXX executable test/replay-timeout-controller-test
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/final-1/Debug-OFF --show-only=json-v1 -R '^replay-timeout-'
+STATUS 0
+alue" : "/tmp/fossilize-16/build/final-1/Debug-OFF/test/replay-timeout-controller-heartbeat-timer-create-failure"
+        }
+      ]
+    },
+    {
+      "backtrace" : 53,
+      "command" : 
+      [
+        "/tmp/fossilize-16/build/final-1/Debug-OFF/test/replay-timeout-controller-test",
+        "heartbeat-timer-arm-failure"
+      ],
+      "name" : "replay-timeout-controller-heartbeat-timer-arm-failure",
+      "properties" : 
+      [
+        {
+          "name" : "TIMEOUT",
+          "value" : 45.0
+        },
+        {
+          "name" : "WORKING_DIRECTORY",
+          "value" : "/tmp/fossilize-16/build/final-1/Debug-OFF/test/replay-timeout-controller-heartbeat-timer-arm-failure"
+        }
+      ]
+    },
+    {
+      "backtrace" : 55,
+      "command" : 
+      [
+        "/tmp/fossilize-16/build/final-1/Debug-OFF/test/replay-timeout-controller-test",
+        "heartbeat-timer-register-failure"
+      ],
+      "name" : "replay-timeout-controller-heartbeat-timer-register-failure",
+      "properties" : 
+      [
+        {
+          "name" : "TIMEOUT",
+          "value" : 45.0
+        },
+        {
+          "name" : "WORKING_DIRECTORY",
+          "value" : "/tmp/fossilize-16/build/final-1/Debug-OFF/test/replay-timeout-controller-heartbeat-timer-register-failure"
+        }
+      ]
+    },
+    {
+      "backtrace" : 57,
+      "command" : 
+      [
+        "/tmp/fossilize-16/build/final-1/Debug-OFF/test/replay-timeout-controller-test",
+        "heartbeat-timer-read-failure"
+      ],
+      "name" : "replay-timeout-controller-heartbeat-timer-read-failure",
+      "properties" : 
+      [
+        {
+          "name" : "TIMEOUT",
+          "value" : 45.0
+        },
+        {
+          "name" : "WORKING_DIRECTORY",
+          "value" : "/tmp/fossilize-16/build/final-1/Debug-OFF/test/replay-timeout-controller-heartbeat-timer-read-failure"
+        }
+      ]
+    },
+    {
+      "backtrace" : 59,
+      "command" : 
+      [
+        "/tmp/fossilize-16/build/final-1/Debug-OFF/test/replay-timeout-controller-test",
+        "heartbeat-timer-rearm-failure"
+      ],
+      "name" : "replay-timeout-controller-heartbeat-timer-rearm-failure",
+      "properties" : 
+      [
+        {
+          "name" : "TIMEOUT",
+          "value" : 45.0
+        },
+        {
+          "name" : "WORKING_DIRECTORY",
+          "value" : "/tmp/fossilize-16/build/final-1/Debug-OFF/test/replay-timeout-controller-heartbeat-timer-rearm-failure"
+        }
+      ]
+    }
+  ],
+  "version" : 
+  {
+    "major" : 1,
+    "minor" : 0
+  }
+}
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/final-1/Debug-OFF --output-on-failure --no-tests=error -R '^replay-timeout-'
+STATUS 0
+d
+16/30 Test #190: replay-timeout-controller-multithread ........................   Passed    0.00 sec
+      Start 191: replay-timeout-controller-recovery
+17/30 Test #191: replay-timeout-controller-recovery ...........................   Passed    0.01 sec
+      Start 192: replay-timeout-controller-protocol
+18/30 Test #192: replay-timeout-controller-protocol ...........................   Passed    0.00 sec
+      Start 193: replay-timeout-controller-dispatcher-reset
+19/30 Test #193: replay-timeout-controller-dispatcher-reset ...................   Passed    0.00 sec
+      Start 194: replay-timeout-controller-dispatcher-disabled
+20/30 Test #194: replay-timeout-controller-dispatcher-disabled ................   Passed    0.00 sec
+      Start 195: replay-timeout-controller-ordinary-no-progress
+21/30 Test #195: replay-timeout-controller-ordinary-no-progress ...............   Passed    0.00 sec
+      Start 196: replay-timeout-controller-ordinary-delivery-failure
+22/30 Test #196: replay-timeout-controller-ordinary-delivery-failure ..........   Passed    0.00 sec
+      Start 197: replay-timeout-controller-timer-create-failure
+23/30 Test #197: replay-timeout-controller-timer-create-failure ...............   Passed    0.00 sec
+      Start 198: replay-timeout-controller-timer-arm-failure
+24/30 Test #198: replay-timeout-controller-timer-arm-failure ..................   Passed    0.00 sec
+      Start 199: replay-timeout-controller-timer-register-failure
+25/30 Test #199: replay-timeout-controller-timer-register-failure .............   Passed    0.00 sec
+      Start 200: replay-timeout-controller-heartbeat-timer-create-failure
+26/30 Test #200: replay-timeout-controller-heartbeat-timer-create-failure .....   Passed    0.00 sec
+      Start 201: replay-timeout-controller-heartbeat-timer-arm-failure
+27/30 Test #201: replay-timeout-controller-heartbeat-timer-arm-failure ........   Passed    0.00 sec
+      Start 202: replay-timeout-controller-heartbeat-timer-register-failure
+28/30 Test #202: replay-timeout-controller-heartbeat-timer-register-failure ...   Passed    0.00 sec
+      Start 203: replay-timeout-controller-heartbeat-timer-read-failure
+29/30 Test #203: replay-timeout-controller-heartbeat-timer-read-failure .......   Passed    0.00 sec
+      Start 204: replay-timeout-controller-heartbeat-timer-rearm-failure
+30/30 Test #204: replay-timeout-controller-heartbeat-timer-rearm-failure ......   Passed    0.00 sec
+
+100% tests passed out of 30
+
+Total Test time (real) =   0.13 sec
+
+COMMAND /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/final-1/Debug-OFF --output-on-failure --no-tests=error -R '^replay-timeout-' --repeat until-fail:3
+STATUS 0
+d    0.00 sec
+      Start 200: replay-timeout-controller-heartbeat-timer-create-failure
+    Test #200: replay-timeout-controller-heartbeat-timer-create-failure .....   Passed    0.00 sec
+      Start 200: replay-timeout-controller-heartbeat-timer-create-failure
+26/30 Test #200: replay-timeout-controller-heartbeat-timer-create-failure .....   Passed    0.00 sec
+      Start 201: replay-timeout-controller-heartbeat-timer-arm-failure
+    Test #201: replay-timeout-controller-heartbeat-timer-arm-failure ........   Passed    0.00 sec
+      Start 201: replay-timeout-controller-heartbeat-timer-arm-failure
+    Test #201: replay-timeout-controller-heartbeat-timer-arm-failure ........   Passed    0.00 sec
+      Start 201: replay-timeout-controller-heartbeat-timer-arm-failure
+27/30 Test #201: replay-timeout-controller-heartbeat-timer-arm-failure ........   Passed    0.00 sec
+      Start 202: replay-timeout-controller-heartbeat-timer-register-failure
+    Test #202: replay-timeout-controller-heartbeat-timer-register-failure ...   Passed    0.00 sec
+      Start 202: replay-timeout-controller-heartbeat-timer-register-failure
+    Test #202: replay-timeout-controller-heartbeat-timer-register-failure ...   Passed    0.00 sec
+      Start 202: replay-timeout-controller-heartbeat-timer-register-failure
+28/30 Test #202: replay-timeout-controller-heartbeat-timer-register-failure ...   Passed    0.00 sec
+      Start 203: replay-timeout-controller-heartbeat-timer-read-failure
+    Test #203: replay-timeout-controller-heartbeat-timer-read-failure .......   Passed    0.00 sec
+      Start 203: replay-timeout-controller-heartbeat-timer-read-failure
+    Test #203: replay-timeout-controller-heartbeat-timer-read-failure .......   Passed    0.00 sec
+      Start 203: replay-timeout-controller-heartbeat-timer-read-failure
+29/30 Test #203: replay-timeout-controller-heartbeat-timer-read-failure .......   Passed    0.00 sec
+      Start 204: replay-timeout-controller-heartbeat-timer-rearm-failure
+    Test #204: replay-timeout-controller-heartbeat-timer-rearm-failure ......   Passed    0.00 sec
+      Start 204: replay-timeout-controller-heartbeat-timer-rearm-failure
+    Test #204: replay-timeout-controller-heartbeat-timer-rearm-failure ......   Passed    0.00 sec
+      Start 204: replay-timeout-controller-heartbeat-timer-rearm-failure
+30/30 Test #204: replay-timeout-controller-heartbeat-timer-rearm-failure ......   Passed    0.00 sec
+
+100% tests passed out of 30
+
+Total Test time (real) =   0.37 sec
+
+COMMAND python3 /tmp/fossilize-16/final_audit1.py
+STATUS 0
+ "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "variant": "healthy",
+      "case": "heartbeat-reset",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "variant": "healthy",
+      "case": "multithread",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "variant": "healthy",
+      "case": "external-kill",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "variant": "healthy",
+      "case": "cleanup",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "variant": "healthy",
+      "case": "dispatcher-reset",
+      "observed_exit": 0,
+      "required_assertion": null,
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "variant": "ordering",
+      "case": "no-progress",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/cause-missing-before-abort-adapter",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "variant": "nonblocking",
+      "case": "heartbeat-reset",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/nonblocking-deadline-timer",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "variant": "external-attribution",
+      "case": "external-kill",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/no-invented-no-progress",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "variant": "multithread-attribution",
+      "case": "multithread",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/unknown-individual-attribution",
+      "control_verified": true
+    },
+    {
+      "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "variant": "counted-wakeups",
+      "case": "no-progress",
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/dispatcher-measured-elapsed-before-abort",
+      "control_verified": true
+    }
+  ]
+}
