@@ -1,0 +1,14 @@
+import io,subprocess,tarfile,pathlib,json,shlex
+s=pathlib.Path('/tmp/fossilize-15/checker-final-1'); o=pathlib.Path('/tmp/fossilize-15/output/checker-final-1'); b=pathlib.Path('/tmp/fossilize-15/build/checker-final-1/debug-exceptions-off'); base='a6b22d65badc61907060028514dc5e86c5ce6c3e'; candidate='4f223c867b43ee3f01d643c0a77484c0cd4fd53a'; f=o/'baseline-source'; f.mkdir()
+archive=subprocess.check_output(['git','-C',str(s),'archive',candidate]); tarfile.open(fileobj=io.BytesIO(archive)).extractall(f,filter='data')
+for rel in ['rapidjson','cli/volk','cli/SPIRV-Tools','cli/SPIRV-Headers','cli/SPIRV-Cross']:
+ p=f/rel
+ if p.exists(): p.rmdir()
+ p.symlink_to(s/rel,target_is_directory=True)
+restored=['cli/fossilize_replay.cpp','cli/replay_item_outcome.hpp','fossilize_external_replayer.hpp','fossilize_types.hpp','fossilize_external_replayer_control_block.hpp']
+for rel in restored: (f/rel).write_bytes(subprocess.check_output(['git','-C',str(s),'show',base+':'+rel]))
+h=o/'old-headers';h.mkdir()
+for rel in ['fossilize_external_replayer.hpp','fossilize_types.hpp']:(h/rel).write_bytes(subprocess.check_output(['git','-C',str(s),'show',base+':'+rel]))
+for n in ['cache-write-failure','cache-legacy-provenance','cache-loop','creation']:(o/('baseline-'+n)).mkdir()
+(o/'old-header-run').mkdir()
+print('Complete candidate control tree with original replay TU/headers and pinned dependency links prepared; no source tree changed.')

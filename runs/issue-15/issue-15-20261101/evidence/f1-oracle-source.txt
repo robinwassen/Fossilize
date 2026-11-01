@@ -1,0 +1,54 @@
+import collections,io,json,pathlib,re,subprocess,sys,tarfile
+S=pathlib.Path('/tmp/fossilize-15/checker-final-1');O=pathlib.Path('/tmp/fossilize-15/output/checker-final-1');U=pathlib.Path('/tmp/fossilize-15/output/checker-1')
+C='4f223c867b43ee3f01d643c0a77484c0cd4fd53a'; B='a6b22d65badc61907060028514dc5e86c5ce6c3e';ROOT='https://github.com/robinwassen/Fossilize/issues/15'; passed=[]
+def need(v,n):
+ if not v:raise AssertionError(n)
+ passed.append(n)
+def git(*a):return subprocess.check_output(['git','-C',str(S),*a])
+def receipt(id,folder=O,intents=None):
+ r=json.loads((folder/(id+'.receipt.json')).read_text());need(r['cwd']==str(S if folder==O else pathlib.Path('/tmp/fossilize-15/checker-1')) and r['timeout']==600 and not r['timed_out'],id+'/boundary')
+ if intents is not None:need(r['command']==intents[id]['child_command'],id+'/exact-argv')
+ return r
+intents={r['intent_id']:r for f in ['candidate-intents.json','controls-intents.json'] for r in json.loads((O/f).read_text())}
+need(git('rev-parse','HEAD').decode().strip()==C,'exact-candidate');need(not git('status','--porcelain'),'source-clean')
+sub=git('submodule','status','--recursive').decode();need(bool(sub.strip()) and all(x.startswith(' ') for x in sub.splitlines()),'pinned-initialized-submodules')
+state=json.loads(pathlib.Path('/tmp/fossilize-15/control/current.json').read_text())['state'];plan=json.loads(pathlib.Path('/tmp/fossilize-15/plan-v1.json').read_text())
+need(state['original']==plan['original']==state['plan']['original'],'immutable-original-preserved');need(state['repository']['candidate_sha']==C and state['repository']['base_sha']==B and state['plan']['version']==plan['version']==1,'exact-state-candidate-base-plan');need(len(plan['cases'])==10,'all-ten-plan-cases')
+restored=['cli/fossilize_replay.cpp','cli/replay_item_outcome.hpp','fossilize_external_replayer.hpp','fossilize_types.hpp','fossilize_external_replayer_control_block.hpp']
+archive=tarfile.open(fileobj=io.BytesIO(git('archive',C)))
+for m in archive.getmembers():
+ if m.isfile():need((O/'baseline-source'/m.name).read_bytes()==(git('show',B+':'+m.name) if m.name in restored else archive.extractfile(m).read()),'complete-baseline-tree/'+m.name)
+for rel in ['rapidjson','cli/volk','cli/SPIRV-Tools','cli/SPIRV-Headers','cli/SPIRV-Cross']:need((O/'baseline-source'/rel).resolve()==(S/rel).resolve(),'pinned-baseline-dependency/'+rel)
+for h in ['fossilize_external_replayer.hpp','fossilize_types.hpp']:need((O/'old-headers'/h).read_bytes()==git('show',B+':'+h),'old-header/'+h)
+for n in ['configure','build','inventory','ctest','controls-setup','baseline-compile','old-header-compile','old-header-run']:need(receipt('f1-'+n,intents=intents)['exit_code']==0,'own/'+n+'/passed')
+inv=json.loads((O/'f1-inventory.log').read_text());names=[t['name'] for t in inv['tests']];need(len(names)==len(set(names))==174,'own/174-unique-discovered')
+log=(O/'f1-ctest.log').read_text();actual=re.findall(r'Test\s+#\d+:\s+(\S+)\s+\.*\s*Passed',log);need(collections.Counter(actual)==collections.Counter(names),'own/all174-executed-passed');need('100% tests passed' in log,'own/complete-success-summary')
+cache=['creation-rerun','success-policy','loop','compile-required','write-failure','legacy-provenance','null-provenance','whitelist','legacy-invocation']
+need(all('replay-cache-'+n in names for n in cache),'own/all-nine-cache-cases')
+expected={'cache-write-failure':{'M15/write/rejected-operation-and-tag':3,'M15/write/rejected-hash':3,'M15/write/filesystem-rejection-visible-on-fresh-rerun':2,'M15/success/one-real-marker':3,'M15/integration/exact-pipeline-attempts':3,'M15/success/harvested-hint-actually-suppresses':3},'cache-legacy-provenance':{'M15/integration/exact-status':1,'M15/integration/exact-pipeline-attempts':2,'reason/exact-evidence/2':1,'reason/nonzero-independent-of-progress':1,'M15/legacy/new-policy-control':1},'cache-loop':{'M15/final/exact-one-marker-and-independent-whitelist':3,'M15/final/exact-item-marker':3},'creation':{}}
+raw=[]
+for case,failures in expected.items():
+ id='f1-baseline-'+case;r=receipt(id,intents=intents);need(r['exit_code']==(0 if case=='creation' else 1),case+'/expected-raw-status');need(r['command'][4]==str(O/('baseline-'+case)) and r['command'][-1]==case,case+'/private-runtime-cwd')
+ log=(O/(id+'.log')).read_text();found=collections.Counter(x[5:].split(' expected:')[0] for x in log.splitlines() if x.startswith('FAIL '));need(found==collections.Counter(failures),case+'/exact-runtime-assertions');need('Executed R14/'+case+'; failures='+str(sum(failures.values())) in log,case+'/completed-fixture')
+ raw.append(dict(case=case,exit_code=r['exit_code'],assertions=dict(found)))
+# Independently assess raw exact-candidate unit checker four-configuration evidence.
+ur=json.loads(pathlib.Path('/tmp/fossilize-15/checker-1-report.json').read_text());need(ur['candidate_sha']==C and ur['base_sha']==B and ur['plan_version']==1 and ur['verdict']=='accepted' and not ur['findings'] and not ur['skipped'],'unit-report/exact-accepted-envelope')
+ui={r['intent_id']:r for r in json.loads((U/'matrix-intents.json').read_text())};unit_names={}
+for cfg in ['debug-exceptions-off','debug-exceptions-on','release-exceptions-off','release-exceptions-on']:
+ for n in ['configure','build','inventory','test']:need(receipt('c1-'+cfg+'-'+n,U,ui)['exit_code']==0,'unit/'+cfg+'/'+n+'/passed')
+ ix=json.loads((U/('c1-'+cfg+'-inventory.log')).read_text());ns=[t['name'] for t in ix['tests']];need(len(ns)==len(set(ns))==174 and set(ns)==set(names),'unit/'+cfg+'/same174-inventory')
+ lg=(U/('c1-'+cfg+'-test.log')).read_text();ex=re.findall(r'Test\s+#\d+:\s+(\S+)\s+\.*\s*Passed',lg);need(collections.Counter(ns)==collections.Counter(ex) and '100% tests passed' in lg,'unit/'+cfg+'/all174-executed-passed');unit_names[cfg]=ns
+matrix_ids={cfg+'::'+n for cfg,ns in unit_names.items() for n in ns}; auxiliary={'original-defect-controls-oracle','old-header-controller-caller'};need(len(matrix_ids)==696,'unit/696-config-qualified-CTest-ids');need(set(ur['discovered'])==set(ur['executed'])==matrix_ids|auxiliary and len(ur['discovered'])==len(ur['executed'])==698,'unit/696-matrix-plus-two-auxiliary-unique-ids');need(set(ur['test_mapping'])=={c['id'] for c in plan['cases']},'unit/all-ten-case-mappings')
+# Fresh task reads, native graph and managed readiness are read-only.
+sys.path.insert(0,str(S/'.agents/skills/implement-change-harness/scripts'));from github_issues import GitHub
+g=GitHub();snapshot=g.unchanged(state['issue_snapshot']);need(g.ready(snapshot),'all-recursive-prerequisites-completed');(O/'live-final-snapshot.json').write_text(json.dumps(snapshot,indent=2))
+parent=g.issue(8);oldparent=json.loads(pathlib.Path('/tmp/fossilize-15/shared-parent-8.json').read_text())
+for k in ['title','body','url']:need(parent[k]==oldparent[k],'parent/unchanged-'+k)
+need(parent['state']=='open' and snapshot['nodes'][ROOT]['state']=='open','root-and-parent-remain-open');co=state['closeout'];need(co['closing_references']==['Closes '+ROOT] and [t['issue'] for t in co['targets']]==[ROOT],'only-root-eligible-closing-target')
+comments=g.comments(15);matches=[c for c in comments if co['marker'] in c['body']];need(len(matches)==1 and co['binding'] in matches[0]['body'] and co['targets'][0]['reference'] in matches[0]['body'],'exact-managed-readiness-readback');(O/'live-final-parent.json').write_text(json.dumps(parent,indent=2));(O/'readiness-readback.json').write_text(json.dumps(matches,indent=2))
+# Source scope review evidence supplements independent human whole-diff inspection.
+files=git('diff','--name-only',B,C).decode().splitlines();need(set(files)=={'CHANGELOG.md','cli/fossilize_replay.cpp','fossilize_external_replayer.hpp','local-docs/verification.md','test/CMakeLists.txt','test/replay_cache_tests.hpp','test/replay_outcome_test.cpp'},'entire-seven-file-change-scope')
+ch=git('show',C+':CHANGELOG.md').decode();entry=next(x for x in ch.splitlines() if '([#15]' in x);need('[Observability]' in entry and 'https://github.com/robinwassen/Fossilize/issues/15' in entry and 'legacy or unattempted work' in entry,'combined-changelog-short-factual-benefit-and-traceability')
+pr=pathlib.Path('/tmp/fossilize-15/pr-body-draft.txt').read_text();need(re.findall(r'^Closes (.*)$',pr,re.M)==[ROOT],'draft-pr-only-root-closes')
+result=dict(passed=True,candidate_sha=C,base_sha=B,plan_version=1,attempt_id='checker-final-1',assertions=passed,raw_controls=raw,discovered=names,executed=actual,unit_matrix_executions=696,managed_readiness_url=matches[0]['html_url'])
+(O/'final-summary.json').write_text(json.dumps(result,indent=2));print('PASS final independent oracle: '+str(len(passed))+' assertions; fresh174 CPU tests, reviewed696 unit CTests; three expected raw assertion failures1 and original creation control0, old-header caller0; exact open issues/readiness/closing scope verified.')
