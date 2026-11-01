@@ -334,7 +334,7 @@ void ProcessProgress::begin_cleanup()
 		struct itimerspec spec = {};
 		spec.it_value.tv_sec = 3;
 		struct epoll_event event = {};
-		event.data.u64 = (uint64_t(outcome.attempts) << 32) | 0x80000000u | index;
+		event.data.u64 = replay_event_token(0x80000000u | index, outcome.attempts);
 		event.events = EPOLLIN;
 		armed = timerfd_settime(timer_fd, 0, &spec, nullptr) == 0 &&
 		        epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, timer_fd, &event) == 0;
@@ -390,7 +390,7 @@ void ProcessProgress::begin_heartbeat()
 		struct itimerspec spec = {};
 		spec.it_value.tv_sec = 10;
 		struct epoll_event event = {};
-		event.data.u64 = (uint64_t(outcome.attempts) << 32) | 0x40000000u | index;
+		event.data.u64 = replay_event_token(0x40000000u | index, outcome.attempts);
 		event.events = EPOLLIN;
 		armed = timerfd_settime(watchdog_timer_fd, 0, &spec, nullptr) == 0 &&
 		        epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, watchdog_timer_fd, &event) == 0;
@@ -626,7 +626,7 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 		Global::active_processes++;
 
 		epoll_event event = {};
-		event.data.u32 = index;
+		event.data.u64 = replay_event_token(index);
 		event.events = EPOLLIN | EPOLLRDHUP;
 		if (epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, crash_fd, &event) < 0)
 		{
@@ -1329,7 +1329,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 	{
 		epoll_event event = {};
 		event.events = EPOLLIN;
-		event.data.u32 = POLL_VALUE_SIGNAL_FD;
+		event.data.u64 = replay_event_token(POLL_VALUE_SIGNAL_FD);
 		if (epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, Global::signal_fd, &event) < 0)
 		{
 			LOGE("Failed to add signalfd to epoll.\n");
@@ -1347,7 +1347,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 	{
 		epoll_event event = {};
 		event.events = EPOLLIN;
-		event.data.u32 = POLL_VALUE_TIMER_FD;
+		event.data.u64 = replay_event_token(POLL_VALUE_TIMER_FD);
 		if (epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, Global::timer_fd, &event) < 0)
 		{
 			LOGE("Failed to add timerfd to epoll.\n");
@@ -1374,7 +1374,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 
 		epoll_event event = {};
 		event.events = EPOLLIN;
-		event.data.u32 = POLL_VALUE_CONTROL_FD;
+		event.data.u64 = replay_event_token(POLL_VALUE_CONTROL_FD);
 		if (epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, control_fd, &event) < 0)
 		{
 			LOGE("Failed to add control_fd to epoll.\n");
@@ -1430,18 +1430,19 @@ static int run_master_process(const VulkanDevice::Options &opts,
 		for (int i = 0; i < ret; i++)
 		{
 			auto &e = events[i];
+			auto event_id = replay_event_id(e.data.u64);
 			if (e.events & (EPOLLIN | EPOLLHUP | EPOLLRDHUP))
 			{
-				if (e.data.u32 <= POLL_VALUE_MAX_CHILD)
+				if (event_id <= POLL_VALUE_MAX_CHILD)
 				{
-					auto &proc = child_processes[e.data.u32 & 0x3fffffffu];
+					auto &proc = child_processes[event_id & 0x3fffffffu];
 
-					if (e.data.u32 & 0xc0000000u)
+					if (event_id & 0xc0000000u)
 					{
 						// An epoll batch can contain an old attempt's event after a
 						// shutdown/restart. Never apply it to the replacement child.
-						if ((e.data.u64 >> 32) != proc.outcome.attempts || proc.pid <= 0) continue;
-						bool cleanup_event = (e.data.u32 & 0x80000000u) != 0;
+						if (replay_event_attempt(e.data.u64) != proc.outcome.attempts || proc.pid <= 0) continue;
+						bool cleanup_event = (event_id & 0x80000000u) != 0;
 						int &fd = cleanup_event ? proc.timer_fd : proc.watchdog_timer_fd;
 						if (fd >= 0)
 						{
@@ -1467,7 +1468,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 						if (proc.supervision_failed) return EXIT_FAILURE;
 					}
 				}
-				else if (e.data.u32 == POLL_VALUE_SIGNAL_FD)
+				else if (event_id == POLL_VALUE_SIGNAL_FD)
 				{
 					// Read from signalfd to clear the pending flag.
 					signalfd_siginfo info = {};
@@ -1492,7 +1493,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 						shutdown_processes(child_processes);
 					}
 				}
-				else if (e.data.u32 == POLL_VALUE_CONTROL_FD)
+				else if (event_id == POLL_VALUE_CONTROL_FD)
 				{
 					handle_control_commands(child_processes);
 					// After a control command treat it as having received a timer event
@@ -1500,7 +1501,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 					update_target_running_processes(child_processes);
 					poll_self_child_memory_usage(child_processes);
 				}
-				else if (e.data.u32 == POLL_VALUE_TIMER_FD)
+				else if (event_id == POLL_VALUE_TIMER_FD)
 				{
 					uint64_t v;
 					if (read(Global::timer_fd, &v, sizeof(v)) >= 0)
@@ -1520,9 +1521,9 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			}
 			else if (e.events & EPOLLERR)
 			{
-				if (e.data.u32 < 0x80000000u)
+				if (event_id < 0x80000000u)
 				{
-					auto &proc = child_processes[e.data.u32 & 0x7fffffffu];
+					auto &proc = child_processes[event_id & 0x7fffffffu];
 					close_and_remove_epoll_entry(proc.crash_fd);
 				}
 			}

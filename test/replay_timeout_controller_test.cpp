@@ -118,6 +118,8 @@ template <typename Options> static int worker(unsigned, unsigned attempt, const 
 	auto opts = o;
 	opts.num_threads = scenario == "multithread" || scenario == "recovery" ? 2 : 1;
 	block_creation = scenario != "clean" && attempt == 1;
+	// Only deliberate no-progress attempts may advance a work deadline.
+	opts.timeout_seconds = no_progress() && block_creation ? o.timeout_seconds : 0;
 	hold_teardown = attempt == 1 && (scenario == "cleanup" || scenario == "escalation" || scenario == "kill-failure" || scenario.find("timer-") == 0);
 	dispatcher_clock = no_progress() && block_creation;
 	opts.on_disk_pipeline_cache_path = "cache.bin";
@@ -189,6 +191,7 @@ struct Timer { itimerspec spec = {}; epoll_event event = {}; bool injected = fal
 static std::map<int,Timer> timers;
 static epoll_event old_watchdog = {};
 static bool fresh_watchdog, stale_injected;
+static int replacement_timer_fd = -1;
 extern "C" int __real_timerfd_create(int,int);
 extern "C" int __wrap_timerfd_create(int clock, int flags)
 {
@@ -215,16 +218,16 @@ extern "C" int __wrap_epoll_ctl(int epoll, int op, int fd, epoll_event *event)
 {
 	if (getpid() == master_pid)
 	{
-		if (op == EPOLL_CTL_ADD && event && (event->data.u64 >> 32) != 0 &&
-		    ((scenario == "timer-register-failure" && (event->data.u32 & 0xc0000000u) == 0x80000000u) ||
-		     (scenario == "heartbeat-timer-register-failure" && (event->data.u32 & 0xc0000000u) == 0x40000000u))) { errno = EINVAL; return -1; }
-		if (op == EPOLL_CTL_ADD && event && (event->data.u32 & 0xc0000000u))
+		if (op == EPOLL_CTL_ADD && event && replay_event_attempt(event->data.u64) != 0 &&
+		    ((scenario == "timer-register-failure" && (replay_event_id(event->data.u64) & 0xc0000000u) == 0x80000000u) ||
+		     (scenario == "heartbeat-timer-register-failure" && (replay_event_id(event->data.u64) & 0xc0000000u) == 0x40000000u))) { errno = EINVAL; return -1; }
+		if (op == EPOLL_CTL_ADD && event && (replay_event_id(event->data.u64) & 0xc0000000u))
 		{
 			timers[fd].event = *event;
-			if ((event->data.u32 & 0xc0000000u) == 0x40000000u)
+			if ((replay_event_id(event->data.u64) & 0xc0000000u) == 0x40000000u)
 			{
-				if ((event->data.u64 >> 32) == 1) old_watchdog = *event;
-				if ((event->data.u64 >> 32) == 2) fresh_watchdog = true;
+				if (replay_event_attempt(event->data.u64) == 1) old_watchdog = *event;
+				if (replay_event_attempt(event->data.u64) == 2) { fresh_watchdog = true; replacement_timer_fd = fd; }
 			}
 		}
 		if (op == EPOLL_CTL_DEL) timers.erase(fd);
@@ -297,6 +300,7 @@ extern "C" int __wrap_epoll_wait(int epoll, epoll_event *events, int count, int 
 	{
 		stale_injected = true; controller_now += 10500000000ull;
 		events[0] = old_watchdog; events[0].events = EPOLLIN;
+		injected_read_fd = replacement_timer_fd; // Must remain unread for a stale attempt.
 		return 1;
 	}
 	if (scenario == "external-kill" && barriers->ready.load() && !barriers->kill_order.load())
@@ -517,7 +521,7 @@ int main(int argc, char **argv)
 		if (scenario == "multithread" || scenario == "external-kill") checks.require(!r.skipped() && r.unknown_remainder,"M16/unknown-individual-attribution");
 		if (scenario == "no-progress" || scenario == "spontaneous") checks.require(r.assigned[1].skipped_hash == 0x200,"M16/independent-known-resource-evidence");
 		if (success) checks.require(barriers->completed.load() == 2,"M16/clean-control-actually-created-all-inputs");
-		if (scenario == "recovery") checks.require(stale_injected && kill_attempts == 0,"M16/stale-attempt-timer-cannot-kill-replacement");
+		if (scenario == "recovery") checks.require(stale_injected && kill_attempts == 0 && injected_read_fd == replacement_timer_fd,"M16/stale-attempt-timer-cannot-kill-replacement");
 		if (scenario == "recovery") checks.require(r.attempts == 2 && r.timeout.previous_count == 1 && e.recovery == ReplayRecovery::Retry && r.timeout.current.recovery == ReplayRecovery::Complete,"M16/clean-retry-retains-failed-attempt");
 	}
 	int status; checks.require(waitpid(-1,&status,WNOHANG) == -1 && errno == ECHILD,"M16/kernel-all-children-reaped");

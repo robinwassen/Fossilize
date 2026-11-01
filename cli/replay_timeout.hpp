@@ -24,6 +24,12 @@ static inline uint64_t replay_seconds_ns(unsigned seconds)
 	// All unsigned CLI values fit in uint64_t nanoseconds, including UINT_MAX.
 	return uint64_t(seconds) * 1000000000ull;
 }
+// Epoll payloads use arithmetic bit fields, never union member layout.
+static inline uint64_t replay_event_token(uint32_t id, unsigned attempt = 0)
+{ return (uint64_t(attempt) << 32) | id; }
+static inline uint32_t replay_event_id(uint64_t token) { return uint32_t(token); }
+static inline unsigned replay_event_attempt(uint64_t token) { return unsigned(token >> 32); }
+
 struct ReplayTimeoutTrigger
 {
 	bool present = false;

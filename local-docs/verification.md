@@ -680,6 +680,9 @@ The original trigger, signal/termination request, adapter acceptance or raw nati
 error, observed native terminal status, recovery disposition and required-work
 outcome are separate facts. An accepted syscall is not proof of termination.
 An unexplained SIGKILL has unknown cause; it does not establish timeout or OOM.
+Epoll generation/ID tokens use explicit 64-bit shifts and 32-bit extraction,
+without relying on union-member byte layout; Linux x86 execution does not
+establish native big-endian runtime coverage.
 Multiple active worker threads do not establish an individual culprit; independently
 reported resource evidence remains usable. A later successful retry retains the
 earlier attempt's evidence without making that timeout permanent work failure.

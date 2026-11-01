@@ -59,6 +59,14 @@ static void unknown()
 }
 static void protocol()
 {
+	for (uint32_t id : {0u, 1u, 0x40000007u, 0x80000009u, ~0u})
+	{
+		auto token = replay_event_token(id, 42);
+		checks.require(replay_event_id(token) == id && replay_event_attempt(token) == 42,
+		               "M16/event-generation-and-id-independent-of-union-layout");
+		checks.require(replay_event_id(replay_event_token(id)) == id && replay_event_attempt(replay_event_token(id)) == 0,
+		               "M16/controller-and-child-ids-use-same-token-representation");
+	}
 	ReplayAttemptEvidence e;
 	const char *invalid[] = {"TIMEOUT", "TIMEOUT 1 2000000000", "TIMEOUT 1 2000000000 1", "TIMEOUT 2 10000000000 11000000000", "TIMEOUT 1 -1 999", "TIMEOUT 1 18446744073709551616 18446744073709551616", "TIMEOUT 1 2000000000 2500000000 suffix", "TIMEOUT 1 2000000001 2500000000", "TERMINATE 1 2 22"};
 	for (auto text : invalid) { replay_parse_timeout(e,text); checks.require(!e.triggers[0].present && !e.request_count, "M16/strict-extension-no-invented-cause"); }
