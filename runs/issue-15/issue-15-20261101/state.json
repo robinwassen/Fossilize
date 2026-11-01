@@ -2348,7 +2348,24 @@
         "eligible_deadline": 1793515759.5633485,
         "intent_id": "f1-live-inputs",
         "started": 1793504757.973484,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793504803.9888687,
+          "command": [
+            "/usr/bin/python3",
+            "-B",
+            "-c",
+            "import subprocess,json,pathlib; p=pathlib.Path('/tmp/fossilize-15/output/checker-final-1'); p.mkdir(parents=True,exist_ok=True); [(p/('live-'+str(n)+'.json')).write_text(subprocess.check_output(['gh','issue','view',str(n),'--repo','robinwassen/Fossilize','--json','number,title,body,state,stateReason,url,id,comments'],text=True)) for n in (15,8)]; print('live issue snapshots saved')"
+          ],
+          "cwd": "/tmp/fossilize-15/checker-final-1",
+          "exit_code": 0,
+          "finished": 1793504805.2559547,
+          "intent_id": "f1-live-inputs",
+          "started": 1793504803.9860663,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "child_command": [
@@ -3068,7 +3085,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 129,
+  "revision": 130,
   "root_issue": {
     "id": 6079819579,
     "node_id": "I_kwDOVZpjbc8AAAABamKvOw",
