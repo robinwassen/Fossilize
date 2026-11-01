@@ -1,0 +1,102 @@
+{
+  "active_work_unit": "https://github.com/robinwassen/Fossilize/issues/16",
+  "attempts": [],
+  "final_acceptance": null,
+  "findings": [],
+  "issue_snapshot": {
+    "deliverables": [
+      "https://github.com/robinwassen/Fossilize/issues/16"
+    ],
+    "digest": "50812091915c234dcacb36026b29ffc68ac056e2347051ab4a19ee6bbe232218",
+    "nodes": {
+      "https://github.com/robinwassen/Fossilize/issues/13": {
+        "blocked_by": [],
+        "body": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n",
+        "children": [],
+        "id": 6079809809,
+        "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
+        "number": 13,
+        "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+        "repository": "robinwassen/Fossilize",
+        "state": "closed",
+        "state_reason": "completed",
+        "title": "FOS-000004 \u2014 Retain unrecoverable child loss in the controller",
+        "url": "https://github.com/robinwassen/Fossilize/issues/13"
+      },
+      "https://github.com/robinwassen/Fossilize/issues/16": {
+        "blocked_by": [
+          "https://github.com/robinwassen/Fossilize/issues/13"
+        ],
+        "body": "Legacy identity: `FOS-000007`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n7. **FOS-000007 \u2014 Record timeout origin before invoking crash recovery.** **S\u2013M; depends on `FOS-000004`; \u00a74\u2013\u00a75.** [no-progress wait:965](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L965) invokes the timeout handler before its diagnostic. [Linux:1589](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1589) sends SIGABRT; [Windows:1203](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1203) writes `CRASH`. Store/send a distinct trigger from the healthy dispatcher before termination. Distinguish configured work-no-progress timeout, controller heartbeat timeout, and post-crash cleanup timeout. Include actual monotonic elapsed time and configured threshold. **Check:** deterministic no-progress injection, spontaneous fault, heartbeat loss, failed signal delivery and escalation. An externally observed SIGKILL alone does not prove a controller timeout or OOM. Multiple threads imply unknown individual attribution unless independently established.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Fake-clock and termination-adapter unit tests:** Each configured no-progress, heartbeat and cleanup deadline records its own trigger, threshold and monotonic elapsed time before requesting termination. Progress resets only the applicable deadline; a spontaneous fault has no invented timeout trigger.\n   - **Controller integration tests:** Injected SIGABRT/Windows recovery, failed termination delivery and escalation preserve trigger, mechanism and final effect separately. An unexplained external SIGKILL remains unattributed; multi-thread cases without item evidence retain unknown attribution. Use synchronization barriers, not timing races, to order events.\n\n<!-- fossilize-migration-v1:FOS-000007 -->\n",
+        "children": [],
+        "id": 6079824724,
+        "node_id": "I_kwDOVZpjbc8AAAABamLDVA",
+        "number": 16,
+        "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+        "repository": "robinwassen/Fossilize",
+        "state": "open",
+        "state_reason": null,
+        "title": "FOS-000007 \u2014 Record timeout origin before invoking crash recovery",
+        "url": "https://github.com/robinwassen/Fossilize/issues/16"
+      }
+    },
+    "root": "https://github.com/robinwassen/Fossilize/issues/16"
+  },
+  "limits": {
+    "command_timeout": 600,
+    "commands": [],
+    "deadline": 1793567717.6781795,
+    "exhausted": false,
+    "extensions": [],
+    "implementation_counts": {},
+    "repairs": 3,
+    "replan_count": 0,
+    "replans": 1
+  },
+  "next_action": "dispatch fresh planner",
+  "operation": "plan",
+  "original": [
+    {
+      "id": "AC1",
+      "requirement": "Legacy identity: `FOS-000007`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n7. **FOS-000007 \u2014 Record timeout origin before invoking crash recovery.** **S\u2013M; depends on `FOS-000004`; \u00a74\u2013\u00a75.** [no-progress wait:965](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L965) invokes the timeout handler before its diagnostic. [Linux:1589](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1589) sends SIGABRT; [Windows:1203](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1203) writes `CRASH`. Store/send a distinct trigger from the healthy dispatcher before termination. Distinguish configured work-no-progress timeout, controller heartbeat timeout, and post-crash cleanup timeout. Include actual monotonic elapsed time and configured threshold. **Check:** deterministic no-progress injection, spontaneous fault, heartbeat loss, failed signal delivery and escalation. An externally observed SIGKILL alone does not prove a controller timeout or OOM. Multiple threads imply unknown individual attribution unless independently established.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Fake-clock and termination-adapter unit tests:** Each configured no-progress, heartbeat and cleanup deadline records its own trigger, threshold and monotonic elapsed time before requesting termination. Progress resets only the applicable deadline; a spontaneous fault has no invented timeout trigger.\n   - **Controller integration tests:** Injected SIGABRT/Windows recovery, failed termination delivery and escalation preserve trigger, mechanism and final effect separately. An unexplained external SIGKILL remains unattributed; multi-thread cases without item evidence retain unknown attribution. Use synchronization barriers, not timing races, to order events.\n\n<!-- fossilize-migration-v1:FOS-000007 -->\n"
+    }
+  ],
+  "paths": {
+    "build_directory": "/tmp/fossilize-16/build",
+    "output_directory": "/tmp/fossilize-16/output",
+    "source_worktree": "/home/robin/.codex/worktrees/8022/fossilize"
+  },
+  "phase": "planning",
+  "plan": null,
+  "provenance": [],
+  "publishing": {
+    "ci_policy": "local",
+    "stage": "none"
+  },
+  "repository": {
+    "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
+    "branch": "codex/issue-16-timeout-origin",
+    "candidate_sha": null,
+    "common_dir": "/home/robin/dev/fossilize/.git",
+    "implementation_worktree": "/home/robin/.codex/worktrees/8022/fossilize",
+    "input_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
+    "target_branch": "master",
+    "target_remote": "origin",
+    "target_repository": "robinwassen/Fossilize"
+  },
+  "revision": 1,
+  "root_issue": {
+    "id": 6079824724,
+    "node_id": "I_kwDOVZpjbc8AAAABamLDVA",
+    "number": 16,
+    "repository": "robinwassen/Fossilize",
+    "url": "https://github.com/robinwassen/Fossilize/issues/16"
+  },
+  "run_id": "issue-16-20261101",
+  "schema_version": 3,
+  "status": "ready",
+  "task_key": "issue-16",
+  "task_location": "https://github.com/robinwassen/Fossilize/issues/16",
+  "verification": [],
+  "work_units": []
+}
