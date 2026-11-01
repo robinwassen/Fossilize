@@ -1,0 +1,98 @@
+## Problem
+
+`sync_worker_memory_context(index)` uses only `completed_count[index]` to reset the work-progress timeout. The worker queue is FIFO. `enqueue_deferred_pipelines()` can enqueue ordinary pipeline jobs for contexts 0/1 before parent-pipeline parsing jobs for context 2, then wait for context 2. That counter cannot advance until the earlier jobs drain, even though the worker is successfully completing ordinary pipelines.
+
+This converts legitimate queue delay into a timeout, invokes crash recovery and identifies whichever pipeline/shaders happen to be active as culprits. It can interrupt useful shader warming and cause repeated recovery before a game launch.
+
+Source at pinned upstream revision `556da9ff7d7616704dda515756219ab1dab693ec`: [watchdog](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L928), [parent parsing wait](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L3290), and [FIFO worker](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1792).
+
+## Evidence and required outcome
+
+A private Linux/NVIDIA diagnostic build reproduced this on a copied Sims 4 workload. At the false timeout after 10,001 ms:
+
+- Waiting context: 2; its queued/completed counts: 918/0.
+- Other-context work completed during the wait: 305 jobs.
+- The worker and queue head were both in context 0, with 2,218 jobs still queued.
+
+Observe actual worker-wide forward progress for hang detection while retaining the requested context's completion condition for synchronization. Legitimate FIFO work in another context must not cause a worker timeout. Allocation/CPU-activity heuristics are unnecessary for this reproduced defect.
+
+## Minimal candidate fix attached
+
+[Download the minimal candidate patch text](https://github.com/robinwassen/Fossilize/blob/harness-artifacts/runs/watchdog-context-progress/issue-filing-20261101/evidence/minimal-fix.patch.txt) (save as `.patch` to apply). The complete patch is also included below. This is a research candidate, not a merged fix. It changes only watchdog progress accounting, not queue ordering or the context-specific drain condition.
+
+```diff
+--- a/cli/fossilize_replay.cpp
++++ b/cli/fossilize_replay.cpp
+@@ -939,14 +939,22 @@
+ 			return;
+ 		}
+ 
+-		unsigned current_completed = completed_count[index];
++		// The awaited context may be queued behind work from other contexts.
++		// Synchronization remains context-specific; hang detection observes the worker.
++		const auto watchdog_completed = [&]() {
++			unsigned total = 0;
++			for (unsigned count : completed_count)
++			    total += count;
++			return total;
++		};
++		unsigned current_completed = watchdog_completed();
+ 		unsigned num_second_timeouts = 0;
+ 
+ 		do
+ 		{
+ 			bool signalled = work_done_condition[index].wait_for(
+ 					lock, std::chrono::seconds(1),
+-					[&]() -> bool { return current_completed != completed_count[index]; });
++					[&]() -> bool { return current_completed != watchdog_completed(); });
+ 
+ 			// Fire off a heartbeat every 500ms. No need to overwhelm the parent process.
+ 			auto new_time = std::chrono::steady_clock::now();
+@@ -957,7 +965,7 @@
+ 				last_heartbeat = new_time;
+ 			}
+ 
+-			if (!signalled && completed_count[index] == current_completed)
++			if (!signalled && watchdog_completed() == current_completed)
+ 				num_second_timeouts++;
+ 			else
+ 				num_second_timeouts = 0;
+@@ -969,7 +977,7 @@
+ 				exit(2);
+ 			}
+ 
+-			current_completed = completed_count[index];
++			current_completed = watchdog_completed();
+ 		} while (queued_count[index] != completed_count[index]);
+ 
+ 		heartbeat();
+```
+
+## Acceptance criteria
+
+1. A wait on one context remains alive while the same worker makes real progress on finite work queued ahead of it in other contexts; the awaited context still must drain before synchronization returns.
+2. A genuinely stalled worker with no relevant completed work still triggers the configured work-progress deadline. Preserve the separate heartbeat, cancellation and crash-recovery contracts.
+3. Add registered GPU-independent regressions with controllable clocks/barriers: another-context FIFO progress beyond the deadline, eventual awaited-context completion, true no-progress stall, and normal successful completion. Exercise one and multiple compilation threads where supported. Do not use CPU use, allocation activity, log text or queue completion as a substitute for the applicable outcome contract.
+4. Keep CLI/options, capture/database formats and public interfaces unchanged. Document the intentional behavioral correction: productive workers no longer suffer this false timeout.
+5. Run applicable registered tests and platform checks, including Windows coverage for shared replay behavior where claimed. Report unavailable platforms and unsupported/missing-input work separately. Avoid changes to cache-marker success policy, output durability or Steam scheduling in this fix.
+
+## Verification already performed (research evidence)
+
+Same pinned replay translation unit and local support archives; fresh private driver and replay/validation caches for cold cases; one compilation thread; copied real input scope of 2,048 graphics entries plus dependencies:
+
+| Rule / cache | Observed result |
+| --- | --- |
+| Original rule, cold | False timeout reproduced; failing diagnostic capture stopped at 17.6 s, incomplete |
+| Worker-wide progress, cold | Natural completion in 70.7 s; 2,444 successful graphics creations; no timeout |
+| Original rule, completed driver cache | Natural completion in 13.25 s; same 2,444 creations |
+| Worker-wide progress, identical completed driver cache | Natural completion in 13.01 s; same 2,444 creations |
+
+The changed rule also caught an intentionally stalled worker at a two-second threshold, and single-pipeline success controls passed with both rules. These are isolated replay timings, **not game-launch timings**. Native Steam's original binary separately reproduced 43 timeouts and 41 worker restarts during a three-minute full-input cold attempt. The exact internal counter state of that distributed binary was not read directly.
+
+Limitations: the corpus is proprietary and remains local; shader data/cache binaries are not attached. The source input has changed since the original upstream report and contains unsupported/missing-input work. Existing local support archives were reused, so diagnostic builds are not claimed to reproduce Steam's exact build. Windows and general multi-thread-per-child behavior remain unverified. Real Sims cold/second-start A/B tests are being conducted separately; no game-start speedup is claimed here yet.
+
+## Scope and related issues
+
+Standalone defect fix. Related [timeout-origin diagnostics](https://github.com/robinwassen/Fossilize/issues/16) addresses reporting, not this progress-accounting correction; it is not a prerequisite. [Worker lifecycle](https://github.com/robinwassen/Fossilize/issues/46) is related context, not an inherited implementation requirement. Upstream user report: https://github.com/ValveSoftware/Fossilize/issues/318.
+
+<!-- watchdog-context-progress-20261101-v1 -->

@@ -1,0 +1,45 @@
+--- a/cli/fossilize_replay.cpp
++++ b/cli/fossilize_replay.cpp
+@@ -939,14 +939,22 @@
+ 			return;
+ 		}
+ 
+-		unsigned current_completed = completed_count[index];
++		// The awaited context may be queued behind work from other contexts.
++		// Synchronization remains context-specific; hang detection observes the worker.
++		const auto watchdog_completed = [&]() {
++			unsigned total = 0;
++			for (unsigned count : completed_count)
++			    total += count;
++			return total;
++		};
++		unsigned current_completed = watchdog_completed();
+ 		unsigned num_second_timeouts = 0;
+ 
+ 		do
+ 		{
+ 			bool signalled = work_done_condition[index].wait_for(
+ 					lock, std::chrono::seconds(1),
+-					[&]() -> bool { return current_completed != completed_count[index]; });
++					[&]() -> bool { return current_completed != watchdog_completed(); });
+ 
+ 			// Fire off a heartbeat every 500ms. No need to overwhelm the parent process.
+ 			auto new_time = std::chrono::steady_clock::now();
+@@ -957,7 +965,7 @@
+ 				last_heartbeat = new_time;
+ 			}
+ 
+-			if (!signalled && completed_count[index] == current_completed)
++			if (!signalled && watchdog_completed() == current_completed)
+ 				num_second_timeouts++;
+ 			else
+ 				num_second_timeouts = 0;
+@@ -969,7 +977,7 @@
+ 				exit(2);
+ 			}
+ 
+-			current_completed = completed_count[index];
++			current_completed = watchdog_completed();
+ 		} while (queued_count[index] != completed_count[index]);
+ 
+ 		heartbeat();
