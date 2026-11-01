@@ -1,0 +1,70 @@
+{
+  "deliverables": [
+    "https://github.com/robinwassen/Fossilize/issues/15"
+  ],
+  "digest": "0566990f53c68f16ae1da91700623466ba680c72b20b6a7e57f5b3ba294bf46d",
+  "nodes": {
+    "https://github.com/robinwassen/Fossilize/issues/10": {
+      "blocked_by": [],
+      "body": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n",
+      "children": [],
+      "id": 6079794262,
+      "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
+      "number": 10,
+      "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+      "repository": "robinwassen/Fossilize",
+      "state": "closed",
+      "state_reason": "completed",
+      "title": "FOS-000001 \u2014 Preserve precise context in existing diagnostics",
+      "url": "https://github.com/robinwassen/Fossilize/issues/10"
+    },
+    "https://github.com/robinwassen/Fossilize/issues/13": {
+      "blocked_by": [],
+      "body": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n",
+      "children": [],
+      "id": 6079809809,
+      "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
+      "number": 13,
+      "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+      "repository": "robinwassen/Fossilize",
+      "state": "closed",
+      "state_reason": "completed",
+      "title": "FOS-000004 \u2014 Retain unrecoverable child loss in the controller",
+      "url": "https://github.com/robinwassen/Fossilize/issues/13"
+    },
+    "https://github.com/robinwassen/Fossilize/issues/14": {
+      "blocked_by": [
+        "https://github.com/robinwassen/Fossilize/issues/10",
+        "https://github.com/robinwassen/Fossilize/issues/13"
+      ],
+      "body": "Legacy identity: `FOS-000005`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n5. **FOS-000005 \u2014 Separate replay-thread work completion from item success.** **M; depends on `FOS-000001` and `FOS-000004` for complete propagation; \u00a72\u2013\u00a73.** [worker:1800](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1800) discards the parse return and increments `completed_count` after processing; creation helpers return void. [normal replay:4553](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L4553) returns success after the queue finishes (E7). Introduce a thread-safe outcome accumulator independent of optional shared memory. First cover parse/read and Vulkan creation failures, then setup/validation/support/dependency exits. Propagate the result through normal replay, child and controller. **Check:** E7, missing entry, injected Vulkan failure, and mixed success/failure. Keep queue progress as queue progress. Unsupported required work must be unsuccessful under the declared policy, even when it is not a crash.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Replay unit and CLI integration tests:** E7, missing input entries, injected creation errors, unsupported required work, validation failures and dependency-blocked work produce the expected distinct outcomes and nonzero aggregate exits. A fully successful workload returns zero.\n   - **Thread/mode matrix:** The same fixed mixed workload has the same final logical outcome in normal, child/controller and progress modes, with shared progress absent/present and one/multiple threads. Queue completion still reaches its expected count even when processing fails; it is never the success oracle.\n\n<!-- fossilize-migration-v1:FOS-000005 -->\n",
+      "children": [],
+      "id": 6079814916,
+      "node_id": "I_kwDOVZpjbc8AAAABamKdBA",
+      "number": 14,
+      "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+      "repository": "robinwassen/Fossilize",
+      "state": "closed",
+      "state_reason": "completed",
+      "title": "FOS-000005 \u2014 Separate replay-thread work completion from item success",
+      "url": "https://github.com/robinwassen/Fossilize/issues/14"
+    },
+    "https://github.com/robinwassen/Fossilize/issues/15": {
+      "blocked_by": [
+        "https://github.com/robinwassen/Fossilize/issues/14"
+      ],
+      "body": "Legacy identity: `FOS-000006`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n6. **FOS-000006 \u2014 Stop replay-cache markers from certifying failed creation.** **S once `FOS-000005` exists; depends on `FOS-000005`; \u00a72, \u00a76.** [creation dispatch:1698](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1698) calls void creation routines, then calls `mark_replayed_resource()` for a recognized resource type regardless of Vulkan success. [marker:1196](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1196) also ignores its database write result. This is a source-confirmed path, not a reproduced real-driver failure. Write a successful-work marker only after the applicable creation/validation/output contract succeeds. Keep validation-whitelist meaning separate from successful compilation. **Check:** inject creation failure with no validation callback, rerun with the same replayer-cache and require the item to remain eligible. Test `--loop` and compile-required fallback so an eventual success is handled deliberately. Existing marker files lack stronger provenance; do not silently relabel their contents as verified reusable output.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Injected-creation and second-run integration tests:** A failed creation with no validation callback produces no successful-work marker; the next run attempts the item again. Verified success produces a marker only under its declared policy, and marker-write failure remains visible.\n   - **Policy boundary tests:** Compile-required followed by successful fallback and repeated --loop attempts obey the documented final-item policy without double counting. Validation-whitelist entries and legacy markers are never presented as stronger success/persistence/reuse evidence than they establish.\n\n<!-- fossilize-migration-v1:FOS-000006 -->\n",
+      "children": [],
+      "id": 6079819579,
+      "node_id": "I_kwDOVZpjbc8AAAABamKvOw",
+      "number": 15,
+      "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+      "repository": "robinwassen/Fossilize",
+      "state": "open",
+      "state_reason": null,
+      "title": "FOS-000006 \u2014 Stop replay-cache markers from certifying failed creation",
+      "url": "https://github.com/robinwassen/Fossilize/issues/15"
+    }
+  },
+  "root": "https://github.com/robinwassen/Fossilize/issues/15"
+}
