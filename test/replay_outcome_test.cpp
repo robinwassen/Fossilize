@@ -8,7 +8,8 @@
 #include <memory>
 #include <condition_variable>
 static void install_dispatch();
-static bool fail_device, non_lazy;
+static bool fail_device, non_lazy, marker_mode, physical_adapter;
+static bool observed_null_device;
 class OutcomeDevice : public Fossilize::VulkanDevice
 {
 public:
@@ -18,7 +19,10 @@ public:
 	bool init_device(const Options &opts)
 	{
 		if (fail_device) return false;
-		bool ret = VulkanDevice::init_device(opts);
+		observed_null_device = opts.null_device;
+		auto adapted = opts;
+		if (physical_adapter) adapted.null_device = true; // CPU-only provenance adapter.
+		bool ret = VulkanDevice::init_device(adapted);
 		if (ret)
 		{
 			VkPhysicalDeviceFeatures2 f = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
@@ -49,19 +53,21 @@ static VkResult next_result()
 	if (inject_validation) on_validation_error(validation_target);
 	return results.empty() ? VK_SUCCESS : results[std::min<size_t>(call, results.size() - 1)];
 }
-static VkResult pipeline_result(VkPipeline *p)
+static std::vector<VkPipelineCreateFlags> observed_pipeline_flags;
+static VkResult pipeline_result(VkPipeline *p, VkPipelineCreateFlags flags)
 {
+	if (marker_mode) observed_pipeline_flags.push_back(flags);
 	auto result = next_result();
 	*p = result == VK_SUCCESS ? (VkPipeline)uintptr_t(0x1234) : VK_NULL_HANDLE;
 	return result;
 }
-static VKAPI_ATTR VkResult VKAPI_CALL graphics(VkDevice, VkPipelineCache, uint32_t, const VkGraphicsPipelineCreateInfo *, const VkAllocationCallbacks *, VkPipeline *p) { return pipeline_result(p); }
-static VKAPI_ATTR VkResult VKAPI_CALL compute(VkDevice, VkPipelineCache, uint32_t, const VkComputePipelineCreateInfo *, const VkAllocationCallbacks *, VkPipeline *p) { return pipeline_result(p); }
-static VKAPI_ATTR VkResult VKAPI_CALL raytracing(VkDevice, VkDeferredOperationKHR, VkPipelineCache, uint32_t, const VkRayTracingPipelineCreateInfoKHR *, const VkAllocationCallbacks *, VkPipeline *p) { return pipeline_result(p); }
+static VKAPI_ATTR VkResult VKAPI_CALL graphics(VkDevice, VkPipelineCache, uint32_t, const VkGraphicsPipelineCreateInfo *i, const VkAllocationCallbacks *, VkPipeline *p) { return pipeline_result(p, i->flags); }
+static VKAPI_ATTR VkResult VKAPI_CALL compute(VkDevice, VkPipelineCache, uint32_t, const VkComputePipelineCreateInfo *i, const VkAllocationCallbacks *, VkPipeline *p) { return pipeline_result(p, i->flags); }
+static VKAPI_ATTR VkResult VKAPI_CALL raytracing(VkDevice, VkDeferredOperationKHR, VkPipelineCache, uint32_t, const VkRayTracingPipelineCreateInfoKHR *i, const VkAllocationCallbacks *, VkPipeline *p) { return pipeline_result(p, i->flags); }
 static VKAPI_ATTR void VKAPI_CALL destroy(VkDevice, VkPipeline, const VkAllocationCallbacks *) { destroys++; }
 static VKAPI_ATTR VkResult VKAPI_CALL shader(VkDevice, const VkShaderModuleCreateInfo *, const VkAllocationCallbacks *, VkShaderModule *p)
 {
-	auto r = next_result(); *p = r == VK_SUCCESS ? (VkShaderModule)uintptr_t(0x5678) : VK_NULL_HANDLE; return r;
+	auto r = marker_mode ? VK_SUCCESS : next_result(); *p = r == VK_SUCCESS ? (VkShaderModule)uintptr_t(0x5678) : VK_NULL_HANDLE; return r;
 }
 static VKAPI_ATTR void VKAPI_CALL destroy_shader(VkDevice, VkShaderModule, const VkAllocationCallbacks *) { destroys++; }
 static PFN_vkCreatePipelineLayout original_layout;
@@ -555,6 +561,8 @@ static void normal_matrix()
 		}
 	}
 }
+#include "replay_cache_tests.hpp"
+
 int main(int argc, char **argv)
 {
 	if (argc == 3 && std::string(argv[1]) == "--whitelist")
@@ -566,7 +574,8 @@ int main(int argc, char **argv)
 	if (argc == 4 && std::string(argv[1]) == "--entry") { entry_test(argv[2],argv[3]); return checks.failures ? 1 : 0; }
 	if (argc != 2) return 2;
 	std::string test = argv[1];
-	if (test == "state") state_test();
+	if (test.compare(0,6,"cache-") == 0) cache_test(test.substr(6));
+	else if (test == "state") state_test();
 	else if (test == "parse-read") parse_test();
 	else if (test == "creation") { creation_test(false); initial_creation_test(); }
 	else if (test == "compile-required-loop") creation_test(true);
