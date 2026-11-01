@@ -2899,7 +2899,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -3524,6 +3524,23 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793505340.8102417,
+      "body_sha256": "5059756097d8b8b97a0515c4283c6b7b47845b2c10304a130ca1f0567d7adbad",
+      "branch": "codex/issue-15-replay-cache-markers",
+      "candidate_sha": "4f223c867b43ee3f01d643c0a77484c0cd4fd53a",
+      "event": "create-dispatched",
+      "expected_prior": {
+        "all_states": true,
+        "matches": []
+      },
+      "marker": "<!-- harness-implementation:issue-15-20261101:4f223c867b43ee3f01d643c0a77484c0cd4fd53a -->",
+      "observation": "Exact all-state paginated lookup found no PR; create once then reconcile authoritative lookup before retry",
+      "operation": "issue-15-20261101-create-pr",
+      "target_branch": "master",
+      "target_repository": "robinwassen/Fossilize",
+      "title": "Keep replay cache hints within their creation policy"
+    },
     "intent": {
       "base_sha": "a6b22d65badc61907060028514dc5e86c5ce6c3e",
       "branch": "codex/issue-15-replay-cache-markers",
@@ -3551,10 +3568,26 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "body_sha256": "5059756097d8b8b97a0515c4283c6b7b47845b2c10304a130ca1f0567d7adbad",
+        "branch": "codex/issue-15-replay-cache-markers",
+        "candidate_sha": "4f223c867b43ee3f01d643c0a77484c0cd4fd53a",
+        "event": "create-dispatched",
+        "expected_prior": {
+          "all_states": true,
+          "matches": []
+        },
+        "marker": "<!-- harness-implementation:issue-15-20261101:4f223c867b43ee3f01d643c0a77484c0cd4fd53a -->",
+        "observation": "Exact all-state paginated lookup found no PR; create once then reconcile authoritative lookup before retry",
+        "operation": "issue-15-20261101-create-pr",
+        "target_branch": "master",
+        "target_repository": "robinwassen/Fossilize",
+        "title": "Keep replay cache hints within their creation policy"
       }
     ],
     "remote_sha": "4f223c867b43ee3f01d643c0a77484c0cd4fd53a",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "a6b22d65badc61907060028514dc5e86c5ce6c3e",
@@ -3567,7 +3600,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 156,
+  "revision": 157,
   "root_issue": {
     "id": 6079819579,
     "node_id": "I_kwDOVZpjbc8AAAABamKvOw",
