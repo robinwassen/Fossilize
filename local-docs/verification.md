@@ -660,3 +660,60 @@ controller/outcome compatibility tests provide source/invocation evidence, not a
 general binary ABI guarantee. Native Windows execution is explicitly excluded by
 the user's run instruction and remains unverified; no GPU or Steam claim follows
 from this Linux CPU matrix.
+
+
+## Replay timeout causality (issue #16)
+
+`--timeout-seconds` measures the monotonic duration since the dispatcher last
+observed a completion in the memory context it is waiting for; zero disables
+that work deadline. It does not identify an individual pipeline's elapsed compile
+time. Linux heartbeat supervision retains its existing 10-second threshold;
+post-crash cleanup retains its existing 3-second threshold on Linux and Windows.
+Each trigger stores the configured threshold and actual elapsed duration in
+nanoseconds, including overshoot. Work progress, heartbeat and cleanup have
+independent start times. Cleanup notices cannot extend an existing cleanup deadline.
+
+Private controller state retains the current attempt plus the first four prior
+attempts, with an explicit count of omitted attempts. Each attempt has three
+trigger slots and at most four termination requests, plus an omission count.
+The original trigger, signal/termination request, adapter acceptance or raw native
+error, observed native terminal status, recovery disposition and required-work
+outcome are separate facts. An accepted syscall is not proof of termination.
+An unexplained SIGKILL has unknown cause; it does not establish timeout or OOM.
+Multiple active worker threads do not establish an individual culprit; independently
+reported resource evidence remains usable. A later successful retry retains the
+earlier attempt's evidence without making that timeout permanent work failure.
+
+Run the registered `replay-timeout-unit-*` and Linux `replay-timeout-controller-*`
+cases with `ctest --test-dir BUILD --output-on-failure --no-tests=error -R
+'^replay-timeout-'`, then repeat with `--repeat until-fail:3`. Run the full CPU
+suite in separate Debug/Release, exceptions OFF/ON configurations as above. All
+build/test/probe commands require the published-intent verification lock described
+in Preparation. Preserve CTest JSON discovery, actual executed IDs and logs.
+
+Portable units use explicit fake times and termination adapters. The Linux
+fixture includes the production dispatcher/controller, creates and reads back a
+known dependency-complete FOZ, uses real creation threads, fork, pipes, epoll,
+signal handlers, shutdown and kernel reaping, and substitutes only private test
+Vulkan/syscall/clock adapters. Pipe barriers order creation, cause delivery,
+abort, hung teardown and escalation. No wall-clock sleep determines event order;
+an emergency watchdog only bounds broken fixtures. Direct ordinary CLI controls
+also exercise timeout and failed abort delivery without a controller. Mutation
+controls must compile and fail explicit `M16/` assertions; compilation failure,
+watchdog expiry and crashes are not original-defect evidence.
+
+The internal child protocol adds bounded, strictly decimal `TIMEOUT 1
+<threshold-ns> <elapsed-ns>` and `TERMINATE <mechanism> <delivery> <native-error>`
+records. Only the child's work-no-progress origin is accepted from the pipe;
+heartbeat/cleanup origins come from controller clocks. Old CRASH, resource,
+heartbeat and REPLAY_FAILED records keep their meaning; an absent or malformed
+extension leaves cause unknown. Public source declarations and shared progress
+version/layout are unchanged. Old-header ExternalReplayer callers and ordinary
+CLI controls remain compatibility gates; no general prebuilt C++ binary ABI
+claim is made. No test injection options or hooks are installed in the CLI.
+
+Windows uses the portable deadline/evidence model for no-progress recovery and
+its existing cleanup TerminateProcess path; it gains no heartbeat watchdog.
+Native Windows execution for issue #16 is explicitly user-waived and unverified.
+Portable test registration and Linux evidence do not establish native Windows,
+GPU, driver compilation, Steam presentation or cache persistence behavior.

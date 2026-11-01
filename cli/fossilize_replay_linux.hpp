@@ -109,6 +109,7 @@ static void close_and_remove_epoll_entry(int &fd)
 struct ProcessProgress
 {
 	ReplayWorkerOutcome outcome;
+	ReplayDeadline cleanup_deadline, heartbeat_deadline;
 	unsigned start_graphics_index = 0u;
 	unsigned start_compute_index = 0u;
 	unsigned start_raytracing_index = 0u;
@@ -131,35 +132,63 @@ struct ProcessProgress
 	void parse_raw(const char *str);
 	void parse(const char *cmd);
 
+	void begin_cleanup();
+	bool timeout_expired(ReplayTimeoutOrigin origin);
+	bool request_kill();
 	void begin_heartbeat();
 	void heartbeat();
 
 	uint32_t index = 0;
 	bool stopped = false;
 	bool expect_kill = false;
+	bool supervision_failed = false;
 
 	char module_uuid_path[2 * VK_UUID_SIZE + 1] = {};
 	std::string parse_buffer;
+	bool discard_record = false;
 };
 
 void ProcessProgress::parse_raw(const char *str)
 {
-	parse_buffer += str;
-	size_t n;
-
-	while ((n = parse_buffer.find_first_of('\n')) != std::string::npos)
+	// Bound even an unterminated/malicious extension record. Discard through
+	// newline, so a truncated prefix cannot become a later valid message.
+	for (; *str; str++)
 	{
-		auto cmd = parse_buffer.substr(0, n);
-		parse(cmd.c_str());
-		parse_buffer = parse_buffer.substr(n + 1);
+		if (*str == '\n')
+		{
+			if (!discard_record) parse(parse_buffer.c_str());
+			parse_buffer.clear(); discard_record = false;
+		}
+		else if (!discard_record)
+		{
+			if (parse_buffer.size() < 1024) parse_buffer += *str;
+			else { parse_buffer.clear(); discard_record = true; }
+		}
 	}
 }
 
 void ProcessProgress::parse(const char *cmd)
 {
+	bool had_timeout = outcome.timeout.current.triggers[0].present;
+	unsigned prior_requests = outcome.timeout.current.request_count;
 	unsigned failure_mask = 0, drained = 0;
 	int consumed = 0;
-	if (sscanf(cmd, "REPLAY_FAILED %u %u%n", &failure_mask, &drained, &consumed) == 2 &&
+	if (replay_parse_timeout(outcome.timeout.current, cmd))
+	{
+		const auto &evidence = outcome.timeout.current;
+		if (!had_timeout && evidence.triggers[0].present)
+			LOGE("Worker %u attempt %u timeout origin=work-no-progress threshold_ns=%" PRIu64 " elapsed_ns=%" PRIu64 ".\n",
+			     index, outcome.attempts, evidence.triggers[0].threshold_ns, evidence.triggers[0].elapsed_ns);
+		if (evidence.request_count && (evidence.request_count != prior_requests || evidence.requests[evidence.request_count - 1].delivery != ReplayDelivery::Requested))
+		{
+			const auto &request = evidence.requests[evidence.request_count - 1];
+			LOGE("Worker %u attempt %u termination mechanism=%u delivery=%u native_error=%u.\n",
+			     index, outcome.attempts, unsigned(request.mechanism), unsigned(request.delivery), request.native_error);
+		}
+		const auto &e = outcome.timeout.current;
+		if (e.request_count && e.requests[e.request_count - 1].delivery == ReplayDelivery::Failed) begin_cleanup();
+	}
+	else if (sscanf(cmd, "REPLAY_FAILED %u %u%n", &failure_mask, &drained, &consumed) == 2 &&
 	    (cmd[consumed] == '\0' || (cmd[consumed] == '\n' && cmd[consumed + 1] == '\0')) && failure_mask && failure_mask < (1u << unsigned(ReplayFailure::Count)) && drained <= 1)
 	{
 		outcome.orderly_reported = true;
@@ -168,25 +197,7 @@ void ProcessProgress::parse(const char *cmd)
 	}
 	else if (strncmp(cmd, "CRASH", 5) == 0)
 	{
-		// We crashed ... Set up a timeout in case the process hangs while trying to recover.
-		close_and_remove_epoll_entry(timer_fd);
-		timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
-
-		if (timer_fd >= 0)
-		{
-			struct itimerspec spec = {};
-			spec.it_value.tv_sec = 3;
-			if (timerfd_settime(timer_fd, 0, &spec, nullptr) < 0)
-				LOGE("Failed to set time with timerfd_settime.\n");
-
-			struct epoll_event event = {};
-			event.data.u32 = 0x80000000u | index;
-			event.events = EPOLLIN;
-			if (epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, timer_fd, &event))
-				LOGE("Failed adding timer_fd to epoll_ctl().\n");
-		}
-		else
-			LOGE("Failed to create timerfd. Cannot support timeout for process.\n");
+		begin_cleanup();
 	}
 	else if (strncmp(cmd, "GRAPHICS_VERR", 13) == 0 ||
 	         strncmp(cmd, "RAYTRACE_VERR", 13) == 0 ||
@@ -311,8 +322,66 @@ bool ProcessProgress::process_once()
 	return true;
 }
 
+void ProcessProgress::begin_cleanup()
+{
+	if (cleanup_deadline.armed || pid <= 0) return;
+	outcome.timeout.current.recovery = ReplayRecovery::CrashCleanup;
+	cleanup_deadline.arm(replay_monotonic_ns(), replay_seconds_ns(3));
+	timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+	bool armed = false;
+	if (timer_fd >= 0)
+	{
+		struct itimerspec spec = {};
+		spec.it_value.tv_sec = 3;
+		struct epoll_event event = {};
+		event.data.u64 = (uint64_t(outcome.attempts) << 32) | 0x80000000u | index;
+		event.events = EPOLLIN;
+		armed = timerfd_settime(timer_fd, 0, &spec, nullptr) == 0 &&
+		        epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, timer_fd, &event) == 0;
+	}
+	if (!armed)
+	{
+		outcome.native_error = unsigned(errno);
+		supervision_failed = true;
+		LOGE("Failed to arm cleanup supervision (errno=%u).\n", outcome.native_error);
+		// The controller leaves through scoped child cleanup after parsing this
+		// record. Keep the existing watchdog until that bounded failure path.
+		return;
+	}
+	// Recovery owns the deadline only after its timer is successfully installed.
+	heartbeat_deadline.armed = false;
+	close_and_remove_epoll_entry(watchdog_timer_fd);
+}
+
+bool ProcessProgress::request_kill()
+{
+	auto &e = outcome.timeout.current;
+	e.request(ReplayTermination::KillSignal, ReplayDelivery::Requested, 0);
+	int ret = kill(pid, SIGKILL);
+	unsigned error = ret < 0 ? unsigned(errno) : 0;
+	e.request(ReplayTermination::KillSignal, ret == 0 ? ReplayDelivery::Accepted : ReplayDelivery::Failed, error);
+	LOGE("Worker %u attempt %u termination=SIGKILL delivery=%s native_error=%u.\n",
+	     index, outcome.attempts, ret == 0 ? "accepted" : "failed", error);
+	return ret == 0;
+}
+
+bool ProcessProgress::timeout_expired(ReplayTimeoutOrigin origin)
+{
+	auto &deadline = origin == ReplayTimeoutOrigin::Cleanup ? cleanup_deadline : heartbeat_deadline;
+	auto now = replay_monotonic_ns();
+	if (pid <= 0 || !deadline.expired(now) || (origin == ReplayTimeoutOrigin::Heartbeat && stopped)) return true;
+	auto trigger = deadline.trigger(now);
+	outcome.timeout.current.record(origin, trigger);
+	LOGE("Worker %u attempt %u timeout origin=%s threshold_ns=%" PRIu64 " elapsed_ns=%" PRIu64 ".\n",
+	     index, outcome.attempts, replay_timeout_name(origin), trigger.threshold_ns, trigger.elapsed_ns);
+	deadline.armed = false;
+	return request_kill();
+}
+
 void ProcessProgress::begin_heartbeat()
 {
+	if (cleanup_deadline.armed || pid <= 0) return;
+	heartbeat_deadline.arm(replay_monotonic_ns(), replay_seconds_ns(10));
 	close_and_remove_epoll_entry(watchdog_timer_fd);
 	watchdog_timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
 
@@ -324,7 +393,7 @@ void ProcessProgress::begin_heartbeat()
 			LOGE("Failed to set time with timerfd_settime.\n");
 
 		struct epoll_event event = {};
-		event.data.u32 = 0x40000000u | index;
+		event.data.u64 = (uint64_t(outcome.attempts) << 32) | 0x40000000u | index;
 		event.events = EPOLLIN;
 		if (epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, watchdog_timer_fd, &event))
 			LOGE("Failed adding timer_fd to epoll_ctl().\n");
@@ -335,8 +404,9 @@ void ProcessProgress::begin_heartbeat()
 
 void ProcessProgress::heartbeat()
 {
-	if (watchdog_timer_fd >= 0)
+	if (watchdog_timer_fd >= 0 && !cleanup_deadline.armed)
 	{
+		heartbeat_deadline.arm(replay_monotonic_ns(), replay_seconds_ns(10));
 		heartbeats++;
 		// Rearm timer
 		struct itimerspec spec = {};
@@ -364,6 +434,8 @@ WorkerDisposition ProcessProgress::process_shutdown(int wstatus)
 	pid = -1;
 
 	outcome.termination = uint64_t(wstatus);
+	outcome.timeout.current.native_observed = true;
+	outcome.timeout.current.native_status = uint64_t(wstatus);
 	if (WIFSIGNALED(wstatus))
 		LOGE("Worker %u (PID: %d) terminated by signal %d%s.\n", index, wait_pid,
 		     WTERMSIG(wstatus), expect_kill ? " (parent-requested cleanup)" : "");
@@ -516,6 +588,12 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 	}
 
 	outcome.attempts++;
+	outcome.timeout.begin(outcome.attempts);
+	cleanup_deadline = {}; heartbeat_deadline = {};
+	expect_kill = false;
+	supervision_failed = false;
+	discard_record = false;
+	parse_buffer.clear();
 	outcome.orderly_reported = false;
 	outcome.orderly_drained = false;
 
@@ -906,7 +984,7 @@ static void shutdown_processes(std::vector<ProcessProgress> &child_processes)
 		{
 			child_process.stopped = false;
 			child_process.expect_kill = true;
-			kill(child_process.pid, SIGKILL);
+			child_process.request_kill();
 		}
 	}
 }
@@ -945,7 +1023,7 @@ struct ControllerChildrenCleanup
 	~ControllerChildrenCleanup()
 	{
 		for (auto &child : children)
-			if (child.pid > 0) kill(child.pid, SIGKILL);
+			if (child.pid > 0) child.request_kill();
 		for (auto &child : children)
 		{
 			if (child.pid > 0)
@@ -1351,40 +1429,28 @@ static int run_master_process(const VulkanDevice::Options &opts,
 				{
 					auto &proc = child_processes[e.data.u32 & 0x3fffffffu];
 
-					if (e.data.u32 & 0x80000000u)
+					if (e.data.u32 & 0xc0000000u)
 					{
-						// Timeout triggered. kill the process and reap it.
-						// SIGCHLD handler should rearm the process as necessary.
-						if (proc.timer_fd >= 0)
-						{
-							LOGE("Timeout triggered for child process #%u.\n", e.data.u32 & 0x3fffffffu);
-							kill(proc.pid, SIGKILL);
-							close_and_remove_epoll_entry(proc.timer_fd);
-						}
-					}
-					else if (e.data.u32 & 0x40000000u)
-					{
-						// Timeout triggered. kill the process and reap it.
-						// SIGCHLD handler should rearm the process as necessary.
-						if (proc.watchdog_timer_fd >= 0)
+						// An epoll batch can contain an old attempt's event after a
+						// shutdown/restart. Never apply it to the replacement child.
+						if ((e.data.u64 >> 32) != proc.outcome.attempts || proc.pid <= 0) continue;
+						bool cleanup_event = (e.data.u32 & 0x80000000u) != 0;
+						int &fd = cleanup_event ? proc.timer_fd : proc.watchdog_timer_fd;
+						if (fd >= 0)
 						{
 							uint64_t dummy;
-							ssize_t ret_dummy = ::read(proc.watchdog_timer_fd, &dummy, sizeof(dummy));
-							(void)ret_dummy;
-
-							// Hitting watchdog timer while asleep is okay.
-							if (!proc.stopped)
-							{
-								LOGE("Watchdog timeout triggered for child process #%u.\n", e.data.u32 & 0x3fffffffu);
-								kill(proc.pid, SIGKILL);
-								close_and_remove_epoll_entry(proc.watchdog_timer_fd);
-							}
+							(void)::read(fd, &dummy, sizeof(dummy));
+							if (!proc.timeout_expired(cleanup_event ? ReplayTimeoutOrigin::Cleanup : ReplayTimeoutOrigin::Heartbeat))
+								return EXIT_FAILURE;
+							if (!(cleanup_event ? proc.cleanup_deadline.armed : proc.heartbeat_deadline.armed))
+								close_and_remove_epoll_entry(fd);
 						}
 					}
 					else if (proc.crash_fd >= 0)
 					{
 						if (!proc.process_once())
 							close_and_remove_epoll_entry(proc.crash_fd);
+						if (proc.supervision_failed) return EXIT_FAILURE;
 					}
 				}
 				else if (e.data.u32 == POLL_VALUE_SIGNAL_FD)
@@ -1658,19 +1724,44 @@ static void install_trivial_crash_handlers(ThreadedReplayer &replayer)
 	sigaction(SIGABRT, &act, nullptr);
 }
 
+static void report_timeout(const ReplayTimeoutTrigger &trigger)
+{
+	if (crash_fd >= 0)
+	{
+		char buffer[128];
+		snprintf(buffer, sizeof(buffer), "TIMEOUT 1 %" PRIu64 " %" PRIu64 "\n", trigger.threshold_ns, trigger.elapsed_ns);
+		if (!write_all(crash_fd, buffer)) _exit(2);
+	}
+}
+
 static void timeout_handler()
 {
-	if (global_replayer->thread_pool.size() > 1)
+	// Request is sent by the healthy dispatcher, before the signal handler can
+	// exit, block in teardown, or lose its ability to report.
+	if (crash_fd >= 0 && !write_all(crash_fd, "TERMINATE 1 0 0\n")) _exit(2);
+	pthread_t target = global_replayer->thread_pool.size() == 1 ?
+	                   global_replayer->thread_pool.front().native_handle() : pthread_self();
+	if (global_replayer->thread_pool.size() != 1)
+		LOGE("No-progress timeout has unknown individual attribution with multiple worker threads.\n");
+	int error = 0;
+	if (global_replayer->thread_pool.size() != 1)
 	{
-		LOGE("Using timeout handling with more than one worker thread, cannot know which thread is the culprit.\n");
-		// Just send signal to main thread so we don't emit any false positives.
-		pthread_kill(pthread_self(), SIGABRT);
+		// Slave dispatchers normally block SIGABRT so worker crashes cannot
+		// accidentally run on this thread. For unknown multi-thread attribution
+		// explicitly recover on the dispatcher, whose item identity is empty.
+		sigset_t mask; sigemptyset(&mask); sigaddset(&mask, SIGABRT);
+		error = pthread_sigmask(SIG_UNBLOCK, &mask, nullptr);
 	}
-	else
+	if (!error) error = pthread_kill(target, SIGABRT);
+	LOGE("Termination SIGABRT delivery=%s native_error=%d.\n", error ? "failed" : "accepted", error);
+	if (crash_fd >= 0)
 	{
-		// Pretend we crashed in a safe way.
-		// Send a signal to the worker thread to make sure we tear down on that thread.
-		pthread_kill(global_replayer->thread_pool.front().native_handle(), SIGABRT);
+		char buffer[80];
+		snprintf(buffer, sizeof(buffer), "TERMINATE 1 %u %u\n", error ? 2u : 1u, unsigned(error));
+		if (!write_all(crash_fd, buffer)) _exit(2);
+		// The worker's crash handler owns teardown/exit. A failed delivery is
+		// escalated by the parent's bounded cleanup deadline, not false success.
+		for (;;) pause();
 	}
 }
 
