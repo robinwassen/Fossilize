@@ -134,6 +134,7 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/16",
+      "attempt_id": "checker-2",
       "evidence": "CHANGELOG.md:11 says distinct timeout causes and termination results are retained before recovery. cli/fossilize_replay_linux.hpp:443-445 writes native_observed/native_status in process_shutdown after waitpid has established terminal status; cli/fossilize_replay_windows.hpp:363-366 likewise records observed native exit code during shutdown. A signal delivery result may also return after recovery has begun. The wording therefore assigns an unsupported chronology to termination results. The full issue link, Observability tag and practical benefit are otherwise appropriate.",
       "id": "C16-CHANGELOG-CHRONOLOGY",
       "locations": [
@@ -151,9 +152,16 @@
         }
       ],
       "priority": 3,
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/16",
+        "candidate_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+        "checker_attempt": "checker-2",
+        "evidence": "Fresh active checker /root/issue16_checker2 independently reviewed 09be9863cb704b0e47bdbca43aefeca02a82af19 and exact dbdb3232-to-09be9863 diff: only CHANGELOG.md line11 changed. New short Unreleased Observability sentence binds before recovery only to recording distinct timeout causes and retains termination results separately, matching later Linux wait-status and Windows exit-status observation; practical benefit and full issue16 URL preserved. Runtime gates remain pending; resolution is not unit acceptance.",
+        "finding_id": "C16-CHANGELOG-CHRONOLOGY"
+      },
       "requested_change": "Revise the one short sentence so before recovery qualifies recording timeout causes, while termination results are retained separately. Suggested wording: Recorded distinct replay timeout causes before recovery and retained termination results so interrupted work can be diagnosed without mistaking signals for causes.",
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Correct timeout changelog chronology"
     }
   ],
@@ -6649,7 +6657,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 355,
+  "revision": 356,
   "root_issue": {
     "id": 6079824724,
     "node_id": "I_kwDOVZpjbc8AAAABamLDVA",
