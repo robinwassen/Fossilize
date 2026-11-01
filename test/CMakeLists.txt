@@ -323,7 +323,8 @@ if(FOSSILIZE_CLI AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_compile_options(replay-timeout-controller-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
     set_target_properties(replay-timeout-controller-test PROPERTIES LINK_FLAGS
         "${FOSSILIZE_LINK_FLAGS} -Wl,--wrap=_ZNSt6chrono3_V212steady_clock3nowEv,--wrap=pthread_cond_clockwait,--wrap=pthread_kill,--wrap=kill,--wrap=epoll_wait,--wrap=epoll_ctl,--wrap=timerfd_settime,--wrap=timerfd_create,--wrap=read")
-    foreach(case clean no-progress heartbeat heartbeat-reset cleanup spontaneous escalation delivery-failure kill-failure external-kill multithread recovery protocol dispatcher-reset dispatcher-disabled ordinary-no-progress ordinary-delivery-failure timer-create-failure timer-arm-failure timer-register-failure)
+    foreach(case clean no-progress heartbeat heartbeat-reset cleanup spontaneous escalation delivery-failure kill-failure external-kill multithread recovery protocol dispatcher-reset dispatcher-disabled ordinary-no-progress ordinary-delivery-failure timer-create-failure timer-arm-failure timer-register-failure
+                 heartbeat-timer-create-failure heartbeat-timer-arm-failure heartbeat-timer-register-failure heartbeat-timer-read-failure heartbeat-timer-rearm-failure)
         set(name replay-timeout-controller-${case})
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}")
         add_test(NAME ${name} COMMAND replay-timeout-controller-test ${case})

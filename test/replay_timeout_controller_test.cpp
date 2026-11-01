@@ -99,13 +99,15 @@ static bool no_progress()
 	       scenario == "ordinary-no-progress" || scenario == "ordinary-delivery-failure" ||
 	       scenario == "multithread" || scenario == "recovery" || scenario == "dispatcher-reset" || scenario == "dispatcher-disabled";
 }
+static bool heartbeat_timer_failure() { return scenario.find("heartbeat-timer-") == 0; }
 template <typename Options> static int worker(unsigned, unsigned attempt, const Options &o)
 {
 	barriers->child_pid.store(unsigned(getpid()));
-	if (scenario == "heartbeat" || scenario == "heartbeat-reset" || scenario == "external-kill")
+	if (scenario == "heartbeat" || scenario == "heartbeat-reset" || scenario == "external-kill" || heartbeat_timer_failure())
 	{
-		if (scenario != "external-kill") write_all(STDOUT_FILENO, "BEGIN_HEARTBEAT\n");
 		barriers->ready.store(1); byte_write(ready_pipe[1]);
+		if (scenario != "external-kill") write_all(STDOUT_FILENO, "BEGIN_HEARTBEAT\n");
+		if (scenario == "heartbeat-timer-rearm-failure") write_all(STDOUT_FILENO,"HEARTBEAT\n");
 		if (scenario == "external-kill") write_all(STDOUT_FILENO,"HEARTBEAT\n");
 		byte_read(release_pipe[0]);
 		if (scenario == "external-kill") { ::kill(getpid(),SIGKILL); return 91; }
@@ -190,22 +192,32 @@ static bool fresh_watchdog, stale_injected;
 extern "C" int __real_timerfd_create(int,int);
 extern "C" int __wrap_timerfd_create(int clock, int flags)
 {
-	if (getpid() == master_pid && scenario == "timer-create-failure" && barriers->ready.load()) { errno = EMFILE; return -1; }
+	if (getpid() == master_pid && (scenario == "timer-create-failure" || scenario == "heartbeat-timer-create-failure") && barriers->ready.load()) { errno = EMFILE; return -1; }
 	return __real_timerfd_create(clock,flags);
 }
 extern "C" int __real_timerfd_settime(int, int, const itimerspec *, itimerspec *);
 extern "C" int __wrap_timerfd_settime(int fd, int flags, const itimerspec *spec, itimerspec *old)
 {
-	if (getpid() == master_pid && scenario == "timer-arm-failure" && spec->it_value.tv_sec == 3) { errno = EIO; return -1; }
+	if (getpid() == master_pid && scenario == "heartbeat-timer-rearm-failure" && timers.count(fd) && timers[fd].spec.it_value.tv_sec == 10)
+	{ errno = EIO; return -1; }
+	if (getpid() == master_pid && ((scenario == "timer-arm-failure" && spec->it_value.tv_sec == 3) || (scenario == "heartbeat-timer-arm-failure" && spec->it_value.tv_sec == 10))) { errno = EIO; return -1; }
 	if (getpid() == master_pid) { timers[fd].spec = *spec; timers[fd].injected = false; }
-	return __real_timerfd_settime(fd,flags,spec,old);
+	// Keep native child timers unexpired throughout the test watchdog. The
+	// production requests (3s/10s) are retained above; virtual events alone
+	// determine expiration, including the real stale-read EAGAIN oracle.
+	auto native_spec = *spec;
+	if (getpid() == master_pid && (spec->it_value.tv_sec == 3 || spec->it_value.tv_sec == 10))
+		native_spec.it_value.tv_sec = 3600;
+	return __real_timerfd_settime(fd,flags,&native_spec,old);
 }
 extern "C" int __real_epoll_ctl(int,int,int,epoll_event *);
 extern "C" int __wrap_epoll_ctl(int epoll, int op, int fd, epoll_event *event)
 {
 	if (getpid() == master_pid)
 	{
-		if (scenario == "timer-register-failure" && op == EPOLL_CTL_ADD && event && (event->data.u64 >> 32) != 0 && (event->data.u32 & 0xc0000000u) == 0x80000000u) { errno = EINVAL; return -1; }
+		if (op == EPOLL_CTL_ADD && event && (event->data.u64 >> 32) != 0 &&
+		    ((scenario == "timer-register-failure" && (event->data.u32 & 0xc0000000u) == 0x80000000u) ||
+		     (scenario == "heartbeat-timer-register-failure" && (event->data.u32 & 0xc0000000u) == 0x40000000u))) { errno = EINVAL; return -1; }
 		if (op == EPOLL_CTL_ADD && event && (event->data.u32 & 0xc0000000u))
 		{
 			timers[fd].event = *event;
@@ -219,10 +231,23 @@ extern "C" int __wrap_epoll_ctl(int epoll, int op, int fd, epoll_event *event)
 	}
 	return __real_epoll_ctl(epoll,op,fd,event);
 }
-static int injected_read_fd = -1;
+static int injected_read_fd = -1, early_read_fd = -1;
+static bool early_native_eagain;
 extern "C" ssize_t __real_read(int,void *,size_t);
 extern "C" ssize_t __wrap_read(int fd, void *buffer, size_t size)
 {
+	if (fd == early_read_fd && size == sizeof(uint64_t))
+	{
+		early_read_fd = -1;
+		ssize_t ret = __real_read(fd,buffer,size);
+		int error = errno;
+		early_native_eagain = ret < 0 && errno == EAGAIN;
+		checks.require(early_native_eagain,"M16/rearmed-timer-real-read-is-stale-EAGAIN");
+		errno = error;
+		return ret;
+	}
+	if (fd == injected_read_fd && scenario == "heartbeat-timer-read-failure")
+	{ injected_read_fd = -1; errno = EIO; return -1; }
 	if (fd == injected_read_fd && size == sizeof(uint64_t)) { *static_cast<uint64_t *>(buffer) = 1; injected_read_fd = -1; return sizeof(uint64_t); }
 	return __real_read(fd,buffer,size);
 }
@@ -284,7 +309,7 @@ extern "C" int __wrap_epoll_wait(int epoll, epoll_event *events, int count, int 
 		bool cleanup = t.spec.it_value.tv_sec == 3;
 		bool watchdog = t.spec.it_value.tv_sec == 10;
 		bool want_cleanup = scenario == "cleanup" || scenario == "escalation" || scenario == "delivery-failure" || scenario == "kill-failure";
-		bool want_watchdog = scenario == "heartbeat" || scenario == "heartbeat-reset";
+		bool want_watchdog = scenario == "heartbeat" || scenario == "heartbeat-reset" || scenario == "heartbeat-timer-read-failure";
 		if (t.injected || !t.event.events || (!(cleanup && want_cleanup) && !(watchdog && want_watchdog))) continue;
 		if (cleanup && scenario != "delivery-failure" && !barriers->teardown.load()) continue;
 		if (watchdog && !barriers->ready.load()) continue;
@@ -301,7 +326,12 @@ extern "C" int __wrap_epoll_wait(int epoll, epoll_event *events, int count, int 
 		if (watchdog && scenario == "heartbeat-reset" && !early_reset_event)
 		{
 			early_reset_event = true;
-			events[0] = t.event; events[0].events = EPOLLIN; injected_read_fd = entry.first;
+			events[0] = t.event; events[0].events = EPOLLIN;
+			int fd_flags = fcntl(entry.first,F_GETFL);
+			bool nonblocking = fd_flags >= 0 && (fd_flags & O_NONBLOCK) != 0;
+			checks.require(nonblocking,"M16/nonblocking-deadline-timer");
+			// A broken nonblocking control fails an assertion without hanging.
+			if (nonblocking) early_read_fd = entry.first; else injected_read_fd = entry.first;
 			return 1;
 		}
 		if (watchdog && scenario == "heartbeat-reset")
@@ -342,6 +372,7 @@ static int protocol_test()
 	Global::epoll_fd = epoll_create1(EPOLL_CLOEXEC);
 	ProcessProgress p; p.pid = fork();
 	if (p.pid == 0) { byte_write(ready_pipe[1]); byte_read(release_pipe[0]); _exit(0); }
+	barriers->child_pid.store(unsigned(p.pid));
 	byte_read(ready_pipe[0]);
 	p.outcome.assign(0,2,0,0,0,0); p.outcome.attempts = 1; p.outcome.timeout.begin(1);
 	p.parse_raw("TIMEOUT 1 2000000000");
@@ -427,7 +458,8 @@ static void emergency_watchdog(int)
 		}
 	}
 	static const char message[] = "M16 emergency watchdog: fixture failed\n";
-	(void)::write(STDERR_FILENO,message,sizeof(message)-1);
+	ssize_t wrote = ::write(STDERR_FILENO,message,sizeof(message)-1);
+	(void)wrote;
 	_exit(98);
 }
 int main(int argc, char **argv)
@@ -466,12 +498,19 @@ int main(int argc, char **argv)
 			checks.require(e.triggers[2].present && e.triggers[2].threshold_ns == 3000000000ull && e.triggers[2].elapsed_ns == 3500000000ull,"M16/cleanup-measured-origin");
 		else checks.require(!e.triggers[2].present,"M16/no-invented-cleanup");
 		if (scenario == "heartbeat" || scenario == "heartbeat-reset" || scenario == "cleanup" || scenario == "escalation" ||
-		    scenario == "delivery-failure" || scenario == "kill-failure" || scenario == "external-kill")
+		    scenario == "delivery-failure" || scenario == "kill-failure" || scenario == "external-kill" ||
+		    scenario.find("timer-") == 0 || heartbeat_timer_failure())
 			checks.require(WIFSIGNALED(e.native_status) && WTERMSIG(e.native_status) == SIGKILL,"M16/native-SIGKILL-retained-separately-from-cause");
 		if (no_progress() && scenario != "dispatcher-disabled")
 			checks.require(e.request_count && e.requests[0].mechanism == ReplayTermination::AbortSignal,"M16/original-abort-request-retained-through-recovery");
 		if (scenario == "delivery-failure") checks.require(e.request_count >= 2 && e.requests[0].delivery == ReplayDelivery::Failed && e.requests[0].native_error == EINVAL && WIFSIGNALED(e.native_status) && WTERMSIG(e.native_status) == SIGKILL,"M16/failed-abort-and-kill-effect-separated");
-		if (scenario.find("timer-") == 0) checks.require(r.native_error != 0 && !e.triggers[2].present,"M16/failed-supervision-bounded-without-invented-timeout");
+		if (scenario.find("timer-") == 0 || heartbeat_timer_failure())
+		{
+			unsigned expected_error = scenario.find("create-failure") != std::string::npos ? EMFILE :
+			                          scenario.find("register-failure") != std::string::npos ? EINVAL : EIO;
+			checks.require(r.native_error == expected_error && !e.triggers[2].present,"M16/failed-supervision-exact-native-error-without-invented-timeout");
+		}
+		if (scenario == "heartbeat-reset") checks.require(early_native_eagain,"M16/actual-queued-rearm-read-covered");
 		if (scenario == "kill-failure") checks.require(e.requests[0].delivery == ReplayDelivery::Failed && e.requests[0].native_error == EPERM && e.request_count >= 2,"M16/kill-error-preserved-through-cleanup");
 		if (scenario == "multithread" || scenario == "external-kill") checks.require(!r.skipped() && r.unknown_remainder,"M16/unknown-individual-attribution");
 		if (scenario == "no-progress" || scenario == "spontaneous") checks.require(r.assigned[1].skipped_hash == 0x200,"M16/independent-known-resource-evidence");

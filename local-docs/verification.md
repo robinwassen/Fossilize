@@ -697,7 +697,13 @@ known dependency-complete FOZ, uses real creation threads, fork, pipes, epoll,
 signal handlers, shutdown and kernel reaping, and substitutes only private test
 Vulkan/syscall/clock adapters. Pipe barriers order creation, cause delivery,
 abort, hung teardown and escalation. No wall-clock sleep determines event order;
-an emergency watchdog only bounds broken fixtures. Direct ordinary CLI controls
+native child timers are held beyond the test watchdog while the configured
+3/10-second requests remain observable, so only controlled clock/events determine
+expiry. The queued-heartbeat-rearm control exercises a real nonblocking timerfd
+read returning EAGAIN. Timer create, arm, registration, rearm and read errors
+retain native errors and use bounded child cleanup without inventing timeout
+origins; the emergency watchdog kills and reaps a fixture child before failing.
+Direct ordinary CLI controls
 also exercise timeout and failed abort delivery without a controller. Mutation
 controls must compile and fail explicit `M16/` assertions; compilation failure,
 watchdog expiry and crashes are not original-defect evidence.

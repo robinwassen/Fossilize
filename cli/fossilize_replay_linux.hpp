@@ -327,7 +327,7 @@ void ProcessProgress::begin_cleanup()
 	if (cleanup_deadline.armed || pid <= 0) return;
 	outcome.timeout.current.recovery = ReplayRecovery::CrashCleanup;
 	cleanup_deadline.arm(replay_monotonic_ns(), replay_seconds_ns(3));
-	timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+	timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
 	bool armed = false;
 	if (timer_fd >= 0)
 	{
@@ -383,23 +383,24 @@ void ProcessProgress::begin_heartbeat()
 	if (cleanup_deadline.armed || pid <= 0) return;
 	heartbeat_deadline.arm(replay_monotonic_ns(), replay_seconds_ns(10));
 	close_and_remove_epoll_entry(watchdog_timer_fd);
-	watchdog_timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
-
+	watchdog_timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+	bool armed = false;
 	if (watchdog_timer_fd >= 0)
 	{
 		struct itimerspec spec = {};
 		spec.it_value.tv_sec = 10;
-		if (timerfd_settime(watchdog_timer_fd, 0, &spec, nullptr) < 0)
-			LOGE("Failed to set time with timerfd_settime.\n");
-
 		struct epoll_event event = {};
 		event.data.u64 = (uint64_t(outcome.attempts) << 32) | 0x40000000u | index;
 		event.events = EPOLLIN;
-		if (epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, watchdog_timer_fd, &event))
-			LOGE("Failed adding timer_fd to epoll_ctl().\n");
+		armed = timerfd_settime(watchdog_timer_fd, 0, &spec, nullptr) == 0 &&
+		        epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, watchdog_timer_fd, &event) == 0;
 	}
-	else
-		LOGE("Failed to create timerfd. Cannot support timeout for process.\n");
+	if (!armed)
+	{
+		outcome.native_error = unsigned(errno);
+		supervision_failed = true;
+		LOGE("Failed to arm heartbeat supervision (errno=%u).\n", outcome.native_error);
+	}
 }
 
 void ProcessProgress::heartbeat()
@@ -412,7 +413,13 @@ void ProcessProgress::heartbeat()
 		struct itimerspec spec = {};
 		spec.it_value.tv_sec = 10;
 		if (timerfd_settime(watchdog_timer_fd, 0, &spec, nullptr) < 0)
-			LOGE("Failed to set time with timerfd_settime.\n");
+		{
+			outcome.native_error = unsigned(errno); supervision_failed = true;
+			LOGE("Failed to rearm heartbeat supervision (errno=%u).\n", outcome.native_error);
+			// Resume paths also call heartbeat outside child-pipe dispatch. Do
+			// not leave that child running without supervision until another event.
+			request_kill();
+		}
 	}
 }
 
@@ -1439,7 +1446,14 @@ static int run_master_process(const VulkanDevice::Options &opts,
 						if (fd >= 0)
 						{
 							uint64_t dummy;
-							(void)::read(fd, &dummy, sizeof(dummy));
+							ssize_t timer_read = ::read(fd, &dummy, sizeof(dummy));
+							if (timer_read < 0 && (errno == EAGAIN || errno == EINTR)) continue;
+							if (timer_read != ssize_t(sizeof(dummy)))
+							{
+								proc.outcome.native_error = timer_read < 0 ? unsigned(errno) : unsigned(EIO);
+								LOGE("Failed to read worker deadline timer (errno=%u).\n", proc.outcome.native_error);
+								return EXIT_FAILURE;
+							}
 							if (!proc.timeout_expired(cleanup_event ? ReplayTimeoutOrigin::Cleanup : ReplayTimeoutOrigin::Heartbeat))
 								return EXIT_FAILURE;
 							if (!(cleanup_event ? proc.cleanup_deadline.armed : proc.heartbeat_deadline.armed))
