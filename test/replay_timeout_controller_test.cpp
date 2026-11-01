@@ -118,7 +118,7 @@ template <typename Options> static int worker(unsigned, unsigned attempt, const 
 	auto opts = o;
 	opts.num_threads = scenario == "multithread" || scenario == "recovery" ? 2 : 1;
 	block_creation = scenario != "clean" && attempt == 1;
-	hold_teardown = attempt == 1 && (scenario == "cleanup" || scenario == "escalation" || scenario == "kill-failure");
+	hold_teardown = attempt == 1 && (scenario == "cleanup" || scenario == "escalation" || scenario == "kill-failure" || scenario.find("timer-") == 0);
 	dispatcher_clock = no_progress() && block_creation;
 	opts.on_disk_pipeline_cache_path = "cache.bin";
 	return run_slave_process(Global::device_options, opts, Global::databases);
@@ -257,6 +257,8 @@ extern "C" int __wrap_kill(pid_t pid, int signal)
 {
 	if (getpid() == master_pid && signal == SIGKILL)
 	{
+		if (scenario.find("timer-") == 0)
+			while (!barriers->teardown.load()) byte_read(ready_pipe[0]);
 		kill_attempts++;
 		bool cleanup = scenario == "cleanup" || scenario == "escalation" || scenario == "delivery-failure" || scenario == "kill-failure";
 		bool heartbeat = scenario == "heartbeat" || scenario == "heartbeat-reset";
