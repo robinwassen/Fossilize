@@ -1,0 +1,562 @@
+{
+  "analysis": {
+    "commands_executed": "Read-only source/documentation/git-status/submodule-status/gh issue reads only; no verification commands.",
+    "live_issues_read": [
+      "https://github.com/robinwassen/Fossilize/issues/15",
+      "https://github.com/robinwassen/Fossilize/issues/8"
+    ],
+    "read_only": true,
+    "source_findings": [
+      "cli/fossilize_replay.cpp:1808 already gates marker+whitelist on !triggered_validation_error && creation_succeeded.",
+      "cli/fossilize_replay.cpp:1225 mark_replayed_resource ignores DatabaseInterface::write_entry result.",
+      "cli/fossilize_replay.cpp:866 cache namespace uses UUID only; populate_blob_hash_set at 4330 accepts all stored hashes without policy provenance.",
+      "loop_count zero can leave creation_succeeded=true without an actual iteration.",
+      "fossilize_db.cpp:1882 ConcurrentDatabase Append primes only consolidated base .foz then releases reader; generated .N.foz fragments require explicit harvesting to be visible next run."
+    ],
+    "source_sha": "a6b22d65badc61907060028514dc5e86c5ce6c3e"
+  },
+  "attempt_id": "planner-1",
+  "base_sha": "a6b22d65badc61907060028514dc5e86c5ce6c3e",
+  "candidate_sha": null,
+  "input_revision": 1,
+  "input_sha": "a6b22d65badc61907060028514dc5e86c5ce6c3e",
+  "operation": "plan",
+  "plan": {
+    "assumptions": [
+      "Coordinator-provided original and prerequisite snapshot are authoritative retained input, and live gh #15/#8 reads agree. #14/#13/#10 are closed completed in snapshot; coordinator checks delivery evidence and later input drift.",
+      "Build paths/tools supplied by coordinator exist but have not been probed by planner. Submodule initialization belongs to authorized implementation setup.",
+      "Unknown/malformed provenance is safely excluded from current marker trust. Versioned namespace selection is an intentional behavioral compatibility change and must be documented."
+    ],
+    "cases": [
+      {
+        "assertions": [
+          "Exercise production run_normal_process/CLI entry, worker queue, creation dispatch and actual FOZ database with dependency-complete recorder-generated/readback-checked known-hash input; use deterministic Vulkan producer injection only in fixture translation unit.",
+          "For graphics, compute and raytracing creation failure with no validation callback: assert one attempted known item, exact failed VkResult/outcome/nonzero status, no marker for its tag/hash after teardown and reopen, and next fresh replay at same --replayer-cache attempts that item again.",
+          "Read back input tags/hashes and marker archive contents; count actual vkCreate calls for selected pipelines, separately from shader/dependency calls. A readable empty file alone is insufficient. Include successful control that writes exactly one marker per logical item and a harvested/reopened third run that actually suppresses its creation under marker-hint policy.",
+          "Preserve production concurrent archive harvesting behavior: fragments are not automatically read on a second run. Explicitly consolidate applicable fragments using merge_concurrent_databases or actual fossilize-merge-db into the matching read-only base archive before repeat selection; record this step. Do not accidentally prove reattempt solely because no fragments were harvested."
+        ],
+        "id": "M15-creation-rerun",
+        "location": "test/replay_outcome_test.cpp or dedicated test/replay_cache_test.cpp; registered replay-cache-creation-rerun",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/15"
+        ]
+      },
+      {
+        "assertions": [
+          "Creation succeeds with zero observed validation errors and at least one requested iteration: exactly one marker write accepted for that item, not one per loop/fallback. Setup/dependency/support rejection, Vulkan failure, validation callback failure and zero iterations produce no successful-creation marker.",
+          "Test independently per-item state reset: failure then distinct success and success then distinct failure do not leak marker eligibility. Marker represents narrowly scoped creation facts; pipeline cache export, flush/close durability and hardware reuse remain unknown.",
+          "Exercise retained pipeline-library/dependency success without breaking handles or cleanup; preserve existing successful and failure outcomes from issue #14."
+        ],
+        "id": "M15-success-policy",
+        "location": "test/replay_outcome_test.cpp or dedicated fixture; registered replay-cache-success-policy",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/15"
+        ]
+      },
+      {
+        "assertions": [
+          "At final dispatcher, graphics/compute/raytracing --loop=2 success/success writes one marker, failure/success and success/failure write none and retain nonzero item outcome. First failure remains sticky across loop iterations; eventual later iteration success does not erase required failure.",
+          "Assert exact Vulkan attempts, successful iteration counts, logical marker writes, original progress meanings (successful_* is primary-iteration observation), and correct destruction/retained handle behavior; no double marker/count per loop.",
+          "--loop=0 makes no Vulkan attempt and writes no marker; preserve existing CLI invocation/status behavior unless an explicitly documented narrow validation change is necessary."
+        ],
+        "id": "M15-loop",
+        "location": "test/replay_outcome_test.cpp or dedicated fixture; registered replay-cache-loop",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/15"
+        ]
+      },
+      {
+        "assertions": [
+          "For all three pipeline kinds, VK_PIPELINE_COMPILE_REQUIRED followed by permitted successful fallback is one completed logical iteration and one marker; two Vulkan calls, compile-required count one, creation success count one.",
+          "Fallback failure and skip-on-compile-required make no marker and retain failure; assert the flag is removed only for allowed fallback, skip makes no fallback call, and repeated loops obey M15-loop without duplicate markers.",
+          "Run these through run_creation_work_item rather than stopping at individual iteration methods, so final marker and whitelist decisions execute."
+        ],
+        "id": "M15-compile-required",
+        "location": "test/replay_outcome_test.cpp or dedicated fixture; registered replay-cache-compile-required",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/15"
+        ]
+      },
+      {
+        "assertions": [
+          "Force DatabaseInterface::write_entry false using a deterministic per-fixture adapter at the actual mark_replayed_resource call, and separately a real filesystem failure (missing/unusable parent or exhausted private fragment destinations; do not rely on root-sensitive chmod). Assert error remains visible with marker operation, resource tag and hash, and no successful marker is read back.",
+          "Repeat fresh production selection using the same cache and prove an attempted item. Include accepting-write control and retained successful Vulkan cleanup.",
+          "Declare replay markers an optional optimization output: a rejected marker write emits an actionable error but does not rewrite successful Vulkan creation into a compiler failure or invent durable output. Existing aggregate CLI success can remain for this explicitly optional output. DatabaseInterface has bool write acceptance and void flush, so no flush/close durability claim is permitted."
+        ],
+        "id": "M15-write-failure",
+        "location": "test/replay_outcome_test.cpp or dedicated fixture; registered replay-cache-write-failure",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/15"
+        ]
+      },
+      {
+        "assertions": [
+          "Seed actual legacy path.<pipelineCacheUUID>.foz plus legacy concurrent fragments with known tag/hash zero-payload entries. New successful-creation namespace must not consume/promote them into current markers or suppress required creation; preserve their bytes and names, including on new successful writes.",
+          "Use an explicit versioned namespace (recommended path.replay-v1.<null|vulkan>.<pipelineCacheUUID> with ordinary .foz/.N.foz harvesting) or equivalent unambiguous policy provenance. Namespace version identifies creation/no-validation-error policy, not persisted driver results.",
+          "Validate that known current-policy marker hints can suppress work after the normal harvesting step, but malformed/unknown provenance cannot silently become current success. Explicitly document intentional legacy optimization invalidation and resulting one-time replay. Old files remain untouched; no auto migration.",
+          "Assert old CLI --replayer-cache invocation remains accepted and unaffected input FOZ wire format remains readable."
+        ],
+        "id": "M15-legacy-provenance",
+        "location": "test/replay_outcome_test.cpp or dedicated fixture; registered replay-cache-legacy-provenance",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/15"
+        ]
+      },
+      {
+        "assertions": [
+          "Null-device/fake creation markers cannot certify physical Vulkan creation. Verify policy namespace differs for null and Vulkan modes even with same synthetic pipelineCacheUUID; preseed null namespace and show production physical-policy cache lookup does not suppress the item.",
+          "A controlled real-Vulkan-mode fixture may use a private device adapter/fake dispatch solely for CPU verification, with explicit assertions on production device_opts provenance. Do not claim hardware compilation from it."
+        ],
+        "id": "M15-null-provenance",
+        "location": "test/replay_outcome_test.cpp or dedicated fixture; registered replay-cache-null-provenance",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/15"
+        ]
+      },
+      {
+        "assertions": [
+          "Validation whitelist retains existing observed-no-validation-error/success-gating policy, including explicit and implicit prior entries used to avoid extra validation. It does not prove physical compilation, driver-cache persistence or a cache hit.",
+          "Preseed only validation whitelist (real archive plus readback); actual production selection must still attempt compilation and a controlled creation failure must leave no successful-work marker. Preseed only legacy marker and show it does not become validation proof or current-policy marker.",
+          "Do not reinterpret a legacy validation-whitelist entry as newly verified compiler output. Verify independent current marker/whitelist behavior and preserve existing --on-disk-validation-whitelist invocation."
+        ],
+        "id": "M15-whitelist",
+        "location": "test/replay_outcome_test.cpp or dedicated fixture; registered replay-cache-whitelist",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/15"
+        ]
+      },
+      {
+        "assertions": [
+          "Build unchanged committed candidate fixture against unchanged input production replay translation unit (and matching input private outcome header if needed) using only baseline-compatible fixture calls. At least checked marker-write visibility and legacy namespace/provenance controls fail by explicit runtime assertions against original behavior and pass against candidate; zero-loop false-marker control is also expected to fail original.",
+          "Configuration/compile errors, missing fixtures, timeouts and unexpected crashes are not defect detection. Preserve exact candidate/base identities, commands and assertion IDs.",
+          "Creation-failure-without-validation baseline is expected to pass because #14 already fixed gating; report that honestly. If stronger old unconditional-marker countercontrol is useful, restore only that historical dispatch behavior in a disposable candidate tree and require M15-creation-rerun to fail; label it a synthetic regression control, not this input revision defect."
+        ],
+        "id": "M15-original-controls",
+        "location": "external isolated baseline/control tree using committed marker fixture and a6b22d65badc61907060028514dc5e86c5ce6c3e production input",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/15"
+        ]
+      },
+      {
+        "assertions": [
+          "Preserve public declarations/layouts and progress/controller protocol/legacy message meanings. No general binary ABI promise is introduced. Run existing diagnostic-compatibility, replay-controller-cli-compatibility and replay-outcome-cli-compatibility with full suite; compile preserved old-header ExternalReplayer caller against candidate library when touching the public header comments/boundary.",
+          "Document intentional behavior change for replay-cache path/provenance and nonacceptance of legacy success hints, narrow current marker meaning, optional marker write-failure diagnostic and normal harvesting. No marker is represented as durable output or observed driver reuse.",
+          "One short factual Unreleased [Observability] changelog sentence links full issue #15 URL and states practical benefit; checker reviews exact candidate entry and combined final scope."
+        ],
+        "id": "M15-compatibility",
+        "location": "fossilize_external_replayer.hpp comments, local-docs/verification.md, CHANGELOG.md and registered existing compatibility fixtures",
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/15"
+        ]
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/5980/fossilize",
+        "expected": [
+          "Nonzero full CPU CTest inventory executes and passes, including all new replay-cache-* cases and all existing core/diagnostic/file/utility/fork/controller/outcome compatibility tests. No mandatory skipped test; build alone or ctest zero tests fails gate.",
+          "Map every M15 case to explicit executed registered IDs and exact assertion-bearing results; retain candidate/base/config/toolchain, command, logs and receipt.",
+          "Native Windows is explicitly excluded by user: record skipped/unverified separately; do not remove it from immutable parent/root requirements or claim Linux proves Windows. Runtime-layer/GPU/Steam not exercised and no hardware claims."
+        ],
+        "id": "linux-debug-exceptions-off",
+        "kind": "work_unit",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/home/robin/.codex/worktrees/5980/fossilize",
+              "-B",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-off",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-off",
+              "--parallel",
+              "4"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-off",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error"
+            ]
+          ],
+          "note": "Wrap each separately after exact command-intent; inspect JSON discovered IDs and actual executed IDs/results. Replace <attempt> with separate implementer/unit-checker/final-checker attempt directory; source is that role exact worktree, never another dirty checkout. Implementer and independent unit checker each run the complete four-configuration matrix."
+        },
+        "prerequisites": [
+          "Clean exact committed candidate; initialized pinned submodules in implementation/checker tree; compatible CMake >=4, Ninja, C++ toolchain and Python; planning detached tree currently has uninitialized submodules (read-only observation).",
+          "Every build/probe/test command first has coordinator-published command-intent and unique intent_id/child_command; execute via python3 -B <source>/.agents/skills/implement-change-harness/scripts/verification_lock.py --repo <source> --timeout 600 --intent-id ID --receipt /tmp/fossilize-15/output/<attempt>/ID.receipt.json -- <child argv>; coordinator settles each receipt before next budget action. Do not nest wrappers. Workers first send proposed exact child-command JSON batches to coordinator and wait for published authorization; coordinator alone publishes intents and settles returned receipts. Return receipt/log/status after every command.",
+          "All commands have actual <=600 second child deadlines; fresh attempt/config output dirs; test-only Vulkan injection never enters shipped CLI; CTest process timeouts 30-180 seconds and explicit checks survive NDEBUG."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/5980/fossilize",
+        "expected": [
+          "Nonzero full CPU CTest inventory executes and passes, including all new replay-cache-* cases and all existing core/diagnostic/file/utility/fork/controller/outcome compatibility tests. No mandatory skipped test; build alone or ctest zero tests fails gate.",
+          "Map every M15 case to explicit executed registered IDs and exact assertion-bearing results; retain candidate/base/config/toolchain, command, logs and receipt.",
+          "Native Windows is explicitly excluded by user: record skipped/unverified separately; do not remove it from immutable parent/root requirements or claim Linux proves Windows. Runtime-layer/GPU/Steam not exercised and no hardware claims."
+        ],
+        "id": "linux-debug-exceptions-on",
+        "kind": "work_unit",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/home/robin/.codex/worktrees/5980/fossilize",
+              "-B",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-on",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-on",
+              "--parallel",
+              "4"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-on",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-on",
+              "--output-on-failure",
+              "--no-tests=error"
+            ]
+          ],
+          "note": "Wrap each separately after exact command-intent; inspect JSON discovered IDs and actual executed IDs/results. Replace <attempt> with separate implementer/unit-checker/final-checker attempt directory; source is that role exact worktree, never another dirty checkout. Implementer and independent unit checker each run the complete four-configuration matrix."
+        },
+        "prerequisites": [
+          "Clean exact committed candidate; initialized pinned submodules in implementation/checker tree; compatible CMake >=4, Ninja, C++ toolchain and Python; planning detached tree currently has uninitialized submodules (read-only observation).",
+          "Every build/probe/test command first has coordinator-published command-intent and unique intent_id/child_command; execute via python3 -B <source>/.agents/skills/implement-change-harness/scripts/verification_lock.py --repo <source> --timeout 600 --intent-id ID --receipt /tmp/fossilize-15/output/<attempt>/ID.receipt.json -- <child argv>; coordinator settles each receipt before next budget action. Do not nest wrappers. Workers first send proposed exact child-command JSON batches to coordinator and wait for published authorization; coordinator alone publishes intents and settles returned receipts. Return receipt/log/status after every command.",
+          "All commands have actual <=600 second child deadlines; fresh attempt/config output dirs; test-only Vulkan injection never enters shipped CLI; CTest process timeouts 30-180 seconds and explicit checks survive NDEBUG."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/5980/fossilize",
+        "expected": [
+          "Nonzero full CPU CTest inventory executes and passes, including all new replay-cache-* cases and all existing core/diagnostic/file/utility/fork/controller/outcome compatibility tests. No mandatory skipped test; build alone or ctest zero tests fails gate.",
+          "Map every M15 case to explicit executed registered IDs and exact assertion-bearing results; retain candidate/base/config/toolchain, command, logs and receipt.",
+          "Native Windows is explicitly excluded by user: record skipped/unverified separately; do not remove it from immutable parent/root requirements or claim Linux proves Windows. Runtime-layer/GPU/Steam not exercised and no hardware claims."
+        ],
+        "id": "linux-release-exceptions-off",
+        "kind": "work_unit",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/home/robin/.codex/worktrees/5980/fossilize",
+              "-B",
+              "/tmp/fossilize-15/build/<attempt>/release-exceptions-off",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-15/build/<attempt>/release-exceptions-off",
+              "--parallel",
+              "4"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-15/build/<attempt>/release-exceptions-off",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-15/build/<attempt>/release-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error"
+            ]
+          ],
+          "note": "Wrap each separately after exact command-intent; inspect JSON discovered IDs and actual executed IDs/results. Replace <attempt> with separate implementer/unit-checker/final-checker attempt directory; source is that role exact worktree, never another dirty checkout. Implementer and independent unit checker each run the complete four-configuration matrix."
+        },
+        "prerequisites": [
+          "Clean exact committed candidate; initialized pinned submodules in implementation/checker tree; compatible CMake >=4, Ninja, C++ toolchain and Python; planning detached tree currently has uninitialized submodules (read-only observation).",
+          "Every build/probe/test command first has coordinator-published command-intent and unique intent_id/child_command; execute via python3 -B <source>/.agents/skills/implement-change-harness/scripts/verification_lock.py --repo <source> --timeout 600 --intent-id ID --receipt /tmp/fossilize-15/output/<attempt>/ID.receipt.json -- <child argv>; coordinator settles each receipt before next budget action. Do not nest wrappers. Workers first send proposed exact child-command JSON batches to coordinator and wait for published authorization; coordinator alone publishes intents and settles returned receipts. Return receipt/log/status after every command.",
+          "All commands have actual <=600 second child deadlines; fresh attempt/config output dirs; test-only Vulkan injection never enters shipped CLI; CTest process timeouts 30-180 seconds and explicit checks survive NDEBUG."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/5980/fossilize",
+        "expected": [
+          "Nonzero full CPU CTest inventory executes and passes, including all new replay-cache-* cases and all existing core/diagnostic/file/utility/fork/controller/outcome compatibility tests. No mandatory skipped test; build alone or ctest zero tests fails gate.",
+          "Map every M15 case to explicit executed registered IDs and exact assertion-bearing results; retain candidate/base/config/toolchain, command, logs and receipt.",
+          "Native Windows is explicitly excluded by user: record skipped/unverified separately; do not remove it from immutable parent/root requirements or claim Linux proves Windows. Runtime-layer/GPU/Steam not exercised and no hardware claims."
+        ],
+        "id": "linux-release-exceptions-on",
+        "kind": "work_unit",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/home/robin/.codex/worktrees/5980/fossilize",
+              "-B",
+              "/tmp/fossilize-15/build/<attempt>/release-exceptions-on",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-15/build/<attempt>/release-exceptions-on",
+              "--parallel",
+              "4"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-15/build/<attempt>/release-exceptions-on",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-15/build/<attempt>/release-exceptions-on",
+              "--output-on-failure",
+              "--no-tests=error"
+            ]
+          ],
+          "note": "Wrap each separately after exact command-intent; inspect JSON discovered IDs and actual executed IDs/results. Replace <attempt> with separate implementer/unit-checker/final-checker attempt directory; source is that role exact worktree, never another dirty checkout. Implementer and independent unit checker each run the complete four-configuration matrix."
+        },
+        "prerequisites": [
+          "Clean exact committed candidate; initialized pinned submodules in implementation/checker tree; compatible CMake >=4, Ninja, C++ toolchain and Python; planning detached tree currently has uninitialized submodules (read-only observation).",
+          "Every build/probe/test command first has coordinator-published command-intent and unique intent_id/child_command; execute via python3 -B <source>/.agents/skills/implement-change-harness/scripts/verification_lock.py --repo <source> --timeout 600 --intent-id ID --receipt /tmp/fossilize-15/output/<attempt>/ID.receipt.json -- <child argv>; coordinator settles each receipt before next budget action. Do not nest wrappers. Workers first send proposed exact child-command JSON batches to coordinator and wait for published authorization; coordinator alone publishes intents and settles returned receipts. Return receipt/log/status after every command.",
+          "All commands have actual <=600 second child deadlines; fresh attempt/config output dirs; test-only Vulkan injection never enters shipped CLI; CTest process timeouts 30-180 seconds and explicit checks survive NDEBUG."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/5980/fossilize",
+        "expected": [
+          "Nonzero full CPU CTest inventory executes and passes, including all new replay-cache-* cases and all existing core/diagnostic/file/utility/fork/controller/outcome compatibility tests. No mandatory skipped test; build alone or ctest zero tests fails gate.",
+          "Map every M15 case to explicit executed registered IDs and exact assertion-bearing results; retain candidate/base/config/toolchain, command, logs and receipt.",
+          "Native Windows is explicitly excluded by user: record skipped/unverified separately; do not remove it from immutable parent/root requirements or claim Linux proves Windows. Runtime-layer/GPU/Steam not exercised and no hardware claims."
+        ],
+        "id": "final-linux-debug-exceptions-off",
+        "kind": "final",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/home/robin/.codex/worktrees/5980/fossilize",
+              "-B",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-off",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-off",
+              "--parallel",
+              "4"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-off",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-15/build/<attempt>/debug-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error"
+            ]
+          ],
+          "note": "Fresh separate final checker builds and runs full CPU CTest, including every replay-cache-* case, in fresh Debug exceptions OFF tree at unchanged exact candidate/base/plan. Review all four unit-checker configuration evidence and case mappings, entire diff, original acceptance, current live issue inputs, and combined changelog. Full four-matrix rebuild duplication is unnecessary unless source, failures or new concerns justify it."
+        },
+        "prerequisites": [
+          "Clean exact committed candidate; initialized pinned submodules in implementation/checker tree; compatible CMake >=4, Ninja, C++ toolchain and Python; planning detached tree currently has uninitialized submodules (read-only observation).",
+          "Every build/probe/test command first has coordinator-published command-intent and unique intent_id/child_command; execute via python3 -B <source>/.agents/skills/implement-change-harness/scripts/verification_lock.py --repo <source> --timeout 600 --intent-id ID --receipt /tmp/fossilize-15/output/<attempt>/ID.receipt.json -- <child argv>; coordinator settles each receipt before next budget action. Do not nest wrappers. Workers first send proposed exact child-command JSON batches to coordinator and wait for published authorization; coordinator alone publishes intents and settles returned receipts. Return receipt/log/status after every command.",
+          "All commands have actual <=600 second child deadlines; fresh attempt/config output dirs; test-only Vulkan injection never enters shipped CLI; CTest process timeouts 30-180 seconds and explicit checks survive NDEBUG."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/5980/fossilize",
+        "expected": [
+          "Baseline controls fail for the intended assertions and candidate controls pass. Logs name actual base/candidate and failure assertions. No compile/deadline failure substituted for regression evidence."
+        ],
+        "id": "original-defect-controls",
+        "kind": "both",
+        "method": {
+          "case": "M15-original-controls",
+          "commands": [
+            "Create disposable control source tree outside repository from committed candidate plus unchanged input cli/fossilize_replay.cpp; configure/build baseline-compatible committed replay-cache fixture in fresh Debug exceptions OFF tree using same toolchain and wrapper.",
+            "Execute selected marker-write-failure, legacy-provenance and zero-loop controls against original input with finite deadlines; expect named assertion failures, then execute same tests against candidate and expect pass. Preserve positive success/creation-gating controls."
+          ]
+        },
+        "prerequisites": [
+          "Clean exact committed candidate; initialized pinned submodules in implementation/checker tree; compatible CMake >=4, Ninja, C++ toolchain and Python; planning detached tree currently has uninitialized submodules (read-only observation).",
+          "Every build/probe/test command first has coordinator-published command-intent and unique intent_id/child_command; execute via python3 -B <source>/.agents/skills/implement-change-harness/scripts/verification_lock.py --repo <source> --timeout 600 --intent-id ID --receipt /tmp/fossilize-15/output/<attempt>/ID.receipt.json -- <child argv>; coordinator settles each receipt before next budget action. Do not nest wrappers. Workers first send proposed exact child-command JSON batches to coordinator and wait for published authorization; coordinator alone publishes intents and settles returned receipts. Return receipt/log/status after every command.",
+          "All commands have actual <=600 second child deadlines; fresh attempt/config output dirs; test-only Vulkan injection never enters shipped CLI; CTest process timeouts 30-180 seconds and explicit checks survive NDEBUG."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/5980/fossilize",
+        "expected": [
+          "All M15 assertions covered; no ambiguous success/persistence/reuse presentation; policy, loop stickiness, fallback, null/legacy provenance and optional write failure explicitly documented. Old-header caller succeeds; no general binary-ABI claim. Changelog accurate with #15 link."
+        ],
+        "id": "compatibility-and-scope-review",
+        "kind": "both",
+        "method": "Independent source/diff review plus preserved old-header caller compile/run (baseline public headers first, candidate static libraries) under verification wrapper. Review live #15/#8, prerequisite delivery, full test mapping, input/replay marker archive readback, public declarations/protocol unchanged and exact candidate CHANGELOG against guideline.",
+        "prerequisites": [
+          "Clean exact committed candidate; initialized pinned submodules in implementation/checker tree; compatible CMake >=4, Ninja, C++ toolchain and Python; planning detached tree currently has uninitialized submodules (read-only observation).",
+          "Every build/probe/test command first has coordinator-published command-intent and unique intent_id/child_command; execute via python3 -B <source>/.agents/skills/implement-change-harness/scripts/verification_lock.py --repo <source> --timeout 600 --intent-id ID --receipt /tmp/fossilize-15/output/<attempt>/ID.receipt.json -- <child argv>; coordinator settles each receipt before next budget action. Do not nest wrappers. Workers first send proposed exact child-command JSON batches to coordinator and wait for published authorization; coordinator alone publishes intents and settles returned receipts. Return receipt/log/status after every command.",
+          "All commands have actual <=600 second child deadlines; fresh attempt/config output dirs; test-only Vulkan injection never enters shipped CLI; CTest process timeouts 30-180 seconds and explicit checks survive NDEBUG."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/5980/fossilize",
+        "expected": [
+          "Only fully satisfied root https://github.com/robinwassen/Fossilize/issues/15 is eligible Closes target. Shared parent https://github.com/robinwassen/Fossilize/issues/8 remains open. Native Windows user exclusion remains explicit verification limit. No source merge/issue closure without bound human approval."
+        ],
+        "id": "publication-scope",
+        "kind": "publication",
+        "method": "Coordinator re-reads material issue/prerequisite snapshots and current target master, requires independent unit and separate final acceptance on exact same candidate/base/plan with all required gates passed, and follows harness publication/attachment/readback.",
+        "prerequisites": [
+          "Independent unit and separate final acceptance, resolved findings, current live requirements unchanged; coordinator alone owns canonical Harness/Journal state."
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "details": "Document current-policy marker as successful creation for all requested iterations, at least one iteration, no observed validation callback, under device mode and pipelineCacheUUID context. It is an optional selection hint, not verified persisted/reusable driver output. Keep current validation-whitelist meaning independent.",
+        "step": "Declare marker policy"
+      },
+      {
+        "details": "Use an explicit versioned marker namespace including null versus Vulkan mode and UUID; recommended path.replay-v1.<null|vulkan>.<UUID>. Preserve input path option and ordinary concurrent harvesting, update ExternalReplayer path comment/help/docs accurately, ignore untouched legacy paths for current policy. No silent legacy migration. Ensure mode selection follows actual device_opts, not merely UUID or fixture result.",
+        "step": "Isolate provenance"
+      },
+      {
+        "details": "Retain #14 final dispatch gate and sticky failure across loops. Add positive iteration requirement or equivalent so no zero-attempt marker. Compile-required probe is not final failure if allowed fallback succeeds; rejected/failed fallback produces none. Check write_entry bool under existing mutex and emit resource-specific failure diagnostics; never invent errno from bool or call void flush durable. Optional failure need not change successful Vulkan/CLI outcome; tests/documentation must make that policy explicit.",
+        "step": "Check final marker eligibility and write"
+      },
+      {
+        "details": "Extend production-including replay_outcome_test or add dedicated fixture; use existing null/fake dispatch adapters, real production entry/selection and actual recorder-generated FOZ/harvest/readback. Register named replay-cache-* CTests in test/CMakeLists.txt with independent work dirs, timeouts, exception/sanitizer flags and Release-active checks; do not add production injection hooks.",
+        "step": "Implement committed regression fixtures"
+      },
+      {
+        "details": "Run four Linux matrix configurations, original-defect controls and preserved compatibility caller; update verification guide and accurate short Unreleased changelog #15 entry. Record full discovered/executed inventory, mapping, statuses and platform exclusions. Commit all implementation/tests/docs together for independent unit checking of full matrix then separate fresh final full Debug suite and whole-diff/evidence review.",
+        "step": "Verify and document"
+      }
+    ],
+    "non_goals": [
+      "No full per-item ledger, public result schema, output-durability/finalization API, general cache persistence fix, driver-cache-hit proof, Steam scheduling/integration or issue #8 epic completion.",
+      "No change-harness Python/package changes expected; mandatory harness Python suite not applicable unless implementation unexpectedly changes that package, in which case add its complete documented bounded suite before acceptance.",
+      "No native Windows run (explicit user exclusion), real GPU/runtime layer/Steam or Apple/Android robust replay claim. Portable tests should still be registered on supported native platforms; skipped Windows remains unverified."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000006`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n6. **FOS-000006 \u2014 Stop replay-cache markers from certifying failed creation.** **S once `FOS-000005` exists; depends on `FOS-000005`; \u00a72, \u00a76.** [creation dispatch:1698](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1698) calls void creation routines, then calls `mark_replayed_resource()` for a recognized resource type regardless of Vulkan success. [marker:1196](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1196) also ignores its database write result. This is a source-confirmed path, not a reproduced real-driver failure. Write a successful-work marker only after the applicable creation/validation/output contract succeeds. Keep validation-whitelist meaning separate from successful compilation. **Check:** inject creation failure with no validation callback, rerun with the same replayer-cache and require the item to remain eligible. Test `--loop` and compile-required fallback so an eventual success is handled deliberately. Existing marker files lack stronger provenance; do not silently relabel their contents as verified reusable output.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Injected-creation and second-run integration tests:** A failed creation with no validation callback produces no successful-work marker; the next run attempts the item again. Verified success produces a marker only under its declared policy, and marker-write failure remains visible.\n   - **Policy boundary tests:** Compile-required followed by successful fallback and repeated --loop attempts obey the documented final-item policy without double counting. Validation-whitelist entries and legacy markers are never presented as stronger success/persistence/reuse evidence than they establish.\n\n<!-- fossilize-migration-v1:FOS-000006 -->\n"
+      }
+    ],
+    "risks": [
+      "Changing marker namespace means an intentional one-time replay and requires existing harvesters to use documented new filenames; avoid silent fragmentation or accidental old-path merging.",
+      "ConcurrentDatabase Append does not permit payload reads and only primes consolidated base archive; zero payload versioned namespace avoids requiring database public API changes. Tests must harvest and reopen honestly.",
+      "void flush/database destructor cannot establish late-write/close success or durable driver output. Promise only checked write acceptance and actual tested reopen, never power-loss durability.",
+      "Sticky loop failures and primary iteration progress counters are existing #14 semantics; marker changes must not relabel counters as final-item success.",
+      "Null-device dispatch tests establish production control flow and archive selection only, not physical driver compilation. Native Windows remains excluded/unverified."
+    ],
+    "scope": [
+      "One coherent unsplit implementation for issue #15: reliable creation-policy replay markers, visible rejected writes, isolated legacy/null provenance and registered CPU regressions with real archive reruns.",
+      "Base a6b22d65badc61907060028514dc5e86c5ce6c3e already includes #14 sticky creation_succeeded/no-validation-error final gate. Preserve and test it rather than claiming to introduce it. Legacy marker read population currently trusts every hash, marker write result is ignored, and --loop=0 can reach marker gate without creation."
+    ],
+    "verification_status": "Plan/source analysis only; no build, probe or test executed by planner.",
+    "version": 1,
+    "work_units": []
+  },
+  "plan_version": 0,
+  "role": "planner",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/15",
+  "worker_id": "/root/issue15_planner"
+}
