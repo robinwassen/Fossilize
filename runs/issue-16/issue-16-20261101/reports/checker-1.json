@@ -1,0 +1,1726 @@
+{
+  "artifact_records": [
+    {
+      "local": "/tmp/fossilize-16/output/checker-1/c1-G16-MATRIX.log",
+      "record": "runs/issue-16/issue-16-20261101/evidence/c1-G16-MATRIX.log"
+    },
+    {
+      "local": "/tmp/fossilize-16/output/checker-1/c1-G16-DECISIVE.log",
+      "record": "runs/issue-16/issue-16-20261101/evidence/c1-G16-DECISIVE.log"
+    },
+    {
+      "local": "/tmp/fossilize-16/output/checker-1/c1-G16-DEFECT-CONTROLS.log",
+      "record": "runs/issue-16/issue-16-20261101/evidence/c1-G16-DEFECT-CONTROLS.log"
+    },
+    {
+      "local": "/tmp/fossilize-16/output/checker-1/c1-G16-COMPAT.log",
+      "record": "runs/issue-16/issue-16-20261101/evidence/c1-G16-COMPAT.log"
+    }
+  ],
+  "attempt_id": "checker-1",
+  "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
+  "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+  "commands": [
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_provenance.py"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_provenance.py",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.9275035858154297,
+      "exit_code": 0,
+      "intent_id": "c1-provenance",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-provenance.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-provenance.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-16/checker-1-dbdb32",
+        "-B",
+        "/tmp/fossilize-16/build/checker-1/Debug-OFF",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/cmake -S /tmp/fossilize-16/checker-1-dbdb32 -B /tmp/fossilize-16/build/checker-1/Debug-OFF -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_TESTS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 1.9270429611206055,
+      "exit_code": 0,
+      "intent_id": "c1-configure",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-configure.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-configure.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-16/build/checker-1/Debug-OFF",
+        "--parallel",
+        "4",
+        "--target",
+        "replay-timeout-test",
+        "replay-timeout-controller-test"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/cmake --build /tmp/fossilize-16/build/checker-1/Debug-OFF --parallel 4 --target replay-timeout-test replay-timeout-controller-test",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 12.444950103759766,
+      "exit_code": 0,
+      "intent_id": "c1-fresh-build",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-fresh-build.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-fresh-build.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/implementer-1/Debug-OFF",
+        "--show-only=json-v1"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Debug-OFF --show-only=json-v1",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.08434629440307617,
+      "exit_code": 0,
+      "intent_id": "c1-discover-debug-off",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-discover-debug-off.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-discover-debug-off.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/implementer-1/Debug-OFF",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-16/output/checker-1/Debug-OFF.xml"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Debug-OFF --output-on-failure --no-tests=error --output-junit /tmp/fossilize-16/output/checker-1/Debug-OFF.xml",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 7.289318084716797,
+      "exit_code": 0,
+      "intent_id": "c1-matrix-debug-off",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-matrix-debug-off.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-matrix-debug-off.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/implementer-1/Debug-ON",
+        "--show-only=json-v1"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Debug-ON --show-only=json-v1",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.08417415618896484,
+      "exit_code": 0,
+      "intent_id": "c1-discover-debug-on",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-discover-debug-on.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-discover-debug-on.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/implementer-1/Debug-ON",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-16/output/checker-1/Debug-ON.xml"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Debug-ON --output-on-failure --no-tests=error --output-junit /tmp/fossilize-16/output/checker-1/Debug-ON.xml",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 7.242839813232422,
+      "exit_code": 0,
+      "intent_id": "c1-matrix-debug-on",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-matrix-debug-on.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-matrix-debug-on.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/implementer-1/Release-OFF",
+        "--show-only=json-v1"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Release-OFF --show-only=json-v1",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.08359122276306152,
+      "exit_code": 0,
+      "intent_id": "c1-discover-release-off",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-discover-release-off.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-discover-release-off.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/implementer-1/Release-OFF",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-16/output/checker-1/Release-OFF.xml"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Release-OFF --output-on-failure --no-tests=error --output-junit /tmp/fossilize-16/output/checker-1/Release-OFF.xml",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 5.780767440795898,
+      "exit_code": 0,
+      "intent_id": "c1-matrix-release-off",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-matrix-release-off.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-matrix-release-off.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/implementer-1/Release-ON",
+        "--show-only=json-v1"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Release-ON --show-only=json-v1",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.08303689956665039,
+      "exit_code": 0,
+      "intent_id": "c1-discover-release-on",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-discover-release-on.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-discover-release-on.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/implementer-1/Release-ON",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-16/output/checker-1/Release-ON.xml"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Release-ON --output-on-failure --no-tests=error --output-junit /tmp/fossilize-16/output/checker-1/Release-ON.xml",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 5.783448219299316,
+      "exit_code": 0,
+      "intent_id": "c1-matrix-release-on",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-matrix-release-on.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-matrix-release-on.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/checker-1/Debug-OFF",
+        "--show-only=json-v1",
+        "-R",
+        "^replay-timeout-"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/checker-1/Debug-OFF --show-only=json-v1 -R '^replay-timeout-'",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.06856369972229004,
+      "exit_code": 0,
+      "intent_id": "c1-fresh-discover",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-fresh-discover.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-fresh-discover.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/checker-1/Debug-OFF",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^replay-timeout-"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/checker-1/Debug-OFF --output-on-failure --no-tests=error -R '^replay-timeout-'",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.2142488956451416,
+      "exit_code": 0,
+      "intent_id": "c1-focused",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-focused.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-focused.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/checker-1/Debug-OFF",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^replay-timeout-",
+        "--repeat",
+        "until-fail:3"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/checker-1/Debug-OFF --output-on-failure --no-tests=error -R '^replay-timeout-' --repeat until-fail:3",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.4662950038909912,
+      "exit_code": 0,
+      "intent_id": "c1-repeat3",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-repeat3.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-repeat3.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-16/build/implementer-1/Debug-OFF",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(diagnostic-compatibility-test|replay-controller-cli-.*|replay-outcome-cli-compatibility)$"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/implementer-1/Debug-OFF --output-on-failure --no-tests=error -R '^(diagnostic-compatibility-test|replay-controller-cli-.*|replay-outcome-cli-compatibility)$'",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.4767155647277832,
+      "exit_code": 0,
+      "intent_id": "c1-compat",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-compat.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-compat.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "compile",
+        "healthy"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py compile healthy",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 9.136783599853516,
+      "exit_code": 0,
+      "intent_id": "c1-control-build-healthy",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-control-build-healthy.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-control-build-healthy.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "compile",
+        "ordering"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py compile ordering",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 9.037694692611694,
+      "exit_code": 0,
+      "intent_id": "c1-control-build-ordering",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-control-build-ordering.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-control-build-ordering.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "compile",
+        "counted-wakeups"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py compile counted-wakeups",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 9.141116857528687,
+      "exit_code": 0,
+      "intent_id": "c1-control-build-counted-wakeups",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-control-build-counted-wakeups.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-control-build-counted-wakeups.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "compile",
+        "causal-loss"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py compile causal-loss",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 9.18242859840393,
+      "exit_code": 0,
+      "intent_id": "c1-control-build-causal-loss",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-control-build-causal-loss.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-control-build-causal-loss.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "compile",
+        "external-attribution"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py compile external-attribution",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 9.281691789627075,
+      "exit_code": 0,
+      "intent_id": "c1-control-build-external-attribution",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-control-build-external-attribution.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-control-build-external-attribution.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "compile",
+        "multithread-attribution"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py compile multithread-attribution",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 9.034199476242065,
+      "exit_code": 0,
+      "intent_id": "c1-control-build-multithread-attribution",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-control-build-multithread-attribution.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-control-build-multithread-attribution.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "compile",
+        "reset"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py compile reset",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 9.041762113571167,
+      "exit_code": 0,
+      "intent_id": "c1-control-build-reset",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-control-build-reset.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-control-build-reset.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "compile",
+        "nonblocking"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py compile nonblocking",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 9.041080951690674,
+      "exit_code": 0,
+      "intent_id": "c1-control-build-nonblocking",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-control-build-nonblocking.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-control-build-nonblocking.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "healthy",
+        "no-progress"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run healthy no-progress",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.18985509872436523,
+      "exit_code": 0,
+      "intent_id": "c1-healthy-no-progress",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-healthy-no-progress.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-healthy-no-progress.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "healthy",
+        "heartbeat"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run healthy heartbeat",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.1246027946472168,
+      "exit_code": 0,
+      "intent_id": "c1-healthy-heartbeat",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-healthy-heartbeat.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-healthy-heartbeat.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "healthy",
+        "heartbeat-reset"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run healthy heartbeat-reset",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.11191177368164062,
+      "exit_code": 0,
+      "intent_id": "c1-healthy-heartbeat-reset",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-healthy-heartbeat-reset.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-healthy-heartbeat-reset.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "healthy",
+        "cleanup"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run healthy cleanup",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.1155385971069336,
+      "exit_code": 0,
+      "intent_id": "c1-healthy-cleanup",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-healthy-cleanup.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-healthy-cleanup.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "healthy",
+        "external-kill"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run healthy external-kill",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.12371063232421875,
+      "exit_code": 0,
+      "intent_id": "c1-healthy-external-kill",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-healthy-external-kill.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-healthy-external-kill.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "healthy",
+        "multithread"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run healthy multithread",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.11578512191772461,
+      "exit_code": 0,
+      "intent_id": "c1-healthy-multithread",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-healthy-multithread.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-healthy-multithread.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "healthy",
+        "dispatcher-reset"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run healthy dispatcher-reset",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.11594700813293457,
+      "exit_code": 0,
+      "intent_id": "c1-healthy-dispatcher-reset",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-healthy-dispatcher-reset.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-healthy-dispatcher-reset.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "ordering",
+        "no-progress"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run ordering no-progress",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.11438941955566406,
+      "exit_code": 0,
+      "intent_id": "c1-negative-ordering-no-progress",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-negative-ordering-no-progress.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-negative-ordering-no-progress.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "counted-wakeups",
+        "no-progress"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run counted-wakeups no-progress",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.13128900527954102,
+      "exit_code": 0,
+      "intent_id": "c1-negative-counted-wakeups-no-progress",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-negative-counted-wakeups-no-progress.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-negative-counted-wakeups-no-progress.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "causal-loss",
+        "heartbeat"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run causal-loss heartbeat",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.11308789253234863,
+      "exit_code": 0,
+      "intent_id": "c1-negative-causal-loss-heartbeat",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-negative-causal-loss-heartbeat.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-negative-causal-loss-heartbeat.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "causal-loss",
+        "cleanup"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run causal-loss cleanup",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.11675906181335449,
+      "exit_code": 0,
+      "intent_id": "c1-negative-causal-loss-cleanup",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-negative-causal-loss-cleanup.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-negative-causal-loss-cleanup.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "external-attribution",
+        "external-kill"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run external-attribution external-kill",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.11804842948913574,
+      "exit_code": 0,
+      "intent_id": "c1-negative-external-attribution-external-kill",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-negative-external-attribution-external-kill.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-negative-external-attribution-external-kill.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "multithread-attribution",
+        "multithread"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run multithread-attribution multithread",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.1161651611328125,
+      "exit_code": 0,
+      "intent_id": "c1-negative-multithread-attribution-multithread",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-negative-multithread-attribution-multithread.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-negative-multithread-attribution-multithread.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "reset",
+        "dispatcher-reset"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run reset dispatcher-reset",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.11516761779785156,
+      "exit_code": 0,
+      "intent_id": "c1-negative-reset-dispatcher-reset",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-negative-reset-dispatcher-reset.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-negative-reset-dispatcher-reset.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_controls.py",
+        "run",
+        "nonblocking",
+        "heartbeat-reset"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run nonblocking heartbeat-reset",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.11684322357177734,
+      "exit_code": 0,
+      "intent_id": "c1-negative-nonblocking-heartbeat-reset",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-negative-nonblocking-heartbeat-reset.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-negative-nonblocking-heartbeat-reset.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-pthread",
+        "-I/tmp/fossilize-16/output/checker-1/old-headers",
+        "-I/tmp/fossilize-16/checker-1-dbdb32/test",
+        "-I/tmp/fossilize-16/checker-1-dbdb32/khronos",
+        "/tmp/fossilize-16/checker-1-dbdb32/test/replay_controller_compatibility_test.cpp",
+        "/tmp/fossilize-16/build/checker-1/Debug-OFF/libfossilize.a",
+        "/tmp/fossilize-16/build/checker-1/Debug-OFF/libminiz.a",
+        "-lrt",
+        "-o",
+        "/tmp/fossilize-16/output/checker-1/old-caller"
+      ],
+      "command": "/usr/bin/c++ -std=c++14 -g -fno-exceptions -pthread -I/tmp/fossilize-16/output/checker-1/old-headers -I/tmp/fossilize-16/checker-1-dbdb32/test -I/tmp/fossilize-16/checker-1-dbdb32/khronos /tmp/fossilize-16/checker-1-dbdb32/test/replay_controller_compatibility_test.cpp /tmp/fossilize-16/build/checker-1/Debug-OFF/libfossilize.a /tmp/fossilize-16/build/checker-1/Debug-OFF/libminiz.a -lrt -o /tmp/fossilize-16/output/checker-1/old-caller",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.4183635711669922,
+      "exit_code": 0,
+      "intent_id": "c1-old-compile",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-old-compile.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-old-compile.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-E",
+        "chdir",
+        "/tmp/fossilize-16/output/checker-1/old-caller-work",
+        "/tmp/fossilize-16/output/checker-1/old-caller",
+        "/tmp/fossilize-16/build/implementer-1/Debug-OFF/cli/fossilize-replay",
+        "/tmp/fossilize-16/build/implementer-1/Debug-OFF/test/replay-controller-test",
+        "/tmp/fossilize-16/build/implementer-1/Debug-OFF/test/replay-controller-cli-compatibility/fixture.foz"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/cmake -E chdir /tmp/fossilize-16/output/checker-1/old-caller-work /tmp/fossilize-16/output/checker-1/old-caller /tmp/fossilize-16/build/implementer-1/Debug-OFF/cli/fossilize-replay /tmp/fossilize-16/build/implementer-1/Debug-OFF/test/replay-controller-test /tmp/fossilize-16/build/implementer-1/Debug-OFF/test/replay-controller-cli-compatibility/fixture.foz",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.11366081237792969,
+      "exit_code": 0,
+      "intent_id": "c1-old-run",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-old-run.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-old-run.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-E",
+        "chdir",
+        "/tmp/fossilize-16/output/checker-1/shipping-0",
+        "/tmp/fossilize-16/build/implementer-1/Debug-OFF/cli/fossilize-replay",
+        "--null-device",
+        "--num-threads",
+        "1",
+        "--timeout-seconds",
+        "0",
+        "/tmp/fossilize-16/build/implementer-1/Debug-OFF/test/replay-timeout-controller-clean/fixture.foz"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/cmake -E chdir /tmp/fossilize-16/output/checker-1/shipping-0 /tmp/fossilize-16/build/implementer-1/Debug-OFF/cli/fossilize-replay --null-device --num-threads 1 --timeout-seconds 0 /tmp/fossilize-16/build/implementer-1/Debug-OFF/test/replay-timeout-controller-clean/fixture.foz",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.0672299861907959,
+      "exit_code": 0,
+      "intent_id": "c1-shipping-0",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-shipping-0.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-shipping-0.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-E",
+        "chdir",
+        "/tmp/fossilize-16/output/checker-1/shipping-2",
+        "/tmp/fossilize-16/build/implementer-1/Debug-OFF/cli/fossilize-replay",
+        "--null-device",
+        "--num-threads",
+        "1",
+        "--timeout-seconds",
+        "2",
+        "/tmp/fossilize-16/build/implementer-1/Debug-OFF/test/replay-timeout-controller-clean/fixture.foz"
+      ],
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/cmake -E chdir /tmp/fossilize-16/output/checker-1/shipping-2 /tmp/fossilize-16/build/implementer-1/Debug-OFF/cli/fossilize-replay --null-device --num-threads 1 --timeout-seconds 2 /tmp/fossilize-16/build/implementer-1/Debug-OFF/test/replay-timeout-controller-clean/fixture.foz",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 0.06534671783447266,
+      "exit_code": 0,
+      "intent_id": "c1-shipping-2",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-shipping-2.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-shipping-2.receipt.json",
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-16/checker_final_audit.py"
+      ],
+      "command": "python3 /tmp/fossilize-16/checker_final_audit.py",
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "elapsed": 1.5241889953613281,
+      "exit_code": 0,
+      "intent_id": "c1-final-audit",
+      "log": "/tmp/fossilize-16/output/checker-1/c1-final-audit.log",
+      "receipt": "/tmp/fossilize-16/output/checker-1/c1-final-audit.receipt.json",
+      "timeout": 600
+    }
+  ],
+  "controls": [
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "cleanup",
+      "control_verified": true,
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/cleanup-cause-before-kill",
+      "variant": "causal-loss"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "heartbeat",
+      "control_verified": true,
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/heartbeat-cause-before-kill",
+      "variant": "causal-loss"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "no-progress",
+      "control_verified": true,
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/dispatcher-measured-elapsed-before-abort",
+      "variant": "counted-wakeups"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "external-kill",
+      "control_verified": true,
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/no-invented-no-progress",
+      "variant": "external-attribution"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "cleanup",
+      "control_verified": true,
+      "observed_exit": 0,
+      "required_assertion": null,
+      "variant": "healthy"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "dispatcher-reset",
+      "control_verified": true,
+      "observed_exit": 0,
+      "required_assertion": null,
+      "variant": "healthy"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "external-kill",
+      "control_verified": true,
+      "observed_exit": 0,
+      "required_assertion": null,
+      "variant": "healthy"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "heartbeat",
+      "control_verified": true,
+      "observed_exit": 0,
+      "required_assertion": null,
+      "variant": "healthy"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "heartbeat-reset",
+      "control_verified": true,
+      "observed_exit": 0,
+      "required_assertion": null,
+      "variant": "healthy"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "multithread",
+      "control_verified": true,
+      "observed_exit": 0,
+      "required_assertion": null,
+      "variant": "healthy"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "no-progress",
+      "control_verified": true,
+      "observed_exit": 0,
+      "required_assertion": null,
+      "variant": "healthy"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "multithread",
+      "control_verified": true,
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/unknown-individual-attribution",
+      "variant": "multithread-attribution"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "heartbeat-reset",
+      "control_verified": true,
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/nonblocking-deadline-timer",
+      "variant": "nonblocking"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "no-progress",
+      "control_verified": true,
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/cause-missing-before-abort-adapter",
+      "variant": "ordering"
+    },
+    {
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "case": "dispatcher-reset",
+      "control_verified": true,
+      "observed_exit": 1,
+      "required_assertion": "FAIL M16/production-completion-resets-only-work-deadline",
+      "variant": "reset"
+    }
+  ],
+  "discovered": [
+    "fossilize-system-test",
+    "varint-system-test",
+    "application-info-filter-test",
+    "object-cache-test",
+    "feature-filter-test",
+    "linux-futex-test",
+    "replay-diagnostic-test",
+    "device-diagnostic-test",
+    "capture-diagnostic-normal-graphics-reject",
+    "capture-diagnostic-normal-graphics-success",
+    "capture-diagnostic-normal-graphics-vulkan-error",
+    "capture-diagnostic-normal-compute-reject",
+    "capture-diagnostic-normal-compute-success",
+    "capture-diagnostic-normal-compute-vulkan-error",
+    "capture-diagnostic-normal-raytracing-reject",
+    "capture-diagnostic-normal-raytracing-success",
+    "capture-diagnostic-normal-raytracing-vulkan-error",
+    "capture-diagnostic-qa-graphics-reject",
+    "capture-diagnostic-qa-graphics-success",
+    "capture-diagnostic-qa-graphics-vulkan-error",
+    "capture-diagnostic-qa-compute-reject",
+    "capture-diagnostic-qa-compute-success",
+    "capture-diagnostic-qa-compute-vulkan-error",
+    "capture-diagnostic-qa-raytracing-reject",
+    "capture-diagnostic-qa-raytracing-success",
+    "capture-diagnostic-qa-raytracing-vulkan-error",
+    "capture-diagnostic-paranoid-graphics-reject",
+    "capture-diagnostic-paranoid-graphics-success",
+    "capture-diagnostic-paranoid-graphics-vulkan-error",
+    "capture-diagnostic-paranoid-compute-reject",
+    "capture-diagnostic-paranoid-compute-success",
+    "capture-diagnostic-paranoid-compute-vulkan-error",
+    "capture-diagnostic-paranoid-raytracing-reject",
+    "capture-diagnostic-paranoid-raytracing-success",
+    "capture-diagnostic-paranoid-raytracing-vulkan-error",
+    "capture-diagnostic-eager-graphics-reject",
+    "capture-diagnostic-eager-graphics-success",
+    "capture-diagnostic-eager-graphics-vulkan-error",
+    "capture-diagnostic-eager-compute-reject",
+    "capture-diagnostic-eager-compute-success",
+    "capture-diagnostic-eager-compute-vulkan-error",
+    "capture-diagnostic-eager-raytracing-reject",
+    "capture-diagnostic-eager-raytracing-success",
+    "capture-diagnostic-eager-raytracing-vulkan-error",
+    "capture-diagnostic-binary-graphics-reject",
+    "capture-diagnostic-binary-graphics-success",
+    "capture-diagnostic-binary-graphics-vulkan-error",
+    "capture-diagnostic-binary-compute-reject",
+    "capture-diagnostic-binary-compute-success",
+    "capture-diagnostic-binary-compute-vulkan-error",
+    "capture-diagnostic-binary-raytracing-reject",
+    "capture-diagnostic-binary-raytracing-success",
+    "capture-diagnostic-binary-raytracing-vulkan-error",
+    "diagnostic-compatibility-test",
+    "utility-parse-list-version",
+    "utility-parse-list-invalid-json",
+    "utility-parse-list-empty",
+    "utility-parse-list-populated",
+    "utility-parse-list-mixed",
+    "utility-parse-list-dependency-failure",
+    "utility-parse-list-empty-dependencies",
+    "utility-parse-list-legacy-invocations",
+    "utility-parse-rehash-version",
+    "utility-parse-rehash-invalid-json",
+    "utility-parse-rehash-empty",
+    "utility-parse-rehash-populated",
+    "utility-parse-rehash-mixed",
+    "utility-parse-prune-version",
+    "utility-parse-prune-invalid-json",
+    "utility-parse-prune-empty",
+    "utility-parse-prune-populated",
+    "utility-parse-prune-mixed",
+    "utility-parse-prune-rejected-application",
+    "file-helper-string-open",
+    "file-helper-string-short-write",
+    "file-helper-string-flush",
+    "file-helper-string-close",
+    "file-helper-string-first-error",
+    "file-helper-string-success",
+    "file-helper-string-filesystem",
+    "file-helper-string-dev-full",
+    "file-helper-buffer-open",
+    "file-helper-buffer-short-write",
+    "file-helper-buffer-flush",
+    "file-helper-buffer-close",
+    "file-helper-buffer-first-error",
+    "file-helper-buffer-success",
+    "file-helper-buffer-filesystem",
+    "file-helper-buffer-dev-full",
+    "file-helper-legacy-compatibility",
+    "file-helper-legacy-completion",
+    "fork-child-healthy",
+    "fork-child-healthy-recovery",
+    "fork-child-parent-death",
+    "fork-child-prctl-failure",
+    "fork-child-parent-race",
+    "fork-child-initial-first-sigmask",
+    "fork-child-initial-last-sigmask",
+    "fork-child-recovery-sigmask",
+    "fork-child-initial-first-stdout-dup2",
+    "fork-child-initial-last-stdout-dup2",
+    "fork-child-recovery-stdout-dup2",
+    "fork-child-initial-first-stdin-dup2",
+    "fork-child-initial-last-stdin-dup2",
+    "fork-child-recovery-stdin-dup2",
+    "replay-controller-clean",
+    "replay-controller-zero",
+    "replay-controller-empty-archive",
+    "replay-controller-lost",
+    "replay-controller-lost-progress",
+    "replay-controller-mixed-success-first",
+    "replay-controller-mixed-loss-first",
+    "replay-controller-recover",
+    "replay-controller-skip-graphics",
+    "replay-controller-skip-compute",
+    "replay-controller-skip-raytracing",
+    "replay-controller-skip-graphics-final",
+    "replay-controller-skip-compute-final",
+    "replay-controller-skip-raytracing-final",
+    "replay-controller-skip-graphics-progress",
+    "replay-controller-skip-graphics-final-progress",
+    "replay-controller-partial",
+    "replay-controller-loss-after-retry",
+    "replay-controller-held-sibling",
+    "replay-controller-signal",
+    "replay-controller-status-error",
+    "replay-controller-outcome-state",
+    "replay-controller-cli-normal",
+    "replay-controller-cli-master",
+    "replay-controller-cli-progress",
+    "replay-controller-cli-e5",
+    "replay-controller-cli-e6",
+    "replay-controller-cli-compatibility",
+    "replay-cache-creation-rerun",
+    "replay-cache-success-policy",
+    "replay-cache-loop",
+    "replay-cache-compile-required",
+    "replay-cache-write-failure",
+    "replay-cache-legacy-provenance",
+    "replay-cache-null-provenance",
+    "replay-cache-whitelist",
+    "replay-cache-legacy-invocation",
+    "replay-outcome-state",
+    "replay-outcome-parse-read",
+    "replay-outcome-creation",
+    "replay-outcome-compile-required-loop",
+    "replay-outcome-support",
+    "replay-outcome-setup-dependency",
+    "replay-outcome-worker-queue",
+    "replay-outcome-matrix",
+    "replay-outcome-validation",
+    "replay-outcome-entry-good",
+    "replay-outcome-entry-create",
+    "replay-outcome-entry-layout",
+    "replay-outcome-entry-device",
+    "replay-outcome-cli-e7",
+    "replay-outcome-cli-missing",
+    "replay-outcome-cli-unsupported",
+    "replay-outcome-cli-unsupported-shader",
+    "replay-outcome-cli-library",
+    "replay-outcome-cli-mixed",
+    "replay-outcome-cli-good",
+    "replay-outcome-cli-empty",
+    "replay-outcome-cli-missinghash",
+    "replay-outcome-cli-emptyhash",
+    "replay-outcome-cli-selection",
+    "replay-outcome-cli-hashselection",
+    "replay-outcome-cli-whitelist",
+    "replay-outcome-cli-compatibility",
+    "replay-outcome-cli-validation",
+    "replay-outcome-controller-success-first-absent",
+    "replay-outcome-controller-success-first-progress",
+    "replay-outcome-controller-failure-first-absent",
+    "replay-outcome-controller-failure-first-progress",
+    "replay-timeout-unit-deadlines",
+    "replay-timeout-unit-reset",
+    "replay-timeout-unit-delivery",
+    "replay-timeout-unit-unknown",
+    "replay-timeout-unit-protocol",
+    "replay-timeout-controller-clean",
+    "replay-timeout-controller-no-progress",
+    "replay-timeout-controller-heartbeat",
+    "replay-timeout-controller-heartbeat-reset",
+    "replay-timeout-controller-cleanup",
+    "replay-timeout-controller-spontaneous",
+    "replay-timeout-controller-escalation",
+    "replay-timeout-controller-delivery-failure",
+    "replay-timeout-controller-kill-failure",
+    "replay-timeout-controller-external-kill",
+    "replay-timeout-controller-multithread",
+    "replay-timeout-controller-recovery",
+    "replay-timeout-controller-protocol",
+    "replay-timeout-controller-dispatcher-reset",
+    "replay-timeout-controller-dispatcher-disabled",
+    "replay-timeout-controller-ordinary-no-progress",
+    "replay-timeout-controller-ordinary-delivery-failure",
+    "replay-timeout-controller-timer-create-failure",
+    "replay-timeout-controller-timer-arm-failure",
+    "replay-timeout-controller-timer-register-failure",
+    "replay-timeout-controller-heartbeat-timer-create-failure",
+    "replay-timeout-controller-heartbeat-timer-arm-failure",
+    "replay-timeout-controller-heartbeat-timer-register-failure",
+    "replay-timeout-controller-heartbeat-timer-read-failure",
+    "replay-timeout-controller-heartbeat-timer-rearm-failure"
+  ],
+  "evidence": [
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "command": "python3 /tmp/fossilize-16/checker_final_audit.py",
+      "command_intents": [
+        "c1-provenance",
+        "c1-matrix-debug-off",
+        "c1-matrix-debug-on",
+        "c1-matrix-release-off",
+        "c1-matrix-release-on",
+        "c1-final-audit"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "environment": {
+        "SPIRV_validation": "ON",
+        "compiler": "GNU13.3.0",
+        "configurations": [
+          "Debug exceptionsOFF",
+          "Debug exceptionsON",
+          "Release exceptionsOFF",
+          "Release exceptionsON"
+        ],
+        "hardware_runtime_layer": "OFF by design",
+        "native_Windows": "user-waived/unverified",
+        "platform": "Linux x86_64 CPU/null-device"
+      },
+      "exit_code": 0,
+      "gate": "G16-MATRIX",
+      "log": "runs/issue-16/issue-16-20261101/evidence/c1-G16-MATRIX.log",
+      "note": "Independently executed required checks passed.",
+      "plan_version": 1,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-16/build/checker-1/Debug-OFF --output-on-failure --no-tests=error -R '^replay-timeout-' --repeat until-fail:3",
+      "command_intents": [
+        "c1-configure",
+        "c1-fresh-build",
+        "c1-focused",
+        "c1-repeat3"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "environment": {
+        "SPIRV_validation": "ON",
+        "compiler": "GNU13.3.0",
+        "configurations": [
+          "Debug exceptionsOFF"
+        ],
+        "hardware_runtime_layer": "OFF by design",
+        "native_Windows": "user-waived/unverified",
+        "platform": "Linux x86_64 CPU/null-device"
+      },
+      "exit_code": 0,
+      "gate": "G16-DECISIVE",
+      "log": "runs/issue-16/issue-16-20261101/evidence/c1-G16-DECISIVE.log",
+      "note": "All commands passed; required changelog review fails chronology.",
+      "plan_version": 1,
+      "result": "failed"
+    },
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "command": "python3 /tmp/fossilize-16/checker_controls.py run nonblocking heartbeat-reset",
+      "command_intents": [
+        "c1-control-build-healthy",
+        "c1-control-build-ordering",
+        "c1-control-build-counted-wakeups",
+        "c1-control-build-causal-loss",
+        "c1-control-build-external-attribution",
+        "c1-control-build-multithread-attribution",
+        "c1-control-build-reset",
+        "c1-control-build-nonblocking",
+        "c1-healthy-no-progress",
+        "c1-healthy-heartbeat",
+        "c1-healthy-heartbeat-reset",
+        "c1-healthy-cleanup",
+        "c1-healthy-external-kill",
+        "c1-healthy-multithread",
+        "c1-healthy-dispatcher-reset",
+        "c1-negative-ordering-no-progress",
+        "c1-negative-counted-wakeups-no-progress",
+        "c1-negative-causal-loss-heartbeat",
+        "c1-negative-causal-loss-cleanup",
+        "c1-negative-external-attribution-external-kill",
+        "c1-negative-multithread-attribution-multithread",
+        "c1-negative-reset-dispatcher-reset",
+        "c1-negative-nonblocking-heartbeat-reset"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "environment": {
+        "SPIRV_validation": "ON",
+        "compiler": "GNU13.3.0",
+        "configurations": [
+          "Debug exceptionsOFF"
+        ],
+        "hardware_runtime_layer": "OFF by design",
+        "native_Windows": "user-waived/unverified",
+        "platform": "Linux x86_64 CPU/null-device"
+      },
+      "exit_code": 0,
+      "gate": "G16-DEFECT-CONTROLS",
+      "log": "runs/issue-16/issue-16-20261101/evidence/c1-G16-DEFECT-CONTROLS.log",
+      "note": "Independently executed required checks passed.",
+      "plan_version": 1,
+      "result": "passed"
+    },
+    {
+      "attempt_id": "checker-1",
+      "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
+      "candidate_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+      "command": "python3 /tmp/fossilize-16/checker_final_audit.py",
+      "command_intents": [
+        "c1-compat",
+        "c1-old-compile",
+        "c1-old-run",
+        "c1-shipping-0",
+        "c1-shipping-2",
+        "c1-final-audit"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-16/checker-1-dbdb32",
+      "environment": {
+        "SPIRV_validation": "ON",
+        "compiler": "GNU13.3.0",
+        "configurations": [
+          "Debug exceptionsOFF"
+        ],
+        "hardware_runtime_layer": "OFF by design",
+        "native_Windows": "user-waived/unverified",
+        "platform": "Linux x86_64 CPU/null-device"
+      },
+      "exit_code": 0,
+      "gate": "G16-COMPAT",
+      "log": "runs/issue-16/issue-16-20261101/evidence/c1-G16-COMPAT.log",
+      "note": "Independently executed required checks passed.",
+      "plan_version": 1,
+      "result": "passed"
+    }
+  ],
+  "executed": [
+    "fossilize-system-test",
+    "varint-system-test",
+    "application-info-filter-test",
+    "object-cache-test",
+    "feature-filter-test",
+    "linux-futex-test",
+    "replay-diagnostic-test",
+    "device-diagnostic-test",
+    "capture-diagnostic-normal-graphics-reject",
+    "capture-diagnostic-normal-graphics-success",
+    "capture-diagnostic-normal-graphics-vulkan-error",
+    "capture-diagnostic-normal-compute-reject",
+    "capture-diagnostic-normal-compute-success",
+    "capture-diagnostic-normal-compute-vulkan-error",
+    "capture-diagnostic-normal-raytracing-reject",
+    "capture-diagnostic-normal-raytracing-success",
+    "capture-diagnostic-normal-raytracing-vulkan-error",
+    "capture-diagnostic-qa-graphics-reject",
+    "capture-diagnostic-qa-graphics-success",
+    "capture-diagnostic-qa-graphics-vulkan-error",
+    "capture-diagnostic-qa-compute-reject",
+    "capture-diagnostic-qa-compute-success",
+    "capture-diagnostic-qa-compute-vulkan-error",
+    "capture-diagnostic-qa-raytracing-reject",
+    "capture-diagnostic-qa-raytracing-success",
+    "capture-diagnostic-qa-raytracing-vulkan-error",
+    "capture-diagnostic-paranoid-graphics-reject",
+    "capture-diagnostic-paranoid-graphics-success",
+    "capture-diagnostic-paranoid-graphics-vulkan-error",
+    "capture-diagnostic-paranoid-compute-reject",
+    "capture-diagnostic-paranoid-compute-success",
+    "capture-diagnostic-paranoid-compute-vulkan-error",
+    "capture-diagnostic-paranoid-raytracing-reject",
+    "capture-diagnostic-paranoid-raytracing-success",
+    "capture-diagnostic-paranoid-raytracing-vulkan-error",
+    "capture-diagnostic-eager-graphics-reject",
+    "capture-diagnostic-eager-graphics-success",
+    "capture-diagnostic-eager-graphics-vulkan-error",
+    "capture-diagnostic-eager-compute-reject",
+    "capture-diagnostic-eager-compute-success",
+    "capture-diagnostic-eager-compute-vulkan-error",
+    "capture-diagnostic-eager-raytracing-reject",
+    "capture-diagnostic-eager-raytracing-success",
+    "capture-diagnostic-eager-raytracing-vulkan-error",
+    "capture-diagnostic-binary-graphics-reject",
+    "capture-diagnostic-binary-graphics-success",
+    "capture-diagnostic-binary-graphics-vulkan-error",
+    "capture-diagnostic-binary-compute-reject",
+    "capture-diagnostic-binary-compute-success",
+    "capture-diagnostic-binary-compute-vulkan-error",
+    "capture-diagnostic-binary-raytracing-reject",
+    "capture-diagnostic-binary-raytracing-success",
+    "capture-diagnostic-binary-raytracing-vulkan-error",
+    "diagnostic-compatibility-test",
+    "utility-parse-list-version",
+    "utility-parse-list-invalid-json",
+    "utility-parse-list-empty",
+    "utility-parse-list-populated",
+    "utility-parse-list-mixed",
+    "utility-parse-list-dependency-failure",
+    "utility-parse-list-empty-dependencies",
+    "utility-parse-list-legacy-invocations",
+    "utility-parse-rehash-version",
+    "utility-parse-rehash-invalid-json",
+    "utility-parse-rehash-empty",
+    "utility-parse-rehash-populated",
+    "utility-parse-rehash-mixed",
+    "utility-parse-prune-version",
+    "utility-parse-prune-invalid-json",
+    "utility-parse-prune-empty",
+    "utility-parse-prune-populated",
+    "utility-parse-prune-mixed",
+    "utility-parse-prune-rejected-application",
+    "file-helper-string-open",
+    "file-helper-string-short-write",
+    "file-helper-string-flush",
+    "file-helper-string-close",
+    "file-helper-string-first-error",
+    "file-helper-string-success",
+    "file-helper-string-filesystem",
+    "file-helper-string-dev-full",
+    "file-helper-buffer-open",
+    "file-helper-buffer-short-write",
+    "file-helper-buffer-flush",
+    "file-helper-buffer-close",
+    "file-helper-buffer-first-error",
+    "file-helper-buffer-success",
+    "file-helper-buffer-filesystem",
+    "file-helper-buffer-dev-full",
+    "file-helper-legacy-compatibility",
+    "file-helper-legacy-completion",
+    "fork-child-healthy",
+    "fork-child-healthy-recovery",
+    "fork-child-parent-death",
+    "fork-child-prctl-failure",
+    "fork-child-parent-race",
+    "fork-child-initial-first-sigmask",
+    "fork-child-initial-last-sigmask",
+    "fork-child-recovery-sigmask",
+    "fork-child-initial-first-stdout-dup2",
+    "fork-child-initial-last-stdout-dup2",
+    "fork-child-recovery-stdout-dup2",
+    "fork-child-initial-first-stdin-dup2",
+    "fork-child-initial-last-stdin-dup2",
+    "fork-child-recovery-stdin-dup2",
+    "replay-controller-clean",
+    "replay-controller-zero",
+    "replay-controller-empty-archive",
+    "replay-controller-lost",
+    "replay-controller-lost-progress",
+    "replay-controller-mixed-success-first",
+    "replay-controller-mixed-loss-first",
+    "replay-controller-recover",
+    "replay-controller-skip-graphics",
+    "replay-controller-skip-compute",
+    "replay-controller-skip-raytracing",
+    "replay-controller-skip-graphics-final",
+    "replay-controller-skip-compute-final",
+    "replay-controller-skip-raytracing-final",
+    "replay-controller-skip-graphics-progress",
+    "replay-controller-skip-graphics-final-progress",
+    "replay-controller-partial",
+    "replay-controller-loss-after-retry",
+    "replay-controller-held-sibling",
+    "replay-controller-signal",
+    "replay-controller-status-error",
+    "replay-controller-outcome-state",
+    "replay-controller-cli-normal",
+    "replay-controller-cli-master",
+    "replay-controller-cli-progress",
+    "replay-controller-cli-e5",
+    "replay-controller-cli-e6",
+    "replay-controller-cli-compatibility",
+    "replay-cache-creation-rerun",
+    "replay-cache-success-policy",
+    "replay-cache-loop",
+    "replay-cache-compile-required",
+    "replay-cache-write-failure",
+    "replay-cache-legacy-provenance",
+    "replay-cache-null-provenance",
+    "replay-cache-whitelist",
+    "replay-cache-legacy-invocation",
+    "replay-outcome-state",
+    "replay-outcome-parse-read",
+    "replay-outcome-creation",
+    "replay-outcome-compile-required-loop",
+    "replay-outcome-support",
+    "replay-outcome-setup-dependency",
+    "replay-outcome-worker-queue",
+    "replay-outcome-matrix",
+    "replay-outcome-validation",
+    "replay-outcome-entry-good",
+    "replay-outcome-entry-create",
+    "replay-outcome-entry-layout",
+    "replay-outcome-entry-device",
+    "replay-outcome-cli-e7",
+    "replay-outcome-cli-missing",
+    "replay-outcome-cli-unsupported",
+    "replay-outcome-cli-unsupported-shader",
+    "replay-outcome-cli-library",
+    "replay-outcome-cli-mixed",
+    "replay-outcome-cli-good",
+    "replay-outcome-cli-empty",
+    "replay-outcome-cli-missinghash",
+    "replay-outcome-cli-emptyhash",
+    "replay-outcome-cli-selection",
+    "replay-outcome-cli-hashselection",
+    "replay-outcome-cli-whitelist",
+    "replay-outcome-cli-compatibility",
+    "replay-outcome-cli-validation",
+    "replay-outcome-controller-success-first-absent",
+    "replay-outcome-controller-success-first-progress",
+    "replay-outcome-controller-failure-first-absent",
+    "replay-outcome-controller-failure-first-progress",
+    "replay-timeout-unit-deadlines",
+    "replay-timeout-unit-reset",
+    "replay-timeout-unit-delivery",
+    "replay-timeout-unit-unknown",
+    "replay-timeout-unit-protocol",
+    "replay-timeout-controller-clean",
+    "replay-timeout-controller-no-progress",
+    "replay-timeout-controller-heartbeat",
+    "replay-timeout-controller-heartbeat-reset",
+    "replay-timeout-controller-cleanup",
+    "replay-timeout-controller-spontaneous",
+    "replay-timeout-controller-escalation",
+    "replay-timeout-controller-delivery-failure",
+    "replay-timeout-controller-kill-failure",
+    "replay-timeout-controller-external-kill",
+    "replay-timeout-controller-multithread",
+    "replay-timeout-controller-recovery",
+    "replay-timeout-controller-protocol",
+    "replay-timeout-controller-dispatcher-reset",
+    "replay-timeout-controller-dispatcher-disabled",
+    "replay-timeout-controller-ordinary-no-progress",
+    "replay-timeout-controller-ordinary-delivery-failure",
+    "replay-timeout-controller-timer-create-failure",
+    "replay-timeout-controller-timer-arm-failure",
+    "replay-timeout-controller-timer-register-failure",
+    "replay-timeout-controller-heartbeat-timer-create-failure",
+    "replay-timeout-controller-heartbeat-timer-arm-failure",
+    "replay-timeout-controller-heartbeat-timer-register-failure",
+    "replay-timeout-controller-heartbeat-timer-read-failure",
+    "replay-timeout-controller-heartbeat-timer-rearm-failure"
+  ],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/16",
+      "evidence": "CHANGELOG.md:11 says distinct timeout causes and termination results are retained before recovery. cli/fossilize_replay_linux.hpp:443-445 writes native_observed/native_status in process_shutdown after waitpid has established terminal status; cli/fossilize_replay_windows.hpp:363-366 likewise records observed native exit code during shutdown. A signal delivery result may also return after recovery has begun. The wording therefore assigns an unsupported chronology to termination results. The full issue link, Observability tag and practical benefit are otherwise appropriate.",
+      "id": "C16-CHANGELOG-CHRONOLOGY",
+      "locations": [
+        {
+          "file": "CHANGELOG.md",
+          "line": 11
+        },
+        {
+          "file": "cli/fossilize_replay_linux.hpp",
+          "line": 443
+        },
+        {
+          "file": "cli/fossilize_replay_windows.hpp",
+          "line": 363
+        }
+      ],
+      "priority": 3,
+      "requested_change": "Revise the one short sentence so before recovery qualifies recording timeout causes, while termination results are retained separately. Suggested wording: Recorded distinct replay timeout causes before recovery and retained termination results so interrupted work can be diagnosed without mistaking signals for causes.",
+      "route": "implementation",
+      "status": "open",
+      "title": "Correct timeout changelog chronology"
+    }
+  ],
+  "input_revision": 223,
+  "input_sha": "dbdb3232f4d0e39127aec1939a98f7a0821bbc7f",
+  "limitations": [
+    "Native Windows execution explicitly user-waived and unverified. Windows source paths and portable registration reviewed; Linux evidence does not establish native Windows process/IPC behavior. No new Windows heartbeat watchdog.",
+    "All execution is Linux CPU/null-device GNU13.3.0; runtime hardware layer testing disabled by design. No GPU, real driver compilation, Steam, cache warming or durability evidence.",
+    "Private test adapters control clocks, Vulkan dispatch and syscall events; actual fork, threads, pipes, epoll, signal handlers, controller recovery and kernel reaping remain exercised. Native child timers are deliberately held beyond fixture watchdog to remove time-based ordering races.",
+    "No native big-endian execution or general prebuilt C++ binary ABI verification is claimed. Arithmetic event token invariants and source compatibility have narrower evidence.",
+    "Work timeout is documented actual monotonic no-progress elapsed; no separately established policy subtracts intentional whole-process SIGSTOP duration. Existing heartbeat stopped/resumed behavior is asserted. This unspecified work-pause policy is not treated as a new acceptance requirement."
+  ],
+  "matrix": [
+    {
+      "configuration": "Debug-OFF",
+      "discovered": 204,
+      "executed": 204,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "configuration": "Debug-ON",
+      "discovered": 204,
+      "executed": 204,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "configuration": "Release-OFF",
+      "discovered": 204,
+      "executed": 204,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "configuration": "Release-ON",
+      "discovered": 204,
+      "executed": 204,
+      "failures": 0,
+      "skipped": 0
+    }
+  ],
+  "next_action": "Dispatch a fresh bounded implementer to correct the factual CHANGELOG.md chronology, commit the repaired candidate, then renew independent checking against the exact new candidate/base/plan. Do not accept or publish this candidate unchanged.",
+  "operation": "work_unit",
+  "plan_version": 1,
+  "role": "checker",
+  "skipped": [],
+  "summary": "Required runtime, matrix, defect-control and compatibility execution passed independently; one factual changelog chronology correction is required before acceptance.",
+  "test_mapping": {
+    "T16-C1": {
+      "location": "Existing diagnostic-compatibility, replay-controller-cli-* and replay-outcome-cli-compatibility CTests plus replay-timeout-unit-protocol and a new timeout legacy-invocation control as necessary.",
+      "result": "passed",
+      "review": "Eight preserved compatibility CTests pass; independently compiled unchanged caller against base public headers first links freshly built candidate libraries and executes clean/failed query/wait order controls. Shipping timeout0/2 invocations pass. Actual old public/shared header bytes and nonempty CLI option sets match base.",
+      "tests": [
+        "diagnostic-compatibility-test",
+        "replay-controller-cli-normal",
+        "replay-controller-cli-master",
+        "replay-controller-cli-progress",
+        "replay-controller-cli-e5",
+        "replay-controller-cli-e6",
+        "replay-controller-cli-compatibility",
+        "replay-outcome-cli-compatibility",
+        "replay-timeout-unit-protocol",
+        "replay-timeout-controller-protocol",
+        "replay-timeout-controller-ordinary-no-progress",
+        "replay-timeout-controller-dispatcher-disabled"
+      ]
+    },
+    "T16-C2": {
+      "location": "Shared portable units and platform-conditioned controller fixture; source review of cli/fossilize_replay_windows.hpp and test/CMakeLists.txt, mapped to executed portable/compatibility tests with the separate native execution waiver stated in limitations.",
+      "result": "passed",
+      "review": "Portable deadline/evidence units execute on Linux; registration is unconditional for supported test builds, and Linux integration is explicitly conditioned. Windows no-progress TIMEOUT precedes existing CRASH recovery; existing cleanup records threshold/elapsed, TerminateProcess request/error and later native status; no Windows heartbeat watchdog added. Native Windows execution is user-waived/unverified.",
+      "tests": [
+        "replay-timeout-unit-deadlines",
+        "replay-timeout-unit-reset",
+        "replay-timeout-unit-delivery",
+        "replay-timeout-unit-unknown",
+        "replay-timeout-unit-protocol",
+        "replay-controller-cli-compatibility",
+        "replay-outcome-cli-compatibility"
+      ]
+    },
+    "T16-D1": {
+      "location": "CHANGELOG.md, local-docs/verification.md, and full base-to-candidate review; assertion tests above establish the described delivered behavior.",
+      "result": "changes_required",
+      "review": "All10 changed files and committed registration/assertions reviewed. Verification guide scope/units/private adapters/compatibility limits are factual. CHANGELOG entry has topic/full issue link/benefit but inaccurately groups termination results as occurring before recovery; finding C16-CHANGELOG-CHRONOLOGY requires repair.",
+      "tests": [
+        "replay-timeout-controller-no-progress",
+        "replay-timeout-controller-heartbeat",
+        "replay-timeout-controller-cleanup",
+        "replay-timeout-unit-protocol"
+      ]
+    },
+    "T16-I1": {
+      "location": "New replay-timeout-controller-no-progress and replay-timeout-controller-clean CTests, extending existing controller/outcome fixture or adding a private production-TU fixture.",
+      "result": "passed",
+      "review": "Real production dispatcher waits for blocked actual null compute creation; healthy child sends TIMEOUT/TERMINATE before the wrapped pthread_kill adapter; parent stores actual2.5-second elapsed and2-second threshold; clean control actually creates both known inputs.",
+      "tests": [
+        "replay-timeout-controller-no-progress",
+        "replay-timeout-controller-clean"
+      ]
+    },
+    "T16-I2": {
+      "location": "replay-timeout-controller-heartbeat and replay-timeout-controller-heartbeat-reset CTests; actual run_master_process event branch.",
+      "result": "passed",
+      "review": "Real fork/pipe/epoll controller with barrier-ready heartbeat child records10.5-second elapsed versus10-second threshold before kill; queued rearm reads actual EAGAIN; kernel stop/resume barrier suppresses watchdog kill and rearms heartbeat.",
+      "tests": [
+        "replay-timeout-controller-heartbeat",
+        "replay-timeout-controller-heartbeat-reset",
+        "replay-timeout-controller-protocol"
+      ]
+    },
+    "T16-I3": {
+      "location": "replay-timeout-controller-cleanup, replay-timeout-controller-spontaneous and replay-timeout-controller-escalation CTests; production CRASH parser, timer event and shutdown path.",
+      "result": "passed",
+      "review": "Spontaneous actual SIGABRT and held real emergency teardown use3.5-second measured cleanup versus3-second threshold; escalation retains work cause separately; spontaneous completed cleanup invents no timeout.",
+      "tests": [
+        "replay-timeout-controller-cleanup",
+        "replay-timeout-controller-spontaneous",
+        "replay-timeout-controller-escalation"
+      ]
+    },
+    "T16-I4": {
+      "location": "replay-timeout-controller-delivery-failure and replay-timeout-controller-kill-failure CTests; private pthread_kill/kill adapters and production controller.",
+      "result": "passed",
+      "review": "Actual pthread_kill EINVAL and kill EPERM adapters preserve error and requested mechanism; real subsequent SIGKILL/reaping establishes native effect. Timer setup/rearm/read failure cases preserve exact native errors and fail safely without inventing timeout causes.",
+      "tests": [
+        "replay-timeout-controller-delivery-failure",
+        "replay-timeout-controller-kill-failure",
+        "replay-timeout-controller-ordinary-delivery-failure",
+        "replay-timeout-controller-timer-create-failure",
+        "replay-timeout-controller-timer-arm-failure",
+        "replay-timeout-controller-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-create-failure",
+        "replay-timeout-controller-heartbeat-timer-arm-failure",
+        "replay-timeout-controller-heartbeat-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-read-failure",
+        "replay-timeout-controller-heartbeat-timer-rearm-failure"
+      ]
+    },
+    "T16-I5": {
+      "location": "replay-timeout-controller-external-kill, replay-timeout-controller-multithread and replay-timeout-controller-recovery CTests; state checks active in Release.",
+      "result": "passed",
+      "review": "Real external SIGKILL remains unknown;2-thread dispatcher abort has no arbitrary culprit. Separate1-thread resource report remains known. Real replacement completes both inputs and retains prior timeout/Retry evidence; stale prior timer generation cannot consume replacement event or kill it.",
+      "tests": [
+        "replay-timeout-controller-external-kill",
+        "replay-timeout-controller-multithread",
+        "replay-timeout-controller-recovery",
+        "replay-timeout-controller-no-progress"
+      ]
+    },
+    "T16-U1": {
+      "location": "New private portable timeout-state/termination-adapter unit fixture, registered as replay-timeout-unit-deadlines (or equivalent explicit CTest names).",
+      "result": "passed",
+      "review": "Shared monotonic boundary/overshoot logic and three distinct trigger slots are explicit; production integration independently checks fixed3/10-second and configured2-second thresholds before native adapters.",
+      "tests": [
+        "replay-timeout-unit-deadlines",
+        "replay-timeout-unit-delivery"
+      ]
+    },
+    "T16-U2": {
+      "location": "Portable unit fixture: replay-timeout-unit-resets; production dispatcher wait loop shares the exercised clock policy.",
+      "result": "passed",
+      "review": "Actual dispatcher completion rearm and disabled work timeout execute; ongoing dispatcher heartbeat does not suppress work timeout; actual controller heartbeat parser rearm handles queued native EAGAIN; repeated CRASH/HEARTBEAT cannot extend cleanup.",
+      "tests": [
+        "replay-timeout-unit-reset",
+        "replay-timeout-controller-dispatcher-reset",
+        "replay-timeout-controller-dispatcher-disabled",
+        "replay-timeout-controller-heartbeat-reset"
+      ]
+    },
+    "T16-U3": {
+      "location": "Portable unit fixture: replay-timeout-unit-unknown and replay-timeout-unit-delivery.",
+      "result": "passed",
+      "review": "External real SIGKILL and spontaneous SIGABRT have no invented work/heartbeat/cleanup trigger; signal/raw native status, recovery disposition and required-work result remain separate.",
+      "tests": [
+        "replay-timeout-unit-unknown",
+        "replay-timeout-unit-delivery",
+        "replay-timeout-controller-external-kill",
+        "replay-timeout-controller-spontaneous"
+      ]
+    },
+    "T16-U4": {
+      "location": "Portable state/protocol fixture: replay-timeout-unit-delivery and replay-timeout-unit-protocol; test actual parser where feasible.",
+      "result": "passed",
+      "review": "Explicit returning delivery errors, escalation, bounded evidence/history, parser fragmentation, malformed/overflow/duplicate extensions and generation token round trips are checked.",
+      "tests": [
+        "replay-timeout-unit-delivery",
+        "replay-timeout-unit-protocol",
+        "replay-timeout-controller-protocol",
+        "replay-timeout-controller-recovery"
+      ]
+    }
+  },
+  "unsupported": [],
+  "verdict": "changes_required",
+  "verification_details": {
+    "all_control_compiles_passed": true,
+    "compatibility": "Base public headers first, fresh candidate static libraries, unchanged old caller fixture, actual clean/failed/query/wait controls; shared progress header/version bytes unchanged. Internal TIMEOUT/TERMINATE are additive strict bounded private grammar. No prebuilt general C++ ABI claim.",
+    "complete_diff_review": "All10 base-to-candidate changed files, assertions, registration and documentation reviewed. No production source edits or canonical record writes by checker.",
+    "control_method": "Independently created private source copies from exact candidate Git objects, with targeted old-order/count-policy restorations or causal-loss/reset/unknown/nonblocking mutations; candidate observation interfaces retained as disclosed bridge. Own patch files and compile argv retained under output/checker-1/controls. No claim that unchanged base compiles against new fixture interfaces.",
+    "control_negative_oracle": "Underlying executable exits1 with intended explicit FAIL M16 assertion; no compiler failure, deadline, crash or emergency watchdog accepted as defect evidence.",
+    "focused": 30,
+    "focused_repeat_each": 3,
+    "fresh_build": "/tmp/fossilize-16/build/checker-1/Debug-OFF",
+    "fresh_source": "/tmp/fossilize-16/checker-1-dbdb32",
+    "full_suite_each": 204,
+    "independent_controls_healthy": 7,
+    "independent_controls_negative": 8,
+    "material_inputs": "Final audited live issue16 body/identity and parent8 body/title/identity/state unchanged from immutable definitions; prerequisite13 closed/completed and matches supplied snapshot.",
+    "reused_matrix_builds": "Exact candidate-bound implementer trees independently hash/configuration checked, then four full suites rerun. Fresh detached source built both affected timeout targets."
+  },
+  "waivers": [
+    {
+      "authority": "explicit user instruction relayed by coordinator",
+      "check": "native Windows execution",
+      "status": "waived/unverified, not passed"
+    }
+  ],
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/16",
+  "worker_id": "/root/issue16_checker"
+}
