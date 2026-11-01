@@ -23,6 +23,7 @@
 #pragma once
 
 #include <cstdint>
+#include "replay_timeout.hpp"
 
 // Internal controller state. This is deliberately separate from optional shared
 // progress and from the mutable range used to launch the next attempt.
@@ -30,6 +31,7 @@ enum class WorkerDisposition { Complete, Retry, Unresolved, Failed };
 
 struct ReplayWorkerOutcome
 {
+	ReplayTimeoutHistory timeout;
 	struct Range
 	{
 		unsigned begin = 0, end = 0;
@@ -51,6 +53,7 @@ struct ReplayWorkerOutcome
 
 	WorkerDisposition finish_controlled()
 	{
+		timeout.current.recovery = ReplayRecovery::Failed;
 		controlled_failure = true;
 		complete = false;
 		unknown_remainder = !orderly_drained;
@@ -97,6 +100,7 @@ struct ReplayWorkerOutcome
 			for (auto &r : assigned) r.confirmed_end = r.skipped_hash ? r.skipped_index : r.end;
 			unknown_remainder = false;
 			complete = !skipped();
+			timeout.current.recovery = complete ? ReplayRecovery::Complete : ReplayRecovery::Unresolved;
 			return complete ? WorkerDisposition::Complete : WorkerDisposition::Unresolved;
 		}
 		failed_attempts++;
@@ -117,10 +121,14 @@ struct ReplayWorkerOutcome
 			}
 		}
 		if (can_retry && remaining)
+		{
+			timeout.current.recovery = ReplayRecovery::Retry;
 			return WorkerDisposition::Retry;
+		}
 		// A failed final attempt cannot certify a successful assignment. Retain
 		// uncertainty even if a cursor happened to reach the end of its range.
 		unknown_remainder = !can_retry || remaining || !skipped();
+		timeout.current.recovery = ReplayRecovery::Unresolved;
 		return WorkerDisposition::Unresolved;
 	}
 };

@@ -39,6 +39,7 @@
 #include "fossilize_errors.hpp"
 #include "util/object_cache.hpp"
 #include "replay_item_outcome.hpp"
+#include "replay_timeout.hpp"
 
 #include <string>
 #include <unordered_set>
@@ -259,11 +260,13 @@ struct EnqueuedWork
 static void on_validation_error(void *userdata);
 #ifndef NO_ROBUST_REPLAYER
 static void report_module_uuid(const char (&path)[2 * VK_UUID_SIZE + 1]);
+static void report_timeout(const ReplayTimeoutTrigger &trigger);
 static void timeout_handler();
 static void begin_heartbeat();
 static void heartbeat();
 #else
 #define report_module_uuid(x) ((void)(x))
+#define report_timeout(x) ((void)(x))
 #define timeout_handler() ((void)0)
 #define begin_heartbeat() ((void)0)
 #define heartbeat() ((void)0)
@@ -966,11 +969,12 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 
 		unsigned current_completed = completed_count[index];
-		unsigned num_second_timeouts = 0;
+		ReplayDeadline no_progress;
+		no_progress.arm(replay_monotonic_ns(), replay_seconds_ns(opts.timeout_seconds));
 
 		do
 		{
-			bool signalled = work_done_condition[index].wait_for(
+			work_done_condition[index].wait_for(
 					lock, std::chrono::seconds(1),
 					[&]() -> bool { return current_completed != completed_count[index]; });
 
@@ -983,15 +987,17 @@ struct ThreadedReplayer : StateCreatorInterface
 				last_heartbeat = new_time;
 			}
 
-			if (!signalled && completed_count[index] == current_completed)
-				num_second_timeouts++;
-			else
-				num_second_timeouts = 0;
+			auto now = replay_monotonic_ns();
+			if (completed_count[index] != current_completed)
+				no_progress.arm(now, replay_seconds_ns(opts.timeout_seconds));
 
-			if (opts.timeout_seconds != 0 && num_second_timeouts >= opts.timeout_seconds)
+			if (no_progress.expired(now))
 			{
+				auto trigger = no_progress.trigger(now);
+				LOGE("Replay timeout origin=work-no-progress threshold_ns=%" PRIu64 " elapsed_ns=%" PRIu64 ".\n",
+				     trigger.threshold_ns, trigger.elapsed_ns);
+				report_timeout(trigger);
 				timeout_handler();
-				LOGE("Timed out replaying pipelines!\n");
 				exit(2);
 			}
 
