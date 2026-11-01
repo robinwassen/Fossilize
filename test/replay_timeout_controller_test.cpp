@@ -465,6 +465,11 @@ int main(int argc, char **argv)
 		if (scenario == "cleanup" || scenario == "escalation" || scenario == "delivery-failure" || scenario == "kill-failure")
 			checks.require(e.triggers[2].present && e.triggers[2].threshold_ns == 3000000000ull && e.triggers[2].elapsed_ns == 3500000000ull,"M16/cleanup-measured-origin");
 		else checks.require(!e.triggers[2].present,"M16/no-invented-cleanup");
+		if (scenario == "heartbeat" || scenario == "heartbeat-reset" || scenario == "cleanup" || scenario == "escalation" ||
+		    scenario == "delivery-failure" || scenario == "kill-failure" || scenario == "external-kill")
+			checks.require(WIFSIGNALED(e.native_status) && WTERMSIG(e.native_status) == SIGKILL,"M16/native-SIGKILL-retained-separately-from-cause");
+		if (no_progress() && scenario != "dispatcher-disabled")
+			checks.require(e.request_count && e.requests[0].mechanism == ReplayTermination::AbortSignal,"M16/original-abort-request-retained-through-recovery");
 		if (scenario == "delivery-failure") checks.require(e.request_count >= 2 && e.requests[0].delivery == ReplayDelivery::Failed && e.requests[0].native_error == EINVAL && WIFSIGNALED(e.native_status) && WTERMSIG(e.native_status) == SIGKILL,"M16/failed-abort-and-kill-effect-separated");
 		if (scenario.find("timer-") == 0) checks.require(r.native_error != 0 && !e.triggers[2].present,"M16/failed-supervision-bounded-without-invented-timeout");
 		if (scenario == "kill-failure") checks.require(e.requests[0].delivery == ReplayDelivery::Failed && e.requests[0].native_error == EPERM && e.request_count >= 2,"M16/kill-error-preserved-through-cleanup");
