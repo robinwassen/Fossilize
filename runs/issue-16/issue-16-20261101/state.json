@@ -9480,7 +9480,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -9733,6 +9733,18 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1793568538.934493,
+      "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
+      "body_sha256": "22c731adca85f2f4f2ef34e3ff97bca432b3e7004261430e309c9ed8b9c99fdc",
+      "branch": "codex/issue-16-timeout-origin",
+      "event": "create-dispatched",
+      "expected_prior": "Complete all-state paginated exact head/base/repository lookup returned zero matches",
+      "head_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+      "target_branch": "master",
+      "target_repository": "robinwassen/Fossilize",
+      "title": "Record replay timeout causes before recovery"
+    },
     "intent": {
       "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
       "branch": "codex/issue-16-timeout-origin",
@@ -9752,10 +9764,21 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
+        "body_sha256": "22c731adca85f2f4f2ef34e3ff97bca432b3e7004261430e309c9ed8b9c99fdc",
+        "branch": "codex/issue-16-timeout-origin",
+        "event": "create-dispatched",
+        "expected_prior": "Complete all-state paginated exact head/base/repository lookup returned zero matches",
+        "head_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
+        "target_branch": "master",
+        "target_repository": "robinwassen/Fossilize",
+        "title": "Record replay timeout causes before recovery"
       }
     ],
     "remote_sha": "09be9863cb704b0e47bdbca43aefeca02a82af19",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "2e0dfbfb4f7606523e0c4209279c48e6af4523ba",
@@ -9768,7 +9791,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 542,
+  "revision": 543,
   "root_issue": {
     "id": 6079824724,
     "node_id": "I_kwDOVZpjbc8AAAABamLDVA",
