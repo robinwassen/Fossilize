@@ -1,0 +1,31 @@
+{
+  "scope": "CPU production low-level StreamArchive writer/readback using existing older support archives; not actual current emergency caller/concurrent backend or driver cache.",
+  "observations": [
+    {
+      "written": 230,
+      "unflushed_readable": 219,
+      "physical_bytes": 12288,
+      "tail_bytes": 8
+    },
+    {
+      "written": 300,
+      "unflushed_readable": 292,
+      "physical_bytes": 16384,
+      "tail_bytes": 16
+    },
+    {
+      "written": 370,
+      "unflushed_readable": 365,
+      "physical_bytes": 20480,
+      "tail_bytes": 24
+    },
+    {
+      "written": 1030,
+      "unflushed_readable": 1023,
+      "physical_bytes": 57344,
+      "tail_bytes": 40
+    }
+  ],
+  "controls": "Explicit flush then _exit and normal destruction then _exit preserved every written entry with no tail in all four cases.",
+  "interpretation": "Expected buffering and supported crash-prefix retention behavior; no compiled-driver-cache corruption, lost readable prefix, crash-survival obligation or user latency regression established."
+}

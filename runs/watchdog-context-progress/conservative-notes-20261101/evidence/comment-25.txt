@@ -1,0 +1,13 @@
+### Qualified retention observation for finalization policy
+
+At `2e0dfbfb4f7606523e0c4209279c48e6af4523ba`, [best-effort emergency teardown](https://github.com/robinwassen/Fossilize/blob/2e0dfbfb4f7606523e0c4209279c48e6af4523ba/cli/fossilize_replay.cpp#L3661) explicitly flushes several caches/databases but not the optional replay-hint database before the Linux handler exits abruptly.
+
+A CPU-only production-writer probe demonstrates the buffering mechanism: `_exit` without destruction can leave a partial final marker header and omit buffered markers; explicit flush or normal destruction retained them in the controls. The observed shapes match retained diagnostic fragments. This probe used existing older support archives and did **not** execute current production emergency teardown, so it is not a source-matched caller integration proof.
+
+This is a retention-policy consideration, **not a confirmed compiled-cache corruption or loss-of-driver-binaries bug**. StreamArchive deliberately tolerates a truncated final record and preserves its readable prefix; optional hints have no established crash-survival guarantee. Missing hints can make work eligible again on a future replay, but additional user latency was not measured. Successful flush also does not establish power-loss durability.
+
+When defining checked finalization/caller policy here and in https://github.com/robinwassen/Fossilize/issues/30, clarify whether controlled emergency teardown should attempt to retain these hints. Any enhancement needs signal/lock-safety analysis and bounded cleanup; blindly adding a blocking flush to a signal handler is not a proposed verified fix. No claim is made that SIGKILL can flush. The failed-creation marker policy already addressed by https://github.com/robinwassen/Fossilize/issues/15 is separate.
+
+Sanitized writer-probe summary: https://github.com/robinwassen/Fossilize/blob/harness-artifacts/runs/watchdog-context-progress/conservative-notes-20261101/evidence/retention-evidence.json
+
+<!-- conservative-replay-hint-retention-20261101-v1 -->

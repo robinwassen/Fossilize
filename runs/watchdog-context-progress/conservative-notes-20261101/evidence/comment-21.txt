@@ -1,0 +1,21 @@
+### Additional evidence: reordered execution is not a completed prefix
+
+Source checked: `2e0dfbfb4f7606523e0c4209279c48e6af4523ba`. This is supporting evidence for this existing issue, rather than a new task or a claim that the current controller silently succeeds.
+
+A CPU-only instrumented run of the current production scheduler/controller used 21 selected graphics entries plus one external library. Selected consumer index 0 and its library use shader identity `0x10`; ordinary entries 1–20 use `0x11`. A controlled one-shot SIGSEGV occurs during ordinary index 10, with the watchdog disabled.
+
+Observed:
+
+- Clean control: 21/21 requested creations plus the parent; exit 0.
+- Fault control: 9/21 requested creations; actual retry range `[11, 21)`; selected consumer 0 never reaches creation. Only ordinary shader `0x11` is quarantined, so that quarantine does not explain the consumer's omission.
+- The retained range has `confirmed_end=10` and `unknown_remainder=false`, although the supposed prefix contains that uncreated consumer. The aggregate correctly exits 1.
+
+The relevant paths are [recovery cursor assignment](https://github.com/robinwassen/Fossilize/blob/2e0dfbfb4f7606523e0c4209279c48e6af4523ba/cli/fossilize_replay_linux.hpp#L392) and [confirmed-prefix advancement](https://github.com/robinwassen/Fossilize/blob/2e0dfbfb4f7606523e0c4209279c48e6af4523ba/cli/replay_worker_outcome.hpp#L115). Deferred dependency scheduling means an active execution index is not necessarily a contiguous completed prefix.
+
+Please include a production-scheduler ordering regression in this issue's reconciliation work: earlier nonquarantined deferred items must remain pending/unknown unless their completion is established. This does not assume every unrelated item must finish after a fatal failure, and it does not reopen the aggregate-failure fix in https://github.com/robinwassen/Fossilize/issues/13. The controlled fault is independent of the watchdog defect in https://github.com/robinwassen/Fossilize/issues/70.
+
+Limitations: synthetic accepted FOZ/null-device scheduling fixture with skeletal graphics state and header-only SPIR-V, not valid real-Vulkan/GPU verification; existing support archives were reused with current replay source/headers. No native Windows run or exact Steam-distribution reproduction. The older pinned-source `9/21 + exit 0` result must not be attributed to current master.
+
+Sanitized reproduction summary: https://github.com/robinwassen/Fossilize/blob/harness-artifacts/runs/watchdog-context-progress/conservative-notes-20261101/evidence/recovery-evidence.json
+
+<!-- conservative-recovery-evidence-20261101-v1 -->
