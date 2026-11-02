@@ -71,6 +71,7 @@ static HANDLE metadata_handle;
 struct ProcessProgress
 {
 	ReplayWorkerOutcome outcome;
+	ReplayDeadline cleanup_deadline;
 	unsigned start_graphics_index = 0u;
 	unsigned start_compute_index = 0u;
 	unsigned start_raytracing_index = 0u;
@@ -97,6 +98,7 @@ struct ProcessProgress
 
 	uint32_t index = 0;
 	bool expect_kill = false;
+	bool supervision_failed = false;
 
 	char module_uuid_path[2 * VK_UUID_SIZE + 1] = {};
 };
@@ -119,9 +121,24 @@ bool ProcessProgress::kick_overlapped_io()
 
 void ProcessProgress::parse(const char *cmd)
 {
+	bool had_timeout = outcome.timeout.current.triggers[0].present;
+	unsigned prior_requests = outcome.timeout.current.request_count;
 	unsigned failure_mask = 0, drained = 0;
 	int consumed = 0;
-	if (sscanf(cmd, "REPLAY_FAILED %u %u%n", &failure_mask, &drained, &consumed) == 2 &&
+	if (replay_parse_timeout(outcome.timeout.current, cmd))
+	{
+		const auto &evidence = outcome.timeout.current;
+		if (!had_timeout && evidence.triggers[0].present)
+			LOGE("Worker %u attempt %u timeout origin=work-no-progress threshold_ns=%" PRIu64 " elapsed_ns=%" PRIu64 ".\n",
+			     index, outcome.attempts, evidence.triggers[0].threshold_ns, evidence.triggers[0].elapsed_ns);
+		if (evidence.request_count && (evidence.request_count != prior_requests || evidence.requests[evidence.request_count - 1].delivery != ReplayDelivery::Requested))
+		{
+			const auto &request = evidence.requests[evidence.request_count - 1];
+			LOGE("Worker %u attempt %u termination mechanism=%u delivery=%u native_error=%u.\n",
+			     index, outcome.attempts, unsigned(request.mechanism), unsigned(request.delivery), request.native_error);
+		}
+	}
+	else if (sscanf(cmd, "REPLAY_FAILED %u %u%n", &failure_mask, &drained, &consumed) == 2 &&
 	    (cmd[consumed] == '\0' || (cmd[consumed] == '\n' && cmd[consumed + 1] == '\0')) && failure_mask && failure_mask < (1u << unsigned(ReplayFailure::Count)) && drained <= 1)
 	{
 		outcome.orderly_reported = true;
@@ -130,7 +147,10 @@ void ProcessProgress::parse(const char *cmd)
 	}
 	else if (strncmp(cmd, "CRASH", 5) == 0)
 	{
-		// We crashed ... Set up a timeout in case the process hangs while trying to recover.
+		// Repeated recovery notices cannot postpone this attempt's deadline.
+		if (cleanup_deadline.armed) return;
+		cleanup_deadline.arm(replay_monotonic_ns(), replay_seconds_ns(3));
+		outcome.timeout.current.recovery = ReplayRecovery::CrashCleanup;
 		if (timer_handle)
 		{
 			CloseHandle(timer_handle);
@@ -143,10 +163,16 @@ void ProcessProgress::parse(const char *cmd)
 			LARGE_INTEGER due_time;
 			due_time.QuadPart = -30000000ll;
 			if (!SetWaitableTimer(timer_handle, &due_time, 0, nullptr, nullptr, 0))
-				LOGE("Failed to set waitable timer.\n");
+			{
+				outcome.native_error = GetLastError(); supervision_failed = true;
+				LOGE("Failed to set waitable timer (error=%u).\n", outcome.native_error);
+			}
 		}
 		else
-			LOGE("Failed to create waitable timer.\n");
+		{
+			outcome.native_error = GetLastError(); supervision_failed = true;
+			LOGE("Failed to create waitable timer (error=%u).\n", outcome.native_error);
+		}
 	}
 	else if (strncmp(cmd, "GRAPHICS_VERR", 13) == 0 ||
 	         strncmp(cmd, "RAYTRACE_VERR", 13) == 0 ||
@@ -334,6 +360,11 @@ WorkerDisposition ProcessProgress::process_shutdown()
 	}
 
 	outcome.termination = code;
+	if (observed)
+	{
+		outcome.timeout.current.native_observed = true;
+		outcome.timeout.current.native_status = code;
+	}
 	bool controlled = observed && code == EXIT_FAILURE && outcome.orderly_reported &&
 	                  !expect_kill && !outcome.native_error;
 	auto disposition = controlled ? outcome.finish_controlled() :
@@ -423,6 +454,10 @@ bool ProcessProgress::start_child_process()
 	}
 
 	outcome.attempts++;
+	outcome.timeout.begin(outcome.attempts);
+	cleanup_deadline = {};
+	expect_kill = false;
+	supervision_failed = false;
 	outcome.orderly_reported = false;
 	outcome.orderly_drained = false;
 
@@ -1042,11 +1077,31 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			{
 				// Read a command, and queue up a new async read.
 				event_itr->process_once();
+				if (event_itr->supervision_failed) return EXIT_FAILURE;
 			}
 			else if (timer_itr != end(child_processes))
 			{
-				LOGE("Terminating process due to timeout ...\n");
-				if (!TerminateProcess(timer_itr->process, 3))
+				auto now = replay_monotonic_ns();
+				if (!timer_itr->cleanup_deadline.expired(now))
+				{
+					// A signalled manual-reset timer must be rearmed, otherwise a
+					// marginally early native wake would spin on the same event.
+					uint64_t remaining = timer_itr->cleanup_deadline.threshold_ns - timer_itr->cleanup_deadline.elapsed(now);
+					LARGE_INTEGER due; due.QuadPart = -LONGLONG((remaining + 99) / 100);
+					if (!SetWaitableTimer(timer_itr->timer_handle, &due, 0, nullptr, nullptr, FALSE))
+					{ timer_itr->outcome.native_error = GetLastError(); return EXIT_FAILURE; }
+					continue;
+				}
+				auto trigger = timer_itr->cleanup_deadline.trigger(now);
+				auto &evidence = timer_itr->outcome.timeout.current;
+				evidence.record(ReplayTimeoutOrigin::Cleanup, trigger);
+				LOGE("Worker %u timeout origin=post-crash-cleanup threshold_ns=%" PRIu64 " elapsed_ns=%" PRIu64 ".\n",
+				     timer_itr->index, trigger.threshold_ns, trigger.elapsed_ns);
+				evidence.request(ReplayTermination::TerminateProcess, ReplayDelivery::Requested, 0);
+				BOOL delivered = TerminateProcess(timer_itr->process, 3);
+				DWORD error = delivered ? 0 : GetLastError();
+				evidence.request(ReplayTermination::TerminateProcess, delivered ? ReplayDelivery::Accepted : ReplayDelivery::Failed, error);
+				if (!delivered)
 				{
 					LOGE("Failed to terminate child process.\n");
 					return EXIT_FAILURE;
@@ -1282,6 +1337,16 @@ static void install_trivial_crash_handlers(ThreadedReplayer &replayer)
 	signal(SIGABRT, abort_handler_trivial);
 }
 
+static void report_timeout(const ReplayTimeoutTrigger &trigger)
+{
+	if (crash_handle)
+	{
+		char buffer[128];
+		snprintf(buffer, sizeof(buffer), "TIMEOUT 1 %" PRIu64 " %" PRIu64 "\n", trigger.threshold_ns, trigger.elapsed_ns);
+		if (!write_all(crash_handle, buffer)) ExitProcess(2);
+	}
+}
+
 static void timeout_handler()
 {
 	bool robustness = global_replayer && global_replayer->robustness;
@@ -1290,6 +1355,7 @@ static void timeout_handler()
 	{
 		if (robustness)
 		{
+			if (!write_all(crash_handle, "TERMINATE 3 0 0\n")) ExitProcess(2);
 			if (!write_all(crash_handle, "CRASH\n"))
 				ExitProcess(2);
 

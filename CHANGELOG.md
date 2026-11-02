@@ -8,6 +8,8 @@ and their status. Follow the [changelog writing guideline](local-docs/changelog-
 Entries are reviewed with their implementation PR; inclusion in an open PR does
 not establish merged delivery or a release.
 
+- **[Observability]** Recorded distinct replay timeout causes before recovery and retained termination results so interrupted work can be diagnosed without mistaking signals for causes. ([#16](https://github.com/robinwassen/Fossilize/issues/16))
+
 - **[Observability]** Versioned replay hints by creation policy and device mode and exposed rejected writes so legacy or unattempted work cannot silently suppress replay. ([#15](https://github.com/robinwassen/Fossilize/issues/15))
 
 - **[Observability]** Retained replay item failures across threads and child processes so drained queues no longer report failed required work as successful. ([#14](https://github.com/robinwassen/Fossilize/issues/14))
