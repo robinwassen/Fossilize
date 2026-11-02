@@ -95,7 +95,7 @@ bool decode_varint(uint32_t *words, size_t words_size, const uint8_t *buffer, si
 			if (offset >= buffer_size || shift >= 32u)
 				return false;
 
-			w |= (buffer[offset] & 0x7f) << shift;
+			w |= uint32_t(buffer[offset] & 0x7f) << shift;
 			shift += 7;
 		} while (buffer[offset++] & 0x80);
 	}

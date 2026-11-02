@@ -557,21 +557,18 @@ shared-ring forwarding, unknown native status, and empty-kind recovery.
 
 `replay-controller-cli-{normal,master,progress}` preserve successful null-device
 invocations on a dependency-complete known-hash fixture. `replay-controller-cli-
-{e5,e6}` use a readback-checked FOZ containing compute `{}`. Debug requires the
-actual CLI's unsuccessful exit, including `--progress --quiet-slave`. To reproduce the
-original defect, invoke `test/replay_controller_cli.cmake` with `GENERATOR`,
-`REPLAY`, `WORK`, `CASE=e5` (then `e6`) and `BASELINE_REPLAY` set to an unchanged
-input Debug executable. The runner checks baseline false-success zero separately
-from candidate status one. Release exercises a distinct parser-rejection boundary without losing a worker.
-At the issue #13 delivery, this fixture exited zero despite rejected required
-work; issue [#14](https://github.com/robinwassen/Fossilize/issues/14) supersedes
-that behavior with status one for the orderly item failure. The current
-`ExternalReplayer::Progress` control still requires exactly one compute parse
-failure and skip, zero completed compute pipelines and zero clean/dirty worker
-deaths. This Release case verifies item failure, not worker loss. Mandatory
-deterministic real-controller loss cases require status one in every
-configuration. The E5/E6 worker-loss defect and baseline contrast remain
-established by Debug evidence.
+{e5,e6}` use a readback-checked FOZ containing compute `{}` and require orderly
+parser rejection in Debug and Release, unsuccessful exit, the malformed-envelope
+reason and known compute tag/hash in nonquiet normal, direct-child and master
+paths. Progress intentionally suppresses child stderr; its readback-checked
+single-entry fixture and authoritative counters establish orderly rejection
+without a visible child diagnostic. The `ExternalReplayer::Progress` control
+requires exactly one compute parse failure and skip, zero completed compute
+pipelines and zero clean/dirty worker deaths. These cases exercise input rejection;
+the separate injected real-controller loss/recovery/order/range cases retain
+worker-loss coverage. Historical issue #13 Debug worker-loss/false-success
+observations describe its input revision, not the current envelope behavior.
+
 
 `replay-controller-cli-compatibility` exercises `ExternalReplayer::Options{}`,
 `start`, `wait`, `is_process_complete`, and cached status for clean and failed
@@ -726,3 +723,38 @@ its existing cleanup TerminateProcess path; it gains no heartbeat watchdog.
 Native Windows execution for issue #16 is explicitly user-waived and unverified.
 Portable test registration and Linux evidence do not establish native Windows,
 GPU, driver compilation, Steam presentation or cache persistence behavior.
+
+## Controlled parser input errors
+
+`parser-input-{envelope,containers,shader,link,diagnostics,valid}` use explicit
+Release-active assertions for the first-level resource envelope and the fully
+migrated shader-module/application-link fields. They check false returns, fixed
+reason/field diagnostics, syntax error code/offset, validated shader identity,
+absence of shader payload in logs, and exact valid callback order/hashes/word
+bytes. A valid shader parse follows each deterministic rejected input.
+`parser-input-containment` launches the actual sentinel subprocess and checks its
+normal zero exit, exact fixture/continuation marker union and final sentinel.
+`parser-input-mutations` executes 384 fixed-seed (`0x170008`) byte/structured
+mutations with inputs at most4096 bytes and a90-second CTest deadline; it records
+the corpus digest and accepted/rejected counts and continues valid work after
+every input. The committed fixture table names deterministic size-wraparound,
+truncated/overflowing varint and embedded-NUL base64 regressions.
+
+Build and execute the full non-GPU CPU CTest inventory in separate Linux
+Debug/Release and exceptions OFF/ON directories, with CLI, Vulkan layer and
+SPIR-V validation enabled and runtime-layer testing OFF. Additionally build the
+parser runner with ASan+UBSan and run all `^parser-input-` cases (plus the direct
+varint boundary test). The harness run evidence records actual statuses and
+counts; these instructions alone are not execution evidence. For original-defect
+controls, compile the same parser runner against an unchanged Debug baseline
+library, then invoke `parser_input_containment.cmake` with `RUNNER` and
+`BASELINE_RUNNER`: baseline valid controls must pass, baseline envelope/nested
+probes must exhibit their known RapidJSON assertion without a sentinel, and the
+candidate probes must return false with a reason and normal continuation.
+
+This is a bounded parser slice: nested Vulkan fields within application metadata,
+pNext, samplers, pipelines, layouts and render passes are not recursively audited.
+It adds no callback rollback or allocator-exhaustion guarantee. Native Windows
+verification is user-waived and unverified; real GPU/driver and Steam execution
+are excluded. Public bool parse/callback declarations and shared progress layout
+remain unchanged; no complete parser-security or binary-ABI claim is made.

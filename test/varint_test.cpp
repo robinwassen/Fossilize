@@ -30,6 +30,15 @@ using namespace Fossilize;
 
 int main()
 {
+	// Explicit boundary words exercise the fifth-byte shift under UBSan too.
+	const uint32_t boundary[] = {0, 0x7f, 0x80, 0x0fffffff, 0x10000000, 0x80000000u, 0xffffffffu};
+	uint8_t encoded_boundary[35] = {};
+	uint32_t decoded_boundary[7] = {};
+	auto *end = encode_varint(encoded_boundary, boundary, 7);
+	if (!decode_varint(decoded_boundary, 7, encoded_boundary, size_t(end - encoded_boundary)) ||
+	    memcmp(boundary, decoded_boundary, sizeof(boundary)))
+		return EXIT_FAILURE;
+
 	std::mt19937 rnd;
 	std::vector<uint32_t> buffer;
 	buffer.reserve(16 * 1024 * 1024);
