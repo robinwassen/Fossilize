@@ -1,0 +1,334 @@
+{
+  "attempt_id": "planner-1",
+  "base_sha": "f527df07881087e6fb76eae3e0f882ae77bf05b9",
+  "candidate_sha": null,
+  "input_revision": 1,
+  "input_sha": "f527df07881087e6fb76eae3e0f882ae77bf05b9",
+  "operation": "plan",
+  "plan": {
+    "assumptions": [
+      "The live issue read through gh --repo robinwassen/Fossilize matches the immutable AC1 snapshot; prerequisite completion/readiness is coordinator-owned.",
+      "Existing implementation worktree may already have populated dependencies; the detached planner worktree has uninitialized submodules. Populate required submodules before native CLI/layer builds. No planner build or probe has been run.",
+      "Use available native Linux GCC or Clang, CMake and Ninja; discover actual tool/compiler versions under a published intent. All child execution is limited to600 seconds and uses isolated build/output directories."
+    ],
+    "boundaries": [
+      "Keep the existing public StateReplayer::parse(bool) signature, StateCreatorInterface callbacks and logging callback declarations source compatible; internal helpers/reason tokens may change. Preserve ExternalReplayer declarations and SharedControlBlock layout/version. No general binary-ABI or mixed-version child-protocol claim.",
+      "Keep valid supported format versions, unknown top-level-field tolerance, empty known resource maps, recorder-generated empty application/feature objects, NUL-separated shader binary payload format, valid resource hashes/handles/callback values/order, and duplicate replay suppression. Reject malformed fields before their unchecked reads; preserve prior successfully accepted callbacks on a later failure without promising rollback.",
+      "Reason-bearing input errors are parse failures, never evidence of a driver crash. Use bounded fixed reason/field labels; include numeric RapidJSON error and byte offset when available; include tag/hash only where actually known. Envelope-only library calls have no externally supplied resource identity and must not invent one; surrounding CLI parse-outcome diagnostics retain known database tag/hash.",
+      "Require an integer version; wrong-type/fractional versions are malformed-envelope reasons, integral numeric versions outside the supported interval (including oversized integer representations) are incompatible-version reasons without narrowing overflow. Preserve ordinary compatible versions."
+    ],
+    "cases": [
+      {
+        "assertions": [
+          "Table: null pointer/zero length, non-null zero bytes, null pointer/nonzero length, empty/whitespace, JSON null, arrays, scalar roots, {}, absent version, version null/string/bool/object/array/fraction; return false with a specific malformed-input reason, no callbacks, no assertion/signal/throw.",
+          "Versions min/max and ordinary supported version succeed; below-min/above-max and oversized signed/unsigned integral values reject as incompatible-version, distinct from malformed shape. Unknown top-level members and empty maps retain prior supported behavior."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-envelope",
+        "location": "test/parser_input_test.cpp; CTest parser-input-envelope"
+      },
+      {
+        "assertions": [
+          "For application/applicationInfo/physicalDeviceFeatures/link and each recognized resource-map section (shaderModules,samplers,setLayouts,pipelineLayouts,renderPasses,renderPasses2,computePipelines,graphicsPipelines,raytracingPipelines), inject null/scalar/array/object as appropriate. All invalid outer containers reject before callbacks.",
+          "For every resource map, null/scalar/array entry values reject with fixed section/field reason; object entries of non-migrated parsers are intentionally not declared recursively validated. Empty valid maps succeed and recorder-generated empty app/feature objects retain their null metadata semantics."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-containers",
+        "location": "test/parser_input_test.cpp; CTest parser-input-containers"
+      },
+      {
+        "assertions": [
+          "Every migrated field has missing/wrong-type/range table: entry object, hash key, flags, codeSize, code, varintOffset, varintSize. Partial varint pair rejects; wrong lengths, truncations, embedded NUL/invalid alphabet/padding, non-word-aligned/oversized codeSize, offset+size overflow, out-of-payload slice, absent binary payload and malformed varints reject before creation.",
+          "Use UINT64_MAX offsets/codeSize, wraparound combinations and tiny binary payload with huge declared decoded count; assertions establish rejection without disproportionate allocation. Newly exposed deterministic failures become named table fixtures.",
+          "Assert validated hash and shader resource type in diagnostic where available, no callback on rejected single record, correct return value and continued execution. Fresh instances prevent replay cache skips from masking failures."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-shader",
+        "location": "test/parser_input_test.cpp; CTest parser-input-shader"
+      },
+      {
+        "assertions": [
+          "For link.application, link.hash and link.tag, test absent/null/wrong-type/invalid or overflowing hash string and tag narrowing/range cases. Rejections are reason-bearing and contained; diagnostics use fixed labels rather than printing untrusted strings.",
+          "Valid link retains application hash, resource tag, resource hash and computed link hash callback exactly. Application reference accepted hashes remain exact; known identity is not invented for an invalid hash."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-link",
+        "location": "test/parser_input_test.cpp; CTest parser-input-link"
+      },
+      {
+        "assertions": [
+          "Invalid JSON with known RapidJSON parse error and exact byte offset asserts both numeric values in captured log; syntax, malformed-envelope, incompatible-version and nested-field reasons are distinguishable.",
+          "Put a distinctive shader-payload secret marker and hostile long/control-character strings in rejected input. Logs remain bounded, contain fixed reason and available known identity, and contain none of the shader payload/marker/untrusted field values. Successful controls emit no failure diagnostic; no driver-crash attribution occurs."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-diagnostics",
+        "location": "test/parser_input_test.cpp; CTest parser-input-diagnostics"
+      },
+      {
+        "assertions": [
+          "Recorder-generated and fixed known fixtures cover compatible versions, empty maps, application metadata/link, base64 shader and NUL+varint shader. Assert exact callback counts/order, resource hashes, module flags/codeSize/word bytes and handles, application/link callback values and replay suppression.",
+          "Run identical valid controls against unchanged baseline library/runner and candidate. Source compatibility caller uses unchanged public headers/signatures, with no ExternalReplayer/shared-control layout changes. Full core system tests continue to pass."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-valid",
+        "location": "test/parser_input_test.cpp; test/diagnostic_compatibility_test.cpp; CTest parser-input-valid and existing fossilize-system-test/diagnostic-compatibility-test"
+      },
+      {
+        "assertions": [
+          "Launch a subprocess that loops through every deterministic rejected table fixture and emits a continuation marker after each parse plus a final sentinel; assert each return=false and expected reason, exact marker/count union, normal exit=0 and final sentinel.",
+          "After each rejection parse a valid fixture with a fresh or appropriately reset replayer and verify exact creation callback values, proving host work continues. CMake treats timeout/signal/assert/nonzero/missing sentinel as failure. Run in Debug and Release, exceptions OFF and ON."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-sentinel",
+        "location": "test/parser_input_containment.cmake; test/parser_input_test.cpp; CTest parser-input-containment"
+      },
+      {
+        "assertions": [
+          "Run automatically, fixed explicit seed e.g.0x170008, fixed count at least256 and maximum input size4096 bytes with test process timeout<=90s. Seed supported envelopes, base64/varint shader and link records; mutate bytes and structured types/field presence/length/range across migrated shapes only.",
+          "Require nonzero executed corpus count, deterministic corpus digest and iteration IDs, both accepted valid controls and rejected mutations, every parse returns without host termination, every rejected mutation has reason, sentinel/valid control continues after each iteration and captured diagnostics leak no payload.",
+          "Not every byte mutation must reject (unknown fields and other valid changes remain compatible); explicit table fixtures determine semantic rejection expectations. Preserve any discovered crash/incorrect-acceptance mutation as a deterministic named fixture."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-mutations",
+        "location": "test/parser_input_test.cpp; CTest parser-input-mutations"
+      },
+      {
+        "assertions": [
+          "Existing {} archive rejects orderly in Debug and Release normal/master/progress/child paths as applicable; subprocess exits unsuccessful directly, parsed-fail/skip evidence remains known compute tag/hash, zero clean/dirty crash counters and no driver fault claim.",
+          "Revise old Debug-worker-loss and Release-only expectation text; genuine injected lost/recover/order/range controller tests still exercise worker loss and recovery. Full suite preserves existing E7 and clean controls, and public waiting/progress compatibility checks."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-cli",
+        "location": "test/replay_controller_cli.cmake; test/replay_controller_compatibility_test.cpp; existing CTest replay-controller-cli-e5/e6 and replay-outcome-cli-*"
+      },
+      {
+        "assertions": [
+          "With unchanged base f527df07881087e6fb76eae3e0f882ae77bf05b9 parser library, a Debug subprocess for {} or [] and one malformed migrated nested record reproduces missing sentinel/assert/abnormal containment. The candidate same fixture exits0 with false return, specific reason and sentinel.",
+          "Baseline valid controls still pass. Record actual statuses without expecting historical issue13 controller false-success from this already-fixed base; Release baseline may reject {} but lacks new reason/offset guarantees. A source inspection alone is not original-defect execution evidence."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-original-defect",
+        "location": "test/parser_input_containment.cmake baseline override mode; isolated unchanged baseline build"
+      },
+      {
+        "assertions": [
+          "Exact candidate includes one short factual issue-linked Unreleased entry with specific host-continuity benefit and honest bounded nested scope. Independent work-unit and final checkers compare it with actual diff and guideline; no complete parser-audit, Windows, GPU or merged-delivery claim."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P17-changelog",
+        "location": "CHANGELOG.md; local-docs/changelog-guidelines.md"
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/592d/fossilize",
+        "expected": [
+          "Nonempty inventory and full CPU discovered/executed union pass, including every P17 envelope/container/shader/link/diagnostic/valid/sentinel/mutation case and revised e5/e6 plus existing system, utilities, replay/controller outcomes.",
+          "Report compiler/options and actual counts/statuses; successful build or empty suite is insufficient."
+        ],
+        "id": "linux-debug-exceptions-off",
+        "kind": "both",
+        "method": "Each command separately intent-published/wrapped: cmake -S WORKTREE -B /tmp/fossilize-17/ATTEMPT/build/debug-exceptions-off -G Ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_TESTS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF; cmake --build /tmp/fossilize-17/ATTEMPT/build/debug-exceptions-off --parallel 2; ctest --test-dir /tmp/fossilize-17/ATTEMPT/build/debug-exceptions-off --show-only=json-v1; ctest --test-dir /tmp/fossilize-17/ATTEMPT/build/debug-exceptions-off --output-on-failure --parallel 2. Split build/test batches at natural targets/CTest ID sets if necessary so each invocation<=600s, preserving complete discovered CPU test union.",
+        "prerequisites": [
+          "Exact committed candidate, isolated attempt-specific build/work dirs; initialized required submodules; available native Linux CMake/Ninja/compiler; no GPU dependency.",
+          "All parser tests registered with explicit Release-active assertions and bounded subprocess timeouts."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/592d/fossilize",
+        "expected": [
+          "Nonempty inventory and full CPU discovered/executed union pass, including every P17 envelope/container/shader/link/diagnostic/valid/sentinel/mutation case and revised e5/e6 plus existing system, utilities, replay/controller outcomes.",
+          "Report compiler/options and actual counts/statuses; successful build or empty suite is insufficient."
+        ],
+        "id": "linux-debug-exceptions-on",
+        "kind": "both",
+        "method": "Each command separately intent-published/wrapped: cmake -S WORKTREE -B /tmp/fossilize-17/ATTEMPT/build/debug-exceptions-on -G Ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF; cmake --build /tmp/fossilize-17/ATTEMPT/build/debug-exceptions-on --parallel 2; ctest --test-dir /tmp/fossilize-17/ATTEMPT/build/debug-exceptions-on --show-only=json-v1; ctest --test-dir /tmp/fossilize-17/ATTEMPT/build/debug-exceptions-on --output-on-failure --parallel 2. Split build/test batches at natural targets/CTest ID sets if necessary so each invocation<=600s, preserving complete discovered CPU test union.",
+        "prerequisites": [
+          "Exact committed candidate, isolated attempt-specific build/work dirs; initialized required submodules; available native Linux CMake/Ninja/compiler; no GPU dependency.",
+          "All parser tests registered with explicit Release-active assertions and bounded subprocess timeouts."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/592d/fossilize",
+        "expected": [
+          "Nonempty inventory and full CPU discovered/executed union pass, including every P17 envelope/container/shader/link/diagnostic/valid/sentinel/mutation case and revised e5/e6 plus existing system, utilities, replay/controller outcomes.",
+          "Report compiler/options and actual counts/statuses; successful build or empty suite is insufficient."
+        ],
+        "id": "linux-release-exceptions-off",
+        "kind": "both",
+        "method": "Each command separately intent-published/wrapped: cmake -S WORKTREE -B /tmp/fossilize-17/ATTEMPT/build/release-exceptions-off -G Ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_TESTS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF; cmake --build /tmp/fossilize-17/ATTEMPT/build/release-exceptions-off --parallel 2; ctest --test-dir /tmp/fossilize-17/ATTEMPT/build/release-exceptions-off --show-only=json-v1; ctest --test-dir /tmp/fossilize-17/ATTEMPT/build/release-exceptions-off --output-on-failure --parallel 2. Split build/test batches at natural targets/CTest ID sets if necessary so each invocation<=600s, preserving complete discovered CPU test union.",
+        "prerequisites": [
+          "Exact committed candidate, isolated attempt-specific build/work dirs; initialized required submodules; available native Linux CMake/Ninja/compiler; no GPU dependency.",
+          "All parser tests registered with explicit Release-active assertions and bounded subprocess timeouts."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/592d/fossilize",
+        "expected": [
+          "Nonempty inventory and full CPU discovered/executed union pass, including every P17 envelope/container/shader/link/diagnostic/valid/sentinel/mutation case and revised e5/e6 plus existing system, utilities, replay/controller outcomes.",
+          "Report compiler/options and actual counts/statuses; successful build or empty suite is insufficient."
+        ],
+        "id": "linux-release-exceptions-on",
+        "kind": "both",
+        "method": "Each command separately intent-published/wrapped: cmake -S WORKTREE -B /tmp/fossilize-17/ATTEMPT/build/release-exceptions-on -G Ninja -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF; cmake --build /tmp/fossilize-17/ATTEMPT/build/release-exceptions-on --parallel 2; ctest --test-dir /tmp/fossilize-17/ATTEMPT/build/release-exceptions-on --show-only=json-v1; ctest --test-dir /tmp/fossilize-17/ATTEMPT/build/release-exceptions-on --output-on-failure --parallel 2. Split build/test batches at natural targets/CTest ID sets if necessary so each invocation<=600s, preserving complete discovered CPU test union.",
+        "prerequisites": [
+          "Exact committed candidate, isolated attempt-specific build/work dirs; initialized required submodules; available native Linux CMake/Ninja/compiler; no GPU dependency.",
+          "All parser tests registered with explicit Release-active assertions and bounded subprocess timeouts."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/592d/fossilize",
+        "expected": [
+          "All parser tables, valid controls, sentinel and fixed-seed bounded mutations pass under ASan+UBSan with no sanitizer errors. If an environment prevents this required evidence, report unable-to-verify for coordinator decision, never silently downgrade."
+        ],
+        "id": "parser-sanitizers",
+        "kind": "both",
+        "method": "Separately wrapped native Clang Debug configure/build in /tmp/fossilize-17/ATTEMPT/build/parser-sanitize with FOSSILIZE_TESTS=ON FOSSILIZE_CLI=OFF FOSSILIZE_VULKAN_LAYER=OFF FOSSILIZE_ENABLE_EXCEPTIONS=OFF, FOSSILIZE_SANITIZE_ADDRESS=ON and CMAKE_CXX_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all, CMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined; build --target parser-input-test; ctest --show-only=json-v1 and ctest --output-on-failure -R ^parser-input- with ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1. Use supported available compiler and record exact flags.",
+        "prerequisites": [
+          "Exact committed candidate; sanitizer-capable native compiler/runtime; inherited sanitizer flags link runner and production library; isolated output dirs."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/592d/fossilize",
+        "expected": [
+          "P17-original-defect reproduces baseline containment failure for envelope and nested defect, candidate contains both; valid callback/word/hash controls pass on both. Existing public declarations/layout remain compatible."
+        ],
+        "id": "baseline-defect-and-compatibility",
+        "kind": "both",
+        "method": "Use isolated detached unchanged base source and a small baseline Debug core library build; compile the same public-interface parser fixture/sentinel runner against baseline library (no candidate production changes). Execute baseline negative probes and valid controls through the portable containment controller, each wrapped and<=600s, then candidate equivalents. Inspect unchanged public header diffs/source compatibility alongside existing diagnostic/replay compatibility runners. Private runner/adapters may be copied outside source; record actual baseline/candidate SHAs and binary link identities.",
+        "prerequisites": [
+          "Base f527df07881087e6fb76eae3e0f882ae77bf05b9 available; populated core dependency; new runner can be bound to baseline library; no external service effects."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/592d/fossilize",
+        "expected": [
+          "Every planned case maps to actually executed assertion-bearing tests; no vacuous crash acceptance or omitted required coverage; changelog satisfies P17-changelog; bounded follow-up limits and user-waived Windows are explicit; no unsupported driver/GPU/security claims."
+        ],
+        "id": "scope-changelog-review",
+        "kind": "both",
+        "method": "Read complete git diff BASE..CANDIDATE, CHANGELOG.md and authoritative local-docs/changelog-guidelines.md at candidate; inspect production validation and new test assertions/CTest registration independently; read live issue with gh issue view 17 --repo robinwassen/Fossilize --json body,title,state,url and reconcile material drift through coordinator. Record a small sanitized assertion checklist as gate evidence.",
+        "prerequisites": [
+          "Exact base/candidate/plan tuple, immutable original AC1, current issue read, complete diff and actual test inventory/results."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/592d/fossilize",
+        "expected": [
+          "One verified ready PR references only fully satisfied issue17 and includes honest local Linux/sanitizer evidence, bounded parser-slice scope and Windows unverified waiver; issue remains open until approved merge."
+        ],
+        "id": "publication-identity",
+        "kind": "publication",
+        "method": "Coordinator re-reads live issue snapshot and target branch, confirms candidate/base/plan and fresh final acceptance, validates full issue closing reference plus actual PR head/base/readback and issue evidence through existing harness journal.",
+        "prerequisites": [
+          "All required gates passed and independent work-unit plus separate fresh final acceptance on exact unchanged tuple; no unresolved findings; exact issue input reconciled."
+        ]
+      }
+    ],
+    "implementation": [
+      "Add internal checked envelope access/diagnostic helpers in fossilize.cpp. Reject null/zero input before pointer arithmetic and validate parsed root/member/type before Get*/HasMember/Member*. Preserve numeric syntax code and GetErrorOffset and report only fixed field/reason identifiers plus available validated identity.",
+      "Validate recognized container and resource-entry shapes before dispatch. Avoid promoting first-level shape validation into claims of recursive protection of all resource types. Validate application/link primitive values using non-lossy hash parsing, bounded fixed-field diagnostics and safe tag conversion.",
+      "Migrate shaderModules fully: map/entry/key type, required flags/codeSize, mutually coherent base64 versus paired varint fields, unsigned widths, code-size alignment/conversion, actual base64 encoded length/alphabet/padding, overflow-safe binary offset/size and required decoded-word budget. Validate before decoder/allocation. Preserve valid base64 and NUL+varint representations and enqueue semantics.",
+      "Add a CPU-only parser-input-test runner with explicit checks surviving NDEBUG, isolated log capture, deterministic per-case identifiers and fresh StateReplayer instances where cache state would mask malformed fields. Register table, shader, link, diagnostic, valid, containment and mutation cases in test/CMakeLists.txt with process timeouts; inherit project exception/sanitizer flags.",
+      "Use portable CMake execute_process to run actual parser sentinel subprocesses and validate exact normal exit, per-case continuation markers, expected rejection count and final sentinel; never treat any nonzero or signal exit as a successful rejection. Emit case IDs/discovered/executed counts for report mappings. A nonfatal false return alone is insufficient without reason and continuation assertions.",
+      "Revise replay_controller_cli.cmake and its --parser-rejection caller so e5/e6 assert orderly rejection in Debug and Release, no worker-death counters, nonzero aggregate and retained known compute tag/hash. Keep original failure-injection controller lost/recover/order tests unchanged or strengthen them if needed. Update verification.md obsolete assertion claims precisely.",
+      "Add one short accurate [Observability] Unreleased CHANGELOG.md sentence describing the envelope and bounded nested behavior and practical host-continuity benefit, with the full issue URL; use local-docs/changelog-guidelines.md and revise if scope changes."
+    ],
+    "non_goals": [
+      "A complete parser-security audit; recursive validation of application-info feature/pNext fields, sampler/pipeline/layout/render-pass nested Vulkan records, dependency graph limits, adversarial allocator exhaustion, or arbitrary unreadable non-null caller pointers. Those internals remain unaudited after their envelope/entry object guards; malformed nested acceptance is explicitly for every migrated parser, as the original issue permits bounded subsequent patches.",
+      "Public structured outcome API redesign, complete proposed observability-standard compliance, parser callback transaction/rollback guarantees, new wire/FOZ schema, GPU/driver compilation, Steam/runtime or persistence claims.",
+      "Native Windows execution is user-waived and must be reported unverified; retain the immutable original acceptance and portable source/CTest registration, without a native Windows gate. Cross-compilation is not native evidence.",
+      "Harness helper changes or its unrelated Python suite; source verification here uses the existing harness command-intent and verification_lock mechanics."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000008`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n8. **FOS-000008 \u2014 Reject malformed resource envelopes as controlled input errors.** **S for envelope guard, M for nested validation; depends on `FOS-000001` and `FOS-000005`; \u00a71\u2013\u00a72.** [parse:6368](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize.cpp#L6368) indexes `doc[\"version\"].GetInt()` without checking object/member/type (E5). Start with the envelope, reporting invalid shape versus incompatible version; audit nested field reads in subsequent bounded patches. Preserve numeric parse error/offset and resource identity without dumping shader contents. **Check:** `{}`, `[]`, null, missing/string version, malformed nested records; none may assert, terminate the embedding host or be blamed on the driver. Test release and debug builds. This is an outcome/containment prerequisite, not merely prettier logging; no claim of a complete parser-security audit is made here.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Parser table tests in debug and release builds:** Null, arrays, {}, missing/wrong-type version, invalid JSON and malformed nested fixtures for every migrated parser return controlled reason-bearing errors without assertions, signals or host termination. Incompatible numeric versions have a different reason from malformed shape.\n   - **Containment and input-mutation tests:** A subprocess sentinel continues after each rejected input; valid fixtures still parse identically. A fixed-seed mutation corpus is run automatically with a bounded runtime, and newly found failures become deterministic fixtures. Diagnostics expose available error offsets/identity but no shader payload.\n\n<!-- fossilize-migration-v1:FOS-000008 -->\n"
+      }
+    ],
+    "risks": [
+      "Structural checks can accidentally reject valid historical empty application records or shader encodings; recorder-generated round-trip, known-hash fixtures and unchanged baseline valid controls are mandatory.",
+      "Shader codeSize and varint offset+size can overflow or cause disproportionate allocations before rejection. Check type, SIZE_MAX conversion, word alignment, overflow-safe subtraction bounds and encoded/decoded length relationships before allocation; do not add an arbitrary valid-size cap silently.",
+      "Do not replace a full recursive audit with generic assertions-disabled RapidJSON or exception catching. Non-migrated object internals remain explicit scope limits; mutation seeds and coverage must name that boundary.",
+      "E5/E6 currently use Debug assertions to exercise worker loss; simply removing their assertions would leave misleading test names/evidence. Their revised assertions must inspect orderly rejection and zero crash counters, while separate injected worker-loss tests retain status/range/recovery checks."
+    ],
+    "scope": [
+      "One coherent unsplit work unit for https://github.com/robinwassen/Fossilize/issues/17: contain malformed JSON/resource-envelope inputs in StateReplayer::parse with explicit diagnostic reasons, preserve syntax error code/offset, and audit a bounded first nested slice consisting of shaderModules and application link records.",
+      "Envelope validation covers null/empty buffer, JSON syntax, root object, mandatory integer format version, application reference string, applicationInfo/physicalDeviceFeatures object containers, link object container, and all recognized resource-map containers plus each map entry object shape before unchecked RapidJSON access.",
+      "The shader-module slice covers every field read by parse_shader_modules, hash identity, base64 and varint representation shape, size/range arithmetic, and decoder inputs; the application-link slice covers every field read by parse_application_info_link. Include fixtures for each migrated entry point and first-level container guard.",
+      "Update obsolete E5/E6 assertion expectations to controlled input rejection in every build and retain separate meaningful injected worker-loss regressions. Include tests, narrow verification documentation and issue-linked Unreleased changelog entry in the same candidate."
+    ],
+    "verification_policy": {
+      "candidate": "Run committed candidate; clean detached checker/final worktrees at exact SHA, separate build dirs per compiler/config/exception/sanitizer and attempt. Reuse unchanged committed-candidate binaries only when their source identity and full config are recorded; decisive parser cases are rerun independently in each check.",
+      "exclusions": "User-waived native Windows unverified; real GPU/driver layer integration, Steam and complete security audit not run. Harness Python suite unnecessary unless implementation unexpectedly changes harness code, which requires coordinator scope reconciliation.",
+      "matrix": "Linux Debug/Release x FOSSILIZE_ENABLE_EXCEPTIONS OFF/ON, with FOSSILIZE_CLI=ON, FOSSILIZE_VULKAN_LAYER=ON, FOSSILIZE_TESTS=ON, FOSSILIZE_REPLAYER_SPIRV_VAL=ON and FOSSILIZE_TEST_RUNTIME_LAYER=OFF. Build then execute full registered CPU CTest suite in each configuration; split bounded CTest groups if needed without omissions or weakening.",
+      "registration": "CTest JSON inventory must be nonempty and contain all new parser and relevant existing tests. Preserve actual discovered/executed IDs, explicit assertion IDs and counts; full CPU suite excludes only optional real-driver layer integration which remains OFF.",
+      "sanitizer": "Additional native Debug parser target with address+undefined sanitizers and no sanitizer recover, exceptions OFF, CLI/layer may be OFF to bound cost. Run all parser table/valid/sentinel/mutation cases. Useful parser-only evidence, no GPU or full suite sanitizer claim.",
+      "wrapper": "Every configure/build/probe/test command requires coordinator-published command-intent with exact cwd/argv and unique intent_id; execute through .agents/skills/implement-change-harness/scripts/verification_lock.py --repo WORKTREE --timeout 600 --intent-id ID --receipt UNIQUE_PATH -- CHILD_ARGV. Return receipt before the next budget-gated action so the coordinator settles measured contention. Do not nest wrappers."
+    },
+    "version": 1,
+    "work_units": []
+  },
+  "plan_version": 0,
+  "planning_evidence": {
+    "commands_executed": "Only read-only documentation/code/git/gh exploration and private report writing; no build/probe/test/verification commands executed.",
+    "live_issue": "gh issue view 17 --repo robinwassen/Fossilize --json number,title,body,state,url; live definition matched snapshot",
+    "read_only_findings": [
+      "Unchecked version access at fossilize.cpp:6368",
+      "Unchecked shader object fields and offset+size bound at fossilize.cpp:3161-3207",
+      "Unchecked application-link fields at fossilize.cpp:3332-3341",
+      "Assertion-dependent historical E5/E6 expectations in test/replay_controller_cli.cmake; existing --parser-rejection checks are Release-only",
+      "Detached planner submodules are uninitialized; do not infer implementation worktree dependency readiness"
+    ],
+    "source_revision": "f527df07881087e6fb76eae3e0f882ae77bf05b9"
+  },
+  "role": "planner",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/17",
+  "worker_id": "/root/planner_17"
+}
