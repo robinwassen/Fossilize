@@ -41,7 +41,7 @@ if(CASE STREQUAL "e5" OR CASE STREQUAL "e6" OR CASE STREQUAL "parser-normal" OR 
         message(FATAL_ERROR "Structured parser-rejection/no-worker-loss control failed: ${rejection_status}\n${rejection_output}\n${rejection_errors}")
     endif()
     if(NOT errors MATCHES "reason=malformed-envelope field=version" OR
-       NOT errors MATCHES "tag=7.*hash=0x0000000000000605" OR
+       NOT errors MATCHES "tag: 7, hash: 0x0000000000000605" OR
        errors MATCHES "Assertion|segmentation|driver crash")
         message(FATAL_ERROR "Controlled input reason/compute identity missing or crash misattributed: ${errors}")
     endif()
