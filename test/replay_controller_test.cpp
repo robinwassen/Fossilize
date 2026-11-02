@@ -386,7 +386,7 @@ static void validate(int result, unsigned workers, bool zero)
    {
     const auto &v=e.events[i];
     if(scenario=="event-creation")found|=v.phase==Fossilize::ReplayEvent::Create&&v.reason==Fossilize::ReplayEvent::CreationFailed&&v.raw==VK_ERROR_DEVICE_LOST&&v.domain==Fossilize::ReplayEvent::Vulkan&&v.tag==RESOURCE_COMPUTE_PIPELINE&&v.hash>=0x302&&v.hash<0x306;
-    else found|=v.phase==Fossilize::ReplayEvent::Parse&&v.reason==Fossilize::ReplayEvent::InvalidJSON&&v.domain==Fossilize::ReplayEvent::RapidJSON&&v.raw!=0&&v.offset==1&&v.hash==(scenario=="event-initial-parse"?0x102u:0x302u);
+    else found|=v.phase==Fossilize::ReplayEvent::Parse&&v.reason==Fossilize::ReplayEvent::InvalidJSON&&v.domain==Fossilize::ReplayEvent::RapidJSON&&v.raw==rapidjson::kParseErrorObjectMissName&&v.offset==1&&v.hash==(scenario=="event-initial-parse"?0x102u:0x302u);
     checks.require((v.known&(Fossilize::ReplayEvent::Worker|Fossilize::ReplayEvent::Attempt))==(Fossilize::ReplayEvent::Worker|Fossilize::ReplayEvent::Attempt)&&v.worker==0&&v.attempt==1,"M18/controller-worker-reported-identity");
    }
    checks.require(found,"M18/controller-origin-field-preservation");

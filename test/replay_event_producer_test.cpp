@@ -14,7 +14,7 @@ static void event_parse()
  set_thread_log_level(LOG_NONE);
  checks.require(!r.run_parse_work_item(parser,buffer,parse_item(0x101)),"M18/actual-parse-fails");checks.require(s.count==1,"M18/one-origin-event");const auto &e=s.events[0];
  checks.require(e.phase==Parse&&e.reason==c.second&&e.tag==RESOURCE_SHADER_MODULE&&e.hash==0x101&&e.worker==0&&e.attempt==1&&(e.known&(HasTag|HasHash|Worker|Attempt))==(HasTag|HasHash|Worker|Attempt),"M18/parse-origin-fields");
- checks.require(c.second==InvalidJSON?((e.known&(Raw|Offset))==(Raw|Offset)&&e.domain==RapidJSON&&e.raw!=0):(!(e.known&(Raw|Offset))&&e.domain==0),"M18/parse-raw-known-only-at-origin");
+ checks.require(c.second==InvalidJSON?((e.known&(Raw|Offset))==(Raw|Offset)&&e.domain==RapidJSON&&e.raw==rapidjson::kParseErrorObjectMissName&&e.offset==1):(!(e.known&(Raw|Offset))&&e.domain==0),"M18/parse-raw-known-only-at-origin");
  db.blobs[{RESOURCE_SHADER_MODULE,0x101}]=shader_json();checks.require(r.run_parse_work_item(parser,buffer,parse_item(0x101)),"M18/valid-after-rejection");checks.require(s.count==1,"M18/valid-does-not-repeat-stale-error");
  ParseCapture capture;auto good=shader_json();checks.require(parser.parse(r,nullptr,good.data(),good.size())&&!capture.result.reason,"M18/capture-reset-after-failure"); }
  // TLS capture isolation with actual parser calls and no shared StateReplayer.

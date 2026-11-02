@@ -25,13 +25,14 @@ static void roundtrip()
  checks.require(s.count==1 && s.final && s.failed && !s.lost,"M18/exact-roundtrip-count");auto &v=s.events[0];
  checks.require(v.phase==e.phase&&v.reason==e.reason&&v.known==e.known&&v.raw==e.raw&&v.domain==e.domain&&v.offset==e.offset&&v.threshold==e.threshold&&v.elapsed==e.elapsed&&v.hash==0&&v.worker==0&&v.attempt==0,"M18/exact-fields-zero-is-known"); }
  State s;s.begin(0,0);Stream p;Event e;e.phase=Parse;e.reason=GenericParse;feed(p,s,hello()+wire(e));checks.require(s.count==1&&s.events[0].known==0,"M18/absent-fields-remain-absent");
+ Event zero=sample(1);zero.raw=0;State zs;zs.begin(0,0);Stream zp;feed(zp,zs,hello()+wire(zero));checks.require(zs.count==1&&(zs.events[0].known&Raw)&&zs.events[0].raw==0&&zs.events[0].domain==Vulkan,"M18/known-zero-raw-distinct-from-absence");
  checks.require(wire("1 HELLO 0 0")=="FZ18 11:1 HELLO 0 0\n","M18/golden-stable-hello");
  checks.require(Parse==1&&Create==2&&Timeout==3&&InvalidJSON==2&&CreationFailed==16&&NoProgress==32&&Raw==1&&Duration==128&&Vulkan==1&&RapidJSON==2&&Native==3,"M18/stable-identifiers");
 }
 static void streaming()
 {
  const std::string all=hello()+wire(sample())+wire(sample(1))+wire("1 FINAL 1 0");
- for(size_t split=0;split<=all.size();split++) { State s;s.begin(0,0);Stream p;feed(p,s,all.substr(0,split));feed(p,s,all.substr(split));p.finish(s);checks.require(s.count==2&&s.final&&!s.lost,"M18/every-two-part-split"); }
+ for(size_t split=0;split<=all.size();split++) { State s;s.begin(0,0);Stream p;feed(p,s,all.substr(0,split));feed(p,s,all.substr(split));p.finish(s);checks.require(s.count==2&&s.events[0].phase==Parse&&s.events[0].offset==27&&s.events[1].phase==Create&&s.events[1].raw==-4&&s.final&&!s.lost,"M18/every-two-part-split"); }
  State s;s.begin(0,0);Stream p;for(char c:all)feed(p,s,std::string(1,c));p.finish(s);checks.require(s.count==2&&s.final&&!s.lost,"M18/every-byte-split");
  // OFFER is consumed by the startup decoder and never steals a first legacy hash.
  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
@@ -44,6 +45,11 @@ static void malformed()
  const std::string final=wire("1 FINAL 0 0");
  for(size_t n=1;n<final.size();n++) { State s;s.begin(0,0);Stream p;feed(p,s,hello());feed(p,s,final.substr(0,n));p.finish(s);checks.require(!s.final&&s.lost&&!s.successful(),"M18/every-truncated-final-prefix"); }
  std::vector<std::string> bad={"FZ18 99999999999999999999999999:x\n","FZ18 1:abc\n","FZ18 0:\n",std::string(4096,'x')+"\n", "FZ18 11:1 HELLO 0 0\r\n", "FZ18 11:1 HELLO 0 0junk\n"};
+ bad.push_back(wire("1 EVENT 18446744073709551616 2 0 0 0 0 0 0 0 0 0 0 0 0"));
+ bad.push_back(wire("1 EVENT 1 2 2 1 9223372036854775808 0 0 0 0 0 0 0 0 0"));
+ bad.push_back(wire("1 EVENT 1 2 2 1 -9223372036854775809 0 0 0 0 0 0 0 0 0"));
+ bad.push_back(wire("1 EVENT 1 2 0 32 0 0 0 0 0 7 6 0 0 0"));
+ bad.push_back(wire("1 EVENT 1 2 0 0 0 0 1 0 0 0 0 0 0 0"));
  auto nul=hello();nul[9]=0;bad.push_back(nul);auto high=hello();high[10]=char(255);bad.push_back(high);
  auto huge=sample();auto ewire=wire(huge);auto pos=ewire.find(" 3 "); if(pos!=std::string::npos) ewire.replace(pos,3," 18446744073709551616 "); bad.push_back(ewire);
  for(const auto &b:bad) {State s;s.begin(0,0);Stream p;feed(p,s,b);feed(p,s,hello()+wire(sample()));p.finish(s);checks.require((s.lost||s.unsupported)&&!s.successful()&&p.used==0,"M18/malformed-resynchronizes-with-explicit-loss");}
