@@ -41,8 +41,9 @@ zero values and empty half-open ranges remain distinct from absent values.
 Offsets are input bytes; threshold and elapsed are monotonic nanosecond durations.
 Syntax failures alone carry RapidJSON code/offset. Other controlled parser errors
 carry stable reasons without invented raw codes. Parser captures are scoped TLS;
-recursive dependency detection preserves the first origin and later valid calls
-start empty. No shader payload is copied into events.
+Impl dependency detection preserves the first origin, public reentrant calls
+have separate boundaries, explicit nested captures retain their own results,
+and later valid calls clear a reused receiver. No shader payload is copied into events.
 
 Actual parse and creation detectors emit before final reporting, independently
 of verbosity. The healthy dispatcher emits no-progress threshold/elapsed before
@@ -65,7 +66,8 @@ item accounting. Separate legacy failure summaries remain authoritative.
 Orderly shutdown attempts `1 FINAL <failure-0-or-1> <omitted-event-count>` after
 producer threads drain. Rich successful completion requires HELLO, one valid FINAL,
 no observed failure/loss/unsupported context, and independently successful native
-termination. Empty workers also negotiate and finalize. FINAL cannot override a
+termination. Empty assignments negotiate and finalize without initializing Vulkan, preserving
+the controller's original no-device zero-work behavior. FINAL cannot override a
 nonzero or abnormal process status. Missing final evidence preserves received
 origins and leaves unresolved work unsuccessful. A later successful retry retains
 the earlier attempt's evidence.

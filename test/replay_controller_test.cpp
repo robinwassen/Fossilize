@@ -30,7 +30,7 @@ static void install_event_dispatch();
 class EventDevice : public Fossilize::VulkanDevice
 {
 public:
- bool init_device(const Options &o) {bool ret=VulkanDevice::init_device(o);if(ret)install_event_dispatch();return ret;}
+ bool init_device(const Options &o) {if(scenario=="event-empty")return false;bool ret=VulkanDevice::init_device(o);if(ret)install_event_dispatch();return ret;}
 };
 #define VulkanDevice EventDevice
 

@@ -23,12 +23,15 @@ struct Event
 // A caller-owned capture, scoped independently on each parsing thread. Impl
 // recursion uses the same capture, retaining the first detected originating fact.
 Event *&parse_slot();
+bool &parse_boundary();
 struct ParseCapture
 {
 	Event result;
 	Event *previous;
-	ParseCapture() : previous(parse_slot()) { parse_slot() = &result; }
-	~ParseCapture() { parse_slot() = previous; }
+	bool previous_boundary;
+	explicit ParseCapture(bool boundary = false) : previous(parse_slot()), previous_boundary(parse_boundary())
+	{ parse_slot() = &result; parse_boundary() = boundary; }
+	~ParseCapture() { parse_slot() = previous; parse_boundary() = previous_boundary; }
 };
 inline void detected(const Event &e) { auto *p = parse_slot(); if (p && !p->reason) *p = e; }
 

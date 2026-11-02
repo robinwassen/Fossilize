@@ -6397,9 +6397,13 @@ ScratchAllocator &StateReplayer::get_allocator()
 
 bool StateReplayer::parse(StateCreatorInterface &iface, DatabaseInterface *resolver, const void *buffer, size_t size)
 {
-	ReplayEvent::ParseCapture capture;
+	ReplayEvent::ParseCapture capture(true);
 	bool ok = impl->parse(iface, resolver, buffer, size);
-	if (!ok && capture.previous && !capture.previous->reason) *capture.previous = capture.result;
+	// A public reentrant call is independent from the outer parser operation.
+	// Only an explicitly scoped receiver gets this call's result; successful
+	// calls clear it. Impl dependency recursion keeps this operation's slot.
+	if (capture.previous && !capture.previous_boundary)
+		*capture.previous = ok ? ReplayEvent::Event{} : capture.result;
 	return ok;
 }
 

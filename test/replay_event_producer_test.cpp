@@ -34,6 +34,26 @@ static void event_parse()
  recursive.get_per_thread_data().expected_tag=RESOURCE_SHADER_MODULE;recursive.get_per_thread_data().expected_hash=0x101;
  StateReplayer outer;auto good=shader_json();ParseCapture capture;
  checks.require(outer.parse(recursive,nullptr,good.data(),good.size())&&recursive.nested==1&&!capture.result.reason,"M18/successful-outer-clears-reentrant-failure");
+ struct Handled : Replay
+ {
+  unsigned nested=0;
+  bool enqueue_create_shader_module(Fossilize::Hash h,const VkShaderModuleCreateInfo *i,VkShaderModule *m) override
+  {
+   StateReplayer inner;
+   checks.require(!inner.parse(*this,nullptr,"{",1),"M18/reentrant-inner-failure-handled-without-capture");nested++;
+   return Replay::enqueue_create_shader_module(h,i,m);
+  }
+ } handled;
+ handled.get_per_thread_data().expected_tag=RESOURCE_SHADER_MODULE;handled.get_per_thread_data().expected_hash=0x101;
+ StateReplayer handled_parser;ParseCapture handled_result;
+ const std::string outer_bad="{\"version\":6,\"shaderModules\":{\"101\":{\"flags\":0,\"codeSize\":0,\"code\":\"\"},\"102\":{\"flags\":0,\"codeSize\":3,\"code\":\"AAAA\"}}}";
+ checks.require(!handled_parser.parse(handled,nullptr,outer_bad.data(),outer_bad.size())&&handled.nested==1&&handled_result.result.reason==InvalidShader&&handled_result.result.hash==0x102&&!(handled_result.result.known&Raw),"M18/handled-reentrant-failure-cannot-replace-outer-origin");
+ Replay dependent;BlobDatabase resolver;resolver.blobs[{RESOURCE_SHADER_MODULE,0x101}]="{";
+ StateReplayer dependency_parser;ParseCapture dependency_result;
+ const std::string compute="{\"version\":6,\"computePipelines\":{\"201\":{\"flags\":0,\"basePipelineHandle\":\"0\",\"basePipelineIndex\":-1,\"layout\":\"0\",\"stage\":{\"flags\":0,\"stage\":32,\"module\":\"101\",\"name\":\"main\"}}}}";
+ checks.require(!dependency_parser.parse(dependent,&resolver,compute.data(),compute.size())&&dependency_result.result.reason==InvalidJSON&&dependency_result.result.raw==rapidjson::kParseErrorObjectMissName&&dependency_result.result.offset==1,"M18/impl-dependency-recursion-keeps-origin");
+ const char valid[]="{\"version\":6}";
+ checks.require(dependency_parser.parse(dependent,&resolver,valid,sizeof(valid)-1)&&!dependency_result.result.reason&&!dependency_result.result.known,"M18/reused-capture-valid-call-clears-stale-origin");
 }
 static void event_creation()
 {

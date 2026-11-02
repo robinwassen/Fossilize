@@ -1916,7 +1916,18 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 	if (pthread_sigmask(SIG_BLOCK, &mask, &old_mask) < 0)
 		return EXIT_FAILURE;
 
-	int ret = run_normal_process(replayer, databases, nullptr, 0, Global::metadata_fd);
+	int ret;
+	if (rich && replayer_opts.start_graphics_index >= replayer_opts.end_graphics_index &&
+	    replayer_opts.start_compute_index >= replayer_opts.end_compute_index &&
+	    replayer_opts.start_raytracing_index >= replayer_opts.end_raytracing_index)
+	{
+		// Preserve the controller's original no-device zero-assignment path,
+		// while making this launched worker's negotiation/finalization explicit.
+		replayer.work_drained = true;
+		ret = EXIT_SUCCESS;
+	}
+	else
+		ret = run_normal_process(replayer, databases, nullptr, 0, Global::metadata_fd);
 	if (ret == EXIT_FAILURE)
 	{
 		char terminal[64];
