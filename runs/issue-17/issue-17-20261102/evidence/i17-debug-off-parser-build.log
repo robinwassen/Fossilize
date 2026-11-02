@@ -1,0 +1,17 @@
+[1/13] Building C object CMakeFiles/miniz.dir/miniz/miniz.c.o
+[2/13] Linking C static library libminiz.a
+[3/13] Building CXX object CMakeFiles/fossilize.dir/fossilize_application_filter.cpp.o
+[4/13] Building CXX object CMakeFiles/fossilize.dir/varint.cpp.o
+[5/13] Building CXX object CMakeFiles/fossilize.dir/fossilize_db.cpp.o
+[6/13] Building CXX object CMakeFiles/fossilize.dir/path.cpp.o
+[7/13] Building CXX object CMakeFiles/fossilize.dir/fossilize_external_replayer.cpp.o
+[8/13] Building CXX object test/CMakeFiles/varint-test.dir/varint_test.cpp.o
+[9/13] Building CXX object test/CMakeFiles/parser-input-test.dir/parser_input_test.cpp.o
+FAILED: [code=1] test/CMakeFiles/parser-input-test.dir/parser_input_test.cpp.o 
+/usr/bin/c++  -I/home/robin/.codex/worktrees/592d/fossilize -I/home/robin/.codex/worktrees/592d/fossilize/rapidjson/include -I/home/robin/.codex/worktrees/592d/fossilize/khronos -I/home/robin/.codex/worktrees/592d/fossilize/miniz -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fno-exceptions -pthread -MD -MT test/CMakeFiles/parser-input-test.dir/parser_input_test.cpp.o -MF test/CMakeFiles/parser-input-test.dir/parser_input_test.cpp.o.d -o test/CMakeFiles/parser-input-test.dir/parser_input_test.cpp.o -c /home/robin/.codex/worktrees/592d/fossilize/test/parser_input_test.cpp
+/home/robin/.codex/worktrees/592d/fossilize/test/parser_input_test.cpp: In function ‘void {anonymous}::valid_controls(DiagnosticChecks&)’:
+/home/robin/.codex/worktrees/592d/fossilize/test/parser_input_test.cpp:234:191: error: ‘compute_hash_application_info_link’ is not a member of ‘Fossilize::Hashing’
+  234 |                 c.require(creator.link_count == 1 && creator.link_app == 0x10 && creator.link_resource == 0x20 && creator.link_tag == RESOURCE_SHADER_MODULE && creator.link_hash == Hashing::compute_hash_application_info_link(0x10, RESOURCE_SHADER_MODULE, 0x20), "valid/exact-link");
+      |                                                                                                                                                                                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[10/13] Building CXX object CMakeFiles/fossilize.dir/fossilize.cpp.o
+ninja: build stopped: subcommand failed.
