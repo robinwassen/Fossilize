@@ -1,0 +1,844 @@
+{
+  "attempt_id": "plan-1",
+  "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+  "candidate_sha": null,
+  "input_revision": 1,
+  "input_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+  "observations": {
+    "executed_verification": "None: read-only source/Git/gh inspection only; no tests, builds or probes run.",
+    "live_issue": "Read #18 and parent #8 independently with gh issue view --repo robinwassen/Fossilize. Immutable AC1 preserved byte-for-byte from state.original.",
+    "reviewed_guidance": [
+      "AGENTS.md",
+      "local-docs/README.md",
+      "local-docs/project-descriptor.md",
+      "local-docs/project-pillars.md",
+      "local-docs/issue-workflow.md",
+      "local-docs/verification.md",
+      "local-docs/changelog-guidelines.md",
+      ".agents/skills/implement-change-harness/SKILL.md",
+      ".agents/skills/implement-change-harness/references/roles.md",
+      ".agents/skills/implement-change-harness/references/state.md",
+      "local-docs/specs/observability-standard.md",
+      "local-docs/specs/observability-validation.md",
+      "local-docs/specs/observability-adversarial-review.md"
+    ],
+    "source_revision": "4ea747ffa215f8057d12aa5525ba0e4497961e7d"
+  },
+  "operation": "plan",
+  "plan": {
+    "cases": [
+      {
+        "assertions": [
+          "Explicit stable numeric phase/reason/raw-error-domain identifiers and known-field bits round-trip without relying on enum declaration order or sentinel values.",
+          "Cover parse, creation and timeout producers; signed Vulkan error, parser error code/offset and native error retain exact domain/value when available. Unknown raw error stays unknown, not VK_SUCCESS.",
+          "Known zero hash/raw value/worker/attempt and empty ranges remain distinguishable from absent fields; absent tag/hash/range/worker/attempt does not acquire a value during serialization or controller association. Controller-owned worker/attempt/range context is explicitly marked as controller-known, not worker-reported.",
+          "Unknown reason/phase/raw-domain numeric IDs remain opaque/unknown and never map to a known category or success; stable supported IDs retain meanings in golden wire fixtures."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-01",
+        "location": "new private result/event header; test/replay_event_test.cpp",
+        "registered_tests": [
+          "replay-event-unit-roundtrip",
+          "replay-event-unit-unknown"
+        ]
+      },
+      {
+        "assertions": [
+          "For every representative legal OFFER/HELLO/EVENT/FINAL frame, feed every two-part split including 0 and full length, then every-byte fragmentation and multiple concatenated frames; exact emitted records/order/fields match the unsplit golden fixture.",
+          "Explicit byte count handles embedded NUL, non-ASCII/invalid bytes, CR/LF variants, decimal overflow, signed overflow, invalid flags/field combinations, invalid lengths and trailing junk without C-string truncation or unchecked numeric conversion.",
+          "Feed each truncated prefix then EOF: no partial record is accepted; retained protocol state exposes incomplete/truncated evidence. Oversized declared/actual records and arbitrarily long unterminated input never exceed the documented fixed buffer/frame/storage caps; discard/recovery never joins an invalid prefix to a later valid record.",
+          "After malformed/oversized/unknown-version/reason input, feed a valid frame and assert the documented resynchronization policy, explicit protocol uncertainty and no fabricated successful final. Unknown frame kinds are safely bounded and accounted for."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-02",
+        "location": "shared length-aware stream decoder; test/replay_event_test.cpp",
+        "registered_tests": [
+          "replay-event-unit-streaming",
+          "replay-event-unit-malformed"
+        ]
+      },
+      {
+        "assertions": [
+          "Parent explicitly offers bounded supported versions before child replay; child selects an offered supported version in HELLO, controller validates that selection before accepting new data. Suggested transport is first-line OFFER on existing stdin hash-list pipe, followed by normal module hashes and EOF; HELLO precedes events on output. This is an actual offer/selection exchange, not just an unexplained hard-coded version token.",
+          "Supported overlap succeeds; no overlap, absent/malformed selection, data before HELLO, duplicate/conflicting HELLO, unsupported selection and unknown wire version leave structured context incomplete/unsupported. No unbounded handshake wait or new pipe deadlock.",
+          "Absent offer on direct legacy slave invocation remains an explicit legacy path with old message semantics; no negotiated rich-evidence claim. Preserve first legacy faulty-module hash rather than consuming it as an offer.",
+          "Negotiation and stream parser state reset per worker attempt. Stale worker/attempt mismatches cannot overwrite the current attempt or certify its FINAL."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-03",
+        "location": "shared negotiation state; both platform startup/input paths; test/replay_event_test.cpp",
+        "registered_tests": [
+          "replay-event-unit-negotiation",
+          "replay-event-unit-attempts"
+        ]
+      },
+      {
+        "assertions": [
+          "Actual StateReplayer controlled input detection exposes private structured reason data independently of log level/callback; at least invalid-json, incompatible-version, malformed-envelope and a validated shader failure distinguish stable reasons. Invalid JSON retains its known RapidJSON code/offset, while non-syntax failures mark unavailable raw/offset context unknown.",
+          "Carry that originating reason into actual replay worker events for initial-resource and worker-queue parsing, with known archive tag/hash; a generic bool-only fallback is explicitly generic/unknown and never infers detailed reasons from prose.",
+          "A valid parse follows each failure, with exact expected callbacks/bytes and cleared stale error state; concurrent threads and recursive dependency parsing do not cross-contaminate per-parse evidence. Keep existing bool parse/callback interfaces and avoid copying shader payload into event fields."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-04",
+        "location": "fossilize.cpp controlled parser diagnostics; cli/fossilize_replay.cpp parse paths; test/replay_event_producer_test.cpp or replay_outcome_test.cpp",
+        "registered_tests": [
+          "replay-event-producer-parse"
+        ]
+      },
+      {
+        "assertions": [
+          "Actual controlled graphics, compute, raytracing and shader creation failures preserve creation phase/reason, exact signed VkResult with Vulkan domain, known tag/hash, and applicable worker/attempt. Successful creation emits no failure event.",
+          "A compile-required probe followed by successful fallback remains successful; a failed fallback emits the actual failure, with existing item outcomes, cache gates and loop semantics retained.",
+          "Creation failure is emitted from its detector, before orderly final reporting; first bounded retained evidence and any omitted-event count/loss bit remain honest. Parallel producer writes cannot interleave into accepted corrupt records."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-05",
+        "location": "cli/fossilize_replay.cpp creation failure sites; test/replay_event_producer_test.cpp or replay_outcome_test.cpp",
+        "registered_tests": [
+          "replay-event-producer-creation"
+        ]
+      },
+      {
+        "assertions": [
+          "Actual no-progress detection emits timeout reason/phase and threshold/elapsed ns before termination; work deadline, controller heartbeat and cleanup origins remain distinct from termination request/observed native status.",
+          "Retain known native delivery failure domain/value; successful syscall acceptance is not observed termination. A multithread no-progress timeout has no invented individual culprit hash; retain known worker/attempt/assigned scope.",
+          "Existing fake-clock/barrier timeout tests and successful disabled/reset/recovery controls pass. Unknown external SIGKILL remains unknown cause, with observed native status separate."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-06",
+        "location": "cli/replay_timeout.hpp; both platform timeout producers; test/replay_timeout_test.cpp and replay_timeout_controller_test.cpp",
+        "registered_tests": [
+          "replay-event-producer-timeout",
+          "replay-timeout-unit-*",
+          "replay-timeout-controller-*"
+        ]
+      },
+      {
+        "assertions": [
+          "Run real production worker parse and creation paths and production timeout dispatcher through actual fork/CreateProcess, pipe transport and production controller parsing with worker prose disabled at source (no log callback oracle). Use dependency-complete FOZ fixtures, read back tag/hash/payload before running, and controlled fake Vulkan dispatch/time.",
+          "Controller retained structured facts distinguish actual parse, create and timeout reasons and verify raw values, phase, known tag/hash or assigned range, worker and attempt. No prose parsing. Exercise progress absent/present on Linux and keep portable Windows absent-progress registration plus named-progress CLI controls.",
+          "Successful populated and zero-work negotiated controls require a valid FINAL and successful native status; controlled parse/create failures remain nonzero without crash restart/counter inflation, and bounded sibling cleanup/reaping still holds.",
+          "Initial worker and retry attempts carry their own identities; a successful retry can finish required work while retaining timeout evidence from the earlier attempt."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-07",
+        "location": "test/replay_event_controller_test.cpp or production-including existing controller fixtures; both robust platform controllers",
+        "registered_tests": [
+          "replay-event-controller-clean",
+          "replay-event-controller-empty",
+          "replay-event-controller-parse",
+          "replay-event-controller-creation",
+          "replay-event-controller-timeout",
+          "replay-event-controller-retry",
+          "replay-event-controller-progress"
+        ]
+      },
+      {
+        "assertions": [
+          "Kill or exit worker before its first report and assert observed native status, controller-known worker/attempt/ranges, unknown root cause/resource identity and unsuccessful unresolved work.",
+          "Drop complete FINAL, truncate FINAL at each relevant boundary, drop HELLO, and exit zero after reporting only events: negotiated result remains incomplete/unknown and cannot claim complete success. Preserve any independently received originating parse/create/timeout facts.",
+          "Truncated/oversized/unknown-version/reason reports are integrated through actual controller transport, not just a parser unit; protocol loss/unsupported fields are observable in retained state. An EOF callback must run on normal shutdown, pending Windows overlapped completion, and error cleanup.",
+          "A valid FINAL does not override nonzero/abnormal native termination; duplicate/conflicting FINAL and data from a prior attempt cannot certify success. No inferred individual culprit from a range alone."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-08",
+        "location": "test/replay_event_controller_test.cpp; both platform EOF/shutdown paths",
+        "registered_tests": [
+          "replay-event-controller-pre-report-death",
+          "replay-event-controller-missing-final",
+          "replay-event-controller-truncated",
+          "replay-event-controller-unknown"
+        ]
+      },
+      {
+        "assertions": [
+          "Golden legacy CRASH, MODULE[_UUID], GRAPHICS/COMPUTE/RAYTRACE, *_VERR, heartbeat, TIMEOUT/TERMINATE and REPLAY_FAILED fixtures preserve their prior meanings and optional shared-ring forwarding. New rich records are additive internal protocol; no general mixed-version rich-evidence guarantee.",
+          "Existing public declarations, ExternalReplayer options/progress source interface and SharedControlBlock version/layout remain unchanged; current normal/master/progress/direct-slave invocations continue to work.",
+          "Compile existing diagnostic and ExternalReplayer compatibility consumers with actual input-revision public headers first on include path, link candidate libraries, and run against candidate CLI plus readback-checked fixtures. Cached wait/query failures and ordinary successful invocation remain correct. This is source/invocation evidence, not a prebuilt C++ ABI claim."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-09",
+        "location": "test/replay_event_test.cpp fixed golden fixtures; existing compatibility runners; old-header consumer build",
+        "registered_tests": [
+          "replay-event-unit-legacy",
+          "diagnostic-compatibility-test",
+          "replay-controller-cli-compatibility",
+          "replay-outcome-cli-compatibility",
+          "replay-event-old-header-compatibility"
+        ]
+      },
+      {
+        "assertions": [
+          "Run deterministic fixed-seed byte/structured stream corpus (at least 512 cases, maximum 4096 bytes per input, test watchdog at most 90s), including legal frames and malformed framing/numeric/unknown fields, followed by known valid continuation. Record seed, corpus digest and accepted/rejected/lost counts; sanitizer instrumentation covers shared decoder and any changed parser-result capture.",
+          "In a disposable exact-candidate copy, disable originating detail emission for a parse or creation failure while keeping aggregate failure status; the corresponding real-controller test must compile and fail its explicit M18 field-preservation assertion.",
+          "In another bounded semantic mutation, allow negotiated zero-exit without FINAL to complete; missing-final test must compile and fail explicit M18 uncertainty/success assertion while the clean control passes. Compilation error, crash or watchdog expiry is not defect detection. These are sensitivity controls, not claims of an unchanged-baseline runtime reproduction."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-10",
+        "location": "test/replay_event_test.cpp registered mutation corpus; independent isolated semantic mutations",
+        "registered_tests": [
+          "replay-event-unit-mutations",
+          "replay-event-controller-parse",
+          "replay-event-controller-missing-final"
+        ]
+      },
+      {
+        "assertions": [
+          "One short factual [Observability] Unreleased changelog sentence links full issue #18 URL and describes transported reasons/known context without whole-standard, GPU, Windows-run or persistence claims.",
+          "Document stable numeric IDs, known bits/raw domains/units, framing bounds, offer/selection and legacy behavior, EOF/FINAL uncertainty, thread/signal transport restrictions and the Linux verification procedure. Explicitly state native Windows execution was waived and remains unverified."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "P18-11",
+        "location": "CHANGELOG.md; local-docs/verification.md; private event/protocol documentation",
+        "registered_tests": [
+          "candidate-diff-review"
+        ]
+      }
+    ],
+    "compatibility": {
+      "behavior": "Preserve successful old normal/master/progress/direct-slave invocations and existing failure outcomes; intentionally prevent negotiated missing FINAL plus zero native exit from certifying rich completion.",
+      "binary": "No general C++ binary ABI guarantee claimed.",
+      "protocol": "Additive internal negotiated extension; existing progress/shared-ring layout/version and legacy message meanings preserved. Rich evidence requires offered/selected supported version. Legacy absent-offer direct child mode remains explicit and cannot claim rich result coverage.",
+      "source": "Preserve current public declarations/layout; verify actual input-header consumer compile/link/run."
+    },
+    "execution": {
+      "bindings": {
+        "BUILD_ROOT": "/tmp/fossilize-issue18/build",
+        "OUTPUT_ROOT": "/tmp/fossilize-issue18/output",
+        "SOURCE": "/home/robin/.codex/worktrees/9d8a/fossilize"
+      },
+      "bounds": "Existing four-hour run deadline, max three repairs and one replan; 600s maximum child verification command. Do not add unrelated suites or hardware work.",
+      "checker_bindings": "Coordinator supplies a new detached exact-candidate SOURCE and fresh role-specific BUILD_ROOT/OUTPUT_ROOT; resolve every template to exact argv/cwd before publishing its command intent. No dirty-source build evidence.",
+      "command_policy": "Every build/test/probe/verification child command is separately published by coordinator then run under python3 -B SOURCE/.agents/skills/implement-change-harness/scripts/verification_lock.py --repo SOURCE --timeout 600 --intent-id UNIQUE --receipt FRESH_RECEIPT -- CHILD_ARGV. No nested wrapper; return receipt/log/status for coordinator command-wait settlement. Configuration/build/discovery/test commands are separate; plan file authoring and read-only source/gh inspection are not test execution.",
+      "environment": "Linux CPU-only; Debug/Release exceptions OFF/ON; CLI/layer/SPIR-V validation ON, runtime-layer OFF. Maximum four build jobs initially, serial CTest protects fixed-name fixtures. Each invocation deadline 600s; process tests additionally use 30-90s watchdogs.",
+      "evidence": "Record full candidate/base/plan/attempt binding, exact argv/cwd/environment, exit status, small sanitized log, discovery JSON and executed/JUnit ID union per configuration; no skipped mandatory applicable Linux tests. Separate passed, failed, unavailable, incomplete and waived/unverified.",
+      "naming": "If sharing existing producer runners avoids redundant compiled production copies, use their actual executable target names in sanitizer build command and retain all requested producer case assertions/mappings; record exact resolved commands. A renamed test is not an omitted assertion.",
+      "prerequisites": "Recursive submodules are currently uninitialized in the planner detached tree. Initialize the implementation/checker required modules before configuring. Check actual compiler/CMake/Ninja availability and compatible Python; no planning builds/probes were run.",
+      "tool_paths": "Coordinator located /tmp/fossilize-10/tools/cmake/data/bin/cmake and /tmp/fossilize-10/tools/bin/ninja by filesystem reads; use an explicitly recorded PATH including both tool directories and the existing environment PATH, or resolve those absolute executables. /usr/bin/g++ is GCC13. Actual tool-version probes still require published command intents. Clang availability is not yet verified; GCC ASan+UBSan with recorded equivalent flags is permitted.",
+      "windows_waiver": "Explicit user instruction waives native Windows verification only. Both Windows production transport/startup/shutdown implementation and portable CTest registration remain required. Report Windows runtime unverified; Linux evidence does not establish Windows behavior."
+    },
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{SOURCE}",
+        "expected": [
+          "P18-01 through P18-11 implemented without prose-derived categories; both platform source paths use the common protocol with real offer/selection and EOF finalization.",
+          "No unbounded parser allocation, unsafe unchecked numeric conversion, fabricated known fields, accidental public/progress layout change or installed test injection surface.",
+          "Native Windows execution waiver remains explicit. Changelog meets local guideline and final scope. No harness source changes unless separately justified; full harness Python suite is irrelevant otherwise."
+        ],
+        "id": "G18-source-review",
+        "kind": "both",
+        "method": "Independent entire base-to-candidate diff review plus review of committed Release-active assertions, fixture semantics and CTest registration. Read live root and parent via explicit gh repository; retain immutable requirements.",
+        "prerequisites": "Exact committed clean candidate and base; same plan v1; no material live input drift."
+      },
+      {
+        "commands": [
+          {
+            "argv": [
+              "cmake",
+              "-S",
+              "{SOURCE}",
+              "-B",
+              "{BUILD}",
+              "-G",
+              "Ninja",
+              "-DCMAKE_BUILD_TYPE={CONFIG}",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS={EXCEPTIONS}",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "bindings": {
+              "BUILD": "{BUILD_ROOT}/linux-debug-off",
+              "CONFIG": "Debug",
+              "EXCEPTIONS": "OFF"
+            }
+          },
+          {
+            "argv": [
+              "cmake",
+              "--build",
+              "{BUILD_ROOT}/linux-debug-off",
+              "--parallel",
+              "4"
+            ]
+          },
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/linux-debug-off",
+              "--show-only=json-v1"
+            ],
+            "output": "{OUTPUT_ROOT}/debug-off-discovery.json"
+          },
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/linux-debug-off",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--parallel",
+              "1",
+              "--output-junit",
+              "{OUTPUT_ROOT}/debug-off-ctest.xml"
+            ]
+          }
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{SOURCE}",
+        "expected": [
+          "Nonzero discovery and exact discovered/executed test ID union; all pass with no skipped/missing/timeout cases. Existing inventory was reported as 214 Linux tests before additions; derive actual count rather than hard-code it.",
+          "New protocol/producer/controller/compatibility cases registered and all P18 runtime cases mapped to explicit assertions active under NDEBUG. Existing diagnostic, parser, outcome/cache, controller, timeout, fork-child and utility regressions remain passing."
+        ],
+        "id": "G18-cpu-debug-off",
+        "kind": "both",
+        "method": "Execute full discovered non-GPU CPU CTest inventory, with configuration/build/discovery/test as separate bounded commands. Never substitute a focused subset for the full inventory.",
+        "prerequisites": "Populated recursive submodules at pinned commits; CMake/Ninja/C++ toolchain and Python compatible with dependencies; sufficient disk; exact committed candidate."
+      },
+      {
+        "commands": [
+          {
+            "argv": [
+              "cmake",
+              "-S",
+              "{SOURCE}",
+              "-B",
+              "{BUILD}",
+              "-G",
+              "Ninja",
+              "-DCMAKE_BUILD_TYPE={CONFIG}",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS={EXCEPTIONS}",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "bindings": {
+              "BUILD": "{BUILD_ROOT}/linux-debug-on",
+              "CONFIG": "Debug",
+              "EXCEPTIONS": "ON"
+            }
+          },
+          {
+            "argv": [
+              "cmake",
+              "--build",
+              "{BUILD_ROOT}/linux-debug-on",
+              "--parallel",
+              "4"
+            ]
+          },
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/linux-debug-on",
+              "--show-only=json-v1"
+            ],
+            "output": "{OUTPUT_ROOT}/debug-on-discovery.json"
+          },
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/linux-debug-on",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--parallel",
+              "1",
+              "--output-junit",
+              "{OUTPUT_ROOT}/debug-on-ctest.xml"
+            ]
+          }
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{SOURCE}",
+        "expected": [
+          "Nonzero discovery and exact discovered/executed test ID union; all pass with no skipped/missing/timeout cases. Existing inventory was reported as 214 Linux tests before additions; derive actual count rather than hard-code it.",
+          "New protocol/producer/controller/compatibility cases registered and all P18 runtime cases mapped to explicit assertions active under NDEBUG. Existing diagnostic, parser, outcome/cache, controller, timeout, fork-child and utility regressions remain passing."
+        ],
+        "id": "G18-cpu-debug-on",
+        "kind": "both",
+        "method": "Execute full discovered non-GPU CPU CTest inventory, with configuration/build/discovery/test as separate bounded commands. Never substitute a focused subset for the full inventory.",
+        "prerequisites": "Populated recursive submodules at pinned commits; CMake/Ninja/C++ toolchain and Python compatible with dependencies; sufficient disk; exact committed candidate."
+      },
+      {
+        "commands": [
+          {
+            "argv": [
+              "cmake",
+              "-S",
+              "{SOURCE}",
+              "-B",
+              "{BUILD}",
+              "-G",
+              "Ninja",
+              "-DCMAKE_BUILD_TYPE={CONFIG}",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS={EXCEPTIONS}",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "bindings": {
+              "BUILD": "{BUILD_ROOT}/linux-release-off",
+              "CONFIG": "Release",
+              "EXCEPTIONS": "OFF"
+            }
+          },
+          {
+            "argv": [
+              "cmake",
+              "--build",
+              "{BUILD_ROOT}/linux-release-off",
+              "--parallel",
+              "4"
+            ]
+          },
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/linux-release-off",
+              "--show-only=json-v1"
+            ],
+            "output": "{OUTPUT_ROOT}/release-off-discovery.json"
+          },
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/linux-release-off",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--parallel",
+              "1",
+              "--output-junit",
+              "{OUTPUT_ROOT}/release-off-ctest.xml"
+            ]
+          }
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{SOURCE}",
+        "expected": [
+          "Nonzero discovery and exact discovered/executed test ID union; all pass with no skipped/missing/timeout cases. Existing inventory was reported as 214 Linux tests before additions; derive actual count rather than hard-code it.",
+          "New protocol/producer/controller/compatibility cases registered and all P18 runtime cases mapped to explicit assertions active under NDEBUG. Existing diagnostic, parser, outcome/cache, controller, timeout, fork-child and utility regressions remain passing."
+        ],
+        "id": "G18-cpu-release-off",
+        "kind": "both",
+        "method": "Execute full discovered non-GPU CPU CTest inventory, with configuration/build/discovery/test as separate bounded commands. Never substitute a focused subset for the full inventory.",
+        "prerequisites": "Populated recursive submodules at pinned commits; CMake/Ninja/C++ toolchain and Python compatible with dependencies; sufficient disk; exact committed candidate."
+      },
+      {
+        "commands": [
+          {
+            "argv": [
+              "cmake",
+              "-S",
+              "{SOURCE}",
+              "-B",
+              "{BUILD}",
+              "-G",
+              "Ninja",
+              "-DCMAKE_BUILD_TYPE={CONFIG}",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS={EXCEPTIONS}",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "bindings": {
+              "BUILD": "{BUILD_ROOT}/linux-release-on",
+              "CONFIG": "Release",
+              "EXCEPTIONS": "ON"
+            }
+          },
+          {
+            "argv": [
+              "cmake",
+              "--build",
+              "{BUILD_ROOT}/linux-release-on",
+              "--parallel",
+              "4"
+            ]
+          },
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/linux-release-on",
+              "--show-only=json-v1"
+            ],
+            "output": "{OUTPUT_ROOT}/release-on-discovery.json"
+          },
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/linux-release-on",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--parallel",
+              "1",
+              "--output-junit",
+              "{OUTPUT_ROOT}/release-on-ctest.xml"
+            ]
+          }
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{SOURCE}",
+        "expected": [
+          "Nonzero discovery and exact discovered/executed test ID union; all pass with no skipped/missing/timeout cases. Existing inventory was reported as 214 Linux tests before additions; derive actual count rather than hard-code it.",
+          "New protocol/producer/controller/compatibility cases registered and all P18 runtime cases mapped to explicit assertions active under NDEBUG. Existing diagnostic, parser, outcome/cache, controller, timeout, fork-child and utility regressions remain passing."
+        ],
+        "id": "G18-cpu-release-on",
+        "kind": "both",
+        "method": "Execute full discovered non-GPU CPU CTest inventory, with configuration/build/discovery/test as separate bounded commands. Never substitute a focused subset for the full inventory.",
+        "prerequisites": "Populated recursive submodules at pinned commits; CMake/Ninja/C++ toolchain and Python compatible with dependencies; sufficient disk; exact committed candidate."
+      },
+      {
+        "commands": [
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/linux-debug-off",
+              "--output-on-failure",
+              "--no-tests=error",
+              "-R",
+              "^(replay-event-controller-|replay-timeout-|fork-child-)",
+              "--repeat",
+              "until-fail:3"
+            ]
+          }
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{SOURCE}",
+        "expected": [
+          "Three consecutive passes; no timing sleep oracle, unreaped child or leaked IPC handles; no repeated stale evidence between attempts."
+        ],
+        "id": "G18-repeat",
+        "kind": "both",
+        "method": "Repeat new real-controller cases and retained timeout/fork-child cases in Debug exceptions OFF, with deterministic barriers/clocks and per-process watchdogs.",
+        "prerequisites": "Passing Linux Debug OFF build and isolated registered working directories."
+      },
+      {
+        "commands": [
+          {
+            "argv": [
+              "cmake",
+              "-S",
+              "{SOURCE}",
+              "-B",
+              "{BUILD}",
+              "-G",
+              "Ninja",
+              "-DCMAKE_BUILD_TYPE={CONFIG}",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS={EXCEPTIONS}",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+              "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+              "-DCMAKE_CXX_COMPILER=clang++",
+              "-DCMAKE_C_COMPILER=clang",
+              "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer",
+              "-DCMAKE_C_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer",
+              "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined",
+              "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=undefined"
+            ],
+            "bindings": {
+              "BUILD": "{BUILD_ROOT}/parser-asan-ubsan",
+              "CONFIG": "Debug",
+              "EXCEPTIONS": "OFF"
+            }
+          },
+          {
+            "argv": [
+              "cmake",
+              "--build",
+              "{BUILD_ROOT}/parser-asan-ubsan",
+              "--parallel",
+              "4",
+              "--target",
+              "replay-event-test",
+              "parser-input-test",
+              "varint-test",
+              "replay-event-producer-test"
+            ]
+          },
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/parser-asan-ubsan",
+              "--show-only=json-v1"
+            ],
+            "output": "{OUTPUT_ROOT}/sanitizer-discovery.json"
+          },
+          {
+            "argv": [
+              "ctest",
+              "--test-dir",
+              "{BUILD_ROOT}/parser-asan-ubsan",
+              "--output-on-failure",
+              "--no-tests=error",
+              "-R",
+              "^(replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+            ],
+            "environment": {
+              "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+              "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+            }
+          }
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{SOURCE}",
+        "expected": [
+          "All new replay-event-unit-* including mutation corpus, producer-parse/creation where supported, all ^parser-input- and varint-system-test pass without ASan/UBSan reports; assert no empty regex selection. Any environment failure is reported as unavailable/incomplete and requires coordinator decision, not a silent downgrade."
+        ],
+        "id": "G18-parser-sanitizers",
+        "kind": "both",
+        "method": "Build the shared codec/parser and relevant producer/parser runners with ASan+UBSan in a separate Debug exceptions OFF directory; verify effective compile/link flags. Execute bounded streaming corpus plus all migrated input parser cases, not the entire process/signal suite under sanitizer.",
+        "prerequisites": "Available Clang or GCC ASan/UBSan runtimes; select available compiler explicitly and record its resolved command. Candidate instrumented changed translation units; no suppressed sanitizer faults."
+      },
+      {
+        "commands": [
+          {
+            "argv": [
+              "git",
+              "show",
+              "4ea747ffa215f8057d12aa5525ba0e4497961e7d:fossilize.hpp"
+            ],
+            "output": "{OUTPUT_ROOT}/base-headers/fossilize.hpp"
+          },
+          {
+            "argv": [
+              "git",
+              "show",
+              "4ea747ffa215f8057d12aa5525ba0e4497961e7d:fossilize_external_replayer.hpp"
+            ],
+            "output": "{OUTPUT_ROOT}/base-headers/fossilize_external_replayer.hpp"
+          },
+          {
+            "argv": [
+              "c++",
+              "-std=c++14",
+              "-I{OUTPUT_ROOT}/base-headers",
+              "-I{SOURCE}",
+              "-I{SOURCE}/test",
+              "-I{SOURCE}/khronos",
+              "{SOURCE}/test/diagnostic_compatibility_test.cpp",
+              "{BUILD_ROOT}/linux-debug-off/libfossilize.a",
+              "{BUILD_ROOT}/linux-debug-off/libminiz.a",
+              "-pthread",
+              "-ldl",
+              "-lrt",
+              "-o",
+              "{OUTPUT_ROOT}/old-diagnostic-caller"
+            ]
+          },
+          {
+            "argv": [
+              "c++",
+              "-std=c++14",
+              "-I{OUTPUT_ROOT}/base-headers",
+              "-I{SOURCE}",
+              "-I{SOURCE}/test",
+              "-I{SOURCE}/khronos",
+              "{SOURCE}/test/replay_outcome_compatibility_test.cpp",
+              "{BUILD_ROOT}/linux-debug-off/libfossilize.a",
+              "{BUILD_ROOT}/linux-debug-off/libminiz.a",
+              "-pthread",
+              "-ldl",
+              "-lrt",
+              "-o",
+              "{OUTPUT_ROOT}/old-external-caller"
+            ]
+          },
+          {
+            "argv": [
+              "cmake",
+              "-DCALLER={OUTPUT_ROOT}/old-diagnostic-caller",
+              "-DREPLAY={BUILD_ROOT}/linux-debug-off/cli/fossilize-replay",
+              "-DWORK={OUTPUT_ROOT}/old-diagnostic-work",
+              "-P",
+              "{SOURCE}/test/diagnostic_compatibility.cmake"
+            ]
+          },
+          {
+            "argv": [
+              "{OUTPUT_ROOT}/old-external-caller",
+              "{BUILD_ROOT}/linux-debug-off/cli/fossilize-replay",
+              "{BUILD_ROOT}/linux-debug-off/test/replay-outcome-cli-compatibility/fixture.foz"
+            ]
+          }
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{SOURCE}",
+        "expected": [
+          "Old caller sources compile and run unchanged with candidate; status/cache-query/progress behavior and public bool parse/record calls pass. Full signatures/layout diff has no undocumented public changes. No general binary ABI claim."
+        ],
+        "id": "G18-old-headers",
+        "kind": "both",
+        "method": "Prepare an external include directory containing actual base public header bytes using git show; compile existing diagnostic_compatibility_test.cpp and replay_outcome_compatibility_test.cpp with that directory first, link exact candidate libfossilize.a/libminiz.a, and execute successful diagnostic parse/record fixture and success/failure ExternalReplayer fixture against candidate CLI. Commit a CMake-script runner or registered compatibility target to make these assertions repeatable.",
+        "prerequisites": "Passing Debug OFF candidate libraries/CLI; header files from input SHA 4ea747ffa215f8057d12aa5525ba0e4497961e7d; recorded include order and link command; checked mixed fixture from replay-outcome-test --fixture compatibility."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{SOURCE}",
+        "expected": [
+          "Compile successfully; suppression of originating parse/create detail fails exact controller field assertion; false-success without FINAL fails exact uncertainty assertion. Clean negotiated control passes in both. Deadline/crash/build failure never counts as detection."
+        ],
+        "id": "G18-test-sensitivity",
+        "kind": "work_unit",
+        "method": "Run the two P18-10 bounded semantic mutations in disposable candidate copies outside source; retain exact mutation patch, compilation command, clean-control result and explicit expected-failure M18 assertions. Implementer may select concrete code lines after implementation, without changing designed assertions.",
+        "prerequisites": "Passing new committed tests; disposable copies preserve all other candidate source/tests; independent checker reviews exact patches and reruns decisive controls."
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{SOURCE}",
+        "expected": [
+          "Only root #18 is eligible for full Closes reference; parent #8 remains open. Native Windows implementation/portable registration reviewed, native Windows execution explicitly waived/unverified. No GPU/Steam/persistence or whole-standard compliance claim."
+        ],
+        "id": "G18-publication",
+        "kind": "publication",
+        "method": "Coordinator and final checker compare exact candidate/base/plan/live issue graph; PR and managed issue evidence retain honest verification limits and correct closing target.",
+        "prerequisites": "All applicable required Linux gates accepted; changelog included; prerequisite completed evidence verified; native Windows run explicitly waived by user."
+      }
+    ],
+    "implementation": [
+      {
+        "description": "Define explicit numeric IDs, raw-error domains, known-context flags, scalar-only bounded record and documented units. Capture reason/error/offset at controlled parser detection independently of logs, including scope reset and recursive/concurrent parse behavior. Prefer private additive machinery; preserve public StateReplayer class layout/signatures.",
+        "files": [
+          "private replay event/protocol header(s)",
+          "optional private parser-result header",
+          "fossilize.cpp"
+        ],
+        "step": 1
+      },
+      {
+        "description": "Attach origin facts to actual parse/create/timeout producers; emit bounded first evidence before terminal reporting, retaining category summary/omission facts. Keep optional-progress, loop, compile-required fallback, cache and timeout causality behavior. Serialize concurrent producer writes as complete bounded frames; avoid allocations/locks in asynchronous signal handling.",
+        "files": [
+          "cli/replay_item_outcome.hpp",
+          "cli/replay_timeout.hpp",
+          "cli/fossilize_replay.cpp"
+        ],
+        "step": 2
+      },
+      {
+        "description": "Add actual OFFER/HELLO selection on existing parent-to-child stdin/startup and child output channel. Common length-aware streaming decoder handles Linux byte reads and Windows overlapped message fragments/ERROR_MORE_DATA without assuming read boundaries. Finalize on EOF and retain explicit structured protocol/termination uncertainty. Negotiated success requires valid FINAL plus native successful status; preserve separate explicit legacy invocation behavior. Bound fields/storage/frame count and expose loss rather than silently dropping authoritative facts.",
+        "files": [
+          "cli/fossilize_replay_linux.hpp",
+          "cli/fossilize_replay_windows.hpp",
+          "cli/replay_worker_outcome.hpp"
+        ],
+        "step": 3
+      },
+      {
+        "description": "Implement P18-01..P18-10 with explicit checks under NDEBUG. Names in the plan are the intended registered IDs; same-scope reuse/extension of existing runners is allowed, but every case must retain explicit mapping and decisive assertions. Register portable units/producers/controllers on Windows and Linux; any intrinsically Linux syscall-specific timeout adapter can extend the existing Linux fixture while portable timeout model and Windows protocol/controller cases remain registered. Processes have isolated dirs, barriers/fake clocks and watchdogs.",
+        "files": [
+          "test/replay_event_test.cpp",
+          "test/replay_event_producer_test.cpp",
+          "test/replay_event_controller_test.cpp or existing production-including fixtures",
+          "test/CMakeLists.txt"
+        ],
+        "step": 4
+      },
+      {
+        "description": "Document exact private wire/known-field/legacy compatibility and limits, add factual one-sentence linked Unreleased entry. Execute bounded published-intent gates, commit candidate, provide actual test mapping/evidence; independent checker owns acceptance.",
+        "files": [
+          "CHANGELOG.md",
+          "local-docs/verification.md",
+          "private protocol documentation"
+        ],
+        "step": 5
+      }
+    ],
+    "non_goals": [
+      "No public structured-result API, Steam presentation/scheduling work, complete logical-item ledger/reconciliation from later issues, automatic telemetry or every observability-standard feature.",
+      "No recursive audit of all nested Vulkan parser fields, parser callback rollback/allocation exhaustion promise, GPU/driver cache/persistence guarantee or general prebuilt C++ ABI/mixed-version rich-child interoperability guarantee.",
+      "No native Windows execution by explicit user waiver; no Apple/Android robust controller invention; no unrelated harness implementation/Python suite."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000009`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n9. **FOS-000009 \u2014 Carry reason data from the place that detects it.** **M; depends on `FOS-000005`, `FOS-000007`, `FOS-000008`; \u00a71, \u00a74\u2013\u00a75.** Add a small stable internal result/event representation: phase, reason ID, known raw error, tag/hash or range, worker and attempt, plus unknown-context flags. Start with parse, creation and timeout paths. Extend child messages on both platforms with explicit framing/version negotiation and bounded parsing; never require the controller to infer categories from human logs. **Check:** split/truncated messages, unknown version/reason, missing final message, worker exit before first report. Unknown information stays unknown. This is where downstream controllers acquire causes; a parent-only summary cannot recover details a worker never sends.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Result serialization and streaming-parser unit tests:** Each migrated producer preserves reason, phase, raw error and applicable identity through a round trip. Feed every split position, multiple records per read, truncated/oversized records and unknown versions/reasons; parsing stays bounded and never converts absent context into known values.\n   - **Worker/controller integration tests:** With worker prose disabled, injected parse, creation and timeout failures remain distinguishable at the controller. Death before the first report and loss of the final report yield explicit uncertainty rather than fabricated resource identity or success.\n\n<!-- fossilize-migration-v1:FOS-000009 -->\n"
+      }
+    ],
+    "risks": [
+      "The old Linux parser is NUL-terminated and silently discards excess records; the old Windows parser assumes one message fits its buffer. Shared bytes/length decoder and EOF finalization must replace those assumptions for rich records without weakening legacy forwards.",
+      "The current parser only logs detailed input reasons; a controller-only enum or log interceptor cannot satisfy origin propagation. Structured parser evidence needs isolation under recursive calls and parallel worker threads.",
+      "Changing negotiated success to require FINAL must not invalidate legacy subprocess fixture semantics or direct slave modes; tests must establish the explicit mode boundary, without adding an implicit fallback after a bad negotiated handshake.",
+      "Signal/timeout paths must not use mutexes/heap/stdio inside asynchronous handler context. New event writes must not corrupt legacy crash evidence, and unavailable transport must leave uncertainty.",
+      "The budget must cover fresh independent checks of the full CPU matrix; use shared source caches/pinned dependencies and isolated out-of-tree build directories, without treating prior different-candidate passes as evidence."
+    ],
+    "scope": [
+      "One unsplit work unit for https://github.com/robinwassen/Fossilize/issues/18; carry detected parse/creation/timeout facts through bounded stable private event representation to both robust controllers.",
+      "Migrate the controlled parser slice from issue #17 to structured origin evidence without changing public bool parse/callback behavior; preserve genuine raw parser/Vulkan/native errors only where available.",
+      "Add negotiated framed event and FINAL records to existing child transport; preserve legacy progress/resume/crash grammar and SharedControlBlock interface; classify missing/truncated/unsupported rich reports honestly.",
+      "Commit assertion-bearing unit, producer and real-controller regressions plus changelog and concise protocol/verification documentation. Retain Windows implementation and portable registration with native Windows execution waived."
+    ],
+    "version": 1,
+    "work_units": []
+  },
+  "plan_version": 0,
+  "role": "planner",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/18",
+  "worker_id": "/root/planner18"
+}
