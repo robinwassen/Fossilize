@@ -16,7 +16,7 @@ static void event_parse()
  checks.require(e.phase==Parse&&e.reason==c.second&&e.tag==RESOURCE_SHADER_MODULE&&e.hash==0x101&&e.worker==0&&e.attempt==1&&(e.known&(HasTag|HasHash|Worker|Attempt))==(HasTag|HasHash|Worker|Attempt),"M18/parse-origin-fields");
  checks.require(c.second==InvalidJSON?((e.known&(Raw|Offset))==(Raw|Offset)&&e.domain==RapidJSON&&e.raw!=0):(!(e.known&(Raw|Offset))&&e.domain==0),"M18/parse-raw-known-only-at-origin");
  db.blobs[{RESOURCE_SHADER_MODULE,0x101}]=shader_json();checks.require(r.run_parse_work_item(parser,buffer,parse_item(0x101)),"M18/valid-after-rejection");checks.require(s.count==1,"M18/valid-does-not-repeat-stale-error");
- ParseCapture capture;StateReplayer clean;auto good=shader_json();checks.require(clean.parse(r,nullptr,good.data(),good.size())&&!capture.result.reason,"M18/capture-reset-after-failure"); }
+ ParseCapture capture;auto good=shader_json();checks.require(parser.parse(r,nullptr,good.data(),good.size())&&!capture.result.reason,"M18/capture-reset-after-failure"); }
  // TLS capture isolation with actual parser calls and no shared StateReplayer.
  std::atomic<unsigned> correct{0};std::vector<std::unique_ptr<Replay>> owners;
  for(unsigned i=0;i<8;i++)owners.emplace_back(new Replay);

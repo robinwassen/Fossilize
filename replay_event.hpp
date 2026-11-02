@@ -175,7 +175,7 @@ struct Stream
 		}
 	}
 	template <typename Legacy> void feed(State &state, const char *bytes, size_t n, Legacy legacy)
-	{ feed_frames(state,bytes,n,legacy,[&state](const char *p,size_t n) {state.accept(p,n);}); }
+	{ feed_frames(state,bytes,n,legacy,[&state](const char *p,size_t length) {state.accept(p,length);}); }
 	void finish(State &s) { if (used || discard) s.lost = true; used = 0; discard = false; s.eof = true; if (s.offered && (!s.hello || !s.final)) s.lost = true; }
 };
 // Startup only: first offer line, followed by legacy module hashes and EOF.

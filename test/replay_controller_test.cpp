@@ -386,7 +386,7 @@ static void validate(int result, unsigned workers, bool zero)
    {
     const auto &v=e.events[i];
     if(scenario=="event-creation")found|=v.phase==Fossilize::ReplayEvent::Create&&v.reason==Fossilize::ReplayEvent::CreationFailed&&v.raw==VK_ERROR_DEVICE_LOST&&v.domain==Fossilize::ReplayEvent::Vulkan&&v.tag==RESOURCE_COMPUTE_PIPELINE&&v.hash>=0x302&&v.hash<0x306;
-    else found|=v.phase==Fossilize::ReplayEvent::Parse&&v.reason==Fossilize::ReplayEvent::InvalidJSON&&v.domain==Fossilize::ReplayEvent::RapidJSON&&v.raw!=0&&v.offset==1&&v.hash==(scenario=="event-initial-parse"?0x101u:0x302u);
+    else found|=v.phase==Fossilize::ReplayEvent::Parse&&v.reason==Fossilize::ReplayEvent::InvalidJSON&&v.domain==Fossilize::ReplayEvent::RapidJSON&&v.raw!=0&&v.offset==1&&v.hash==(scenario=="event-initial-parse"?0x102u:0x302u);
     checks.require((v.known&(Fossilize::ReplayEvent::Worker|Fossilize::ReplayEvent::Attempt))==(Fossilize::ReplayEvent::Worker|Fossilize::ReplayEvent::Attempt)&&v.worker==0&&v.attempt==1,"M18/controller-worker-reported-identity");
    }
    checks.require(found,"M18/controller-origin-field-preservation");
@@ -591,7 +591,7 @@ int main(int argc, char **argv)
    std::unique_ptr<DatabaseInterface> input(create_database("event-good.foz",DatabaseMode::ReadOnly));
    std::unique_ptr<DatabaseInterface> output(create_database(argv[3],DatabaseMode::OverWrite));
    checks.require(input&&output&&input->prepare()&&output->prepare(),"M18/fixture-copy-open");
-   for(unsigned t=0;t<RESOURCE_COUNT;t++){size_t n=0;input->get_hash_list_for_resource_tag(ResourceTag(t),&n,nullptr);std::vector<Hash> hashes(n);if(n)input->get_hash_list_for_resource_tag(ResourceTag(t),&n,hashes.data());for(auto h:hashes){size_t z=0;input->read_entry(ResourceTag(t),h,&z,nullptr,0);std::vector<char>b(z);input->read_entry(ResourceTag(t),h,&z,b.data(),0);bool bad=(scenario=="event-parse"&&t==RESOURCE_COMPUTE_PIPELINE&&h==0x302)||(scenario=="event-initial-parse"&&t==RESOURCE_SHADER_MODULE&&h==0x101);checks.require(output->write_entry(ResourceTag(t),h,bad?"{":b.data(),bad?1:z,0),"M18/fixture-copy-with-controlled-input");}}
+   for(unsigned t=0;t<RESOURCE_COUNT;t++){size_t n=0;input->get_hash_list_for_resource_tag(ResourceTag(t),&n,nullptr);std::vector<Hash> hashes(n);if(n)input->get_hash_list_for_resource_tag(ResourceTag(t),&n,hashes.data());for(auto h:hashes){size_t z=0;input->read_entry(ResourceTag(t),h,&z,nullptr,0);std::vector<char>b(z);input->read_entry(ResourceTag(t),h,&z,b.data(),0);bool bad=(scenario=="event-parse"&&t==RESOURCE_COMPUTE_PIPELINE&&h==0x302)||(scenario=="event-initial-parse"&&t==RESOURCE_PIPELINE_LAYOUT&&h==0x102);checks.require(output->write_entry(ResourceTag(t),h,bad?"{":b.data(),bad?1:z,0),"M18/fixture-copy-with-controlled-input");}}
   }
   std::unique_ptr<DatabaseInterface> db(create_database(argv[3],DatabaseMode::ReadOnly));checks.require(db&&db->prepare(),"M18/fixture-readback-open");
   if(db)for(unsigned t=0;t<RESOURCE_COUNT;t++){size_t n=0;checks.require(db->get_hash_list_for_resource_tag(ResourceTag(t),&n,nullptr),"M18/fixture-hash-discovery");std::vector<Hash> hashes(n);if(n)checks.require(db->get_hash_list_for_resource_tag(ResourceTag(t),&n,hashes.data()),"M18/fixture-hash-readback");for(auto h:hashes){size_t z=0;checks.require(db->read_entry(ResourceTag(t),h,&z,nullptr,0)&&z,"M18/fixture-payload-size");std::vector<char>b(z);checks.require(db->read_entry(ResourceTag(t),h,&z,b.data(),0),"M18/fixture-payload-readback");}}

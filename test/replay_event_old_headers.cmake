@@ -1,5 +1,5 @@
 file(MAKE_DIRECTORY "${WORK}/headers" "${WORK}/diagnostic")
-foreach(header fossilize.hpp fossilize_external_replayer.hpp)
+foreach(header fossilize.hpp fossilize_external_replayer.hpp fossilize_db.hpp fossilize_types.hpp fossilize_inttypes.h fossilize_application_filter.hpp)
     execute_process(COMMAND git show "4ea747ffa215f8057d12aa5525ba0e4497961e7d:${header}"
         WORKING_DIRECTORY "${SOURCE}" OUTPUT_FILE "${WORK}/headers/${header}" RESULT_VARIABLE status TIMEOUT 15)
     if(NOT status EQUAL 0)
