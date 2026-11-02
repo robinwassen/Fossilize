@@ -1,0 +1,13 @@
+diff --git a/tmp/fossilize-issue18/checker-2/cli/replay_worker_outcome.hpp b/tmp/fossilize-issue18/checker-mutations-2/final/cli/replay_worker_outcome.hpp
+index 800b2cff..92e56531 100644
+--- a/tmp/fossilize-issue18/checker-2/cli/replay_worker_outcome.hpp
++++ b/tmp/fossilize-issue18/checker-mutations-2/final/cli/replay_worker_outcome.hpp
+@@ -108,7 +108,7 @@ struct ReplayWorkerOutcome
+ 	WorkerDisposition finish(bool clean, bool can_retry, int graphics, int compute, int raytracing)
+ 	{
+ 		if (native_error) { clean = false; can_retry = false; }
+-		if (clean && !events.successful()) { clean = false; can_retry = false; }
++		/* checker bypass negotiated FINAL gate */
+ 		if (clean)
+ 		{
+ 			for (auto &r : assigned) r.confirmed_end = r.skipped_hash ? r.skipped_index : r.end;

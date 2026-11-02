@@ -1,0 +1,21 @@
+#include "replay_event.hpp"
+#include <cstdio>
+#include <cstring>
+int main()
+{
+ using namespace Fossilize::ReplayEvent;
+ char b[MaxFrame];
+ auto n=frame(b,sizeof(b),"1 OFFER 2 0 1");
+ uint64_t w=9,a=9; bool recognized=false;
+ bool valid_control=offer(b,n,w,a,recognized)&&recognized&&w==0&&a==1;
+ std::printf("M18/probe-valid-complete-offer accepted=%d\n",valid_control);
+ if(!valid_control)return 98;
+ w=9;a=9;recognized=false;
+ bool truncated_accepted=offer(b,n-1,w,a,recognized);
+ std::printf("M18/probe-offer-EOF-before-LF accepted=%d recognized=%d worker=%llu attempt=%llu\n",truncated_accepted,recognized,(unsigned long long)w,(unsigned long long)a);
+ char embedded[MaxFrame];std::memcpy(embedded,b,n-1);embedded[n-1]=0;std::memcpy(embedded+n,"junk\n",5);
+ w=9;a=9;recognized=false;
+ bool nul_accepted=offer(embedded,std::strlen(embedded),w,a,recognized);
+ std::printf("M18/probe-startup-strlen-embedded-NUL accepted=%d recognized=%d worker=%llu attempt=%llu\n",nul_accepted,recognized,(unsigned long long)w,(unsigned long long)a);
+ return truncated_accepted||nul_accepted?99:0;
+}

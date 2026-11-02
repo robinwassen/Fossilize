@@ -1,0 +1,13 @@
+diff --git a/tmp/fossilize-issue18/checker-2/cli/fossilize_replay.cpp b/tmp/fossilize-issue18/checker-mutations-2/origin/cli/fossilize_replay.cpp
+index 68705fdf..3d2f5a96 100644
+--- a/tmp/fossilize-issue18/checker-2/cli/fossilize_replay.cpp
++++ b/tmp/fossilize-issue18/checker-mutations-2/origin/cli/fossilize_replay.cpp
+@@ -659,7 +659,7 @@ struct ThreadedReplayer : StateCreatorInterface
+ 		outcome.fail(reason, tag, hash, result);
+ 		if (reason == ReplayFailure::Parse || reason == ReplayFailure::Create)
+ 		{
+-			ReplayEvent::Event e = origin ? *origin : ReplayEvent::Event{};
++			ReplayEvent::Event e = ReplayEvent::Event{}; // checker suppress origin
+ 			if (!e.reason) { e.phase = reason == ReplayFailure::Parse ? ReplayEvent::Parse : ReplayEvent::Create;
+ 				e.reason = reason == ReplayFailure::Parse ? ReplayEvent::GenericParse : ReplayEvent::CreationFailed; }
+ 			if (reason == ReplayFailure::Create) { e.known |= ReplayEvent::Raw; e.domain = ReplayEvent::Vulkan; e.raw = result; }
