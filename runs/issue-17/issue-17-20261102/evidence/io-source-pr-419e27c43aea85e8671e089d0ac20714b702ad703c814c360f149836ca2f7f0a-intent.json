@@ -1,0 +1,25 @@
+{
+  "base_sha": "f527df07881087e6fb76eae3e0f882ae77bf05b9",
+  "body": "## Problem\n\nMalformed resource envelopes could reach unchecked RapidJSON access and abort an embedding host. Shader records also used unchecked sizes and binary ranges before decoding, obscuring controlled input failures as worker loss.\n\n## What changes\n\nValidate the root, version, recognized containers and resource-entry shapes before dispatch. Report distinct malformed-input and incompatible-version reasons, preserve numeric JSON errors and offsets, and retain validated shader identity without printing payloads. Validate shader fields, base64/varint data and binary ranges before allocation, and validate application links. Use unsigned varint shifts.\n\nRegister parser tables, continuation sentinels, fixed-seed mutations and valid compatibility controls. Revise malformed-input CLI tests to assert orderly rejection, and retain separate worker-loss regressions. Add the issue-linked changelog entry and verification scope.\n\n## Why this matters\n\nAn embedding host can continue after these rejected inputs, and replay reports parser failure without treating it as a driver crash.\n\n## Why this approach\n\nThe existing public parser signature, callback interfaces and FOZ format remain unchanged. This bounded nested audit covers shaders and application links; other nested Vulkan fields and pNext chains remain unaudited. Earlier successful callbacks are retained if a later record fails; rollback is not promised. Hash fields accept plain hexadecimal values, including leading zeros, and reject overflow, prefixes, signs and whitespace.\n\n## Verification and limits\n\nIndependent work-unit and separate final reviewers each reran all 214 CPU CTests in Linux Debug/Release with exceptions OFF/ON (856 test executions per review), plus all 9 selected ASan+UBSan parser/varint tests. Both verified the 256-fixture continuation union, 384 fixed-seed mutations and unchanged baseline defect/valid controls. The final reviewer additionally passed 4,617 independently generated sanitizer scenarios. Both accepted the unchanged candidate with no findings.\n\nReviewers independently verified source/configuration/binary provenance before reusing the committed-candidate builds. GCC 13.3 and CMake 4.4.4 were used; optional real-driver layer integration was disabled. Public headers and supported valid callback/word/hash controls were preserved.\n\nNative Windows verification was explicitly skipped at the user's request and remains unverified. These are CPU control-flow and parser checks; no GPU, driver-compilation, Steam, cache-persistence, general binary-ABI or complete parser-security-audit claim is made.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/17\n\n<!-- harness-source-pr:issue-17-20261102:7eb9b485be6a1d404e7add0f587d3053d52133fd -->\n",
+  "body_sha256": "7d1dad7525c9046987edaf0aa6ceb993c0b2c0cb0cee8129c9cf4319ad1efd6c",
+  "candidate_sha": "7eb9b485be6a1d404e7add0f587d3053d52133fd",
+  "destination": "github.com/robinwassen/Fossilize",
+  "effect": "Create exactly one open non-draft implementation PR from accepted branch to master; do not merge",
+  "expected_prior": {
+    "all_states": true,
+    "exact_head_base_repository_matches": 0,
+    "pagination_complete": true
+  },
+  "marker": "<!-- harness-source-pr:issue-17-20261102:7eb9b485be6a1d404e7add0f587d3053d52133fd -->",
+  "next_action": "Publish dispatched checkpoint, create once, preserve returned URL, reconcile all-state exact lookup before any retry",
+  "operation": "419e27c43aea85e8671e089d0ac20714b702ad703c814c360f149836ca2f7f0a",
+  "plan_version": 1,
+  "root_issue": {
+    "id": 6079829518,
+    "node_id": "I_kwDOVZpjbc8AAAABamLWDg",
+    "number": 17,
+    "repository": "robinwassen/Fossilize",
+    "url": "https://github.com/robinwassen/Fossilize/issues/17"
+  },
+  "title": "Contain malformed resource envelopes and shader/link records"
+}
