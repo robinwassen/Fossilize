@@ -14,7 +14,12 @@ subsequent frames can be retained, with sticky loss/unsupported flags. EOF
 invalidates an unfinished record and records missing HELLO/FINAL uncertainty.
 
 Startup writes `1 OFFER <version-bitmask> <worker> <attempt>` on the existing
-stdin pipe, before optional legacy shader hashes and EOF. Linux contains EPIPE
+stdin pipe, before optional legacy shader hashes and EOF. Both slave startup paths
+read explicit bytes with a fixed line cap and require LF before selecting an
+offer; EOF prefixes, NUL, CR, non-ASCII, junk and oversized lines fail before
+HELLO or replay. Windows stdin uses binary mode to preserve invalid bytes.
+Legacy hash lines are bounded hexadecimal values; the first remains available
+when no offer is present. Linux contains EPIPE
 for both writes without changing the caller's SIGPIPE disposition, mask or
 pre-existing pending signal; a closed reader remains a native delivery failure
 with unknown worker origin. Bit 1 offers version

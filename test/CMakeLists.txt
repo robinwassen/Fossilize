@@ -350,7 +350,7 @@ add_executable(replay-event-test replay_event_test.cpp)
 target_link_libraries(replay-event-test PRIVATE fossilize)
 target_compile_options(replay-event-test PRIVATE ${FOSSILIZE_CXX_FLAGS})
 set_target_properties(replay-event-test PROPERTIES LINK_FLAGS "${FOSSILIZE_LINK_FLAGS}")
-foreach(case roundtrip unknown streaming malformed negotiation attempts legacy mutations)
+foreach(case roundtrip unknown streaming malformed negotiation attempts legacy mutations startup)
     add_test(NAME replay-event-unit-${case} COMMAND replay-event-test ${case})
     set_tests_properties(replay-event-unit-${case} PROPERTIES TIMEOUT 90)
 endforeach()
@@ -407,4 +407,14 @@ if(TARGET replay-controller-test AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
         add_test(NAME ${name} COMMAND replay-controller-test --controller event-${case} fixture.foz)
         set_tests_properties(${name} PROPERTIES TIMEOUT 45 WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}")
     endforeach()
+endif()
+
+if(TARGET replay-controller-test)
+    set(work "${CMAKE_CURRENT_BINARY_DIR}/replay-event-controller-startup-input")
+    file(MAKE_DIRECTORY "${work}")
+    add_test(NAME replay-event-controller-startup-input COMMAND ${CMAKE_COMMAND}
+        -DCODEC=$<TARGET_FILE:replay-event-test> -DGENERATOR=$<TARGET_FILE:replay-controller-test>
+        -DREPLAY=$<TARGET_FILE:fossilize-replay> -DWORK=${work}
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/replay_event_startup.cmake)
+    set_tests_properties(replay-event-controller-startup-input PROPERTIES TIMEOUT 90 WORKING_DIRECTORY "${work}")
 endif()

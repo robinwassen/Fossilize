@@ -191,8 +191,46 @@ inline bool select_offer(const char *p, size_t length, uint64_t &worker, uint64_
 inline bool offer(const char *line, size_t n, uint64_t &worker, uint64_t &attempt, bool &recognized)
 {
 	recognized = n >= 4 && !std::memcmp(line,"FZ18",4); if (!recognized) return false;
-	if (n && line[n-1] == '\n') n--;
+	if (!n || n >= MaxFrame || line[n-1] != '\n') return false;
+	n--;
 	const char *p; size_t length; if (!payload(line,n,p,length)) return false;
 	return select_offer(p,length,worker,attempt);
+}
+// The slave consumes bytes, not C strings: stdio fgets/strlen would hide NUL
+// and cannot distinguish a complete frame from an EOF-terminated prefix.
+// Startup rejects an invalid line immediately, before HELLO or any replay.
+template <typename Mask> bool startup(FILE *input, bool &rich, uint64_t &worker, uint64_t &attempt, Mask mask)
+{
+ rich = false;
+ bool first = true;
+ for (;;)
+ {
+  char line[MaxFrame]; size_t n = 0;
+  for (;;)
+  {
+   int c = std::fgetc(input);
+   if (c == EOF) return n == 0 && !std::ferror(input);
+   if (n + 1 >= sizeof(line)) return false;
+   line[n++] = char(c);
+   if (c == '\n') break;
+   if (c < 32 || c > 126) return false;
+  }
+  if (first)
+  {
+   first = false; bool recognized = false;
+   rich = offer(line,n,worker,attempt,recognized);
+   if (recognized) { if (!rich) return false; continue; }
+  }
+  uint64_t hash = 0;
+  for (size_t i = 0; i + 1 < n; i++)
+  {
+   unsigned char c = static_cast<unsigned char>(line[i]);
+   unsigned digit = c >= '0' && c <= '9' ? c - '0' : c >= 'a' && c <= 'f' ? c - 'a' + 10 : c >= 'A' && c <= 'F' ? c - 'A' + 10 : 16;
+   if (digit >= 16 || hash > (UINT64_MAX - digit) / 16) return false;
+   hash = hash * 16 + digit;
+  }
+  if (!hash) return true; // Legacy list terminator (including an empty line).
+  mask(hash);
+ }
 }
 } }

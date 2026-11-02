@@ -1848,27 +1848,11 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 
 	// In slave mode, we can receive a list of shader module hashes we should ignore.
 	// This is to avoid trying to replay the same faulty shader modules again and again.
-	char ignored_shader_module_hash[ReplayEvent::MaxFrame];
-	bool first_input = true, rich = false, recognized = false;
+	bool rich = false;
 	uint64_t event_worker = 0, event_attempt = 0;
-	while (fgets(ignored_shader_module_hash, sizeof(ignored_shader_module_hash), stdin))
-	{
-		if (first_input)
-		{
-			first_input = false;
-			rich = ReplayEvent::offer(ignored_shader_module_hash,strlen(ignored_shader_module_hash),event_worker,event_attempt,recognized);
-			if (recognized) { if (!rich) return EXIT_FAILURE; continue; }
-		}
-		errno = 0;
-		auto hash = strtoull(ignored_shader_module_hash, nullptr, 16);
-		if (hash == 0)
-			break;
-		if (errno == 0)
-		{
-			//LOGE("Ignoring module %llx\n", hash);
-			replayer.mask_shader_module(Hash(hash));
-		}
-	}
+	if (!ReplayEvent::startup(stdin, rich, event_worker, event_attempt,
+	                          [&replayer](uint64_t hash) { replayer.mask_shader_module(Hash(hash)); }))
+		return EXIT_FAILURE;
 
 	// Make sure that the driver cannot mess up the master process by writing random data to stdout.
 	crash_fd = dup(STDOUT_FILENO);

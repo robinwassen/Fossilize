@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 using namespace Fossilize::ReplayEvent;
 static DiagnosticChecks checks;
 static std::string wire(const std::string &p) { char b[MaxFrame]; checks.require(frame(b,sizeof(b),p.c_str()) != 0,"M18/frame-fits"); return b; }
@@ -74,6 +75,44 @@ static void negotiation()
  State duplicate;duplicate.begin(0,0);Stream dp;feed(dp,duplicate,hello()+wire("1 FINAL 0 0")+wire("1 FINAL 1 0"));checks.require(duplicate.final&&duplicate.lost&&!duplicate.failed&&!duplicate.successful(),"M18/conflicting-final-cannot-overwrite-first");
  o.events.begin(0,2);p={};feed(p,o.events,wire("1 HELLO 0 2")+wire("1 FINAL 0 0"));p.finish(o.events);checks.require(o.events.successful()&&o.previous_events[0].events[0].reason==InvalidJSON,"M18/current-success-keeps-prior-evidence");
 }
+struct StartupCase
+{
+ std::string name, input;
+ bool accepted = false, rich = false;
+ std::vector<uint64_t> hashes;
+};
+static std::vector<StartupCase> startup_cases()
+{
+ const auto complete = wire("1 OFFER 2 7 9");
+ std::vector<StartupCase> cases;
+ StartupCase valid; valid.name="valid";valid.input=complete;valid.accepted=valid.rich=true;cases.push_back(valid);
+ valid.name="valid-hashes";valid.input=complete+"abcdef\n0123456789abcdef\n";valid.hashes={0xabcdef,0x123456789abcdef};cases.push_back(valid);
+ StartupCase legacy;legacy.name="legacy";legacy.input="abcdef\n0123456789abcdef\n";legacy.accepted=true;legacy.hashes=valid.hashes;cases.push_back(legacy);
+ legacy.name="empty";legacy.input="";legacy.hashes.clear();cases.push_back(legacy);
+ for(size_t n=1;n<complete.size();n++){StartupCase c;c.name="reject-prefix-"+std::to_string(n);c.input=complete.substr(0,n);cases.push_back(c);}
+ std::vector<std::string> invalid={complete.substr(0,complete.size()-1)+"junk\n",complete.substr(0,complete.size()-1)+"\r\n", "FZ18 999999999999999999999999999999:x\n", "FZ18 "+std::string(4096,'x')+"\n",wire("1 OFFER 4 7 9"),wire("2 OFFER 2 7 9"),"FZ18 1:1 OFFER 2 7 9\n",complete+"abcjunk\n", "abcjunk\n"};
+ auto nul=complete.substr(0,complete.size()-1);nul.push_back(0);nul+="junk\n";invalid.push_back(nul);
+ nul=complete;nul[2]=0;invalid.push_back(nul);
+ auto high=complete;high[10]=char(255);invalid.push_back(high);
+ nul=complete+"abc";nul.push_back(0);nul+="junk\n";invalid.push_back(nul);
+ for(size_t i=0;i<invalid.size();i++){StartupCase c;c.name="reject-invalid-"+std::to_string(i);c.input=invalid[i];cases.push_back(c);}
+ return cases;
+}
+static void startup_tests(const char *directory = nullptr)
+{
+ const auto complete=wire("1 OFFER 2 7 9");
+ for(size_t n=0;n<complete.size();n++){uint64_t w=99,a=99;bool recognized=false;checks.require(!offer(complete.data(),n,w,a,recognized),"M18/actual-offer-every-truncated-prefix-rejected");}
+ for(const auto &c:startup_cases())
+ {
+  FILE *input=std::tmpfile();checks.require(input!=nullptr,"M18/startup-input-file");if(!input)continue;
+  checks.require(std::fwrite(c.input.data(),1,c.input.size(),input)==c.input.size(),"M18/startup-input-exact-bytes");std::rewind(input);
+  bool rich=false;uint64_t worker=99,attempt=99;std::vector<uint64_t> hashes;
+  bool accepted=startup(input,rich,worker,attempt,[&](uint64_t hash){hashes.push_back(hash);});std::fclose(input);
+  checks.require(accepted==c.accepted,"M18/actual-startup-complete-valid-bytes-only");
+  if(c.accepted)checks.require(rich==c.rich&&hashes==c.hashes&&(!rich||(worker==7&&attempt==9)),"M18/actual-startup-identity-and-first-legacy-hash");
+  if(directory){std::ofstream out(std::string(directory)+"/"+c.name+".input",std::ios::binary);out.write(c.input.data(),std::streamsize(c.input.size()));checks.require(bool(out),"M18/startup-corpus-written");}
+ }
+}
 static void mutations()
 {
  uint32_t seed=0x180018;uint64_t digest=1469598103934665603ull,accepted=0,rejected=0,lost=0;
@@ -96,7 +135,7 @@ static void mutations()
 int main(int argc,char **argv)
 {
  std::string c=argc>1?argv[1]:"all";
- if(c=="roundtrip")roundtrip();else if(c=="unknown")malformed();
+ if(c=="startup")startup_tests();else if(c=="startup-files"&&argc==3)startup_tests(argv[2]);else if(c=="roundtrip")roundtrip();else if(c=="unknown")malformed();
  else if(c=="streaming")streaming();else if(c=="malformed")malformed();else if(c=="negotiation"||c=="attempts")negotiation();else if(c=="mutations")mutations();
  else if(c=="legacy") {ReplayAttemptEvidence e;checks.require(replay_parse_timeout(e,"TIMEOUT 1 2000000000 2500000000")&&e.triggers[0].present,"M18/legacy-timeout");checks.require(replay_parse_timeout(e,"TERMINATE 1 2 5")&&e.requests[0].native_error==5,"M18/legacy-native-error");}
  else return 2;

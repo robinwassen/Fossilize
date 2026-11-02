@@ -782,3 +782,11 @@ in isolated copies suppress originating detail or bypass the FINAL completion ga
 only compiled explicit M18 assertion failures count as detection. Native Windows
 verification is user-waived and remains unverified; no GPU/Steam/cache-persistence
 claim follows from these checks.
+
+The registered `replay-event-unit-startup` exercises the actual shared slave
+startup decoder with every nonempty OFFER prefix, malformed/oversized/invalid
+bytes, valid negotiation and exact first legacy hashes. The portable
+`replay-event-controller-startup-input` sends those binary inputs through the
+production CLI stdin slave path and checks native exit status and HELLO/FINAL
+presence. These checks remain active in Release; an empty stdin is an explicit
+legacy control rather than an incomplete offer claim.
