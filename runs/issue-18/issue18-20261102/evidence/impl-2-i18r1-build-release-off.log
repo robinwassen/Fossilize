@@ -1,0 +1,126 @@
+les/spirv-cross-c.dir/spirv_cross_c.cpp.o
+[3/47] Linking CXX static library cli/SPIRV-Cross/libspirv-cross-c.a
+[4/47] Building CXX object test/CMakeFiles/replay-diagnostic-test.dir/replay_diagnostic_test.cpp.o
+[5/47] Building CXX object CMakeFiles/fossilize.dir/fossilize.cpp.o
+[6/47] Linking CXX static library libfossilize.a
+[7/47] Building CXX object cli/CMakeFiles/fossilize-replay.dir/fossilize_replay.cpp.o
+[8/47] Building CXX object test/CMakeFiles/replay-timeout-test.dir/replay_timeout_test.cpp.o
+[9/47] Building CXX object test/CMakeFiles/fork-child-setup-test.dir/fork_child_setup_test.cpp.o
+In file included from /usr/include/c++/13/algorithm:61,
+                 from /home/robin/.codex/worktrees/9d8a/fossilize/util/object_pool.hpp:28,
+                 from /home/robin/.codex/worktrees/9d8a/fossilize/util/object_cache.hpp:27,
+                 from /home/robin/.codex/worktrees/9d8a/fossilize/test/../cli/fossilize_replay.cpp:40,
+                 from /home/robin/.codex/worktrees/9d8a/fossilize/test/fork_child_setup_test.cpp:7:
+In function ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = long unsigned int*; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’,
+    inlined from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = long unsigned int*; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’ at /usr/include/c++/13/bits/stl_algo.h:1854:5,
+    inlined from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = long unsigned int*; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’ at /usr/include/c++/13/bits/stl_algo.h:1950:31,
+    inlined from ‘void std::sort(_RAIter, _RAIter) [with _RAIter = long unsigned int*]’ at /usr/include/c++/13/bits/stl_algo.h:4861:18,
+    inlined from ‘bool fixture(DiagnosticChecks&)’ at /home/robin/.codex/worktrees/9d8a/fossilize/test/fork_child_setup_test.cpp:283:12,
+    inlined from ‘int main(int, char**)’ at /home/robin/.codex/worktrees/9d8a/fossilize/test/fork_child_setup_test.cpp:306:24:
+/usr/include/c++/13/bits/stl_algo.h:1859:32: warning: array subscript 16 is outside array bounds of ‘Fossilize::Hash [2]’ {aka ‘long unsigned int [2]’} [-Warray-bounds=]
+ 1859 |           std::__insertion_sort(__first, __first + int(_S_threshold), __comp);
+      |           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/fork_child_setup_test.cpp: In function ‘int main(int, char**)’:
+/home/robin/.codex/worktrees/9d8a/fossilize/test/fork_child_setup_test.cpp:281:22: note: at offset 128 into object ‘hashes’ of size 16
+  281 |                 Hash hashes[2] = {};
+      |                      ^~~~~~
+[10/47] Building CXX object test/CMakeFiles/replay-event-test.dir/replay_event_test.cpp.o
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_test.cpp: In lambda function:
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_test.cpp:42:130: warning: declaration of ‘p’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                      ~~~~~~~~~~~~^
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_test.cpp:38:30: note: shadowed declaration is here
+   38 |  State s;s.begin(0,0);Stream p;for(char c:all)feed(p,s,std::string(1,c));p.finish(s);checks.require(s.count==2&&s.final&&!s.lost,"M18/every-byte-split");
+      |                              ^
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_test.cpp:42:151: warning: declaration of ‘w’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                                                       ^
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_test.cpp:40:55: note: shadowed declaration is here
+   40 |  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
+      |                                                       ^
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_test.cpp:42:155: warning: declaration of ‘a’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                                                           ^
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_test.cpp:40:59: note: shadowed declaration is here
+   40 |  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
+      |                                                           ^
+[11/47] Building CXX object test/CMakeFiles/replay-controller-test.dir/replay_controller_test.cpp.o
+[12/47] Linking CXX shared library layer/libVkLayer_fossilize.so
+[13/47] Linking CXX executable cli/fossilize-replay
+[14/47] Linking CXX executable cli/fossilize-bench
+[15/47] Linking CXX executable cli/fossilize-convert-db
+[16/47] Linking CXX executable cli/fossilize-merge-db
+[17/47] Linking CXX executable cli/fossilize-disasm
+[18/47] Linking CXX executable cli/fossilize-prune
+[19/47] Linking CXX executable cli/fossilize-list
+[20/47] Linking CXX executable cli/fossilize-rehash
+[21/47] Linking CXX executable cli/fossilize-opt
+[22/47] Linking CXX executable cli/fossilize-synth
+[23/47] Building CXX object test/CMakeFiles/replay-outcome-test.dir/replay_outcome_test.cpp.o
+[24/47] Linking CXX executable cli/fossilize-validate-cache-roundtrip
+[25/47] Linking CXX executable cli/fossilize-feature-sifter
+[26/47] Linking CXX executable test/fossilize-test
+[27/47] Linking CXX executable test/varint-test
+[28/47] Linking CXX executable test/application-info-filter-test
+[29/47] Linking CXX executable test/object-cache-test
+[30/47] Linking CXX executable test/multi-instance-and-device-test
+[31/47] Linking CXX executable test/futex-test
+[32/47] Linking CXX executable test/device-diagnostic-test
+[33/47] Linking CXX executable test/replay-diagnostic-test
+[34/47] Linking CXX executable test/utility-parse-test
+[35/47] Linking CXX executable test/diagnostic-compatibility-test
+[36/47] Linking CXX executable test/replay-controller-test
+[37/47] Linking CXX executable test/fork-child-setup-test
+[38/47] Linking CXX executable test/replay-controller-compatibility-test
+[39/47] Linking CXX executable test/replay-outcome-compatibility-test
+[40/47] Linking CXX executable test/replay-outcome-test
+[41/47] Linking CXX executable test/replay-timeout-test
+[42/47] Linking CXX executable test/parser-input-test
+[43/47] Linking CXX executable test/replay-event-test
+[44/47] Building CXX object test/CMakeFiles/replay-timeout-controller-test.dir/replay_timeout_controller_test.cpp.o
+[45/47] Linking CXX executable test/replay-timeout-controller-test
+[46/47] Building CXX object test/CMakeFiles/replay-event-producer-test.dir/replay_event_producer_test.cpp.o
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_producer_test.cpp: In lambda function:
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_producer_test.cpp:8:55: warning: declaration of ‘b’ shadows a previous local [-Wshadow]
+    8 |  r.event_attempt=1;r.event_writer=[&s,&p](const char *b){p.feed(s,b,strlen(b),[](const char*){});return true;};
+      |                                           ~~~~~~~~~~~~^
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_producer_test.cpp:7:20: note: shadowed declaration is here
+    7 |  s.begin(0,1);char b[MaxFrame];frame(b,sizeof(b),"1 HELLO 0 1");p.feed(s,b,strlen(b),[](const char*){});
+      |                    ^
+In file included from /home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:564,
+                 from /home/robin/.codex/worktrees/9d8a/fossilize/test/replay_event_producer_test.cpp:2:
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_cache_tests.hpp: At global scope:
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_cache_tests.hpp:306:13: warning: ‘void cache_test(const std::string&)’ defined but not used [-Wunused-function]
+  306 | static void cache_test(const std::string &test)
+      |             ^~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:532:13: warning: ‘void normal_matrix()’ defined but not used [-Wunused-function]
+  532 | static void normal_matrix()
+      |             ^~~~~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:519:13: warning: ‘void entry_test(const std::string&, const char*)’ defined but not used [-Wunused-function]
+  519 | static void entry_test(const std::string &scenario, const char *path)
+      |             ^~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:414:13: warning: ‘void queue_test()’ defined but not used [-Wunused-function]
+  414 | static void queue_test()
+      |             ^~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:380:13: warning: ‘void setup_test()’ defined but not used [-Wunused-function]
+  380 | static void setup_test()
+      |             ^~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:349:13: warning: ‘void validation_test()’ defined but not used [-Wunused-function]
+  349 | static void validation_test()
+      |             ^~~~~~~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:326:13: warning: ‘void support_test()’ defined but not used [-Wunused-function]
+  326 | static void support_test()
+      |             ^~~~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:307:13: warning: ‘void initial_creation_test()’ defined but not used [-Wunused-function]
+  307 | static void initial_creation_test()
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:247:13: warning: ‘void creation_test(bool)’ defined but not used [-Wunused-function]
+  247 | static void creation_test(bool loops)
+      |             ^~~~~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:196:13: warning: ‘void parse_test()’ defined but not used [-Wunused-function]
+  196 | static void parse_test()
+      |             ^~~~~~~~~~
+/home/robin/.codex/worktrees/9d8a/fossilize/test/replay_outcome_test.cpp:163:13: warning: ‘void state_test()’ defined but not used [-Wunused-function]
+  163 | static void state_test()
+      |             ^~~~~~~~~~
+[47/47] Linking CXX executable test/replay-event-producer-test

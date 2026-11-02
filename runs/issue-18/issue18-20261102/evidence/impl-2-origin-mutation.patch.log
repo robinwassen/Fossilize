@@ -1,0 +1,11 @@
+--- a/cli/fossilize_replay.cpp
++++ b/cli/fossilize_replay.cpp
+@@ -659,7 +659,7 @@
+ 		outcome.fail(reason, tag, hash, result);
+ 		if (reason == ReplayFailure::Parse || reason == ReplayFailure::Create)
+ 		{
+-			ReplayEvent::Event e = origin ? *origin : ReplayEvent::Event{};
++			ReplayEvent::Event e = ReplayEvent::Event{}; // M18 suppress originating detail only.
+ 			if (!e.reason) { e.phase = reason == ReplayFailure::Parse ? ReplayEvent::Parse : ReplayEvent::Create;
+ 				e.reason = reason == ReplayFailure::Parse ? ReplayEvent::GenericParse : ReplayEvent::CreationFailed; }
+ 			if (reason == ReplayFailure::Create) { e.known |= ReplayEvent::Raw; e.domain = ReplayEvent::Vulkan; e.raw = result; }

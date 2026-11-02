@@ -1,0 +1,11 @@
+--- a/cli/replay_worker_outcome.hpp
++++ b/cli/replay_worker_outcome.hpp
+@@ -108,7 +108,7 @@
+ 	WorkerDisposition finish(bool clean, bool can_retry, int graphics, int compute, int raytracing)
+ 	{
+ 		if (native_error) { clean = false; can_retry = false; }
+-		if (clean && !events.successful()) { clean = false; can_retry = false; }
++		/* M18 sensitivity: permit native zero without FINAL. */
+ 		if (clean)
+ 		{
+ 			for (auto &r : assigned) r.confirmed_end = r.skipped_hash ? r.skipped_index : r.end;

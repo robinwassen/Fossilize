@@ -1,0 +1,27 @@
+{
+  "acquired": 1793629457.1185412,
+  "command": [
+    "env",
+    "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+    "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue18/build/parser-asan-ubsan",
+    "--output-on-failure",
+    "--no-tests=error",
+    "--parallel",
+    "1",
+    "-R",
+    "^(replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)",
+    "--output-junit",
+    "/tmp/fossilize-issue18/output/implementer-repair-1/sanitizer-ctest.xml"
+  ],
+  "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+  "exit_code": 0,
+  "finished": 1793629460.7401638,
+  "intent_id": "i18r1-ctest-sanitizer",
+  "started": 1793629457.115554,
+  "timed_out": false,
+  "timeout": 600,
+  "wait_seconds": 0
+}
