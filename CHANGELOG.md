@@ -5,6 +5,8 @@ and their status. Follow the [changelog writing guideline](local-docs/changelog-
 
 ## Unreleased
 
+- **[Observability]** Carry worker parse, creation and timeout reasons through bounded negotiated messages so controllers retain known causes and expose missing reports. ([#18](https://github.com/robinwassen/Fossilize/issues/18))
+
 Entries are reviewed with their implementation PR; inclusion in an open PR does
 not establish merged delivery or a release.
 

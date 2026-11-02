@@ -60,6 +60,7 @@ if (CMAKE_COMPILER_IS_GNUCXX OR (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang"))
 endif()
 
 add_library(fossilize STATIC
+    replay_parse_result.cpp
         fossilize.hpp fossilize.cpp
         fossilize_errors.hpp
         fossilize_application_filter.hpp fossilize_application_filter.cpp

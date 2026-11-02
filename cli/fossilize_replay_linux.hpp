@@ -144,27 +144,16 @@ struct ProcessProgress
 	bool supervision_failed = false;
 
 	char module_uuid_path[2 * VK_UUID_SIZE + 1] = {};
+	Fossilize::ReplayEvent::Stream stream;
 	std::string parse_buffer;
 	bool discard_record = false;
 };
 
 void ProcessProgress::parse_raw(const char *str)
 {
-	// Bound even an unterminated/malicious extension record. Discard through
-	// newline, so a truncated prefix cannot become a later valid message.
-	for (; *str; str++)
-	{
-		if (*str == '\n')
-		{
-			if (!discard_record) parse(parse_buffer.c_str());
-			parse_buffer.clear(); discard_record = false;
-		}
-		else if (!discard_record)
-		{
-			if (parse_buffer.size() < 1024) parse_buffer += *str;
-			else { parse_buffer.clear(); discard_record = true; }
-		}
-	}
+	stream.feed(outcome.events, str, strlen(str), [this](const char *line) { parse(line); });
+	// Retained compatibility inspection fields; actual transport is length-aware.
+	parse_buffer.assign(stream.buffer.data(), stream.used); discard_record = stream.discard;
 }
 
 void ProcessProgress::parse(const char *cmd)
@@ -317,8 +306,7 @@ bool ProcessProgress::process_once()
 	if (ret <= 0)
 		return false;
 
-	buffer[ret] = '\0';
-	parse_raw(buffer);
+	stream.feed(outcome.events, buffer, size_t(ret), [this](const char *line) { parse(line); });
 	return true;
 }
 
@@ -427,6 +415,7 @@ WorkerDisposition ProcessProgress::process_shutdown(int wstatus)
 {
 	// Flush out all messages we got.
 	while (process_once());
+	stream.finish(outcome.events);
 	parse_buffer.clear();
 	heartbeats = -1;
 
@@ -486,8 +475,11 @@ WorkerDisposition ProcessProgress::process_shutdown(int wstatus)
 	return disposition;
 }
 
-static void send_faulty_modules_and_close(int fd)
+static void send_faulty_modules_and_close(int fd, unsigned worker, unsigned attempt)
 {
+	char payload[96], frame[ReplayEvent::MaxFrame];
+	snprintf(payload,sizeof(payload),"1 OFFER 2 %u %u",worker,attempt);
+	if (ReplayEvent::frame(frame,sizeof(frame),payload)) write_all(fd,frame);
 	for (auto &m : Global::faulty_spirv_modules)
 	{
 		char buffer[18];
@@ -585,17 +577,10 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 	raytracing_progress = -1;
 	stopped = false;
 
-	if (start_graphics_index >= end_graphics_index &&
-	    start_compute_index >= end_compute_index &&
-	    start_raytracing_index >= end_raytracing_index)
-	{
-		// Nothing to do.
-		outcome.complete = !outcome.skipped();
-		return true;
-	}
-
 	outcome.attempts++;
 	outcome.timeout.begin(outcome.attempts);
+	outcome.begin_events(index);
+	stream = {};
 	cleanup_deadline = {}; heartbeat_deadline = {};
 	expect_kill = false;
 	supervision_failed = false;
@@ -620,7 +605,7 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 		pid = new_pid;
 		heartbeats = 1;
 
-		send_faulty_modules_and_close(input_fds[1]);
+		send_faulty_modules_and_close(input_fds[1], index, outcome.attempts);
 		close(crash_fds[1]);
 		close(input_fds[0]);
 		Global::active_processes++;
@@ -1741,6 +1726,12 @@ static void install_trivial_crash_handlers(ThreadedReplayer &replayer)
 
 static void report_timeout(const ReplayTimeoutTrigger &trigger)
 {
+	if (global_replayer)
+	{
+		ReplayEvent::Event e; e.phase = ReplayEvent::Timeout; e.reason = ReplayEvent::NoProgress;
+		e.known = ReplayEvent::Duration; e.threshold = trigger.threshold_ns; e.elapsed = trigger.elapsed_ns;
+		global_replayer->emit_event(e);
+	}
 	if (crash_fd >= 0)
 	{
 		char buffer[128];
@@ -1827,9 +1818,17 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 
 	// In slave mode, we can receive a list of shader module hashes we should ignore.
 	// This is to avoid trying to replay the same faulty shader modules again and again.
-	char ignored_shader_module_hash[16 + 2];
+	char ignored_shader_module_hash[ReplayEvent::MaxFrame];
+	bool first_input = true, rich = false, recognized = false;
+	uint64_t event_worker = 0, event_attempt = 0;
 	while (fgets(ignored_shader_module_hash, sizeof(ignored_shader_module_hash), stdin))
 	{
+		if (first_input)
+		{
+			first_input = false;
+			rich = ReplayEvent::offer(ignored_shader_module_hash,strlen(ignored_shader_module_hash),event_worker,event_attempt,recognized);
+			if (recognized) { if (!rich) return EXIT_FAILURE; continue; }
+		}
 		errno = 0;
 		auto hash = strtoull(ignored_shader_module_hash, nullptr, 16);
 		if (hash == 0)
@@ -1844,6 +1843,15 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 	// Make sure that the driver cannot mess up the master process by writing random data to stdout.
 	crash_fd = dup(STDOUT_FILENO);
 	close(STDOUT_FILENO);
+
+	if (rich)
+	{
+		replayer.event_worker = event_worker; replayer.event_attempt = event_attempt;
+		replayer.event_writer = [](const char *frame) { return write_all(crash_fd, frame); };
+		char payload[96], frame[ReplayEvent::MaxFrame];
+		snprintf(payload,sizeof(payload),"1 HELLO %llu %llu",(unsigned long long)event_worker,(unsigned long long)event_attempt);
+		if (!ReplayEvent::frame(frame,sizeof(frame),payload) || !replayer.event_writer(frame)) return EXIT_FAILURE;
+	}
 
 	global_replayer = &replayer;
 
@@ -1885,6 +1893,7 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 		snprintf(terminal, sizeof(terminal), "REPLAY_FAILED %u %u\n", replayer.outcome.failure_mask(), replayer.work_drained ? 1u : 0u);
 		write_all(crash_fd, terminal);
 	}
+	replayer.finish_events(ret);
 	global_replayer = nullptr;
 
 	if (!replayer_opts.disable_signal_handler)

@@ -1,6 +1,15 @@
 // Real production controller, OS processes and current worker protocol. The
 // adapters below exist only in this translation unit, never in fossilize-replay.
 #include "diagnostic_test.hpp"
+#include "volk.h"
+#include "device.hpp"
+#include "../cli/logging.hpp"
+#undef LOGI
+#undef LOGW
+#undef LOGE
+#define LOGI(...) do {} while(0)
+#define LOGW(...) do {} while(0)
+#define LOGE(...) do {} while(0)
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -15,6 +24,14 @@
 #include <errno.h>
 #endif
 static std::string scenario;
+static void install_event_dispatch();
+class EventDevice : public Fossilize::VulkanDevice
+{
+public:
+ bool init_device(const Options &o) {bool ret=VulkanDevice::init_device(o);if(ret)install_event_dispatch();return ret;}
+};
+#define VulkanDevice EventDevice
+
 #ifdef _WIN32
 static HANDLE hold_ready;
 static std::string hold_name;
@@ -40,7 +57,38 @@ static pid_t test_waitpid(pid_t, int *, int);
 #define main fossilize_replay_original_main
 #include "../cli/fossilize_replay.cpp"
 #undef main
+#undef VulkanDevice
 
+
+static PFN_vkCreateComputePipelines event_real_compute;
+static VKAPI_ATTR VkResult VKAPI_CALL event_compute(VkDevice d,VkPipelineCache c,uint32_t n,const VkComputePipelineCreateInfo *i,const VkAllocationCallbacks *a,VkPipeline *p)
+{if(scenario=="event-creation"){*p=VK_NULL_HANDLE;return VK_ERROR_DEVICE_LOST;}return event_real_compute(d,c,n,i,a,p);}
+static void install_event_dispatch(){event_real_compute=vkCreateComputePipelines;vkCreateComputePipelines=event_compute;}
+static bool event_case(){return scenario.find("event-")==0;}
+static bool event_real(){return event_case()&&(scenario=="event-clean"||scenario=="event-empty"||scenario=="event-progress"||scenario=="event-parse"||scenario=="event-initial-parse"||scenario=="event-creation");}
+static bool event_write(const char *b)
+{
+#ifdef _WIN32
+ return write_all(GetStdHandle(STD_OUTPUT_HANDLE),b);
+#else
+ return write_all(STDOUT_FILENO,b);
+#endif
+}
+struct SyntheticReport
+{
+ bool enabled=true;
+ SyntheticReport(unsigned w,unsigned a)
+ {
+  char line[Fossilize::ReplayEvent::MaxFrame];
+  if(!fgets(line,sizeof(line),stdin)){enabled=false;return;}
+  uint64_t worker=0,attempt=0;bool recognized=false;
+  checks.require(Fossilize::ReplayEvent::offer(line,strlen(line),worker,attempt,recognized)&&worker==w&&attempt==a,"M18/synthetic-actual-offer");
+  while(fgets(line,sizeof(line),stdin)){}
+  if(scenario=="event-pre-report-death"||scenario=="event-drop-hello"){enabled=false;return;}
+  char payload[96];snprintf(payload,sizeof(payload),"1 HELLO %u %u",w,a);Fossilize::ReplayEvent::frame(line,sizeof(line),payload);event_write(line);
+ }
+ ~SyntheticReport(){if(enabled){char line[Fossilize::ReplayEvent::MaxFrame];Fossilize::ReplayEvent::frame(line,sizeof(line),"1 FINAL 0 0");event_write(line);}}
+};
 static unsigned observed = 0;
 static std::vector<ReplayWorkerOutcome> retained;
 static std::string marker_path(unsigned index, unsigned attempt)
@@ -67,8 +115,9 @@ template <typename Options> static int test_worker(unsigned index, unsigned atte
 	unsigned end[] = {opts.end_graphics_index, opts.end_compute_index, opts.end_raytracing_index};
 	for (unsigned i = 0; i < 3; i++) out << "range " << i << ' ' << begin[i] << ' ' << end[i] << '\n';
 	out.flush();
-	if (orderly())
+	if (orderly() || event_real())
 	{
+		Fossilize::set_thread_log_level(Fossilize::LOG_NONE);
 		// The fixed archive and actual production slave perform all parsing,
 		// creation, outcome accumulation, queue draining and terminal writing.
 		int result;
@@ -80,6 +129,23 @@ template <typename Options> static int test_worker(unsigned index, unsigned atte
 		out << "orderly-return " << result << '\n';
 		return result;
 	}
+ SyntheticReport synthetic(index,attempt);
+ if(event_case())
+ {
+  synthetic.enabled=false;
+  if(scenario=="event-pre-report-death")return 2;
+  using namespace Fossilize::ReplayEvent;
+  Event e;e.phase=Create;e.reason=CreationFailed;e.known=Raw|HasTag|HasHash|Worker|Attempt;e.domain=Vulkan;e.raw=VK_ERROR_DEVICE_LOST;e.tag=RESOURCE_COMPUTE_PIPELINE;e.hash=0x302;e.worker=index;e.attempt=attempt;
+  char b[MaxFrame];event_frame(b,sizeof(b),e);event_write(b);
+  if(scenario=="event-missing-final"||scenario=="event-drop-hello")return 0;
+  if(scenario=="event-truncated"){frame(b,sizeof(b),"1 FINAL 0 0"); b[strlen(b)-3]=0;event_write(b);return 0;}
+  if(scenario=="event-unknown"){e.reason=999;event_frame(b,sizeof(b),e);event_write(b);}
+  if(scenario=="event-oversized")event_write((std::string(4096,'x')+"\n").c_str());
+  frame(b,sizeof(b),"1 FINAL 0 0");event_write(b);
+  if(scenario=="event-duplicate-final")event_write(b);
+  return scenario=="event-abnormal-final"?2:0;
+ }
+
 	if (scenario == "held-sibling" && index == 0)
 	{
 #ifdef _WIN32
@@ -197,7 +263,7 @@ template <typename Process> static void child_command(std::string &command, cons
 	                      p.end_compute_index, p.start_raytracing_index, p.end_raytracing_index})
 		command += " " + std::to_string(value);
 	command += " " + (hold_name.empty() ? "unused" : hold_name);
-	if (orderly()) for (auto path : Global::databases) command += " \"" + std::string(path) + "\"";
+	if (orderly() || event_real()) for (auto path : Global::databases) command += " \"" + std::string(path) + "\"";
 }
 template <typename Handles, typename Children> static DWORD test_wait(const Handles &handles, const Children &children)
 {
@@ -302,6 +368,38 @@ static std::string read_marker(unsigned worker, unsigned attempt)
 }
 static void validate(int result, unsigned workers, bool zero)
 {
+ if(event_case())
+ {
+  bool success=scenario=="event-clean"||scenario=="event-empty"||scenario=="event-progress";
+  checks.require(result==(success?0:1)&&retained.size()==1,"M18/controller-native-contract");
+  if(retained.size()!=1)return;
+  const auto &o=retained[0];const auto &e=o.events;
+  checks.require(o.attempts==1&&e.offered&&e.eof&&o.timeout.current.native_observed,"M18/controller-attempt-native-and-eof");
+  checks.require(o.complete==success,"M18/missing-final-never-success");
+  if(success)checks.require(e.hello&&e.final&&e.successful()&&!e.count,"M18/clean-requires-valid-final");
+  else if(scenario=="event-parse"||scenario=="event-initial-parse"||scenario=="event-creation")
+  {
+   checks.require(e.hello&&e.final&&e.failed&&e.count&&o.controlled_failure&&!o.failed_attempts,"M18/controlled-failure-no-crash-inflation");
+   bool found=false;for(unsigned i=0;i<e.count;i++)
+   {
+    const auto &v=e.events[i];
+    if(scenario=="event-creation")found|=v.phase==Fossilize::ReplayEvent::Create&&v.reason==Fossilize::ReplayEvent::CreationFailed&&v.raw==VK_ERROR_DEVICE_LOST&&v.domain==Fossilize::ReplayEvent::Vulkan&&v.tag==RESOURCE_COMPUTE_PIPELINE&&v.hash>=0x302&&v.hash<0x306;
+    else found|=v.phase==Fossilize::ReplayEvent::Parse&&v.reason==Fossilize::ReplayEvent::InvalidJSON&&v.domain==Fossilize::ReplayEvent::RapidJSON&&v.raw!=0&&v.offset==1&&v.hash==(scenario=="event-initial-parse"?0x101u:0x302u);
+    checks.require((v.known&(Fossilize::ReplayEvent::Worker|Fossilize::ReplayEvent::Attempt))==(Fossilize::ReplayEvent::Worker|Fossilize::ReplayEvent::Attempt)&&v.worker==0&&v.attempt==1,"M18/controller-worker-reported-identity");
+   }
+   checks.require(found,"M18/controller-origin-field-preservation");
+  }
+  else
+  {
+   checks.require(!o.complete&&o.unknown_remainder,"M18/uncertain-transport-never-success");
+   if(scenario=="event-pre-report-death")checks.require(!e.hello&&!e.count&&!e.final&&e.lost&&!o.skipped(),"M18/pre-report-death-unknown-root-and-resource");
+   else if(scenario=="event-abnormal-final")checks.require(e.final&&o.termination!=0,"M18/final-cannot-override-native-failure");
+   else checks.require(e.lost||e.unsupported,"M18/protocol-loss-retained");
+   if(scenario=="event-missing-final"||scenario=="event-truncated")checks.require(e.count==1&&e.events[0].raw==VK_ERROR_DEVICE_LOST&&!e.final,"M18/origin-survives-final-loss");
+  }
+  return;
+ }
+
 	if (orderly())
 	{
 		checks.require(result == 1 && observed == 2, "orderly/direct-status-and-both-workers-retained");
@@ -483,6 +581,19 @@ int main(int argc, char **argv)
 	if (argc == 3 && std::string(argv[1]) == "--fixture") return fixture(argv[2]) ? 0 : 1;
 	if (argc < 4 || std::string(argv[1]) != "--controller") return 2;
 	scenario = argv[2];
+ if(event_case())
+ {
+  checks.require(scenario=="event-empty"?empty_fixture(argv[3]):fixture("event-good.foz"),"M18/dependency-complete-fixture-created");
+  if(scenario!="event-empty")
+  {
+   std::unique_ptr<DatabaseInterface> input(create_database("event-good.foz",DatabaseMode::ReadOnly));
+   std::unique_ptr<DatabaseInterface> output(create_database(argv[3],DatabaseMode::OverWrite));
+   checks.require(input&&output&&input->prepare()&&output->prepare(),"M18/fixture-copy-open");
+   for(unsigned t=0;t<RESOURCE_COUNT;t++){size_t n=0;input->get_hash_list_for_resource_tag(ResourceTag(t),&n,nullptr);std::vector<Hash> hashes(n);if(n)input->get_hash_list_for_resource_tag(ResourceTag(t),&n,hashes.data());for(auto h:hashes){size_t z=0;input->read_entry(ResourceTag(t),h,&z,nullptr,0);std::vector<char>b(z);input->read_entry(ResourceTag(t),h,&z,b.data(),0);bool bad=(scenario=="event-parse"&&t==RESOURCE_COMPUTE_PIPELINE&&h==0x302)||(scenario=="event-initial-parse"&&t==RESOURCE_SHADER_MODULE&&h==0x101);checks.require(output->write_entry(ResourceTag(t),h,bad?"{":b.data(),bad?1:z,0),"M18/fixture-copy-with-controlled-input");}}
+  }
+  std::unique_ptr<DatabaseInterface> db(create_database(argv[3],DatabaseMode::ReadOnly));checks.require(db&&db->prepare(),"M18/fixture-readback-open");
+  if(db)for(unsigned t=0;t<RESOURCE_COUNT;t++){size_t n=0;checks.require(db->get_hash_list_for_resource_tag(ResourceTag(t),&n,nullptr),"M18/fixture-hash-discovery");std::vector<Hash> hashes(n);if(n)checks.require(db->get_hash_list_for_resource_tag(ResourceTag(t),&n,hashes.data()),"M18/fixture-hash-readback");for(auto h:hashes){size_t z=0;checks.require(db->read_entry(ResourceTag(t),h,&z,nullptr,0)&&z,"M18/fixture-payload-size");std::vector<char>b(z);checks.require(db->read_entry(ResourceTag(t),h,&z,b.data(),0),"M18/fixture-payload-readback");}}
+ }
 	if (scenario == "outcome-state") return state_and_protocol();
 	VulkanDevice::Options device_opts;
 	device_opts.null_device = true;
@@ -494,7 +605,7 @@ int main(int argc, char **argv)
 #endif
 	opts.start_graphics_index = opts.start_compute_index = opts.start_raytracing_index = 2;
 	opts.end_graphics_index = opts.end_compute_index = opts.end_raytracing_index = scenario == "zero" ? 2 : 6;
-	if (orderly())
+	if (orderly() || scenario=="event-empty")
 	{
 		opts.start_graphics_index = opts.start_compute_index = opts.start_raytracing_index = 0;
 		opts.end_graphics_index = opts.end_compute_index = opts.end_raytracing_index = ~0u;
@@ -587,5 +698,5 @@ int main(int argc, char **argv)
 			<< " confirmed " << r.assigned[k].confirmed_end << " culprit " << r.assigned[k].skipped_hash << ' ' << r.assigned[k].skipped_index << '\n';
 	}
 	printf("Executed R13/%s; failures=%d; controller-result=%d\n", scenario.c_str(), checks.failures, result);
-	return checks.failures ? 99 : result;
+	return checks.failures ? 99 : event_case() ? 0 : result;
 }

@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include "replay_timeout.hpp"
+#include "replay_event.hpp"
 
 // Internal controller state. This is deliberately separate from optional shared
 // progress and from the mutable range used to launch the next attempt.
@@ -32,6 +33,18 @@ enum class WorkerDisposition { Complete, Retry, Unresolved, Failed };
 struct ReplayWorkerOutcome
 {
 	ReplayTimeoutHistory timeout;
+	Fossilize::ReplayEvent::State events;
+	std::array<Fossilize::ReplayEvent::State, 4> previous_events = {};
+	unsigned previous_event_count = 0, omitted_event_attempts = 0;
+	void begin_events(unsigned worker)
+	{
+		if (events.offered)
+		{
+			if (previous_event_count < previous_events.size()) previous_events[previous_event_count++] = events;
+			else omitted_event_attempts++;
+		}
+		events.begin(worker, attempts);
+	}
 	struct Range
 	{
 		unsigned begin = 0, end = 0;
@@ -95,6 +108,7 @@ struct ReplayWorkerOutcome
 	WorkerDisposition finish(bool clean, bool can_retry, int graphics, int compute, int raytracing)
 	{
 		if (native_error) { clean = false; can_retry = false; }
+		if (clean && !events.successful()) { clean = false; can_retry = false; }
 		if (clean)
 		{
 			for (auto &r : assigned) r.confirmed_end = r.skipped_hash ? r.skipped_index : r.end;
