@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 		checks.require(progress.total_compute_pipeline_blobs == 1 && progress.compute.parsed_fail == 1 &&
 		               progress.compute.completed == 0 && progress.compute.skipped == 1,
 		               "parser-rejection/required-pipeline-rejected-with-nonzero-exit");
-		printf("Executed R13/Release-parser-rejection-boundary; worker-deaths=%u/%u; parsed-fail=%u; completed=%u; failures=%d\n",
+		printf("Executed R17/controlled-parser-rejection-boundary; worker-deaths=%u/%u; parsed-fail=%u; completed=%u; failures=%d\n",
 		       progress.clean_crashes, progress.dirty_crashes, progress.compute.parsed_fail, progress.compute.completed, checks.failures);
 		return checks.failures ? 1 : 0;
 	}

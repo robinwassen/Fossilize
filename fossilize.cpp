@@ -40,6 +40,8 @@
 #include "fossilize_application_filter.hpp"
 #include "fossilize_hasher.hpp"
 #include <time.h>
+#include <cmath>
+#include <limits>
 
 #define RAPIDJSON_HAS_STDSTRING 1
 #include "rapidjson/document.h"
@@ -3002,6 +3004,88 @@ static uint64_t string_to_uint64(const char* str)
 	return strtoull(str, nullptr, 16);
 }
 
+// Input diagnostics deliberately use fixed labels, never JSON strings or shader data.
+// Keep a reason for each failed call, including repeated calls in an embedding host.
+static bool input_error(const char *reason, const char *field, const Hash *hash = nullptr)
+{
+	if (get_thread_log_level() <= LOG_ERROR)
+	{
+		if (hash)
+		{
+			if (!Internal::log_thread_callback(LOG_ERROR,
+			        "Parser input error: reason=%s field=%s tag=%u hash=%016llx\n",
+			        reason, field, unsigned(RESOURCE_SHADER_MODULE), static_cast<unsigned long long>(*hash)))
+				LOGE("Parser input error: reason=%s field=%s tag=%u hash=%016llx\n",
+				     reason, field, unsigned(RESOURCE_SHADER_MODULE), static_cast<unsigned long long>(*hash));
+		}
+		else if (!Internal::log_thread_callback(LOG_ERROR, "Parser input error: reason=%s field=%s\n", reason, field))
+			LOGE("Parser input error: reason=%s field=%s\n", reason, field);
+	}
+	return false;
+}
+
+static bool checked_hash(const Value &value, Hash &hash)
+{
+	if (!value.IsString() || value.GetStringLength() == 0 || value.GetStringLength() > 16)
+		return false;
+	hash = 0;
+	for (SizeType i = 0; i < value.GetStringLength(); i++)
+	{
+		unsigned char c = value.GetString()[i];
+		unsigned digit;
+		if (c >= '0' && c <= '9') digit = c - '0';
+		else if (c >= 'a' && c <= 'f') digit = c - 'a' + 10;
+		else if (c >= 'A' && c <= 'F') digit = c - 'A' + 10;
+		else return false;
+		hash = (hash << 4) | digit;
+	}
+	return true;
+}
+
+static bool valid_shader_base64(const Value &value, size_t decoded_size)
+{
+	if (!value.IsString())
+		return false;
+	size_t length = value.GetStringLength();
+	if (length % 4 != 0)
+		return false;
+	const char *data = value.GetString();
+	size_t padding = length && data[length - 1] == '=' ? 1 : 0;
+	if (length > 1 && data[length - 2] == '=') padding++;
+	if (length / 4 * 3 - padding != decoded_size)
+		return false;
+	for (size_t i = 0; i < length - padding; i++)
+	{
+		char c = data[i];
+		if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+		      (c >= '0' && c <= '9') || c == '+' || c == '/'))
+			return false;
+	}
+	return true;
+}
+
+// Validate the complete stream before allocating the decoded buffer. Each word
+// takes at least one byte, and at most five with only four data bits in byte five.
+static bool valid_shader_varint(const uint8_t *data, size_t size, size_t words)
+{
+	if (words > size || (size / 5 > words) || (size / 5 == words && size % 5 != 0))
+		return false;
+	size_t offset = 0;
+	for (size_t i = 0; i < words; i++)
+	{
+		unsigned byte = 0;
+		for (;;)
+		{
+			if (offset == size) return false;
+			uint8_t value = data[offset++];
+			if (byte == 4 && value > 0x0f) return false;
+			if (!(value & 0x80)) break;
+			if (++byte == 5) return false;
+		}
+	}
+	return offset == size;
+}
+
 const char *StateReplayer::Impl::duplicate_string(const char *str, size_t len)
 {
 	auto *c = allocator.allocate_n<char>(len + 1);
@@ -3166,37 +3250,54 @@ bool StateReplayer::Impl::parse_shader_modules(StateCreatorInterface &iface, con
 	unsigned index = 0;
 	for (auto itr = modules.MemberBegin(); itr != modules.MemberEnd(); ++itr, index++)
 	{
-		Hash hash = string_to_uint64(itr->name.GetString());
-		if (replayed_shader_modules.count(hash))
-			continue;
+		Hash hash;
+		if (!checked_hash(itr->name, hash))
+			return input_error("invalid-field", "shaderModules.hash");
 
 		auto &obj = itr->value;
 		auto &info = infos[index];
 		info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		if (!obj.HasMember("flags") || !obj["flags"].IsUint())
+			return input_error("invalid-field", "shaderModules.flags", &hash);
+		if (!obj.HasMember("codeSize") || !obj["codeSize"].IsUint64())
+			return input_error("invalid-field", "shaderModules.codeSize", &hash);
+		auto code_size = obj["codeSize"].GetUint64();
+		if (code_size > std::numeric_limits<size_t>::max() || code_size % 4 != 0)
+			return input_error("invalid-size", "shaderModules.codeSize", &hash);
 		info.flags = obj["flags"].GetUint();
-		info.codeSize = obj["codeSize"].GetUint64();
+		info.codeSize = static_cast<size_t>(code_size);
 
-		if (obj.HasMember("varintOffset") && obj.HasMember("varintSize"))
+		bool has_offset = obj.HasMember("varintOffset");
+		bool has_size = obj.HasMember("varintSize");
+		if (has_offset != has_size)
+			return input_error("invalid-field", "shaderModules.varint-pair", &hash);
+		if (has_offset)
 		{
-			uint32_t *decoded = static_cast<uint32_t *>(allocator.allocate_raw(info.codeSize, 64));
+			if (!obj["varintOffset"].IsUint64())
+				return input_error("invalid-field", "shaderModules.varintOffset", &hash);
+			if (!obj["varintSize"].IsUint64())
+				return input_error("invalid-field", "shaderModules.varintSize", &hash);
 			auto offset = obj["varintOffset"].GetUint64();
 			auto size = obj["varintSize"].GetUint64();
-			if (offset + size > varint_size)
-			{
-				LOGE_LEVEL("Binary varint buffer overflows payload.\n");
-				return false;
-			}
-
-			if (!decode_varint(decoded, info.codeSize / 4, varint + offset, size))
-			{
-				LOGE_LEVEL("Invalid varint format.\n");
-				return false;
-			}
-
+			if (!varint || offset > varint_size || size > varint_size - offset)
+				return input_error("invalid-range", "shaderModules.varint", &hash);
+			if (!valid_shader_varint(varint + size_t(offset), size_t(size), info.codeSize / 4))
+				return input_error("invalid-varint", "shaderModules.varint", &hash);
+			if (replayed_shader_modules.count(hash))
+				continue;
+			auto *decoded = static_cast<uint32_t *>(allocator.allocate_raw(info.codeSize, 64));
+			if (!decode_varint(decoded, info.codeSize / 4, varint + size_t(offset), size_t(size)))
+				return input_error("invalid-varint", "shaderModules.varint", &hash);
 			info.pCode = decoded;
 		}
 		else
+		{
+			if (!obj.HasMember("code") || !valid_shader_base64(obj["code"], info.codeSize))
+				return input_error("invalid-base64", "shaderModules.code", &hash);
+			if (replayed_shader_modules.count(hash))
+				continue;
 			info.pCode = reinterpret_cast<uint32_t *>(decode_base64(allocator, obj["code"].GetString(), info.codeSize));
+		}
 
 		if (!iface.enqueue_create_shader_module(hash, &info, &replayed_shader_modules[hash]))
 			return false;
@@ -3331,9 +3432,14 @@ bool StateReplayer::Impl::parse_application_info(StateCreatorInterface &iface, c
 
 bool StateReplayer::Impl::parse_application_info_link(StateCreatorInterface &iface, const Value &link)
 {
-	Hash application_hash = string_to_uint64(link["application"].GetString());
-	auto tag = static_cast<ResourceTag>(link["tag"].GetInt());
-	Hash hash = string_to_uint64(link["hash"].GetString());
+	Hash application_hash, hash;
+	if (!link.HasMember("application") || !checked_hash(link["application"], application_hash))
+		return input_error("invalid-field", "link.application");
+	if (!link.HasMember("hash") || !checked_hash(link["hash"], hash))
+		return input_error("invalid-field", "link.hash");
+	if (!link.HasMember("tag") || !link["tag"].IsUint() || link["tag"].GetUint() >= RESOURCE_COUNT)
+		return input_error("invalid-field", "link.tag");
+	auto tag = static_cast<ResourceTag>(link["tag"].GetUint());
 	Hash link_hash = Hashing::compute_hash_application_info_link(application_hash, tag, hash);
 	iface.notify_application_info_link(link_hash, application_hash, tag, hash);
 	return true;
@@ -6341,6 +6447,9 @@ void StateReplayer::Impl::forget_handle_references()
 
 bool StateReplayer::Impl::parse(StateCreatorInterface &iface, DatabaseInterface *resolver, const void *buffer_, size_t total_size)
 {
+	if (!buffer_ || total_size == 0)
+		return input_error("malformed-envelope", "buffer");
+
 	// All data after a string terminating '\0' is considered binary payload
 	// which can be read for various purposes (SPIR-V varint for example).
 	const uint8_t *buffer = static_cast<const uint8_t *>(buffer_);
@@ -6360,24 +6469,58 @@ bool StateReplayer::Impl::parse(StateCreatorInterface &iface, DatabaseInterface 
 
 	if (doc.HasParseError())
 	{
-		auto error = doc.GetParseError();
-		LOGE_LEVEL("Got parse error: %d\n", int(error));
+		auto error = int(doc.GetParseError());
+		auto offset = static_cast<unsigned long long>(doc.GetErrorOffset());
+		if (get_thread_log_level() <= LOG_ERROR &&
+		    !Internal::log_thread_callback(LOG_ERROR, "Parser input error: reason=invalid-json error=%d offset=%llu\n", error, offset))
+			LOGE("Parser input error: reason=invalid-json error=%d offset=%llu\n", error, offset);
 		return false;
 	}
 
-	int version = doc["version"].GetInt();
-	if (version > FOSSILIZE_FORMAT_VERSION || version < FOSSILIZE_FORMAT_MIN_COMPAT_VERSION)
+	if (!doc.IsObject())
+		return input_error("malformed-envelope", "root");
+	if (!doc.HasMember("version"))
+		return input_error("malformed-envelope", "version");
+	const auto &version = doc["version"];
+	if (!version.IsInt64() && !version.IsUint64())
 	{
-		LOGE_LEVEL("JSON version mismatches.");
-		return false;
+		// RapidJSON represents integer literals beyond uint64_t as doubles.
+		if (version.IsDouble() && std::floor(version.GetDouble()) == version.GetDouble() &&
+		    (version.GetDouble() < FOSSILIZE_FORMAT_MIN_COMPAT_VERSION || version.GetDouble() > FOSSILIZE_FORMAT_VERSION))
+			return input_error("incompatible-version", "version");
+		return input_error("malformed-envelope", "version");
 	}
+	if (!version.IsUint() || version.GetUint() < FOSSILIZE_FORMAT_MIN_COMPAT_VERSION ||
+	    version.GetUint() > FOSSILIZE_FORMAT_VERSION)
+		return input_error("incompatible-version", "version");
+
+	// Validate the complete first-level envelope before emitting any callbacks.
+	// Object internals other than shader modules and links are separate audits.
+	const char *object_fields[] = { "applicationInfo", "physicalDeviceFeatures", "link" };
+	for (auto *field : object_fields)
+		if (doc.HasMember(field) && !doc[field].IsObject())
+			return input_error("malformed-envelope", field);
+	const char *maps[] = { "shaderModules", "samplers", "setLayouts", "pipelineLayouts", "renderPasses",
+	                       "renderPasses2", "computePipelines", "graphicsPipelines", "raytracingPipelines" };
+	for (auto *field : maps)
+	{
+		if (!doc.HasMember(field)) continue;
+		if (!doc[field].IsObject())
+			return input_error("malformed-envelope", field);
+		for (auto member = doc[field].MemberBegin(); member != doc[field].MemberEnd(); ++member)
+			if (!member->value.IsObject())
+				return input_error("invalid-record", field);
+	}
+	Hash application = 0;
+	if (doc.HasMember("application") && !checked_hash(doc["application"], application))
+		return input_error("malformed-envelope", "application");
 
 	if (doc.HasMember("applicationInfo") && doc.HasMember("physicalDeviceFeatures"))
 		if (!parse_application_info(iface, doc["applicationInfo"], doc["physicalDeviceFeatures"]))
 			return false;
 
 	if (doc.HasMember("application"))
-		iface.set_current_application_info(string_to_uint64(doc["application"].GetString()));
+		iface.set_current_application_info(application);
 
 	if (doc.HasMember("link"))
 		if (!parse_application_info_link(iface, doc["link"]))
