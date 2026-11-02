@@ -1871,6 +1871,9 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	void worker_thread(unsigned thread_index)
 	{
+#ifdef FOSSILIZE_REPLAY_TEST_PROSE_OFF
+		set_thread_log_level(LOG_NONE);
+#endif
 		Global::worker_thread_index = thread_index;
 
 		if (opts.on_thread_callback)

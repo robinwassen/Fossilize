@@ -7,9 +7,9 @@
 #undef LOGI
 #undef LOGW
 #undef LOGE
-#define LOGI(...) do {} while(0)
-#define LOGW(...) do {} while(0)
-#define LOGE(...) do {} while(0)
+#define LOGI(...) discard_prose(__VA_ARGS__)
+#define LOGW(...) discard_prose(__VA_ARGS__)
+#define LOGE(...) discard_prose(__VA_ARGS__)
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -23,6 +23,7 @@
 #include <signal.h>
 #include <errno.h>
 #endif
+static void discard_prose(const char *, ...) {}
 static std::string scenario;
 static void install_event_dispatch();
 class EventDevice : public Fossilize::VulkanDevice
@@ -54,6 +55,7 @@ static pid_t test_waitpid(pid_t, int *, int);
 #endif
 #define FOSSILIZE_REPLAY_TEST_WORKER test_worker
 #define FOSSILIZE_REPLAY_TEST_OBSERVE observe
+#define FOSSILIZE_REPLAY_TEST_PROSE_OFF
 #define main fossilize_replay_original_main
 #include "../cli/fossilize_replay.cpp"
 #undef main

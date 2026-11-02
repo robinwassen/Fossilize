@@ -20,6 +20,13 @@
 static DiagnosticChecks checks;
 static std::string scenario;
 static bool event_case;
+#include "../cli/logging.hpp"
+#undef LOGI
+#undef LOGW
+#undef LOGE
+#define LOGI(...) do { if (!event_case || getpid() == master_pid) { fprintf(stderr, __VA_ARGS__); } } while(0)
+#define LOGW(...) LOGI(__VA_ARGS__)
+#define LOGE(...) LOGI(__VA_ARGS__)
 static pid_t master_pid;
 static thread_local bool dispatcher_clock;
 static thread_local uint64_t dispatcher_now = 100000000000ull;
@@ -56,6 +63,7 @@ template <typename Children> static void observe(const Children &);
 #define VulkanDevice TimeoutDevice
 #define FOSSILIZE_REPLAY_TEST_WORKER worker
 #define FOSSILIZE_REPLAY_TEST_OBSERVE observe
+#define FOSSILIZE_REPLAY_TEST_PROSE_OFF
 #define main fossilize_replay_original_main
 #include "../cli/fossilize_replay.cpp"
 #undef main
@@ -504,7 +512,7 @@ int main(int argc, char **argv)
   if(event_case)
   {
    const auto &origin=r.previous_event_count?r.previous_events[0]:r.events;
-   bool found=false;for(unsigned i=0;i<origin.count;i++){const auto &v=origin.events[i];found|=v.phase==Fossilize::ReplayEvent::Timeout&&v.reason==Fossilize::ReplayEvent::NoProgress&&v.threshold==2000000000ull&&v.elapsed==2500000000ull&&v.worker==0&&v.attempt==1;checks.require(!(v.known&Fossilize::ReplayEvent::Hash),"M18/no-timeout-invented-culprit");}
+   bool found=false;for(unsigned i=0;i<origin.count;i++){const auto &v=origin.events[i];found|=v.phase==Fossilize::ReplayEvent::Timeout&&v.reason==Fossilize::ReplayEvent::NoProgress&&v.threshold==2000000000ull&&v.elapsed==2500000000ull&&v.worker==0&&v.attempt==1;checks.require(!(v.known&Fossilize::ReplayEvent::HasHash),"M18/no-timeout-invented-culprit");}
    checks.require(origin.hello&&origin.eof&&found,"M18/controller-actual-dispatcher-origin-fields");
    if(scenario=="recovery")checks.require(r.complete&&r.events.final&&r.events.successful()&&r.events.attempt==2&&r.previous_event_count==1,"M18/retry-success-preserves-origin-attempt");
   }
