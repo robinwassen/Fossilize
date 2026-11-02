@@ -478,19 +478,39 @@ WorkerDisposition ProcessProgress::process_shutdown(int wstatus)
 	return disposition;
 }
 
-static void send_faulty_modules_and_close(int fd, unsigned worker, unsigned attempt)
+static unsigned send_faulty_modules_and_close(int fd, unsigned worker, unsigned attempt)
 {
+	// A startup failure can close the child's reader before this first write.
+	// Block SIGPIPE only on this thread and consume only a newly generated
+	// signal; preserve the caller's mask, disposition and pre-existing pending bit.
+	sigset_t mask, old_mask, pending;
+	sigemptyset(&mask); sigaddset(&mask, SIGPIPE);
+	unsigned error = unsigned(pthread_sigmask(SIG_BLOCK, &mask, &old_mask));
+	if (error) { close(fd); return error; }
+	if (sigpending(&pending) != 0)
+	{
+		error = unsigned(errno);
+		close(fd); pthread_sigmask(SIG_SETMASK, &old_mask, nullptr); return error;
+	}
+	bool had_pending = sigismember(&pending, SIGPIPE) == 1;
 	char payload[96], frame[ReplayEvent::MaxFrame];
-	snprintf(payload,sizeof(payload),"1 OFFER 2 %u %u",worker,attempt);
-	if (ReplayEvent::frame(frame,sizeof(frame),payload)) write_all(fd,frame);
+	snprintf(payload, sizeof(payload), "1 OFFER 2 %u %u", worker, attempt);
+	if (!ReplayEvent::frame(frame, sizeof(frame), payload) || !write_all(fd, frame)) error = unsigned(errno ? errno : EIO);
 	for (auto &m : Global::faulty_spirv_modules)
 	{
+		if (error) break;
 		char buffer[18];
 		sprintf(buffer, "%" PRIx64 "\n", m);
-		write_all(fd, buffer);
+		if (!write_all(fd, buffer)) error = unsigned(errno ? errno : EIO);
 	}
-
 	close(fd);
+	if (error == EPIPE && !had_pending)
+	{
+		timespec zero = {};
+		while (sigtimedwait(&mask, nullptr, &zero) < 0 && errno == EINTR) {}
+	}
+	unsigned restore_error = unsigned(pthread_sigmask(SIG_SETMASK, &old_mask, nullptr));
+	return error ? error : restore_error;
 }
 
 static bool poll_process_memory_usage(pid_t pid, ExternalReplayer::ProcessStats &stats)
@@ -608,7 +628,6 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 		pid = new_pid;
 		heartbeats = 1;
 
-		send_faulty_modules_and_close(input_fds[1], index, outcome.attempts);
 		close(crash_fds[1]);
 		close(input_fds[0]);
 		Global::active_processes++;
@@ -619,9 +638,17 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 		if (epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, crash_fd, &event) < 0)
 		{
 			LOGE("Failed to add file to epoll.\n");
+			close(input_fds[1]);
 			return false;
 		}
 
+		unsigned input_error = send_faulty_modules_and_close(input_fds[1], index, outcome.attempts);
+		if (input_error)
+		{
+			outcome.native_error = input_error;
+			outcome.events.lost = true;
+			return false;
+		}
 		return true;
 	}
 	else if (new_pid == 0)

@@ -14,7 +14,10 @@ subsequent frames can be retained, with sticky loss/unsupported flags. EOF
 invalidates an unfinished record and records missing HELLO/FINAL uncertainty.
 
 Startup writes `1 OFFER <version-bitmask> <worker> <attempt>` on the existing
-stdin pipe, before optional legacy shader hashes and EOF. Bit 1 offers version
+stdin pipe, before optional legacy shader hashes and EOF. Linux contains EPIPE
+for both writes without changing the caller's SIGPIPE disposition, mask or
+pre-existing pending signal; a closed reader remains a native delivery failure
+with unknown worker origin. Bit 1 offers version
 1. A child selects an offered version with `1 HELLO <worker> <attempt>` on its
 output pipe before replay. No extra blocking exchange is needed. Missing,
 duplicate, unsupported or mismatched selections cannot certify a rich result.
