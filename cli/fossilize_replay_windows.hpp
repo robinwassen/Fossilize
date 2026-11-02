@@ -183,6 +183,7 @@ void ProcessProgress::parse(const char *cmd)
 		{
 			// Just forward the message.
 			char buffer[ControlBlockMessageSize] = {};
+			if (strlen(cmd) >= sizeof(buffer)) { outcome.events.lost = true; return; }
 			strcpy(buffer, cmd);
 
 			if (WaitForSingleObject(Global::shared_mutex, INFINITE) == WAIT_OBJECT_0)
@@ -260,6 +261,7 @@ void ProcessProgress::parse(const char *cmd)
 	}
 	else if (strncmp(cmd, "MODULE_UUID", 11) == 0)
 	{
+		if (strlen(cmd) != 12 + VK_UUID_SIZE * 2) { outcome.events.lost = true; return; }
 		memcpy(module_uuid_path, cmd + 12, VK_UUID_SIZE * 2);
 	}
 	else if (strncmp(cmd, "MODULE", 6) == 0)
@@ -271,6 +273,7 @@ void ProcessProgress::parse(const char *cmd)
 		{
 			Global::control_block->banned_modules.fetch_add(1, std::memory_order_relaxed);
 			char buffer[ControlBlockMessageSize] = {};
+			if (strlen(cmd) >= sizeof(buffer)) { outcome.events.lost = true; return; }
 			strcpy(buffer, cmd);
 
 			if (WaitForSingleObject(Global::shared_mutex, INFINITE) == WAIT_OBJECT_0)
