@@ -8,7 +8,7 @@ and their status. Follow the [changelog writing guideline](local-docs/changelog-
 Entries are reviewed with their implementation PR; inclusion in an open PR does
 not establish merged delivery or a release.
 
-- **[Observability]** Rejected malformed envelopes, shader modules and application links with input-error reasons so these inputs cannot terminate the replay host. ([#17](https://github.com/robinwassen/Fossilize/issues/17))
+- **[Observability]** Rejected malformed envelopes, shader modules and application links with input-error reasons so replay hosts can continue after rejected input. ([#17](https://github.com/robinwassen/Fossilize/issues/17))
 
 - **[Observability]** Recorded distinct replay timeout causes before recovery and retained termination results so interrupted work can be diagnosed without mistaking signals for causes. ([#16](https://github.com/robinwassen/Fossilize/issues/16))
 

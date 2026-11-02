@@ -213,6 +213,7 @@ void valid_controls(DiagnosticChecks &c)
 	}
 	for (auto data : {
 		shader("\"flags\":3,\"codeSize\":0,\"code\":\"\""),
+		shader("\"flags\":3,\"codeSize\":0,\"code\":\"\"", "000000000000000001234"),
 		binary(shader("\"flags\":3,\"codeSize\":0,\"varintOffset\":0,\"varintSize\":0"), ""),
 		shader("\"flags\":3,\"codeSize\":4,\"code\":\"/////w==\""),
 		binary(shader("\"flags\":3,\"codeSize\":4,\"varintOffset\":0,\"varintSize\":5"), std::string("\xff\xff\xff\xff\x0f", 5))})
@@ -235,6 +236,20 @@ void valid_controls(DiagnosticChecks &c)
 		c.require(creator.order == std::vector<std::string>({"app", "current", "link", "shader"}), "valid/callback-order");
 		check_shader(c, creator, "valid/app-link"); c.require(log.text.empty(), "valid/app-link-no-errors");
 	}
+	{
+		StateReplayer replay; Creator creator; LogCapture log;
+		std::string data = envelope("\"application\":\"00000000000000000010\",\"link\":{\"application\":\"00000000000000000010\",\"hash\":\"00000000000000000020\",\"tag\":4}");
+		c.require(replay.parse(creator, nullptr, data.data(), data.size()) && creator.current_hash == 0x10 && creator.link_app == 0x10 && creator.link_resource == 0x20, "valid/nonoverflowing-leading-zero-hashes");
+		c.require(log.text.empty(), "valid/leading-zero-no-error");
+	}
+	{
+		StateReplayer replay; Creator creator; LogCapture log;
+		std::string data = envelope("\"shaderModules\":{\"1234\":{\"flags\":3,\"codeSize\":8,\"code\":\"AwIjBwEAAAA=\"},\"5678\":{\"codeSize\":8,\"code\":\"AwIjBwEAAAA=\"}}");
+		c.require(!replay.parse(creator, nullptr, data.data(), data.size()), "valid/later-record-failure");
+		check_shader(c, creator, "valid/preserved-earlier-callback");
+		c.contains(log.text, "reason=invalid-field field=shaderModules.flags tag=4 hash=0000000000005678", "valid/later-record-identity");
+	}
+
 	{
 		StateRecorder recorder;
 		VkApplicationInfo app = { VK_STRUCTURE_TYPE_APPLICATION_INFO };
@@ -287,7 +302,8 @@ void mutations(DiagnosticChecks &c)
 		continuation(c, "mutation/" + std::to_string(i));
 		printf("MUTATION_CONTINUED %u\n", i);
 	}
-	c.require(accepted > 0 && rejected > 0, "mutation/accepted-and-rejected");
+	c.require(accepted == 133 && rejected == 251, "mutation/exact-accepted-and-rejected");
+	c.require(digest == 0x4162186d1dd8f000ull, "mutation/fixed-corpus-digest");
 	printf("MUTATION_SENTINEL seed=00170008 count=384 accepted=%u rejected=%u digest=%016llx\n", accepted, rejected, static_cast<unsigned long long>(digest));
 }
 }

@@ -3026,7 +3026,7 @@ static bool input_error(const char *reason, const char *field, const Hash *hash 
 
 static bool checked_hash(const Value &value, Hash &hash)
 {
-	if (!value.IsString() || value.GetStringLength() == 0 || value.GetStringLength() > 16)
+	if (!value.IsString() || value.GetStringLength() == 0)
 		return false;
 	hash = 0;
 	for (SizeType i = 0; i < value.GetStringLength(); i++)
@@ -3037,6 +3037,8 @@ static bool checked_hash(const Value &value, Hash &hash)
 		else if (c >= 'a' && c <= 'f') digit = c - 'a' + 10;
 		else if (c >= 'A' && c <= 'F') digit = c - 'A' + 10;
 		else return false;
+		if (hash > (std::numeric_limits<Hash>::max() - digit) / 16)
+			return false;
 		hash = (hash << 4) | digit;
 	}
 	return true;
