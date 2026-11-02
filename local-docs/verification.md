@@ -559,7 +559,10 @@ shared-ring forwarding, unknown native status, and empty-kind recovery.
 invocations on a dependency-complete known-hash fixture. `replay-controller-cli-
 {e5,e6}` use a readback-checked FOZ containing compute `{}` and require orderly
 parser rejection in Debug and Release, unsuccessful exit, the malformed-envelope
-reason and known compute tag/hash. The `ExternalReplayer::Progress` control
+reason and known compute tag/hash in nonquiet normal, direct-child and master
+paths. Progress intentionally suppresses child stderr; its readback-checked
+single-entry fixture and authoritative counters establish orderly rejection
+without a visible child diagnostic. The `ExternalReplayer::Progress` control
 requires exactly one compute parse failure and skip, zero completed compute
 pipelines and zero clean/dirty worker deaths. These cases exercise input rejection;
 the separate injected real-controller loss/recovery/order/range cases retain

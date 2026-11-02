@@ -40,10 +40,16 @@ if(CASE STREQUAL "e5" OR CASE STREQUAL "e6" OR CASE STREQUAL "parser-normal" OR 
     if(NOT rejection_status STREQUAL "0")
         message(FATAL_ERROR "Structured parser-rejection/no-worker-loss control failed: ${rejection_status}\n${rejection_output}\n${rejection_errors}")
     endif()
-    if(NOT errors MATCHES "reason=malformed-envelope field=version" OR
-       NOT errors MATCHES "tag: 7, hash: 0x0000000000000605" OR
-       errors MATCHES "Assertion|segmentation|driver crash")
-        message(FATAL_ERROR "Controlled input reason/compute identity missing or crash misattributed: ${errors}")
+    # Progress deliberately suppresses child stderr. Its checked one-entry
+    # fixture and structured parse/skip/crash counters remain authoritative.
+    if(NOT CASE STREQUAL "e6")
+        if(NOT errors MATCHES "reason=malformed-envelope field=version" OR
+           NOT errors MATCHES "tag: 7, hash: 0x0000000000000605")
+            message(FATAL_ERROR "Controlled input reason/compute identity missing: ${errors}")
+        endif()
+    endif()
+    if(errors MATCHES "Assertion|segmentation|driver crash")
+        message(FATAL_ERROR "Controlled input rejection misattributed as crash: ${errors}")
     endif()
     message(STATUS "${rejection_output}")
     if(NOT status STREQUAL "${expected}")

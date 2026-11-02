@@ -242,13 +242,6 @@ void valid_controls(DiagnosticChecks &c)
 		c.require(replay.parse(creator, nullptr, data.data(), data.size()) && creator.current_hash == 0x10 && creator.link_app == 0x10 && creator.link_resource == 0x20, "valid/nonoverflowing-leading-zero-hashes");
 		c.require(log.text.empty(), "valid/leading-zero-no-error");
 	}
-	{
-		StateReplayer replay; Creator creator; LogCapture log;
-		std::string data = envelope("\"shaderModules\":{\"1234\":{\"flags\":3,\"codeSize\":8,\"code\":\"AwIjBwEAAAA=\"},\"5678\":{\"codeSize\":8,\"code\":\"AwIjBwEAAAA=\"}}");
-		c.require(!replay.parse(creator, nullptr, data.data(), data.size()), "valid/later-record-failure");
-		check_shader(c, creator, "valid/preserved-earlier-callback");
-		c.contains(log.text, "reason=invalid-field field=shaderModules.flags tag=4 hash=0000000000005678", "valid/later-record-identity");
-	}
 
 	{
 		StateRecorder recorder;
@@ -269,6 +262,16 @@ void valid_controls(DiagnosticChecks &c)
 			c.require(log.text.empty(), "valid/recorder-no-errors");
 			StateRecorder::free_serialized(buffer);
 		}
+	}
+}
+void partial_callback_control(DiagnosticChecks &c)
+{
+	{
+		StateReplayer replay; Creator creator; LogCapture log;
+		std::string data = envelope("\"shaderModules\":{\"1234\":{\"flags\":3,\"codeSize\":8,\"code\":\"AwIjBwEAAAA=\"},\"5678\":{\"codeSize\":8,\"code\":\"AwIjBwEAAAA=\"}}");
+		c.require(!replay.parse(creator, nullptr, data.data(), data.size()), "valid/later-record-failure");
+		check_shader(c, creator, "valid/preserved-earlier-callback");
+		c.contains(log.text, "reason=invalid-field field=shaderModules.flags tag=4 hash=0000000000005678", "valid/later-record-identity");
 	}
 }
 void mutations(DiagnosticChecks &c)
@@ -337,6 +340,7 @@ int main(int argc, char **argv)
 		c.require(count > 0, "nonempty-table");
 		if (mode == "diagnostics")
 		{
+			partial_callback_control(c);
 			StateReplayer replay; Creator creator; LogCapture log;
 			std::string invalid = "{\"version\":6,}";
 			c.require(!replay.parse(creator, nullptr, invalid.data(), invalid.size()), "diagnostics/syntax-false");
