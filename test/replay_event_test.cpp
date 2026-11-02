@@ -26,6 +26,7 @@ static void roundtrip()
  checks.require(v.phase==e.phase&&v.reason==e.reason&&v.known==e.known&&v.raw==e.raw&&v.domain==e.domain&&v.offset==e.offset&&v.threshold==e.threshold&&v.elapsed==e.elapsed&&v.hash==0&&v.worker==0&&v.attempt==0,"M18/exact-fields-zero-is-known"); }
  State s;s.begin(0,0);Stream p;Event e;e.phase=Parse;e.reason=GenericParse;feed(p,s,hello()+wire(e));checks.require(s.count==1&&s.events[0].known==0,"M18/absent-fields-remain-absent");
  Event zero=sample(1);zero.raw=0;State zs;zs.begin(0,0);Stream zp;feed(zp,zs,hello()+wire(zero));checks.require(zs.count==1&&(zs.events[0].known&Raw)&&zs.events[0].raw==0&&zs.events[0].domain==Vulkan,"M18/known-zero-raw-distinct-from-absence");
+ for(auto value:{int64_t(5),INT64_MIN,INT64_MAX}){Event native=sample(2);native.known|=Raw;native.domain=Native;native.raw=value;State state;state.begin(0,0);Stream stream;feed(stream,state,hello()+wire(native));checks.require(state.count==1&&state.events[0].domain==Native&&state.events[0].raw==value&&(state.events[0].known&Raw),"M18/native-domain-and-signed-boundaries");}
  checks.require(wire("1 HELLO 0 0")=="FZ18 11:1 HELLO 0 0\n","M18/golden-stable-hello");
  checks.require(Parse==1&&Create==2&&Timeout==3&&InvalidJSON==2&&CreationFailed==16&&NoProgress==32&&Raw==1&&Duration==128&&Vulkan==1&&RapidJSON==2&&Native==3,"M18/stable-identifiers");
 }
@@ -38,13 +39,16 @@ static void streaming()
  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
  checks.require(offer(offerwire.data(),offerwire.size(),w,a,recognized)&&recognized&&w==0&&a==0,"M18/actual-offer-selection");
  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+ State os;Stream op;unsigned selected=0;for(char c:offerwire)op.feed_frames(os,&c,1,[](const char*){},[&](const char *text,size_t n){uint64_t worker=9,attempt=9;if(select_offer(text,n,worker,attempt)&&worker==0&&attempt==0)selected++;});checks.require(selected==1&&!os.lost,"M18/every-byte-offer-fragmentation");
  checks.require(!offer("abc\n",4,w,a,recognized)&&!recognized,"M18/legacy-first-hash-preserved");
 }
 static void malformed()
 {
  const std::string final=wire("1 FINAL 0 0");
  for(size_t n=1;n<final.size();n++) { State s;s.begin(0,0);Stream p;feed(p,s,hello());feed(p,s,final.substr(0,n));p.finish(s);checks.require(!s.final&&s.lost&&!s.successful(),"M18/every-truncated-final-prefix"); }
- std::vector<std::string> bad={"FZ18 99999999999999999999999999:x\n","FZ18 1:abc\n","FZ18 0:\n",std::string(4096,'x')+"\n", "FZ18 11:1 HELLO 0 0\r\n", "FZ18 11:1 HELLO 0 0junk\n"};
+ const std::vector<std::string> fragments={hello(),wire(sample()),final};
+ for(unsigned kind=0;kind<fragments.size();kind++)for(size_t cut=1;cut<fragments[kind].size();cut++){State state;state.begin(0,0);Stream stream;if(kind)feed(stream,state,hello());feed(stream,state,fragments[kind].substr(0,cut));stream.finish(state);checks.require(state.lost&&!state.count&&!state.final&&(kind||!state.hello),"M18/every-truncated-hello-event-final-prefix");}
+ std::vector<std::string> bad={wire("1 FUTURE 7"),"FZ18 99999999999999999999999999:x\n","FZ18 1:abc\n","FZ18 0:\n",std::string(4096,'x')+"\n", "FZ18 11:1 HELLO 0 0\r\n", "FZ18 11:1 HELLO 0 0junk\n"};
  bad.push_back(wire("1 EVENT 18446744073709551616 2 0 0 0 0 0 0 0 0 0 0 0 0"));
  bad.push_back(wire("1 EVENT 1 2 2 1 9223372036854775808 0 0 0 0 0 0 0 0 0"));
  bad.push_back(wire("1 EVENT 1 2 2 1 -9223372036854775809 0 0 0 0 0 0 0 0 0"));
@@ -52,10 +56,10 @@ static void malformed()
  bad.push_back(wire("1 EVENT 1 2 0 0 0 0 1 0 0 0 0 0 0 0"));
  auto nul=hello();nul[9]=0;bad.push_back(nul);auto high=hello();high[10]=char(255);bad.push_back(high);
  auto huge=sample();auto ewire=wire(huge);auto pos=ewire.find(" 3 "); if(pos!=std::string::npos) ewire.replace(pos,3," 18446744073709551616 "); bad.push_back(ewire);
- for(const auto &b:bad) {State s;s.begin(0,0);Stream p;feed(p,s,b);feed(p,s,hello()+wire(sample()));p.finish(s);checks.require((s.lost||s.unsupported)&&!s.successful()&&p.used==0,"M18/malformed-resynchronizes-with-explicit-loss");}
+ for(const auto &b:bad) {State s;s.begin(0,0);Stream p;feed(p,s,b);feed(p,s,hello()+wire(sample()));p.finish(s);checks.require((s.lost||s.unsupported)&&!s.successful()&&p.used==0&&s.count==1&&s.events[0].reason==InvalidJSON,"M18/malformed-resynchronizes-with-explicit-loss");}
  Event invalid=sample(); invalid.known|=256;
  State s;s.begin(0,0);Stream p;feed(p,s,hello()+wire(invalid)+wire(sample()));checks.require(s.lost&&s.count==1,"M18/invalid-known-mask-rejected");
- for(unsigned which=0;which<3;which++) {State t;t.begin(0,0);Stream q;Event e=sample();if(which==0)e.phase=999;if(which==1)e.reason=999;if(which==2)e.domain=999;feed(q,t,hello()+wire(e)+final);q.finish(t);checks.require(t.unsupported&&t.count==1&&!t.successful(),"M18/opaque-unknown-never-known-success");}
+ for(unsigned which=0;which<3;which++) {State t;t.begin(0,0);Stream q;Event e=sample();if(which==0)e.phase=999;if(which==1)e.reason=999;if(which==2)e.domain=999;feed(q,t,hello()+wire(e)+wire(sample(1))+final);q.finish(t);checks.require(t.unsupported&&t.count==2&&t.events[0].phase==e.phase&&t.events[0].reason==e.reason&&t.events[0].domain==e.domain&&t.events[1].reason==CreationFailed&&!t.successful(),"M18/opaque-unknown-never-known-success");}
  State bounded;bounded.begin(0,0);Stream q;feed(q,bounded,hello());for(unsigned i=0;i<1000;i++)feed(q,bounded,wire(sample()));checks.require(bounded.count==MaxEvents&&bounded.omitted==1000-MaxEvents&&bounded.lost,"M18/bounded-storage-loss-accounted");
 }
 static void negotiation()
@@ -66,14 +70,27 @@ static void negotiation()
  for(auto b:bad){ State s;s.begin(0,0);Stream p;feed(p,s,b+wire("1 FINAL 0 0"));p.finish(s);checks.require(!s.successful(),"M18/invalid-selection-not-certified"); }
  ReplayWorkerOutcome o;o.attempts=1;o.begin_events(0);Stream p;Event prior=sample();prior.attempt=1;feed(p,o.events,wire("1 HELLO 0 1")+wire(prior));p.finish(o.events);o.attempts=2;o.begin_events(0);p={};feed(p,o.events,hello()+wire("1 FINAL 0 0"));p.finish(o.events);
  checks.require(o.previous_event_count==1&&o.previous_events[0].count==1&&!o.events.hello&&o.events.lost,"M18/attempt-reset-and-stale-selection");
+ for(unsigned mismatch=0;mismatch<2;mismatch++){State stale;stale.begin(0,2);Stream stream;Event event=sample();event.attempt=mismatch?2:1;event.worker=mismatch?1:0;feed(stream,stale,wire("1 HELLO 0 2")+wire(event)+wire("1 FINAL 0 0"));stream.finish(stale);checks.require(stale.lost&&!stale.count&&!stale.successful(),"M18/stale-worker-attempt-event-rejected");}
+ State duplicate;duplicate.begin(0,0);Stream dp;feed(dp,duplicate,hello()+wire("1 FINAL 0 0")+wire("1 FINAL 1 0"));checks.require(duplicate.final&&duplicate.lost&&!duplicate.failed&&!duplicate.successful(),"M18/conflicting-final-cannot-overwrite-first");
  o.events.begin(0,2);p={};feed(p,o.events,wire("1 HELLO 0 2")+wire("1 FINAL 0 0"));p.finish(o.events);checks.require(o.events.successful()&&o.previous_events[0].events[0].reason==InvalidJSON,"M18/current-success-keeps-prior-evidence");
 }
 static void mutations()
 {
  uint32_t seed=0x180018;uint64_t digest=1469598103934665603ull,accepted=0,rejected=0,lost=0;
- for(unsigned i=0;i<768;i++) {std::string b=hello()+wire(sample(i%3))+wire("1 FINAL 0 0");seed=seed*1664525u+1013904223u;if(i%4){size_t n=seed%b.size(); b[n]=char(seed>>24);if(i%3==0)b.resize(n);}
- for(unsigned char c:b){digest^=c;digest*=1099511628211ull;}State s;s.begin(0,0);Stream p;feed(p,s,b);feed(p,s,"\n"+wire(sample(1)));p.finish(s);accepted+=s.count; rejected+=!s.successful();lost+=s.lost;
- checks.require(p.used==0&&s.count<=MaxEvents&&!s.successful(),"M18/mutation-bounded-and-post-final-not-success");}
+ for(unsigned i=0;i<768;i++)
+ {
+  Event event=sample(i%3);if(i%8==1)event.reason=999;
+  std::string b=hello()+wire(event);
+  seed=seed*1664525u+1013904223u;
+  if(i%8==2)b=hello()+wire("1 EVENT 18446744073709551616 2 0 0 0 0 0 0 0 0 0 0 0 0");
+  else if(i%8>=3){size_t n=seed%b.size();b[n]=char(seed>>24);if(i%3==0)b.resize(n);}
+  for(unsigned char c:b){digest^=c;digest*=1099511628211ull;}
+  State state;state.begin(0,0);Stream stream;feed(stream,state,b);feed(stream,state,"\n");
+  if(!state.hello)feed(stream,state,hello());
+  feed(stream,state,wire(sample(1))+wire("1 FINAL 1 0"));stream.finish(state);
+  accepted+=state.count;rejected+=state.lost||state.unsupported;lost+=state.lost;
+  checks.require(stream.used==0&&state.count&&state.count<=MaxEvents&&state.events[state.count-1].reason==CreationFailed&&state.events[state.count-1].raw==-4&&state.final&&state.failed&&!state.successful(),"M18/mutation-bounded-and-valid-continuation");
+ }
  printf("M18 corpus seed=0x180018 cases=768 max=4096 digest=%llx accepted=%llu rejected=%llu lost=%llu\n",(unsigned long long)digest,(unsigned long long)accepted,(unsigned long long)rejected,(unsigned long long)lost);
 }
 int main(int argc,char **argv)

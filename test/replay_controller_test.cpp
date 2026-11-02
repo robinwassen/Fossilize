@@ -99,7 +99,8 @@ static pid_t event_fork()
    uint64_t w,a;bool recognized=false;if(!Fossilize::ReplayEvent::offer(line,n,w,a,recognized))_exit(95);
   }
   close(startup_input_read);
-  if(::write(ready[1],"x",1)!=1)_exit(96);close(ready[1]);_exit(2);
+  if(::write(ready[1],"x",1)!=1)_exit(96);
+  close(ready[1]);_exit(2);
  }
  close(ready[1]);startup_child=pid;startup_ready=ready[0];
  if(scenario=="event-startup-close")startup_barrier();
@@ -201,11 +202,15 @@ template <typename Options> static int test_worker(unsigned index, unsigned atte
   synthetic.enabled=false;
   if(scenario=="event-pre-report-death")return 2;
   using namespace Fossilize::ReplayEvent;
+  char final_frame[MaxFrame];
+  if(scenario=="event-missing-final")return 0;
+  if(scenario=="event-abnormal-final"){frame(final_frame,sizeof(final_frame),"1 FINAL 0 0");event_write(final_frame);return 2;}
   Event e;e.phase=Create;e.reason=CreationFailed;e.known=Raw|HasTag|HasHash|Worker|Attempt;e.domain=Vulkan;e.raw=VK_ERROR_DEVICE_LOST;e.tag=RESOURCE_COMPUTE_PIPELINE;e.hash=0x302;e.worker=index;e.attempt=attempt;
   char b[MaxFrame];event_frame(b,sizeof(b),e);event_write(b);
-  if(scenario=="event-missing-final"||scenario=="event-drop-hello")return 0;
-  if(scenario=="event-truncated"){frame(b,sizeof(b),"1 FINAL 0 0"); b[strlen(b)-3]=0;event_write(b);return 0;}
+  if(scenario=="event-missing-final-origin"||scenario=="event-drop-hello")return 0;
+  if(scenario.find("event-truncated")==0){frame(b,sizeof(b),"1 FINAL 0 0");size_t cut=scenario=="event-truncated-prefix"?4:scenario=="event-truncated-length"?8:scenario=="event-truncated-payload"?14:scenario=="event-truncated-newline"?strlen(b)-1:strlen(b)-3;b[cut]=0;event_write(b);return 0;}
   if(scenario=="event-unknown"){e.reason=999;event_frame(b,sizeof(b),e);event_write(b);}
+  if(scenario=="event-unknown-version"){frame(b,sizeof(b),"2 EVENT 7");event_write(b);}
   if(scenario=="event-oversized")event_write((std::string(4096,'x')+"\n").c_str());
   frame(b,sizeof(b),"1 FINAL 0 0");event_write(b);
   if(scenario=="event-duplicate-final")event_write(b);
@@ -442,6 +447,7 @@ static void validate(int result, unsigned workers, bool zero)
   const auto &o=retained[0];const auto &e=o.events;
   checks.require(o.attempts==1&&e.offered&&e.eof&&o.timeout.current.native_observed,"M18/controller-attempt-native-and-eof");
   checks.require(o.complete==success,"M18/missing-final-never-success");
+  for(const auto &range:o.assigned)checks.require(range.begin==(scenario=="event-empty"?0u:2u)&&range.end==(scenario=="event-empty"?0u:6u),"M18/controller-known-original-assigned-range");
   if(success)checks.require(e.hello&&e.final&&e.successful()&&!e.count,"M18/clean-requires-valid-final");
 #ifndef _WIN32
   else if(startup_close())checks.require(o.native_error==EPIPE&&e.lost&&!e.hello&&!e.count&&!e.final&&o.unknown_remainder&&!o.skipped(),"M18/closed-reader-parent-survives-retains-native-error-and-unknown-origin");
@@ -462,9 +468,11 @@ static void validate(int result, unsigned workers, bool zero)
   {
    checks.require(!o.complete&&o.unknown_remainder,"M18/uncertain-transport-never-success");
    if(scenario=="event-pre-report-death")checks.require(!e.hello&&!e.count&&!e.final&&e.lost&&!o.skipped(),"M18/pre-report-death-unknown-root-and-resource");
-   else if(scenario=="event-abnormal-final")checks.require(e.final&&o.termination!=0,"M18/final-cannot-override-native-failure");
+   else if(scenario=="event-abnormal-final")checks.require(e.final&&e.successful()&&!e.count&&o.termination!=0,"M18/final-cannot-override-native-failure");
    else checks.require(e.lost||e.unsupported,"M18/protocol-loss-retained");
-   if(scenario=="event-missing-final"||scenario=="event-truncated")checks.require(e.count==1&&e.events[0].raw==VK_ERROR_DEVICE_LOST&&!e.final,"M18/origin-survives-final-loss");
+   if(scenario=="event-missing-final")checks.require(e.hello&&!e.final&&!e.count&&e.lost,"M18/successful-work-without-final-remains-unknown");
+   if(scenario=="event-unknown-version")checks.require(e.unsupported&&e.count==1&&e.events[0].reason==Fossilize::ReplayEvent::CreationFailed,"M18/unknown-wire-version-preserves-earlier-origin");
+   if(scenario=="event-missing-final-origin"||scenario.find("event-truncated")==0)checks.require(e.count==1&&e.events[0].raw==VK_ERROR_DEVICE_LOST&&!e.final,"M18/origin-survives-final-loss");
   }
   return;
  }
@@ -588,6 +596,9 @@ static int state_and_protocol()
 	               process.outcome.assigned[1].skipped_index == 3 && process.outcome.assigned[1].skipped_hash == 0xdef &&
 	               process.outcome.assigned[2].skipped_index == 4 && process.outcome.assigned[2].skipped_hash == 0x123,
 	               "protocol/authoritative-culprits-independent-of-forwarding");
+ const char *uuid="000102030405060708090a0b0c0d0e0f";
+ std::string uuid_record=std::string("MODULE_UUID ")+uuid;process.parse(uuid_record.c_str());checks.require(strcmp(process.module_uuid_path,uuid)==0,"M18/legacy-module-uuid-golden");
+ process.parse("MODULE abc");char module_message[ControlBlockMessageSize]={};checks.require(Global::faulty_spirv_modules.count(0xabc)==1&&shared_control_block_read(&memory.control,module_message,sizeof(module_message))&&strcmp(module_message,"MODULE abc")==0,"M18/legacy-module-golden-and-ring-forward");
 	// Category terminal records use the authoritative pipe, not the lossy ring.
 	for (unsigned n = 0; n < 1000; n++) process.parse("COMPUTE_VERR abc");
 	process.parse("REPLAY_FAILED 2 1");
