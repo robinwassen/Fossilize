@@ -5085,6 +5085,29 @@
         "intent_id": "c18u2-san-discovery",
         "started": 1793629914.2015111,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+          "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-issue18/checker-build-2/parser-asan-ubsan",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)",
+          "--output-junit",
+          "/tmp/fossilize-issue18/output/checker-unit-2/sanitizer-junit.xml"
+        ],
+        "command": "env ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-issue18/checker-build-2/parser-asan-ubsan --output-on-failure --no-tests=error -R '^(replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)' --output-junit /tmp/fossilize-issue18/output/checker-unit-2/sanitizer-junit.xml",
+        "cwd": "/tmp/fossilize-issue18/checker-2",
+        "eligible_deadline": 1793636214.429166,
+        "expected_exit": 0,
+        "intent_id": "c18u2-san-test",
+        "started": 1793629919.0530484,
+        "timeout": 600
       }
     ],
     "deadline": 1793636214.429166,
@@ -6048,7 +6071,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 250,
+  "revision": 251,
   "root_issue": {
     "id": 6079834852,
     "node_id": "I_kwDOVZpjbc8AAAABamLq5A",
