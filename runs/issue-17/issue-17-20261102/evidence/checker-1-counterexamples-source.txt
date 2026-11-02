@@ -1,0 +1,48 @@
+#define main committed_fixture_main
+#include "/tmp/fossilize-17/checker-1/test/parser_input_test.cpp"
+#undef main
+int main()
+{
+ set_thread_log_level(LOG_ERROR); DiagnosticChecks c; unsigned count=0;
+ // Cached known handles must not suppress validation of a malformed duplicate.
+ StateReplayer cached; Creator creator;
+ c.require(cached.parse(creator,nullptr,valid_shader,strlen(valid_shader)),"checker/cache-seed");
+ for (auto &f:fixtures())
+ {
+  auto before=creator.callbacks(); LogCapture log;
+  const void *p=f.null_pointer?nullptr:f.data.data();size_t n=f.null_pointer?f.null_size:f.data.size();
+  c.require(!cached.parse(creator,nullptr,p,n),"checker/cached-reject/"+f.id);
+  c.contains(log.text,"reason="+f.reason,"checker/cached-reason/"+f.id);
+  c.require(creator.callbacks()==before,"checker/cached-no-callback/"+f.id);
+  log.text.clear();
+  c.require(cached.parse(creator,nullptr,valid_shader,strlen(valid_shader))&&log.text.empty(),"checker/same-instance-continues/"+f.id);
+  count++;
+ }
+ // Exhaust every possible fifth byte at the uint32 varint boundary.
+ for(unsigned fifth=0;fifth<256;fifth++)
+ {
+  StateReplayer r;Creator cr;LogCapture log;
+  std::string bytes(4,char(0x80));bytes.push_back(char(fifth));
+  auto data=binary(shader("\"flags\":3,\"codeSize\":4,\"varintOffset\":0,\"varintSize\":5"),bytes);
+  bool ok=r.parse(cr,nullptr,data.data(),data.size());
+  c.require(ok==(fifth<16),"checker/varint-fifth-status/"+std::to_string(fifth));
+  if(fifth<16)c.require(cr.words==std::vector<uint32_t>({uint32_t(fifth)<<28})&&log.text.empty(),"checker/varint-fifth-word/"+std::to_string(fifth));
+  else c.require(cr.callbacks()==0&&log.text.find("reason=invalid-varint")!=std::string::npos,"checker/varint-fifth-contained/"+std::to_string(fifth));
+  count++;
+ }
+ for(auto key:{"0x1234"," 1234","+1234","-1234","1234 ","10000000000000000"})
+ {
+  StateReplayer r;Creator cr;LogCapture log;
+  auto data=shader("\"flags\":3,\"codeSize\":8,\"code\":\"AwIjBwEAAAA=\"",key);
+  c.require(!r.parse(cr,nullptr,data.data(),data.size())&&cr.callbacks()==0,"checker/hash-lexical-reject");
+  c.contains(log.text,"reason=invalid-field field=shaderModules.hash","checker/hash-lexical-reason");count++;
+ }
+ for(auto key:{"0000000000000000000000000000000000000000000000000000000000001234","aBcDeF0123456789","ffffffffffffffff"})
+ {
+  StateReplayer r;Creator cr;LogCapture log;
+  auto data=shader("\"flags\":3,\"codeSize\":8,\"code\":\"AwIjBwEAAAA=\"",key);
+  c.require(r.parse(cr,nullptr,data.data(),data.size())&&cr.shader_count==1&&log.text.empty(),"checker/hash-valid-preserved");count++;
+ }
+ printf("CHECKER_COUNTEREXAMPLE_SENTINEL cases=%u failures=%d\n",count,c.failures);
+ return c.failures?1:0;
+}
