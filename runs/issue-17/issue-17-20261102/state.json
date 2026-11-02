@@ -1818,7 +1818,34 @@
         "eligible_deadline": 1793613192.248768,
         "intent_id": "c17-parser-sanitize-suite",
         "started": 1793601689.446858,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793601724.8829808,
+          "command": [
+            "env",
+            "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-17/implementer-1/build/parser-sanitize",
+            "--output-on-failure",
+            "--no-tests=error",
+            "--output-junit",
+            "/tmp/fossilize-17/checker-1-output/parser-sanitize-results.xml",
+            "--parallel",
+            "2",
+            "-R",
+            "^(parser-input-|varint-system-test)"
+          ],
+          "cwd": "/tmp/fossilize-17/checker-1",
+          "exit_code": 0,
+          "finished": 1793601727.702896,
+          "intent_id": "c17-parser-sanitize-suite",
+          "started": 1793601724.880199,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "child_command": [
@@ -2297,7 +2324,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 104,
+  "revision": 105,
   "root_issue": {
     "id": 6079829518,
     "node_id": "I_kwDOVZpjbc8AAAABamLWDg",
