@@ -391,19 +391,22 @@ WorkerDisposition ProcessProgress::process_shutdown()
 	return disposition;
 }
 
-static void send_faulty_modules_and_close(HANDLE file, unsigned worker, unsigned attempt)
+static unsigned send_faulty_modules_and_close(HANDLE file, unsigned worker, unsigned attempt)
 {
+	unsigned error = 0;
 	char payload[96], frame[ReplayEvent::MaxFrame];
-	snprintf(payload,sizeof(payload),"1 OFFER 2 %u %u",worker,attempt);
-	if (ReplayEvent::frame(frame,sizeof(frame),payload)) write_all(file,frame);
+	snprintf(payload, sizeof(payload), "1 OFFER 2 %u %u", worker, attempt);
+	if (!ReplayEvent::frame(frame, sizeof(frame), payload)) error = ERROR_INVALID_DATA;
+	else if (!write_all(file, frame)) error = GetLastError();
 	for (auto &m : Global::faulty_spirv_modules)
 	{
+		if (error) break;
 		char buffer[18];
 		sprintf(buffer, "%" PRIx64 "\n", m);
-		write_all(file, buffer);
+		if (!write_all(file, buffer)) error = GetLastError();
 	}
-
-	CloseHandle(file);
+	if (!CloseHandle(file) && !error) error = GetLastError();
+	return error;
 }
 
 static bool CreateCustomPipe(HANDLE *read_pipe, HANDLE *write_pipe, LPSECURITY_ATTRIBUTES attrs, bool overlapped_read)
@@ -713,15 +716,15 @@ bool ProcessProgress::start_child_process()
 	CloseHandle(pi.hThread);
 	process = pi.hProcess;
 
-	// Send over which SPIR-V modules should be ignored.
-	send_faulty_modules_and_close(master_stdout_write, index, outcome.attempts);
-
 	crash_file_handle = master_stdout_read;
 	Global::active_processes++;
 
 	pipe_event = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 	if (!pipe_event)
 	{
+		outcome.native_error = GetLastError();
+		outcome.events.lost = true;
+		CloseHandle(master_stdout_write);
 		LOGE("Failed to create event.\n");
 		return false;
 	}
@@ -730,10 +733,20 @@ bool ProcessProgress::start_child_process()
 	// The pipe_event will signal once something happens.
 	if (!kick_overlapped_io())
 	{
+		outcome.native_error = GetLastError();
+		outcome.events.lost = true;
+		CloseHandle(master_stdout_write);
 		LOGE("Failed to start overlapped I/O.\n");
 		return false;
 	}
 
+	unsigned input_error = send_faulty_modules_and_close(master_stdout_write, index, outcome.attempts);
+	if (input_error)
+	{
+		outcome.native_error = input_error;
+		outcome.events.lost = true;
+		return false;
+	}
 	return true;
 }
 
