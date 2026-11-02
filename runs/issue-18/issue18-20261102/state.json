@@ -4994,6 +4994,27 @@
         "intent_id": "c18u2-linux-release-on-full",
         "started": 1793629891.3369157,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-issue18/checker-build-2/linux-debug-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(replay-event-|replay-timeout-|fork-child-)",
+          "--repeat",
+          "until-fail:3",
+          "--output-junit",
+          "/tmp/fossilize-issue18/output/checker-unit-2/repeat-junit.xml"
+        ],
+        "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-issue18/checker-build-2/linux-debug-off --output-on-failure --no-tests=error -R '^(replay-event-|replay-timeout-|fork-child-)' --repeat until-fail:3 --output-junit /tmp/fossilize-issue18/output/checker-unit-2/repeat-junit.xml",
+        "cwd": "/tmp/fossilize-issue18/checker-2",
+        "eligible_deadline": 1793636214.429166,
+        "intent_id": "c18u2-repeat",
+        "started": 1793629896.4036362,
+        "timeout": 600
       }
     ],
     "deadline": 1793636214.429166,
@@ -5957,7 +5978,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 246,
+  "revision": 247,
   "root_issue": {
     "id": 6079834852,
     "node_id": "I_kwDOVZpjbc8AAAABamLq5A",
