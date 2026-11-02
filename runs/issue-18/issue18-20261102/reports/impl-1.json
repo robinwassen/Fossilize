@@ -1,0 +1,993 @@
+{
+  "acceptance": "Not asserted; independent checker owns acceptance.",
+  "attempt_id": "impl-1",
+  "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+  "candidate_sha": null,
+  "commands": [
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/home/robin/.codex/worktrees/9d8a/fossilize",
+        "-B",
+        "/tmp/fossilize-issue18/build/linux-debug-off",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-config-debug-off-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-config-debug-off-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-config-debug-off-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-issue18/build/linux-debug-off",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-build-debug-off-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-build-debug-off-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-build-debug-off-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/linux-debug-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-discovery-debug-off-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-discovery-debug-off-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-discovery-debug-off-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/linux-debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "1",
+        "--output-junit",
+        "/tmp/fossilize-issue18/output/implementer/debug-off-a24-ctest.xml"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-ctest-debug-off-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-ctest-debug-off-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-ctest-debug-off-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/home/robin/.codex/worktrees/9d8a/fossilize",
+        "-B",
+        "/tmp/fossilize-issue18/build/linux-debug-on",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-config-debug-on-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-config-debug-on-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-config-debug-on-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-issue18/build/linux-debug-on",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-build-debug-on-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-build-debug-on-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-build-debug-on-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/linux-debug-on",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-discovery-debug-on-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-discovery-debug-on-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-discovery-debug-on-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/linux-debug-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "1",
+        "--output-junit",
+        "/tmp/fossilize-issue18/output/implementer/debug-on-a24-ctest.xml"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-ctest-debug-on-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-ctest-debug-on-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-ctest-debug-on-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/home/robin/.codex/worktrees/9d8a/fossilize",
+        "-B",
+        "/tmp/fossilize-issue18/build/linux-release-off",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-config-release-off-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-config-release-off-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-config-release-off-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-issue18/build/linux-release-off",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-build-release-off-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-build-release-off-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-build-release-off-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/linux-release-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-discovery-release-off",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-discovery-release-off.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-discovery-release-off-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/linux-release-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "1",
+        "--output-junit",
+        "/tmp/fossilize-issue18/output/implementer/release-off-ctest.xml"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-ctest-release-off",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-ctest-release-off.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-ctest-release-off-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/home/robin/.codex/worktrees/9d8a/fossilize",
+        "-B",
+        "/tmp/fossilize-issue18/build/linux-release-on",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-config-release-on-final",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-config-release-on-final.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-config-release-on-final-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-issue18/build/linux-release-on",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-build-release-on-final",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-build-release-on-final.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-build-release-on-final-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/linux-release-on",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-discovery-release-on",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-discovery-release-on.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-discovery-release-on-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/linux-release-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "1",
+        "--output-junit",
+        "/tmp/fossilize-issue18/output/implementer/release-on-ctest.xml"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-ctest-release-on",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-ctest-release-on.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-ctest-release-on-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/linux-debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "1",
+        "-R",
+        "^(replay-event-controller-|replay-timeout-|fork-child-)",
+        "--repeat",
+        "until-fail:3"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-repeat",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-repeat.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-repeat-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/home/robin/.codex/worktrees/9d8a/fossilize",
+        "-B",
+        "/tmp/fossilize-issue18/build/parser-asan-ubsan",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/g++",
+        "-DCMAKE_C_COMPILER=/usr/bin/gcc",
+        "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer",
+        "-DCMAKE_C_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer",
+        "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined",
+        "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=undefined"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-config-sanitizer",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-config-sanitizer.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-config-sanitizer-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-issue18/build/parser-asan-ubsan",
+        "--parallel",
+        "4",
+        "--target",
+        "replay-event-test",
+        "parser-input-test",
+        "varint-test",
+        "replay-event-producer-test"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-build-sanitizer",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-build-sanitizer.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-build-sanitizer-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/parser-asan-ubsan",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-discovery-sanitizer",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-discovery-sanitizer.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-discovery-sanitizer-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "env",
+        "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-issue18/build/parser-asan-ubsan",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "1",
+        "-R",
+        "^(replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)",
+        "--output-junit",
+        "/tmp/fossilize-issue18/output/implementer/sanitizer-ctest.xml"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-ctest-sanitizer",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-ctest-sanitizer.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-ctest-sanitizer-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-pthread",
+        "-I/tmp/fossilize-issue18/mutations/origin",
+        "-I/tmp/fossilize-issue18/mutations/origin/test",
+        "-I/tmp/fossilize-issue18/mutations/origin/khronos",
+        "-I/tmp/fossilize-issue18/mutations/origin/rapidjson/include",
+        "-I/tmp/fossilize-issue18/mutations/origin/cli",
+        "-I/tmp/fossilize-issue18/mutations/origin/cli/volk",
+        "/tmp/fossilize-issue18/mutations/origin/test/replay_controller_test.cpp",
+        "/tmp/fossilize-issue18/build/linux-debug-off/cli/libcli-utils.a",
+        "/tmp/fossilize-issue18/build/linux-debug-off/libfossilize.a",
+        "/tmp/fossilize-issue18/build/linux-debug-off/libminiz.a",
+        "/tmp/fossilize-issue18/build/linux-debug-off/cli/libvolk.a",
+        "-ldl",
+        "-lrt",
+        "-o",
+        "/tmp/fossilize-issue18/mutations/origin-controller"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-mutation-origin-compile-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-mutation-origin-compile-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-mutation-origin-compile-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-pthread",
+        "-I/tmp/fossilize-issue18/mutations/final",
+        "-I/tmp/fossilize-issue18/mutations/final/test",
+        "-I/tmp/fossilize-issue18/mutations/final/khronos",
+        "-I/tmp/fossilize-issue18/mutations/final/rapidjson/include",
+        "-I/tmp/fossilize-issue18/mutations/final/cli",
+        "-I/tmp/fossilize-issue18/mutations/final/cli/volk",
+        "/tmp/fossilize-issue18/mutations/final/test/replay_controller_test.cpp",
+        "/tmp/fossilize-issue18/build/linux-debug-off/cli/libcli-utils.a",
+        "/tmp/fossilize-issue18/build/linux-debug-off/libfossilize.a",
+        "/tmp/fossilize-issue18/build/linux-debug-off/libminiz.a",
+        "/tmp/fossilize-issue18/build/linux-debug-off/cli/libvolk.a",
+        "-ldl",
+        "-lrt",
+        "-o",
+        "/tmp/fossilize-issue18/mutations/final-controller"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-mutation-final-compile-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-mutation-final-compile-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-mutation-final-compile-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-E",
+        "chdir",
+        "/tmp/fossilize-issue18/mutations/origin-clean",
+        "/tmp/fossilize-issue18/mutations/origin-controller",
+        "--controller",
+        "event-clean",
+        "/tmp/fossilize-issue18/mutations/origin-clean/fixture.foz"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-mutation-origin-clean-isolated-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-mutation-origin-clean-isolated-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-mutation-origin-clean-isolated-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-E",
+        "chdir",
+        "/tmp/fossilize-issue18/mutations/origin-parse",
+        "/tmp/fossilize-issue18/mutations/origin-controller",
+        "--controller",
+        "event-parse",
+        "/tmp/fossilize-issue18/mutations/origin-parse/fixture.foz"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 99,
+      "intent_id": "i18-mutation-origin-parse-isolated-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-mutation-origin-parse-isolated-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-mutation-origin-parse-isolated-a24-receipt.json",
+      "status": "expected_assertion_failure",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-E",
+        "chdir",
+        "/tmp/fossilize-issue18/mutations/final-clean",
+        "/tmp/fossilize-issue18/mutations/final-controller",
+        "--controller",
+        "event-clean",
+        "/tmp/fossilize-issue18/mutations/final-clean/fixture.foz"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 0,
+      "intent_id": "i18-mutation-final-clean-isolated-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-mutation-final-clean-isolated-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-mutation-final-clean-isolated-a24-receipt.json",
+      "status": "passed",
+      "timeout": 600
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-E",
+        "chdir",
+        "/tmp/fossilize-issue18/mutations/final-missing-final",
+        "/tmp/fossilize-issue18/mutations/final-controller",
+        "--controller",
+        "event-missing-final",
+        "/tmp/fossilize-issue18/mutations/final-missing-final/fixture.foz"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "exit_code": 99,
+      "intent_id": "i18-mutation-final-missing-final-isolated-a24",
+      "log": "/tmp/fossilize-issue18/output/implementer/i18-mutation-final-missing-final-isolated-a24.log",
+      "receipt": "/tmp/fossilize-issue18/output/implementer/i18-mutation-final-missing-final-isolated-a24-receipt.json",
+      "status": "expected_assertion_failure",
+      "timeout": 600
+    },
+    {
+      "command": "Manual entire base-to-candidate source/test/documentation review",
+      "cwd": "/home/robin/.codex/worktrees/9d8a/fossilize",
+      "independent_acceptance": false,
+      "intent_id": "candidate-diff-review",
+      "public_declarations_and_shared_layout": "unchanged; actual base-header consumers separately compiled and executed",
+      "status": "self_review_complete"
+    }
+  ],
+  "corpus": {
+    "accepted_records": 965,
+    "cases": 768,
+    "digest_fnv1a64": "ce220bd93a606ad",
+    "evidence": "/tmp/fossilize-issue18/output/implementer/debug-off-a24-ctest.xml",
+    "input_byte_cap": 4096,
+    "lost_inputs": 544,
+    "rejected_inputs": 644,
+    "seed": "0x180018"
+  },
+  "environment": {
+    "candidate_binding": "Every final command below binds result_candidate_sha; independent checking remains pending.",
+    "compiler": "GCC13.3",
+    "matrix": "Debug/Release, exceptions OFF/ON; CLI/layer/SPIR-V validation ON; runtime-layer OFF",
+    "platform": "native Linux CPU",
+    "sanitizer": "separate GCC ASan+UBSan; explicit env/options in command argv"
+  },
+  "exploratory_history": {
+    "acceptance_eligible": false,
+    "count": 38,
+    "cwd_deviation": "/tmp/fossilize-issue18/output/implementer/mutation-cwd-deviation/deviation.json",
+    "index": "/tmp/fossilize-issue18/output/implementer/exploratory-history.json"
+  },
+  "id_evidence": "Each matrix entry links its exact discovered/executed ID manifest; all four are the same250-test union with no skips.",
+  "input_revision": 4,
+  "input_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+  "limitations": [
+    "Native Windows execution is explicitly user-waived and remains unverified; Windows source paths and portable test registration are implemented, but Linux results do not establish Windows runtime behavior.",
+    "CPU null-device and private Vulkan/clock/syscall adapters establish control-flow and data transport, not physical GPU support, driver compilation/cache reuse, persistence or Steam presentation.",
+    "The controlled parser slice is migrated; this is not a recursive audit of every Vulkan field, callback rollback or allocator-exhaustion guarantee.",
+    "Private bounded events are first evidence with omission accounting, not a complete logical-item ledger or general mixed-version rich protocol/prebuilt C++ ABI guarantee.",
+    "Earlier exploratory fixture failures and cwd-deviating sensitivity runs are retained separately and are not final acceptance evidence; see mutation-cwd-deviation/deviation.json."
+  ],
+  "manual_review": {
+    "id": "candidate-diff-review",
+    "independent": false,
+    "performed": true
+  },
+  "matrix": [
+    {
+      "configuration": "debug-off",
+      "discovered_count": 250,
+      "discovery": "/tmp/fossilize-issue18/output/implementer/i18-discovery-debug-off-a24.log",
+      "executed_count": 250,
+      "failed": 0,
+      "id_manifest": "/tmp/fossilize-issue18/output/implementer/debug-off-ids.json",
+      "id_manifest_sha256": "5c46022fa5f6c28b4a38da53e5b26edcf192143939b8b94295ba06a994538d9a",
+      "junit": "/tmp/fossilize-issue18/output/implementer/debug-off-a24-ctest.xml",
+      "skipped": 0
+    },
+    {
+      "configuration": "debug-on",
+      "discovered_count": 250,
+      "discovery": "/tmp/fossilize-issue18/output/implementer/i18-discovery-debug-on-a24.log",
+      "executed_count": 250,
+      "failed": 0,
+      "id_manifest": "/tmp/fossilize-issue18/output/implementer/debug-on-ids.json",
+      "id_manifest_sha256": "b181d94e8f6cfad10c715dd84856b8419075a10f0b23f3c4e1037f9bfe402cd6",
+      "junit": "/tmp/fossilize-issue18/output/implementer/debug-on-a24-ctest.xml",
+      "skipped": 0
+    },
+    {
+      "configuration": "release-off",
+      "discovered_count": 250,
+      "discovery": "/tmp/fossilize-issue18/output/implementer/i18-discovery-release-off.log",
+      "executed_count": 250,
+      "failed": 0,
+      "id_manifest": "/tmp/fossilize-issue18/output/implementer/release-off-ids.json",
+      "id_manifest_sha256": "b2cce013a4ea63407bc627e139607cdc1b504b8ba7202c70c1fe8d0a5f116755",
+      "junit": "/tmp/fossilize-issue18/output/implementer/release-off-ctest.xml",
+      "skipped": 0
+    },
+    {
+      "configuration": "release-on",
+      "discovered_count": 250,
+      "discovery": "/tmp/fossilize-issue18/output/implementer/i18-discovery-release-on.log",
+      "executed_count": 250,
+      "failed": 0,
+      "id_manifest": "/tmp/fossilize-issue18/output/implementer/release-on-ids.json",
+      "id_manifest_sha256": "c4c93c1daac536f212c0aafeb03616b048aa2df9475ad5fd15ae048f2b79bc69",
+      "junit": "/tmp/fossilize-issue18/output/implementer/release-on-ctest.xml",
+      "skipped": 0
+    }
+  ],
+  "operation": "implement",
+  "plan_version": 1,
+  "preserved_deviation_metadata": "/tmp/fossilize-issue18/output/implementer/mutation-cwd-deviation/deviation.json",
+  "records_note": "Raw logs, exact receipts, ID manifests, sanitizer flag metadata, mutation patches and deviation metadata are local factual evidence; canonical publication and acceptance remain coordinator/checker-owned.",
+  "repeat": {
+    "executions": 204,
+    "ids": [
+      "fork-child-healthy",
+      "fork-child-healthy-recovery",
+      "fork-child-initial-first-sigmask",
+      "fork-child-initial-first-stdin-dup2",
+      "fork-child-initial-first-stdout-dup2",
+      "fork-child-initial-last-sigmask",
+      "fork-child-initial-last-stdin-dup2",
+      "fork-child-initial-last-stdout-dup2",
+      "fork-child-parent-death",
+      "fork-child-parent-race",
+      "fork-child-prctl-failure",
+      "fork-child-recovery-sigmask",
+      "fork-child-recovery-stdin-dup2",
+      "fork-child-recovery-stdout-dup2",
+      "replay-event-controller-abnormal-final",
+      "replay-event-controller-clean",
+      "replay-event-controller-creation",
+      "replay-event-controller-drop-hello",
+      "replay-event-controller-duplicate-final",
+      "replay-event-controller-empty",
+      "replay-event-controller-initial-parse",
+      "replay-event-controller-missing-final",
+      "replay-event-controller-missing-final-origin",
+      "replay-event-controller-oversized",
+      "replay-event-controller-parse",
+      "replay-event-controller-pre-report-death",
+      "replay-event-controller-progress",
+      "replay-event-controller-retry",
+      "replay-event-controller-startup-close",
+      "replay-event-controller-startup-hash-close",
+      "replay-event-controller-timeout",
+      "replay-event-controller-truncated",
+      "replay-event-controller-truncated-length",
+      "replay-event-controller-truncated-newline",
+      "replay-event-controller-truncated-payload",
+      "replay-event-controller-truncated-prefix",
+      "replay-event-controller-unknown",
+      "replay-event-controller-unknown-version",
+      "replay-timeout-controller-clean",
+      "replay-timeout-controller-cleanup",
+      "replay-timeout-controller-delivery-failure",
+      "replay-timeout-controller-dispatcher-disabled",
+      "replay-timeout-controller-dispatcher-reset",
+      "replay-timeout-controller-escalation",
+      "replay-timeout-controller-external-kill",
+      "replay-timeout-controller-heartbeat",
+      "replay-timeout-controller-heartbeat-reset",
+      "replay-timeout-controller-heartbeat-timer-arm-failure",
+      "replay-timeout-controller-heartbeat-timer-create-failure",
+      "replay-timeout-controller-heartbeat-timer-read-failure",
+      "replay-timeout-controller-heartbeat-timer-rearm-failure",
+      "replay-timeout-controller-heartbeat-timer-register-failure",
+      "replay-timeout-controller-kill-failure",
+      "replay-timeout-controller-multithread",
+      "replay-timeout-controller-no-progress",
+      "replay-timeout-controller-ordinary-delivery-failure",
+      "replay-timeout-controller-ordinary-no-progress",
+      "replay-timeout-controller-protocol",
+      "replay-timeout-controller-recovery",
+      "replay-timeout-controller-spontaneous",
+      "replay-timeout-controller-timer-arm-failure",
+      "replay-timeout-controller-timer-create-failure",
+      "replay-timeout-controller-timer-register-failure",
+      "replay-timeout-unit-deadlines",
+      "replay-timeout-unit-delivery",
+      "replay-timeout-unit-protocol",
+      "replay-timeout-unit-reset",
+      "replay-timeout-unit-unknown"
+    ],
+    "iterations_per_id": 3,
+    "log": "/tmp/fossilize-issue18/output/implementer/i18-repeat.log",
+    "unique_ids": 68
+  },
+  "result_candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+  "role": "implementer",
+  "sanitizer": {
+    "compiler": "/usr/bin/g++ GCC 13.3; Clang unavailable in recorded environment probe",
+    "count": 19,
+    "effective_compile_flags": "/tmp/fossilize-issue18/output/implementer/sanitizer-effective-compile-flags.json",
+    "effective_link_flags": "/tmp/fossilize-issue18/output/implementer/sanitizer-effective-link-flags.json",
+    "executed": [
+      "varint-system-test",
+      "parser-input-envelope",
+      "parser-input-containers",
+      "parser-input-shader",
+      "parser-input-link",
+      "parser-input-diagnostics",
+      "parser-input-valid",
+      "parser-input-mutations",
+      "parser-input-containment",
+      "replay-event-unit-roundtrip",
+      "replay-event-unit-unknown",
+      "replay-event-unit-streaming",
+      "replay-event-unit-malformed",
+      "replay-event-unit-negotiation",
+      "replay-event-unit-attempts",
+      "replay-event-unit-legacy",
+      "replay-event-unit-mutations",
+      "replay-event-producer-parse",
+      "replay-event-producer-creation"
+    ],
+    "instrumentation": "ASan+UBSan",
+    "junit": "/tmp/fossilize-issue18/output/implementer/sanitizer-ctest.xml",
+    "log": "/tmp/fossilize-issue18/output/implementer/i18-ctest-sanitizer.log",
+    "skipped": []
+  },
+  "semantic_sensitivity": {
+    "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+    "classification": "Sensitivity controls against isolated exact-candidate semantic mutations, not an unchanged-baseline runtime reproduction.",
+    "final": {
+      "assertion": "M18/missing-final-never-success",
+      "clean_exit": 0,
+      "compile_exit": 0,
+      "decisive_exit": 99,
+      "mutated_controller_result": 0,
+      "patch": "/tmp/fossilize-issue18/output/implementer/final-mutation-a24.patch"
+    },
+    "origin": {
+      "aggregate_controller_result": 1,
+      "assertion": "M18/controller-origin-field-preservation",
+      "clean_exit": 0,
+      "compile_exit": 0,
+      "decisive_exit": 99,
+      "patch": "/tmp/fossilize-issue18/output/implementer/origin-mutation-a24.patch"
+    },
+    "source_metadata": "/tmp/fossilize-issue18/mutations/candidate.json"
+  },
+  "skipped": [],
+  "summary": "Private detector facts now travel through bounded negotiated worker frames; both controllers retain rich protocol/EOF uncertainty independently of legacy progress and native termination.",
+  "test_mapping": {
+    "P18-01": {
+      "assertions": "Stable IDs/domains/known bits; exact signed Vulkan/parser/native values; signed boundaries; known zero versus absence; opaque unknown IDs.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "replay_event.hpp; test/replay_event_test.cpp",
+      "tests": [
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown"
+      ]
+    },
+    "P18-02": {
+      "assertions": "Every split and byte fragmentation; concatenation; all HELLO/EVENT/FINAL truncated prefixes; embedded NUL/non-ASCII/CRLF/overflow/invalid flags; bounded storage and exact valid continuation with sticky uncertainty.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "replay_event.hpp; test/replay_event_test.cpp",
+      "tests": [
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed"
+      ]
+    },
+    "P18-03": {
+      "assertions": "Actual OFFER/HELLO selection, first legacy hash preservation, no overlap/selection errors, stale worker/attempt records and conflicting final cannot certify current work.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "replay_event.hpp; both robust platform startup/controllers",
+      "tests": [
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts",
+        "replay-event-controller-drop-hello",
+        "replay-event-controller-unknown-version"
+      ]
+    },
+    "P18-04": {
+      "assertions": "Actual detector reason/error/offset; archive identity; valid continuation; TLS isolation, explicit nested capture, handled reentrant calls, Impl dependency recursion and reusable receiver clearing.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "fossilize.cpp; replay_parse_result.cpp; cli/fossilize_replay.cpp; test/replay_event_producer_test.cpp",
+      "tests": [
+        "replay-event-producer-parse",
+        "replay-event-controller-parse",
+        "replay-event-controller-initial-parse",
+        "parser-input-valid"
+      ]
+    },
+    "P18-05": {
+      "assertions": "Actual graphics/compute/raytracing/shader failures preserve signed Vulkan error, tag/hash and worker/attempt; successful fallback emits no failure; failed fallback, concurrent complete frames and omissions remain honest.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "cli/fossilize_replay.cpp; test/replay_event_producer_test.cpp",
+      "tests": [
+        "replay-event-producer-creation",
+        "replay-event-controller-creation",
+        "replay-outcome-creation",
+        "replay-outcome-compile-required-loop"
+      ]
+    },
+    "P18-06": {
+      "assertions": "Actual dispatcher origin/threshold/elapsed before termination; controller-known original assignment; no invented individual hash; native delivery and independently observed status remain separate.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "cli/replay_timeout.hpp; both platform timeout reporters; test/replay_timeout_controller_test.cpp",
+      "tests": [
+        "replay-event-controller-timeout",
+        "replay-event-producer-timeout",
+        "replay-timeout-controller-clean",
+        "replay-timeout-controller-cleanup",
+        "replay-timeout-controller-delivery-failure",
+        "replay-timeout-controller-dispatcher-disabled",
+        "replay-timeout-controller-dispatcher-reset",
+        "replay-timeout-controller-escalation",
+        "replay-timeout-controller-external-kill",
+        "replay-timeout-controller-heartbeat",
+        "replay-timeout-controller-heartbeat-reset",
+        "replay-timeout-controller-heartbeat-timer-arm-failure",
+        "replay-timeout-controller-heartbeat-timer-create-failure",
+        "replay-timeout-controller-heartbeat-timer-read-failure",
+        "replay-timeout-controller-heartbeat-timer-rearm-failure",
+        "replay-timeout-controller-heartbeat-timer-register-failure",
+        "replay-timeout-controller-kill-failure",
+        "replay-timeout-controller-multithread",
+        "replay-timeout-controller-no-progress",
+        "replay-timeout-controller-ordinary-delivery-failure",
+        "replay-timeout-controller-ordinary-no-progress",
+        "replay-timeout-controller-protocol",
+        "replay-timeout-controller-recovery",
+        "replay-timeout-controller-spontaneous",
+        "replay-timeout-controller-timer-arm-failure",
+        "replay-timeout-controller-timer-create-failure",
+        "replay-timeout-controller-timer-register-failure",
+        "replay-timeout-unit-deadlines",
+        "replay-timeout-unit-delivery",
+        "replay-timeout-unit-protocol",
+        "replay-timeout-unit-reset",
+        "replay-timeout-unit-unknown"
+      ]
+    },
+    "P18-07": {
+      "assertions": "Production processes, producers and controller parsing without worker prose; checked FOZ data; explicit native/FINAL success, no-device empty assignments, optional progress, controlled failure and retained retry origins; sibling cleanup uses retained production regressions.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/replay_controller_test.cpp; test/replay_timeout_controller_test.cpp",
+      "tests": [
+        "replay-event-controller-clean",
+        "replay-event-controller-empty",
+        "replay-event-controller-parse",
+        "replay-event-controller-initial-parse",
+        "replay-event-controller-creation",
+        "replay-event-controller-timeout",
+        "replay-event-controller-retry",
+        "replay-event-controller-progress",
+        "replay-outcome-controller-success-first-absent",
+        "replay-outcome-controller-failure-first-progress"
+      ]
+    },
+    "P18-08": {
+      "assertions": "Observed termination and assigned scope survive pre-report death; lost/truncated FINAL and unknown protocol stay incomplete; originating facts survive loss; successful protocol FINAL cannot override abnormal native status; Linux startup reader closure preserves EPIPE and SIGPIPE state with bounded reaping.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "both robust platform shutdown paths; test/replay_controller_test.cpp",
+      "tests": [
+        "replay-event-controller-pre-report-death",
+        "replay-event-controller-missing-final",
+        "replay-event-controller-missing-final-origin",
+        "replay-event-controller-truncated",
+        "replay-event-controller-truncated-prefix",
+        "replay-event-controller-truncated-length",
+        "replay-event-controller-truncated-payload",
+        "replay-event-controller-truncated-newline",
+        "replay-event-controller-unknown",
+        "replay-event-controller-unknown-version",
+        "replay-event-controller-oversized",
+        "replay-event-controller-drop-hello",
+        "replay-event-controller-duplicate-final",
+        "replay-event-controller-abnormal-final",
+        "replay-event-controller-startup-close",
+        "replay-event-controller-startup-hash-close"
+      ]
+    },
+    "P18-09": {
+      "assertions": "Legacy protocol and ring forwarding (including MODULE/UUID), shared layout constants, actual input-header compile/link/run of unchanged callers and ordinary/direct-slave/master/progress invocations.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/replay_event_old_headers.cmake; existing compatibility and legacy fixtures",
+      "tests": [
+        "replay-event-unit-legacy",
+        "replay-controller-outcome-state",
+        "diagnostic-compatibility-test",
+        "replay-controller-cli-compatibility",
+        "replay-outcome-cli-compatibility",
+        "replay-event-old-header-compatibility",
+        "replay-outcome-cli-good",
+        "replay-outcome-cli-empty"
+      ]
+    },
+    "P18-10": {
+      "assertions": "768 fixed-seed bounded byte/structured cases and exact valid continuation; separately compiled origin-detail and FINAL-gate semantic mutations must fail explicit M18 assertions while both clean controls pass.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/replay_event_test.cpp; isolated exact-candidate mutation copies",
+      "tests": [
+        "replay-event-unit-mutations",
+        "replay-event-controller-parse",
+        "replay-event-controller-missing-final"
+      ]
+    },
+    "P18-11": {
+      "assertions": "Factual one-sentence issue-linked changelog; documented private wire IDs/flags/domains/units/caps/negotiation/legacy/EOF/thread constraints and honest platform limits; independent acceptance remains checker-owned.",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "CHANGELOG.md; local-docs/specs/replay-worker-events.md; local-docs/verification.md",
+      "tests": [
+        "candidate-diff-review"
+      ]
+    }
+  },
+  "verification_status": "All planned applicable Linux gates passed for the committed candidate; independent checking remains pending.",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/18",
+  "worker_id": "/root/implementer18"
+}
