@@ -20,7 +20,7 @@ static void event_parse()
  // TLS capture isolation with actual parser calls and no shared StateReplayer.
  std::atomic<unsigned> correct{0};std::vector<std::unique_ptr<Replay>> owners;
  for(unsigned i=0;i<8;i++)owners.emplace_back(new Replay);
- std::vector<std::thread> threads;for(unsigned i=0;i<8;i++)threads.emplace_back([&,i](){StateReplayer parser;ParseCapture scope;const char *b="{";if(!parser.parse(*owners[i],nullptr,b,1)&&scope.result.reason==InvalidJSON)correct++;});for(auto &t:threads)t.join();checks.require(correct==8,"M18/concurrent-parse-capture-isolated");
+ std::vector<std::thread> threads;for(unsigned i=0;i<8;i++)threads.emplace_back([&,i](){set_thread_log_level(LOG_NONE);StateReplayer parser;ParseCapture scope;const char *b="{";if(!parser.parse(*owners[i],nullptr,b,1)&&scope.result.reason==InvalidJSON)correct++;});for(auto &t:threads)t.join();checks.require(correct==8,"M18/concurrent-parse-capture-isolated");
  struct Recursive : Replay
  {
   unsigned nested=0;
@@ -31,6 +31,7 @@ static void event_parse()
    return Replay::enqueue_create_shader_module(h,i,m);
   }
  } recursive;
+ recursive.get_per_thread_data().expected_tag=RESOURCE_SHADER_MODULE;recursive.get_per_thread_data().expected_hash=0x101;
  StateReplayer outer;auto good=shader_json();ParseCapture capture;
  checks.require(outer.parse(recursive,nullptr,good.data(),good.size())&&recursive.nested==1&&!capture.result.reason,"M18/successful-outer-clears-reentrant-failure");
 }
