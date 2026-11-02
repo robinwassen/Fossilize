@@ -149,7 +149,7 @@ struct Stream
 	std::array<char, MaxFrame> buffer = {};
 	size_t used = 0;
 	bool discard = false;
-	template <typename Legacy> void feed(State &state, const char *bytes, size_t n, Legacy legacy)
+	template <typename Legacy, typename Rich> void feed_frames(State &state, const char *bytes, size_t n, Legacy legacy, Rich rich)
 	{
 		for (size_t i = 0; i < n; i++)
 		{
@@ -161,7 +161,7 @@ struct Stream
 					buffer[used] = 0;
 					if (used >= 4 && !std::memcmp(buffer.data(),"FZ18",4))
 					{
-						const char *p; size_t length; if (payload(buffer.data(),used,p,length)) state.accept(p,length); else state.lost = true;
+						const char *p; size_t length; if (payload(buffer.data(),used,p,length)) rich(p,length); else state.lost = true;
 					}
 					else legacy(buffer.data());
 				}
@@ -174,16 +174,22 @@ struct Stream
 			}
 		}
 	}
+	template <typename Legacy> void feed(State &state, const char *bytes, size_t n, Legacy legacy)
+	{ feed_frames(state,bytes,n,legacy,[&state](const char *p,size_t n) {state.accept(p,n);}); }
 	void finish(State &s) { if (used || discard) s.lost = true; used = 0; discard = false; s.eof = true; if (s.offered && (!s.hello || !s.final)) s.lost = true; }
 };
 // Startup only: first offer line, followed by legacy module hashes and EOF.
+inline bool select_offer(const char *p, size_t length, uint64_t &worker, uint64_t &attempt)
+{
+	if (length < 10 || std::memcmp(p,"1 OFFER ",8)) return false;
+	Numbers nums{p+8,p+length}; uint64_t versions;
+	return nums.number(versions) && nums.next(worker) && nums.next(attempt) && nums.p == nums.end && (versions & 2u);
+}
 inline bool offer(const char *line, size_t n, uint64_t &worker, uint64_t &attempt, bool &recognized)
 {
 	recognized = n >= 4 && !std::memcmp(line,"FZ18",4); if (!recognized) return false;
 	if (n && line[n-1] == '\n') n--;
 	const char *p; size_t length; if (!payload(line,n,p,length)) return false;
-	if (length < 10 || std::memcmp(p,"1 OFFER ",8)) return false;
-	Numbers nums{p+8,p+length}; uint64_t versions;
-	return nums.number(versions) && nums.next(worker) && nums.next(attempt) && nums.p == nums.end && (versions & 2u);
+	return select_offer(p,length,worker,attempt);
 }
 } }

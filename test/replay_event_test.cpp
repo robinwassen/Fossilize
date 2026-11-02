@@ -36,6 +36,7 @@ static void streaming()
  // OFFER is consumed by the startup decoder and never steals a first legacy hash.
  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
  checks.require(offer(offerwire.data(),offerwire.size(),w,a,recognized)&&recognized&&w==0&&a==0,"M18/actual-offer-selection");
+ for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
  checks.require(!offer("abc\n",4,w,a,recognized)&&!recognized,"M18/legacy-first-hash-preserved");
 }
 static void malformed()
