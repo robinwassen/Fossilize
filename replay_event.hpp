@@ -169,7 +169,7 @@ struct Stream
 			}
 			else if (!discard)
 			{
-				if (used + 1 < buffer.size() && c >= 32 && c <= 126) buffer[used++] = char(c);
+				if (used + 2 < buffer.size() && c >= 32 && c <= 126) buffer[used++] = char(c);
 				else { used = 0; discard = true; state.lost = true; }
 			}
 		}
