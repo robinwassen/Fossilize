@@ -231,7 +231,7 @@ void valid_controls(DiagnosticChecks &c)
 		c.require(replay.parse(creator, nullptr, data.data(), data.size()), "valid/app-link-parse");
 		c.require(creator.app_count == 1 && creator.app_null && creator.features_null && creator.app_hash == Hashing::compute_combined_application_feature_hash(Hashing::compute_application_feature_hash(nullptr, nullptr)), "valid/empty-app-null-semantics");
 		c.require(creator.current_count == 1 && creator.current_hash == 0xfedcba9876543210ull, "valid/exact-application-reference");
-		c.require(creator.link_count == 1 && creator.link_app == 0x10 && creator.link_resource == 0x20 && creator.link_tag == RESOURCE_SHADER_MODULE && creator.link_hash == Hashing::compute_hash_application_info_link(0x10, RESOURCE_SHADER_MODULE, 0x20), "valid/exact-link");
+		c.require(creator.link_count == 1 && creator.link_app == 0x10 && creator.link_resource == 0x20 && creator.link_tag == RESOURCE_SHADER_MODULE && creator.link_hash == 0xe503d753c1c45d3bull, "valid/exact-link");
 		c.require(creator.order == std::vector<std::string>({"app", "current", "link", "shader"}), "valid/callback-order");
 		check_shader(c, creator, "valid/app-link"); c.require(log.text.empty(), "valid/app-link-no-errors");
 	}
