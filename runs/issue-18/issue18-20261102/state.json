@@ -65,13 +65,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "d910e1d613a88f9e5209700ccb30506525c0069bb69871541683440554a00958",
+      "report": "runs/issue-18/issue18-20261102/reports/check-unit-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793628123.3322718,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/18",
       "worker_id": "/root/checker18_unit1"
     }
@@ -80,7 +82,27 @@
     "stage": "pending"
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/18",
+      "cases": [
+        "P18-02",
+        "P18-03",
+        "P18-08"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Exact candidate independent compile exit0; probe exits99 normally after valid complete OFFER accepted=1, final-LF-removed OFFER accepted=1 recognized=1 worker=0 attempt=1, and embedded-NUL production strlen boundary accepted=1. See runs/issue-18/issue18-20261102/evidence/check-unit-1-offer-eof-probe.log and preserved source/receipts. offer() conditionally strips LF instead of requiring it; both actual startup paths use strlen(fgets buffer), allowing incomplete or invalid startup records to negotiate. Existing OFFER fragmentation tests exercise Stream callback/select_offer rather than this production decoding boundary.",
+      "id": "C18U1-F01",
+      "location": "replay_event.hpp:191-196; cli/fossilize_replay_linux.hpp:1854-1860; cli/fossilize_replay_windows.hpp:1435-1441; test/replay_event_test.cpp:38-43",
+      "priority": 2,
+      "requested_change": "Require complete LF-terminated, explicit-byte-valid startup framing on both platforms; ensure embedded NUL/invalid bytes cannot disappear through strlen. Add Release-active registered regressions through actual startup decoder and preferably production stdin slave path for every truncated OFFER prefix, missing LF and embedded NUL, with valid and first-legacy-hash controls.",
+      "route": "implementation",
+      "status": "open",
+      "title": "Reject unterminated and NUL-truncated startup OFFER frames"
+    }
+  ],
   "issue_snapshot": {
     "deliverables": [
       "https://github.com/robinwassen/Fossilize/issues/18"
@@ -3399,8 +3421,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Repair C18U1-F01 in implementation with registered actual startup-decoder regressions, commit a new candidate, then obtain fresh independent execution of all mandatory gates and separate final review.",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -3412,7 +3434,7 @@
     "output_directory": "/tmp/fossilize-issue18/output",
     "source_worktree": "/home/robin/.codex/worktrees/9d8a/fossilize"
   },
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -4350,7 +4372,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 164,
+  "revision": 165,
   "root_issue": {
     "id": 6079834852,
     "node_id": "I_kwDOVZpjbc8AAAABamLq5A",
@@ -4360,7 +4382,7 @@
   },
   "run_id": "issue18-20261102",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-18",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/18",
   "verification": [],

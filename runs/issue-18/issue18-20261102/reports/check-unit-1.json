@@ -1,0 +1,474 @@
+{
+  "attempt_id": "check-unit-1",
+  "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+  "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+  "commands": [
+    {
+      "child_command": [
+        "/usr/bin/g++",
+        "-std=c++14",
+        "-I/tmp/fossilize-issue18/checker-1",
+        "/tmp/fossilize-issue18/output/checker-unit-1/offer-eof-probe.cpp",
+        "-o",
+        "/tmp/fossilize-issue18/output/checker-unit-1/offer-eof-probe"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "exit_code": 0,
+      "intent_id": "c18u1-offer-eof-compile",
+      "log": "/tmp/fossilize-issue18/output/checker-unit-1/c18u1-offer-eof-compile.log",
+      "receipt": "/tmp/fossilize-issue18/output/checker-unit-1/c18u1-offer-eof-compile-receipt.json",
+      "timed_out": false,
+      "timeout": 600
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-issue18/output/checker-unit-1/offer-eof-probe"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "exit_code": 99,
+      "intent_id": "c18u1-offer-eof-probe",
+      "log": "/tmp/fossilize-issue18/output/checker-unit-1/c18u1-offer-eof-probe.log",
+      "receipt": "/tmp/fossilize-issue18/output/checker-unit-1/c18u1-offer-eof-probe-receipt.json",
+      "timed_out": false,
+      "timeout": 600
+    }
+  ],
+  "discovered": [
+    "candidate-diff-review",
+    "M18/probe-valid-complete-offer",
+    "M18/probe-offer-EOF-before-LF",
+    "M18/probe-startup-strlen-embedded-NUL"
+  ],
+  "evidence": [
+    {
+      "attempt_id": "check-unit-1",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+      "command": "Independent complete base-to-candidate diff review and wrapped exact-header OFFER probe",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "environment": {
+        "candidate": "exact detached candidate",
+        "native_windows": "waived/unverified",
+        "platform": "Linux CPU"
+      },
+      "exit_code": 99,
+      "gate": "G18-source-review",
+      "log": "runs/issue-18/issue18-20261102/evidence/check-unit-1-review.log",
+      "plan_version": 1,
+      "result": "failed"
+    },
+    {
+      "attempt_id": "check-unit-1",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+      "command": "No execution: stopped after decisive C18U1-F01 counterexample",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "environment": {
+        "candidate": "exact detached candidate",
+        "native_windows": "waived/unverified",
+        "platform": "Linux CPU"
+      },
+      "exit_code": null,
+      "gate": "G18-cpu-debug-off",
+      "log": "runs/issue-18/issue18-20261102/evidence/check-unit-1-review.log",
+      "plan_version": 1,
+      "result": "not_run"
+    },
+    {
+      "attempt_id": "check-unit-1",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+      "command": "No execution: stopped after decisive C18U1-F01 counterexample",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "environment": {
+        "candidate": "exact detached candidate",
+        "native_windows": "waived/unverified",
+        "platform": "Linux CPU"
+      },
+      "exit_code": null,
+      "gate": "G18-cpu-debug-on",
+      "log": "runs/issue-18/issue18-20261102/evidence/check-unit-1-review.log",
+      "plan_version": 1,
+      "result": "not_run"
+    },
+    {
+      "attempt_id": "check-unit-1",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+      "command": "No execution: stopped after decisive C18U1-F01 counterexample",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "environment": {
+        "candidate": "exact detached candidate",
+        "native_windows": "waived/unverified",
+        "platform": "Linux CPU"
+      },
+      "exit_code": null,
+      "gate": "G18-cpu-release-off",
+      "log": "runs/issue-18/issue18-20261102/evidence/check-unit-1-review.log",
+      "plan_version": 1,
+      "result": "not_run"
+    },
+    {
+      "attempt_id": "check-unit-1",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+      "command": "No execution: stopped after decisive C18U1-F01 counterexample",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "environment": {
+        "candidate": "exact detached candidate",
+        "native_windows": "waived/unverified",
+        "platform": "Linux CPU"
+      },
+      "exit_code": null,
+      "gate": "G18-cpu-release-on",
+      "log": "runs/issue-18/issue18-20261102/evidence/check-unit-1-review.log",
+      "plan_version": 1,
+      "result": "not_run"
+    },
+    {
+      "attempt_id": "check-unit-1",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+      "command": "No execution: stopped after decisive C18U1-F01 counterexample",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "environment": {
+        "candidate": "exact detached candidate",
+        "native_windows": "waived/unverified",
+        "platform": "Linux CPU"
+      },
+      "exit_code": null,
+      "gate": "G18-repeat",
+      "log": "runs/issue-18/issue18-20261102/evidence/check-unit-1-review.log",
+      "plan_version": 1,
+      "result": "not_run"
+    },
+    {
+      "attempt_id": "check-unit-1",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+      "command": "No execution: stopped after decisive C18U1-F01 counterexample",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "environment": {
+        "candidate": "exact detached candidate",
+        "native_windows": "waived/unverified",
+        "platform": "Linux CPU"
+      },
+      "exit_code": null,
+      "gate": "G18-parser-sanitizers",
+      "log": "runs/issue-18/issue18-20261102/evidence/check-unit-1-review.log",
+      "plan_version": 1,
+      "result": "not_run"
+    },
+    {
+      "attempt_id": "check-unit-1",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+      "command": "No execution: stopped after decisive C18U1-F01 counterexample",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "environment": {
+        "candidate": "exact detached candidate",
+        "native_windows": "waived/unverified",
+        "platform": "Linux CPU"
+      },
+      "exit_code": null,
+      "gate": "G18-old-headers",
+      "log": "runs/issue-18/issue18-20261102/evidence/check-unit-1-review.log",
+      "plan_version": 1,
+      "result": "not_run"
+    },
+    {
+      "attempt_id": "check-unit-1",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "candidate_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+      "command": "No execution: stopped after decisive C18U1-F01 counterexample",
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "environment": {
+        "candidate": "exact detached candidate",
+        "native_windows": "waived/unverified",
+        "platform": "Linux CPU"
+      },
+      "exit_code": null,
+      "gate": "G18-test-sensitivity",
+      "log": "runs/issue-18/issue18-20261102/evidence/check-unit-1-review.log",
+      "plan_version": 1,
+      "result": "not_run"
+    }
+  ],
+  "executed": [
+    "candidate-diff-review",
+    "M18/probe-valid-complete-offer",
+    "M18/probe-offer-EOF-before-LF",
+    "M18/probe-startup-strlen-embedded-NUL"
+  ],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/18",
+      "cases": [
+        "P18-02",
+        "P18-03",
+        "P18-08"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Exact candidate independent compile exit0; probe exits99 normally after valid complete OFFER accepted=1, final-LF-removed OFFER accepted=1 recognized=1 worker=0 attempt=1, and embedded-NUL production strlen boundary accepted=1. See runs/issue-18/issue18-20261102/evidence/check-unit-1-offer-eof-probe.log and preserved source/receipts. offer() conditionally strips LF instead of requiring it; both actual startup paths use strlen(fgets buffer), allowing incomplete or invalid startup records to negotiate. Existing OFFER fragmentation tests exercise Stream callback/select_offer rather than this production decoding boundary.",
+      "id": "C18U1-F01",
+      "location": "replay_event.hpp:191-196; cli/fossilize_replay_linux.hpp:1854-1860; cli/fossilize_replay_windows.hpp:1435-1441; test/replay_event_test.cpp:38-43",
+      "priority": 2,
+      "requested_change": "Require complete LF-terminated, explicit-byte-valid startup framing on both platforms; ensure embedded NUL/invalid bytes cannot disappear through strlen. Add Release-active registered regressions through actual startup decoder and preferably production stdin slave path for every truncated OFFER prefix, missing LF and embedded NUL, with valid and first-legacy-hash controls.",
+      "route": "implementation",
+      "status": "open",
+      "title": "Reject unterminated and NUL-truncated startup OFFER frames"
+    }
+  ],
+  "input_revision": 137,
+  "input_sha": "a24df1fa9d6b221ca811d604ac9ec594f65934ad",
+  "limitations": [
+    "Four fresh full Linux CPU matrices, repeat68x3, sanitizer19, old-header registered runtime and sensitivity controls were not executed after the early decisive rejection. No prior implementer results are substituted for these gates.",
+    "Native Windows execution is explicitly user-waived and remains unverified; both source paths and portable registration were reviewed.",
+    "Scope remains controlled parser/private transport CPU behavior; no whole-parser security, GPU/driver, cache durability, Steam, complete ledger or general binary-ABI claim."
+  ],
+  "new_evidence": true,
+  "next_action": "Repair C18U1-F01 in implementation with registered actual startup-decoder regressions, commit a new candidate, then obtain fresh independent execution of all mandatory gates and separate final review.",
+  "not_run": [
+    "G18-cpu-debug-off",
+    "G18-cpu-debug-on",
+    "G18-cpu-release-off",
+    "G18-cpu-release-on",
+    "G18-repeat",
+    "G18-parser-sanitizers",
+    "G18-old-headers",
+    "G18-test-sensitivity"
+  ],
+  "operation": "work_unit",
+  "plan_version": 1,
+  "records": {
+    "runs/issue-18/issue18-20261102/evidence/check-unit-1-offer-eof-compile-receipt.json": {
+      "acquired": 1793628453.0934007,
+      "command": [
+        "/usr/bin/g++",
+        "-std=c++14",
+        "-I/tmp/fossilize-issue18/checker-1",
+        "/tmp/fossilize-issue18/output/checker-unit-1/offer-eof-probe.cpp",
+        "-o",
+        "/tmp/fossilize-issue18/output/checker-unit-1/offer-eof-probe"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "exit_code": 0,
+      "finished": 1793628453.2577684,
+      "intent_id": "c18u1-offer-eof-compile",
+      "started": 1793628453.0906963,
+      "timed_out": false,
+      "timeout": 600,
+      "wait_seconds": 0
+    },
+    "runs/issue-18/issue18-20261102/evidence/check-unit-1-offer-eof-compile.log": "Independent /usr/bin/g++ compile exited0 with no stdout/stderr.\n",
+    "runs/issue-18/issue18-20261102/evidence/check-unit-1-offer-eof-probe-receipt.json": {
+      "acquired": 1793628462.5593214,
+      "command": [
+        "/tmp/fossilize-issue18/output/checker-unit-1/offer-eof-probe"
+      ],
+      "cwd": "/tmp/fossilize-issue18/checker-1",
+      "exit_code": 99,
+      "finished": 1793628462.560932,
+      "intent_id": "c18u1-offer-eof-probe",
+      "started": 1793628462.5563118,
+      "timed_out": false,
+      "timeout": 600,
+      "wait_seconds": 0
+    },
+    "runs/issue-18/issue18-20261102/evidence/check-unit-1-offer-eof-probe-source.txt": "#include \"replay_event.hpp\"\n#include <cstdio>\n#include <cstring>\nint main()\n{\n using namespace Fossilize::ReplayEvent;\n char b[MaxFrame];\n auto n=frame(b,sizeof(b),\"1 OFFER 2 0 1\");\n uint64_t w=9,a=9; bool recognized=false;\n bool valid_control=offer(b,n,w,a,recognized)&&recognized&&w==0&&a==1;\n std::printf(\"M18/probe-valid-complete-offer accepted=%d\\n\",valid_control);\n if(!valid_control)return 98;\n w=9;a=9;recognized=false;\n bool truncated_accepted=offer(b,n-1,w,a,recognized);\n std::printf(\"M18/probe-offer-EOF-before-LF accepted=%d recognized=%d worker=%llu attempt=%llu\\n\",truncated_accepted,recognized,(unsigned long long)w,(unsigned long long)a);\n char embedded[MaxFrame];std::memcpy(embedded,b,n-1);embedded[n-1]=0;std::memcpy(embedded+n,\"junk\\n\",5);\n w=9;a=9;recognized=false;\n bool nul_accepted=offer(embedded,std::strlen(embedded),w,a,recognized);\n std::printf(\"M18/probe-startup-strlen-embedded-NUL accepted=%d recognized=%d worker=%llu attempt=%llu\\n\",nul_accepted,recognized,(unsigned long long)w,(unsigned long long)a);\n return truncated_accepted||nul_accepted?99:0;\n}\n",
+    "runs/issue-18/issue18-20261102/evidence/check-unit-1-offer-eof-probe.log": "M18/probe-valid-complete-offer accepted=1\nM18/probe-offer-EOF-before-LF accepted=1 recognized=1 worker=0 attempt=1\nM18/probe-startup-strlen-embedded-NUL accepted=1 recognized=1 worker=0 attempt=1\n",
+    "runs/issue-18/issue18-20261102/evidence/check-unit-1-review.log": "Independent review of exact detached candidate a24df1fa9d6b221ca811d604ac9ec594f65934ad against base 4ea747ffa215f8057d12aa5525ba0e4497961e7d, plan1. Read live root18 and parent8 with explicit robinwassen/Fossilize and immutable original AC1 before implementer report. Read project guidance, issue workflow, verification/changelog guides, harness roles/state and observability/protocol specs. Reviewed full19-file diff, assertion-bearing test code and registration, numeric IDs/known flags/raw values, bounded streaming/loss/EOF/FINAL, startup negotiation, scoped TLS/reentrancy, actual parse/creation/timeout origins, attempt history, Linux signal/IO and Windows overlapped IO/lifetimes, compatibility and changelog. Public declarations and shared progress layout unchanged in diff; registered old-header runner reads actual base headers before candidate includes. Changelog is one factual issue-linked sentence matching bounded private scope. Native Windows source and portable registration reviewed; execution waived/unverified. No GPU/Steam/cache-persistence/full-security/general-ABI claims.\n\nBLOCKING C18U1-F01: replay_event.hpp191-196 accepts OFFER without required LF. Both production slave paths pass strlen(fgets buffer) to this helper (Linux1854-1860, Windows1435-1441), so EOF immediately after complete payload and embedded-NUL before remaining junk/terminator can select rich mode. This contradicts protocol LF terminator/unfinished EOF contract and planned P18-02/03 malformed/truncated startup handling. Existing OFFER split tests use Stream::feed_frames+select_offer rather than production offer() and do not cover this.\n\nActual wrapped independent probe compilation passed0. Complete OFFER control accepted1; removed final-LF prefix accepted1 recognized1 worker0 attempt1; embedded-NUL production strlen boundary accepted1 recognized1 worker0 attempt1. Probe returned99 normally, no timeout/crash. Exact source and receipts preserved.\n\nPer coordinator instruction, prioritized decisive counterexample before costly builds. All21 published main matrix/sanitizer/repeat intents remain unexecuted. Existing implementer passes are not independent candidate acceptance. No mandatory gate is claimed passed. Source stays clean and unmodified; only external evidence written.\n"
+  },
+  "role": "checker",
+  "skipped": [],
+  "summary": "Production startup OFFER decoding accepts EOF before its required LF and accepts an embedded-NUL prefix through strlen, contrary to bounded framed-negotiation contract.",
+  "test_mapping": {
+    "P18-01": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [],
+      "location": "new private result/event header; test/replay_event_test.cpp",
+      "result": "source_review_only_runtime_not_run",
+      "tests": [
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown"
+      ]
+    },
+    "P18-02": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [
+        "M18/probe-valid-complete-offer",
+        "M18/probe-offer-EOF-before-LF",
+        "M18/probe-startup-strlen-embedded-NUL"
+      ],
+      "location": "shared length-aware stream decoder; test/replay_event_test.cpp",
+      "result": "independent_counterexample_failed",
+      "tests": [
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed"
+      ]
+    },
+    "P18-03": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [
+        "M18/probe-valid-complete-offer",
+        "M18/probe-offer-EOF-before-LF",
+        "M18/probe-startup-strlen-embedded-NUL"
+      ],
+      "location": "shared negotiation state; both platform startup/input paths; test/replay_event_test.cpp",
+      "result": "independent_counterexample_failed",
+      "tests": [
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts"
+      ]
+    },
+    "P18-04": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [],
+      "location": "fossilize.cpp controlled parser diagnostics; cli/fossilize_replay.cpp parse paths; test/replay_event_producer_test.cpp or replay_outcome_test.cpp",
+      "result": "source_review_only_runtime_not_run",
+      "tests": [
+        "replay-event-producer-parse"
+      ]
+    },
+    "P18-05": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [],
+      "location": "cli/fossilize_replay.cpp creation failure sites; test/replay_event_producer_test.cpp or replay_outcome_test.cpp",
+      "result": "source_review_only_runtime_not_run",
+      "tests": [
+        "replay-event-producer-creation"
+      ]
+    },
+    "P18-06": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [],
+      "location": "cli/replay_timeout.hpp; both platform timeout producers; test/replay_timeout_test.cpp and replay_timeout_controller_test.cpp",
+      "result": "source_review_only_runtime_not_run",
+      "tests": [
+        "replay-event-producer-timeout",
+        "replay-timeout-unit-*",
+        "replay-timeout-controller-*"
+      ]
+    },
+    "P18-07": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [],
+      "location": "test/replay_event_controller_test.cpp or production-including existing controller fixtures; both robust platform controllers",
+      "result": "source_review_only_runtime_not_run",
+      "tests": [
+        "replay-event-controller-clean",
+        "replay-event-controller-empty",
+        "replay-event-controller-parse",
+        "replay-event-controller-creation",
+        "replay-event-controller-timeout",
+        "replay-event-controller-retry",
+        "replay-event-controller-progress"
+      ]
+    },
+    "P18-08": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [
+        "M18/probe-valid-complete-offer",
+        "M18/probe-offer-EOF-before-LF",
+        "M18/probe-startup-strlen-embedded-NUL"
+      ],
+      "location": "test/replay_event_controller_test.cpp; both platform EOF/shutdown paths",
+      "result": "independent_counterexample_failed",
+      "tests": [
+        "replay-event-controller-pre-report-death",
+        "replay-event-controller-missing-final",
+        "replay-event-controller-truncated",
+        "replay-event-controller-unknown"
+      ]
+    },
+    "P18-09": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [],
+      "location": "test/replay_event_test.cpp fixed golden fixtures; existing compatibility runners; old-header consumer build",
+      "result": "source_review_only_runtime_not_run",
+      "tests": [
+        "replay-event-unit-legacy",
+        "diagnostic-compatibility-test",
+        "replay-controller-cli-compatibility",
+        "replay-outcome-cli-compatibility",
+        "replay-event-old-header-compatibility"
+      ]
+    },
+    "P18-10": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [],
+      "location": "test/replay_event_test.cpp registered mutation corpus; independent isolated semantic mutations",
+      "result": "source_review_only_runtime_not_run",
+      "tests": [
+        "replay-event-unit-mutations",
+        "replay-event-controller-parse",
+        "replay-event-controller-missing-final"
+      ]
+    },
+    "P18-11": {
+      "criteria": [
+        "AC1"
+      ],
+      "executed_tests": [
+        "candidate-diff-review"
+      ],
+      "location": "CHANGELOG.md; local-docs/verification.md; private event/protocol documentation",
+      "result": "documentation_review_passed_overall_source_gate_failed",
+      "tests": [
+        "candidate-diff-review"
+      ]
+    }
+  },
+  "verdict": "changes_required",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/18",
+  "worker_id": "/root/checker18_unit1"
+}
