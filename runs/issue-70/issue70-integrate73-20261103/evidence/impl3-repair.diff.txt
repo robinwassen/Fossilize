@@ -1,0 +1,181 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 00f207c8..640868ba 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -10,7 +10,7 @@ and their status. Follow the [changelog writing guideline](local-docs/changelog-
+ Entries are reviewed with their implementation PR; inclusion in an open PR does
+ not establish merged delivery or a release.
+ 
+-- **[Observability]** Replay watchdogs now observe completed jobs across memory contexts so productive FIFO work avoids false timeouts. ([#70](https://github.com/robinwassen/Fossilize/issues/70))
++- **[Observability]** Replay watchdogs now observe worker-wide completions so productive FIFO work avoids false timeouts while synchronization still waits for the requested context. ([#70](https://github.com/robinwassen/Fossilize/issues/70))
+ 
+ - **[Observability]** Rejected malformed envelopes, shader modules and application links with input-error reasons so replay hosts can continue after rejected input. ([#17](https://github.com/robinwassen/Fossilize/issues/17))
+ 
+diff --git a/local-docs/verification.md b/local-docs/verification.md
+index 6581e0da..19e6ae72 100644
+--- a/local-docs/verification.md
++++ b/local-docs/verification.md
+@@ -775,6 +775,15 @@ verification is user-waived and unverified; real GPU/driver and Steam execution
+ are excluded. Public bool parse/callback declarations and shared progress layout
+ remain unchanged; no complete parser-security or binary-ABI claim is made.
+ 
++The Linux fork-child setup fixture observes the actual startup OFFER and input
++EOF before each fatal setup injection, and asserts the exact worker/attempt and
++observation-before-injection order. This selects delivered-startup setup failures
++for its unchanged native exit, reap and clean/dirty legacy crash assertions;
++native OFFER delivery failure instead leads to controller cleanup, which does not
++add a legacy crash count. Healthy and controlled-retry paths replay the identical
++startup bytes into the production slave decoder. No sleep or child reaping by the
++fixture establishes the precondition.
++
+ ## Worker origin reasons (issue #18)
+ 
+ The private [worker event protocol](specs/replay-worker-events.md) carries controlled
+diff --git a/test/fork_child_setup_test.cpp b/test/fork_child_setup_test.cpp
+index e900569f..8726bc61 100644
+--- a/test/fork_child_setup_test.cpp
++++ b/test/fork_child_setup_test.cpp
+@@ -14,11 +14,15 @@ static int setup_test_prctl(int option, int value);
+ #include <chrono>
+ #include "diagnostic_test.hpp"
+ 
++extern "C" ssize_t __real_read(int, void *, size_t);
++extern "C" int __real_pipe(int *);
++extern "C" int __real_dup2(int, int);
++
+ namespace
+ {
+ enum EventKind { Birth, Child, Inject, Mask, Output, Input, InputEOF, OutputEOF,
+                  Reap, WorkerExit, Fallthrough, ForeignFork, Ready, ForcedCrash,
+-                 AtExit, Destructor, BarrierRelease, BarrierPassed };
++                 AtExit, Destructor, BarrierRelease, BarrierPassed, StartupOfferEOF };
+ enum Fault { None, Sigmask, Stdout, Stdin, Prctl, ParentRace };
+ struct Event { int kind; pid_t pid; int generation; int a; int b; };
+ static int events_fd = -1;
+@@ -27,7 +31,7 @@ static unsigned generation;
+ static bool worker, injected, recovery, parent_death;
+ static Fault fault;
+ static unsigned fault_generation;
+-static int pipe_index, crash_read_fd;
++static int pipe_index, crash_read_fd, input_read_fd;
+ static int crash_reads[8];
+ static FILE *flush_sentinel;
+ static int fault_barrier[2] = { -1, -1 };
+@@ -46,8 +50,38 @@ static bool selected(Fault site)
+ {
+ 	return worker && !injected && fault == site && generation == fault_generation;
+ }
++// A fatal setup error is injected only after the controller delivered this
++// attempt's real startup offer and closed its input pipe. Otherwise an early
++// child exit can instead exercise native OFFER delivery failure and controller
++// cleanup, whose legacy crash counters intentionally exclude cleanup deaths.
++static void observe_startup(int fd, bool replay)
++{
++	char startup[Fossilize::ReplayEvent::MaxFrame];
++	size_t used = 0;
++	ssize_t n;
++	do
++	{
++		do { n = __real_read(fd, startup + used, sizeof(startup) - used); } while (n < 0 && errno == EINTR);
++		if (n > 0) used += size_t(n);
++		if (used == sizeof(startup)) { event(Fallthrough, 1); _exit(92); }
++	} while (n > 0);
++	uint64_t worker_id = 0, attempt_id = 0; bool recognized = false;
++	if (n != 0 || !Fossilize::ReplayEvent::offer(startup, used, worker_id, attempt_id, recognized) ||
++	    !recognized || worker_id > 1 || !attempt_id)
++	{ event(Fallthrough, 1); _exit(92); }
++	if (replay)
++	{
++		// Preserve the exact bytes for the production slave startup decoder.
++		int replay_pipe[2];
++		if (__real_pipe(replay_pipe) != 0 || write(replay_pipe[1], startup, used) != ssize_t(used) ||
++		    __real_dup2(replay_pipe[0], STDIN_FILENO) < 0) _exit(92);
++		close(replay_pipe[0]); close(replay_pipe[1]);
++	}
++	event(StartupOfferEOF, int(worker_id), int(attempt_id));
++}
+ static void injection(Fault site)
+ {
++	observe_startup(input_read_fd, false);
+ 	if (fault_barrier[0] >= 0)
+ 	{
+ 		// The controller releases only after waitpid collected the real healthy
+@@ -74,12 +108,9 @@ static double now()
+ extern "C"
+ {
+ pid_t __real_fork();
+-int __real_pipe(int *);
+ int __real_pthread_sigmask(int, const sigset_t *, sigset_t *);
+-int __real_dup2(int, int);
+ pid_t __real_getppid();
+ pid_t __real_waitpid(pid_t, int *, int);
+-ssize_t __real_read(int, void *, size_t);
+ int __real_epoll_wait(int, epoll_event *, int, int);
+ [[noreturn]] void __real_exit(int);
+ 
+@@ -90,6 +121,7 @@ int __wrap_pipe(int *fds)
+ 	{
+ 		// start_child_process creates crash then input pipes immediately before fork.
+ 		if ((pipe_index++ & 1) == 0) crash_read_fd = fds[0];
++		else input_read_fd = fds[0];
+ 	}
+ 	return ret;
+ }
+@@ -152,29 +184,7 @@ int __wrap_dup2(int from, int to)
+ 			event(to == STDOUT_FILENO ? Output : Input);
+ 			if (to == STDIN_FILENO)
+ 			{
+-				// Observe the actual startup bytes and EOF before the fault/recovery
+-				// barrier. Replay identical bytes through a private pipe so production
+-				// slave negotiation still consumes the controller's original offer.
+-				char startup[Fossilize::ReplayEvent::MaxFrame];
+-				size_t used = 0;
+-				ssize_t n;
+-				do
+-				{
+-					do { n = __real_read(STDIN_FILENO, startup + used, sizeof(startup) - used); } while (n < 0 && errno == EINTR);
+-					if (n > 0) used += size_t(n);
+-					if (used == sizeof(startup)) { event(Fallthrough, 1); _exit(92); }
+-				} while (n > 0);
+-				if (n != 0) { event(Fallthrough, 1); _exit(92); }
+-				if (used)
+-				{
+-					uint64_t worker_id = 0, attempt_id = 0; bool recognized = false;
+-					if (!Fossilize::ReplayEvent::offer(startup, used, worker_id, attempt_id, recognized) || !recognized || worker_id > 1 || !attempt_id)
+-					{ event(Fallthrough, 1); _exit(92); }
+-					int replay_pipe[2];
+-					if (__real_pipe(replay_pipe) != 0 || write(replay_pipe[1], startup, used) != ssize_t(used) ||
+-					    __real_dup2(replay_pipe[0], STDIN_FILENO) < 0) _exit(92);
+-					close(replay_pipe[0]); close(replay_pipe[1]);
+-				}
++				observe_startup(STDIN_FILENO, true);
+ 				event(InputEOF);
+ 				if (recovery && generation == 1)
+ 				{
+@@ -469,15 +479,25 @@ int main(int argc, char **argv)
+ 			checks.require(WIFEXITED(status) && WEXITSTATUS(status) == (failed ? EXIT_FAILURE : controlled ? 2 : 0), "exact-worker-exit-status");
+ 			checks.require(output_eofs.count(birth.first) == 1, "worker-output-pipe-eof");
+ 		}
+-		unsigned masks = 0, outputs = 0, inputs = 0, input_eofs = 0, exits = 0, children = 0;
++		unsigned masks = 0, outputs = 0, inputs = 0, input_eofs = 0, exits = 0, children = 0, offers = 0;
+ 		for (const auto &record : per_pid[pid])
+ 		{
+ 			masks += record.kind == Mask; outputs += record.kind == Output; inputs += record.kind == Input;
+ 			input_eofs += record.kind == InputEOF; exits += record.kind == WorkerExit; children += record.kind == Child;
++			if (record.kind == StartupOfferEOF)
++			{
++				++offers;
++				checks.require(record.a == (recovery ? 0 : birth.first - 1) &&
++				               record.b == (recovery ? birth.first : 1), "exact-startup-offer-worker-attempt");
++			}
++			if (record.kind == Inject) checks.require(offers == 1, "startup-offer-eof-before-fatal-injection");
++			if (record.kind == ForcedCrash || record.kind == WorkerExit || record.kind == Ready)
++				checks.require(offers == 1, "startup-offer-eof-before-worker-outcome");
+ 			if (record.kind == Child) checks.require(record.a == controller, "worker-parent-identity");
+ 			if (record.kind == WorkerExit) checks.require(record.a == 0, "real-worker-success");
+ 		}
+ 		checks.require(children == 1, "child-start-record");
++		checks.require(offers == 1, "one-complete-startup-offer-before-worker-outcome");
+ 		bool before_mask = failed && (fault == Prctl || fault == ParentRace || fault == Sigmask);
+ 		checks.require(masks == (before_mask ? 0u : 1u), "setup-mask-order");
+ 		checks.require(outputs == (before_mask || (failed && fault == Stdout) ? 0u : 1u), "setup-output-order");
