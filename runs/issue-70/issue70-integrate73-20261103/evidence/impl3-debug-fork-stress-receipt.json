@@ -1,0 +1,24 @@
+{
+  "intent_id": "impl3-debug-fork-stress",
+  "command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70-integrate73/build/implementer-1/debug-exceptions-off",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-R",
+    "^fork-child-recovery-(sigmask|stdout-dup2|stdin-dup2)$",
+    "--repeat",
+    "until-fail:25",
+    "-j",
+    "1"
+  ],
+  "cwd": "/home/robin/.codex/worktrees/4f30/fossilize",
+  "timeout": 600.0,
+  "started": 1793727534.1971292,
+  "acquired": 1793727534.2001562,
+  "wait_seconds": 0.0,
+  "finished": 1793727534.565124,
+  "exit_code": 0,
+  "timed_out": false
+}

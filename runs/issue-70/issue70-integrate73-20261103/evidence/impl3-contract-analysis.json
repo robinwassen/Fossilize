@@ -1,0 +1,40 @@
+{
+  "finding": "M70-INTEGRATE73-FINAL1-STARTUP-COUNTER-RACE",
+  "assessment": "Fixture missing deterministic delivered-startup precondition; no production native/legacy counter contract change warranted.",
+  "authoritative_contract": [
+    {
+      "source": "local-docs/specs/replay-worker-events.md",
+      "fact": "Closed startup reader remains native delivery failure with unknown worker origin; native status cannot be overridden by FINAL."
+    },
+    {
+      "source": "cli/fossilize_replay_linux.hpp:process_shutdown",
+      "fact": "Legacy clean/dirty crash counters count crash protocol independently of required completeness and exclude parent-requested cleanup."
+    },
+    {
+      "source": "cli/fossilize_replay_linux.hpp:start_child_process",
+      "fact": "Failed OFFER delivery records native_error/event loss and returns false, invoking cleanup."
+    }
+  ],
+  "preserved_failed_evidence": "output/check-final-1.json and output/final-1/final1-release-decisive.log; #102 had gen1 status2, gen2 status1, failed startup delivery and only production-no-progress-failure-retained FAIL.",
+  "repair": "Capture actual input read fd when production creates startup pipe; fully read/validate actual OFFER and EOF before selected fatal injections. Every child records StartupOfferEOF; Release-active assertions require correct worker/attempt, one complete startup and that Inject follows the observation. Healthy/recovery control paths replay identical bytes into production slave decoder.",
+  "assertions_preserved": [
+    "exact-worker-exit-status",
+    "controller-collection-exactly-once",
+    "worker-output-pipe-eof",
+    "fatal-does-not-enter-worker",
+    "no-fatal-atexit-or-destructor",
+    "no-fatal-inherited-stdio-flush",
+    "controller-required-work-complete",
+    "production-recovery-progress-retained",
+    "production-no-progress-failure-retained",
+    "all #70 production watchdog/drain/native/outcome assertions unchanged"
+  ],
+  "existing_opposite_branch_controls": [
+    "replay-event-controller-startup-close",
+    "replay-event-controller-startup-hash-close"
+  ],
+  "opposite_branch_proof": "Existing controls use waitid(WEXITED|WNOWAIT), then real parent input write, and require EPIPE/native error/lost/no HELLO/no FINAL/unknown remainder; they retain production controller reaping.",
+  "registration": "Fresh discovery/audit confirms identical260 CPU and99 decisive ID sets in each variant; no IDs added or omitted.",
+  "acceptance": "Not accepted by implementer; fresh independent checker required.",
+  "candidate": "9ea00c4eb3587a8c6622578b718d9caac2c65442"
+}
