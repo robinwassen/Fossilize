@@ -10,6 +10,8 @@ and their status. Follow the [changelog writing guideline](local-docs/changelog-
 Entries are reviewed with their implementation PR; inclusion in an open PR does
 not establish merged delivery or a release.
 
+- **[Observability]** Replay watchdogs now observe worker-wide completions so productive FIFO work avoids false timeouts while synchronization still waits for the requested context. ([#70](https://github.com/robinwassen/Fossilize/issues/70))
+
 - **[Observability]** Rejected malformed envelopes, shader modules and application links with input-error reasons so replay hosts can continue after rejected input. ([#17](https://github.com/robinwassen/Fossilize/issues/17))
 
 - **[Observability]** Recorded distinct replay timeout causes before recovery and retained termination results so interrupted work can be diagnosed without mistaking signals for causes. ([#16](https://github.com/robinwassen/Fossilize/issues/16))
