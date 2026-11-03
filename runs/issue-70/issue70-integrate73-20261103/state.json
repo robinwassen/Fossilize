@@ -6795,7 +6795,29 @@
         "log": "/tmp/fossilize-issue70-integrate73/output/checker-3/check3-mutant-release-positive.log",
         "receipt": "/tmp/fossilize-issue70-integrate73/output/checker-3/check3-mutant-release-positive-receipt.json",
         "started": 1793728194.0135612,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793730491.011027,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-issue70-integrate73/build/checker-3/mutant-release",
+            "-V",
+            "--no-tests=error",
+            "-R",
+            "^replay-timeout-controller-(no-progress|multithread|context-normal-[12])$",
+            "-j",
+            "1"
+          ],
+          "cwd": "/tmp/fossilize-issue70-integrate73/checker-3",
+          "exit_code": 0,
+          "finished": 1793730491.043072,
+          "intent_id": "check3-mutant-release-positive",
+          "started": 1793730491.0083268,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 0
+        }
       },
       {
         "child_command": [
@@ -7821,7 +7843,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 238,
+  "revision": 239,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
