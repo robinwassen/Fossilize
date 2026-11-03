@@ -40,6 +40,8 @@
 #include "util/object_cache.hpp"
 #include "replay_item_outcome.hpp"
 #include "replay_timeout.hpp"
+#include "replay_event.hpp"
+#include <functional>
 
 #include <string>
 #include <unordered_set>
@@ -629,10 +631,41 @@ PipelineResolver::resolve_ray_tracing_pipeline(VulkanDevice *device, const VkRay
 struct ThreadedReplayer : StateCreatorInterface
 {
 	ReplayItemOutcome outcome;
-	void record_failure(ReplayFailure reason, ResourceTag tag = RESOURCE_COUNT, Hash hash = 0, VkResult result = VK_SUCCESS)
+	std::function<bool(const char *)> event_writer;
+	std::mutex event_mutex;
+	uint64_t event_worker = 0, event_attempt = 0, emitted_events = 0, omitted_events = 0;
+	void emit_event(ReplayEvent::Event e)
+	{
+		std::lock_guard<std::mutex> hold(event_mutex);
+		if (!event_writer) return;
+		if (emitted_events >= ReplayEvent::MaxEvents) { omitted_events++; return; }
+		e.known |= ReplayEvent::Worker | ReplayEvent::Attempt;
+		e.worker = event_worker; e.attempt = event_attempt;
+		char frame[ReplayEvent::MaxFrame];
+		if (!ReplayEvent::event_frame(frame, sizeof(frame), e) || !event_writer(frame)) { omitted_events++; return; }
+		emitted_events++;
+	}
+	void finish_events(int status)
+	{
+		std::lock_guard<std::mutex> hold(event_mutex);
+		if (!event_writer) return;
+		char payload[128], frame[ReplayEvent::MaxFrame];
+		snprintf(payload,sizeof(payload),"1 FINAL %u %llu",status == 0 ? 0u : 1u,(unsigned long long)omitted_events);
+		if (ReplayEvent::frame(frame,sizeof(frame),payload)) event_writer(frame);
+	}
+	void record_failure(ReplayFailure reason, ResourceTag tag = RESOURCE_COUNT, Hash hash = 0, VkResult result = VK_SUCCESS, const ReplayEvent::Event *origin = nullptr)
 	{
 		get_per_thread_data().failure_generation++;
 		outcome.fail(reason, tag, hash, result);
+		if (reason == ReplayFailure::Parse || reason == ReplayFailure::Create)
+		{
+			ReplayEvent::Event e = origin ? *origin : ReplayEvent::Event{};
+			if (!e.reason) { e.phase = reason == ReplayFailure::Parse ? ReplayEvent::Parse : ReplayEvent::Create;
+				e.reason = reason == ReplayFailure::Parse ? ReplayEvent::GenericParse : ReplayEvent::CreationFailed; }
+			if (reason == ReplayFailure::Create) { e.known |= ReplayEvent::Raw; e.domain = ReplayEvent::Vulkan; e.raw = result; }
+			if (tag != RESOURCE_COUNT) { e.known |= ReplayEvent::HasTag | ReplayEvent::HasHash; e.tag = tag; e.hash = hash; }
+			emit_event(e);
+		}
 	}
 	bool work_drained = false;
 	int fail_run(ReplayFailure reason, ResourceTag tag = RESOURCE_COUNT, Hash hash = 0)
@@ -1058,12 +1091,13 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		uint64_t previous_failure = per_thread.failure_generation;
 		bool parsed = true;
+		ReplayEvent::ParseCapture capture;
 		if (!replayer.parse(*this, global_database, buffer.data(), buffer.size()) ||
 		    !per_thread.acknowledge_parsing_work)
 		{
 			parsed = false;
 			if (per_thread.failure_generation == previous_failure)
-				record_failure(ReplayFailure::Parse, work_item.tag, work_item.hash);
+				record_failure(ReplayFailure::Parse, work_item.tag, work_item.hash, VK_SUCCESS, &capture.result);
 			LOGW("Did not replay blob (tag: %d, hash: 0x%016" PRIx64 "). See previous logs for context.\n",
 			     work_item.tag, work_item.hash);
 
@@ -1846,6 +1880,9 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	void worker_thread(unsigned thread_index)
 	{
+#ifdef FOSSILIZE_REPLAY_TEST_PROSE_OFF
+		set_thread_log_level(LOG_NONE);
+#endif
 		Global::worker_thread_index = thread_index;
 
 		if (opts.on_thread_callback)
@@ -4529,10 +4566,11 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 			per_thread_data.active_tag = tag;
 			per_thread_data.active_hash = hash;
 			uint64_t previous_failure = per_thread_data.failure_generation;
+			ReplayEvent::ParseCapture capture;
 			if (!state_replayer.parse(replayer, resolver.get(), state_json.data(), state_json.size()))
 			{
 				if (per_thread_data.failure_generation == previous_failure)
-					replayer.record_failure(ReplayFailure::Parse, tag, hash);
+					replayer.record_failure(ReplayFailure::Parse, tag, hash, VK_SUCCESS, &capture.result);
 				LOGW("Did not replay blob (tag: %s, hash: %016" PRIx64 "). See previous logs for context.\n", tag_names[tag], hash);
 			}
 		}
