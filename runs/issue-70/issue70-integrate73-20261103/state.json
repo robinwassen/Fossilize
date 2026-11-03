@@ -4258,6 +4258,66 @@
           "-j",
           "1"
         ]
+      },
+      {
+        "child_command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-issue70-integrate73/build/implementer-1/debug-exceptions-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-recovery-(sigmask|stdout-dup2|stdin-dup2)$",
+          "--repeat",
+          "until-fail:25",
+          "-j",
+          "1"
+        ],
+        "command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-issue70-integrate73/build/implementer-1/debug-exceptions-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-recovery-(sigmask|stdout-dup2|stdin-dup2)$",
+          "--repeat",
+          "until-fail:25",
+          "-j",
+          "1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/4f30/fossilize",
+        "eligible_deadline": 1793735079.3879633,
+        "intent_id": "impl3-debug-fork-stress",
+        "log": "/tmp/fossilize-issue70-integrate73/output/implementer-3/impl3-debug-fork-stress.log",
+        "receipt": "/tmp/fossilize-issue70-integrate73/output/implementer-3/impl3-debug-fork-stress-receipt.json",
+        "started": 1793727468.2293751,
+        "timeout": 600,
+        "wrapper_command": [
+          "python3",
+          "-B",
+          "/home/robin/.codex/worktrees/4f30/fossilize/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+          "--repo",
+          "/home/robin/.codex/worktrees/4f30/fossilize",
+          "--timeout",
+          "600",
+          "--intent-id",
+          "impl3-debug-fork-stress",
+          "--receipt",
+          "/tmp/fossilize-issue70-integrate73/output/implementer-3/impl3-debug-fork-stress-receipt.json",
+          "--",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-issue70-integrate73/build/implementer-1/debug-exceptions-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^fork-child-recovery-(sigmask|stdout-dup2|stdin-dup2)$",
+          "--repeat",
+          "until-fail:25",
+          "-j",
+          "1"
+        ]
       }
     ],
     "deadline": 1793735079.3879633,
@@ -5209,7 +5269,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 154,
+  "revision": 155,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
