@@ -1,0 +1,582 @@
+{
+  "attempt_id": "plan-1",
+  "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+  "candidate_sha": null,
+  "input_revision": 1,
+  "input_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+  "operation": "plan",
+  "plan": {
+    "assumptions_and_risks": [
+      "Issue #70 is currently open with no prerequisites and live body matches supplied immutable original; re-read at every harness gate/publication boundary.",
+      "Worker-wide means all compilation threads/contexts in this replay process; unrelated child activity must not keep a stalled child alive. Any completed work resets only that worker dispatcher no-progress observation.",
+      "Multiple-thread dequeue order does not guarantee completion order; fixture barriers must hold the awaited context and prove actual other-context completions before advancing controlled dispatcher time.",
+      "Existing ReplayDeadline monotonic elapsed/overshoot semantics from #16 replace the historical counted wakeups in issue research patch; implement against current production semantics, not by applying the old patch blindly.",
+      "No proprietary input is necessary for acceptance. Synthetic successful creations and read-back parent inputs establish the bounded shared scheduling defect only, not GPU performance or Steam launch speedup.",
+      "If mandatory Linux prerequisites or assertion-bearing cases cannot be executed, report incomplete/unable_to_verify and route environment/design findings rather than weakening gates."
+    ],
+    "cases": [
+      {
+        "assertions": [
+          "Include shipping cli/fossilize_replay.cpp and call the actual sync_worker_memory_context(PARENT_PIPELINE_MEMORY_CONTEXT) with one real compilation worker and its actual FIFO queue. Enqueue finite successful ordinary creation jobs in contexts 0 and 1 ahead of a valid parse-only parent-context job (context 2); use known complete serialized/read-back inputs or explicitly complete private create infos.",
+          "With timeout_seconds=2, barrier-release individual real jobs and advance only the dispatcher monotonic clock in sub-deadline increments (e.g. 1.5 seconds) through cumulative elapsed time greater than 2 seconds, while completed_count[2] stays zero. Assert every release has actually incremented the production other-context completion count, successful creation/output facts, and that synchronization has not returned or requested timeout/recovery.",
+          "Keep the awaited parent job held after ordinary jobs have drained; assert wait remains blocked, requested context queued/completed differ, and its cache/allocator has not been reset/reused. Then release its valid parse, assert its acknowledgement/outcome, exact requested-context drain and natural successful return. Queue completion alone is not success.",
+          "Use mutex-protected snapshots and explicit pipe/condition barriers; no sleeps or allocation/CPU/log heuristics determine order. Virtual elapsed time, real completion and native result/explicit assertion state decide the result."
+        ],
+        "id": "M70-FIFO-1",
+        "location": "test/replay_timeout_controller_test.cpp; test/CMakeLists.txt: new replay-timeout-controller-context-progress-1 registration"
+      },
+      {
+        "assertions": [
+          "Run the same production FIFO scenario with two actual compilation threads; barriers must acknowledge both workers started and prevent context 2 from completing early even if it was dequeued while an earlier creation remains active.",
+          "Assert productive completion in both ordinary contexts beyond the configured elapsed deadline, no premature synchronization, then eventual successful requested-context drain; no per-thread culprit is invented. All real threads are joined and any child reaped."
+        ],
+        "id": "M70-FIFO-MULTI",
+        "location": "test/replay_timeout_controller_test.cpp; test/CMakeLists.txt: replay-timeout-controller-context-progress-2"
+      },
+      {
+        "assertions": [
+          "After at least one acknowledged other-context completion resets the observed work deadline, hold all remaining real jobs; advance controlled monotonic time to just before the configured deadline and then to/above it without any completion.",
+          "Assert no early trigger, exactly the work-no-progress origin, configured threshold and actual elapsed/overshoot from the last observed productive snapshot, retained timeout evidence before the real abort/recovery adapter, nonzero/incomplete required work and bounded termination/reap. Productive work must not disable the deadline permanently.",
+          "Retain existing ordinary-no-progress and ordinary-delivery-failure controls, plus dispatcher-disabled (zero disables only work deadline), and explicit Release-active assertions."
+        ],
+        "id": "M70-STALL",
+        "location": "test/replay_timeout_controller_test.cpp: existing no-progress/multithread/dispatcher-reset plus new FIFO progress-then-stall control registered for 1/2 threads"
+      },
+      {
+        "assertions": [
+          "For one and two real compilation workers, ordinary finite successful work and awaited work complete without virtual threshold crossing or timeout; assert successful Vulkan producer outputs, parsed required input, retained outcome success, context-specific drain and natural return.",
+          "Retain already-drained fast path and timeout_seconds=0 behavior. A failed/unsupported creation may complete a queue job but remains an unsuccessful required outcome (existing replay-outcome-worker-queue/matrix)."
+        ],
+        "id": "M70-NORMAL",
+        "location": "test/replay_timeout_controller_test.cpp: clean and registered normal 1/2-thread controls; replay-outcome-worker-queue/matrix"
+      },
+      {
+        "assertions": [
+          "Run all existing replay-timeout-unit-* and replay-timeout-controller-* tests, including independent heartbeat/heartbeat-reset, cleanup, recovery, multithread, protocol, dispatcher-reset/disabled and ordinary delivery controls. Assert preserved trigger thresholds, termination/effect separation, retry history and eventual recovery outcomes.",
+          "Add bounded Linux controller cancellation control(s) for SIGINT and SIGTERM, with a real worker barrier held and a signal delivered to the master after its production signalfd setup. Assert incomplete/nonzero result, intentional shutdown rather than invented work/heartbeat/cleanup cause, independently observed native worker termination, closed IPC and no remaining children. Do not modify production cancellation behavior.",
+          "Retain replay-controller-signal/held-sibling/recover and CLI compatibility registrations and assertions. A spontaneous child SIGABRT is not a replacement for a cancellation test."
+        ],
+        "id": "M70-CONTRACTS",
+        "location": "test/replay_timeout_test.cpp; test/replay_timeout_controller_test.cpp; test/replay_controller_test.cpp; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Compile the exact new fixtures with only the production watchdog snapshot/predicate/reset restored to completed_count[index] (the original defect), retaining the existing ReplayDeadline clock/outcome machinery. Preserve a precise mutant diff and baseline/candidate identities.",
+          "In Debug and Release (exceptions OFF), one-thread and two-thread cross-context cases must fail named M70 assertion(s) proving false timeout/premature recovery despite other-context completions. Normal success and genuine-stall controls must still pass under the same original rule.",
+          "Compilation/link failure, unexpected signal, fixture emergency watchdog, missing input, generic CTest failure or matching log text alone cannot count as reproduction. The bounded driver must recognize the intended native result plus assertion-bearing shared state/explicit M70 failure and reject all other failures. Candidate cases pass unchanged."
+        ],
+        "id": "M70-ORIGINAL-DEFECT",
+        "location": "disposable candidate-derived mutation worktree and its registered replay-timeout-controller tests; bounded control driver/evidence outside canonical source"
+      },
+      {
+        "assertions": [
+          "The entire base-to-candidate diff changes only worker-progress observation, bounded private tests/registration and accurate documentation; no CLI/options/public declarations, file/protocol/shared-progress format, cache-marker success policy, durability, Steam scheduling or recovery/cancellation behavior changes.",
+          "Update verification.md timeout semantics from awaited-context completions to worker-wide completed jobs while retaining context-specific synchronization and outcome distinctions; describe new registered Linux cases and Windows limitation honestly.",
+          "Add one short factual Unreleased changelog sentence with practical false-timeout benefit and full #70 URL, following local-docs/changelog-guidelines.md; do not claim game-launch speedup or native Windows/GPU verification."
+        ],
+        "id": "M70-COMPATIBILITY-DOCS",
+        "location": "cli/fossilize_replay.cpp; test/CMakeLists.txt; local-docs/verification.md; CHANGELOG.md; existing compatibility tests"
+      }
+    ],
+    "criterion_mapping": [
+      {
+        "cases": [
+          "M70-FIFO-1",
+          "M70-FIFO-MULTI"
+        ],
+        "gates": [
+          "M70-REVIEW",
+          "M70-LINUX-MATRIX",
+          "M70-MUTATION",
+          "M70-FINAL-DECISIVE"
+        ],
+        "original_id": "AC1",
+        "textual_acceptance_criterion": 1
+      },
+      {
+        "cases": [
+          "M70-STALL",
+          "M70-CONTRACTS"
+        ],
+        "gates": [
+          "M70-REVIEW",
+          "M70-LINUX-MATRIX",
+          "M70-FINAL-DECISIVE"
+        ],
+        "original_id": "AC1",
+        "textual_acceptance_criterion": 2
+      },
+      {
+        "cases": [
+          "M70-FIFO-1",
+          "M70-FIFO-MULTI",
+          "M70-STALL",
+          "M70-NORMAL",
+          "M70-ORIGINAL-DEFECT"
+        ],
+        "gates": [
+          "M70-LINUX-MATRIX",
+          "M70-MUTATION",
+          "M70-FINAL-DECISIVE"
+        ],
+        "original_id": "AC1",
+        "textual_acceptance_criterion": 3
+      },
+      {
+        "cases": [
+          "M70-COMPATIBILITY-DOCS",
+          "M70-CONTRACTS"
+        ],
+        "gates": [
+          "M70-REVIEW",
+          "M70-LINUX-MATRIX",
+          "M70-FINAL-DECISIVE"
+        ],
+        "original_id": "AC1",
+        "textual_acceptance_criterion": 4
+      },
+      {
+        "cases": [
+          "M70-COMPATIBILITY-DOCS",
+          "M70-CONTRACTS",
+          "M70-ORIGINAL-DEFECT"
+        ],
+        "gates": [
+          "M70-LINUX-MATRIX",
+          "M70-MUTATION",
+          "M70-FINAL-DECISIVE",
+          "M70-PUBLICATION"
+        ],
+        "original_id": "AC1",
+        "qualification": "User explicitly waived unavailable native Windows execution; preserve portable source/registration, report Windows unverified and make no runtime coverage claim.",
+        "textual_acceptance_criterion": 5
+      }
+    ],
+    "gates": [
+      {
+        "cases": [
+          "M70-COMPATIBILITY-DOCS",
+          "M70-CONTRACTS"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/4f30/fossilize",
+        "expected": "One unsplit bounded progress-accounting fix; real completed jobs from all memory contexts reset only the no-progress deadline while queued_count[index] != completed_count[index] remains the return condition; heartbeat/cancellation/recovery paths and outcomes unchanged; factual one-sentence #70 changelog and updated timeout guide; no unresolved findings.",
+        "id": "M70-REVIEW",
+        "kind": "both",
+        "method": "Independently inspect complete git diff BASE...CANDIDATE, live gh issue view 70 --repo robinwassen/Fossilize, production locking/wait/reset/worker paths, fixture assertions and CTest registration, verification text and changelog. Record exact source revision and unchanged interface/options/format/policy boundaries. No execution inferred from source review.",
+        "prerequisites": [
+          "Exact clean committed candidate and immutable base/input; live issue requirements unchanged; coordinator publishes each exact argv/cwd/timeout intent before execution.",
+          "Populated pinned submodules, Linux GCC/libstdc++ pthread_cond_clockwait/link-wrap support, CMake/CTest/Ninja at supplied paths; private role-specific source/build/output directories; 600-second child deadlines via verification_lock.py."
+        ]
+      },
+      {
+        "cases": [
+          "M70-FIFO-1",
+          "M70-FIFO-MULTI",
+          "M70-STALL",
+          "M70-NORMAL",
+          "M70-CONTRACTS",
+          "M70-COMPATIBILITY-DOCS"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/4f30/fossilize",
+        "expected": "Every discovered noninteractive GPU-independent registered test passes, no tests skipped/disabled/missing, nonzero discovery and execution. New FIFO 1/2-thread, eventual drain, progress-then-stall, normal and cancellation cases are present and assertion-bearing under Debug and Release; all existing CPU compatibility/outcome/cache tests retain their outcomes. Focused timeout cases pass three consecutive executions in every variant.",
+        "id": "M70-LINUX-MATRIX",
+        "kind": "work_unit",
+        "method": {
+          "commands": [
+            {
+              "build": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+                "--build",
+                "/tmp/fossilize-issue70/build/${ROLE}/debug-exceptions-off",
+                "--parallel",
+                "2"
+              ],
+              "configure": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+                "-S",
+                "${SOURCE}",
+                "-B",
+                "/tmp/fossilize-issue70/build/${ROLE}/debug-exceptions-off",
+                "-G",
+                "Ninja",
+                "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+                "-DFOSSILIZE_CLI=ON",
+                "-DFOSSILIZE_VULKAN_LAYER=ON",
+                "-DFOSSILIZE_TESTS=ON",
+                "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+                "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+                "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+              ],
+              "decisive_repeat": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/debug-exceptions-off",
+                "--output-on-failure",
+                "--no-tests=error",
+                "-R",
+                "^replay-timeout-",
+                "--repeat",
+                "until-fail:3",
+                "-j",
+                "1"
+              ],
+              "discovery": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/debug-exceptions-off",
+                "--show-only=json-v1"
+              ],
+              "full_cpu": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/debug-exceptions-off",
+                "--output-on-failure",
+                "--no-tests=error",
+                "-j",
+                "1"
+              ],
+              "variant": "debug-exceptions-off"
+            },
+            {
+              "build": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+                "--build",
+                "/tmp/fossilize-issue70/build/${ROLE}/debug-exceptions-on",
+                "--parallel",
+                "2"
+              ],
+              "configure": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+                "-S",
+                "${SOURCE}",
+                "-B",
+                "/tmp/fossilize-issue70/build/${ROLE}/debug-exceptions-on",
+                "-G",
+                "Ninja",
+                "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+                "-DFOSSILIZE_CLI=ON",
+                "-DFOSSILIZE_VULKAN_LAYER=ON",
+                "-DFOSSILIZE_TESTS=ON",
+                "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+                "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+                "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+              ],
+              "decisive_repeat": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/debug-exceptions-on",
+                "--output-on-failure",
+                "--no-tests=error",
+                "-R",
+                "^replay-timeout-",
+                "--repeat",
+                "until-fail:3",
+                "-j",
+                "1"
+              ],
+              "discovery": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/debug-exceptions-on",
+                "--show-only=json-v1"
+              ],
+              "full_cpu": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/debug-exceptions-on",
+                "--output-on-failure",
+                "--no-tests=error",
+                "-j",
+                "1"
+              ],
+              "variant": "debug-exceptions-on"
+            },
+            {
+              "build": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+                "--build",
+                "/tmp/fossilize-issue70/build/${ROLE}/release-exceptions-off",
+                "--parallel",
+                "2"
+              ],
+              "configure": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+                "-S",
+                "${SOURCE}",
+                "-B",
+                "/tmp/fossilize-issue70/build/${ROLE}/release-exceptions-off",
+                "-G",
+                "Ninja",
+                "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+                "-DCMAKE_BUILD_TYPE=Release",
+                "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+                "-DFOSSILIZE_CLI=ON",
+                "-DFOSSILIZE_VULKAN_LAYER=ON",
+                "-DFOSSILIZE_TESTS=ON",
+                "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+                "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+                "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+              ],
+              "decisive_repeat": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/release-exceptions-off",
+                "--output-on-failure",
+                "--no-tests=error",
+                "-R",
+                "^replay-timeout-",
+                "--repeat",
+                "until-fail:3",
+                "-j",
+                "1"
+              ],
+              "discovery": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/release-exceptions-off",
+                "--show-only=json-v1"
+              ],
+              "full_cpu": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/release-exceptions-off",
+                "--output-on-failure",
+                "--no-tests=error",
+                "-j",
+                "1"
+              ],
+              "variant": "release-exceptions-off"
+            },
+            {
+              "build": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+                "--build",
+                "/tmp/fossilize-issue70/build/${ROLE}/release-exceptions-on",
+                "--parallel",
+                "2"
+              ],
+              "configure": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+                "-S",
+                "${SOURCE}",
+                "-B",
+                "/tmp/fossilize-issue70/build/${ROLE}/release-exceptions-on",
+                "-G",
+                "Ninja",
+                "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+                "-DCMAKE_BUILD_TYPE=Release",
+                "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+                "-DFOSSILIZE_CLI=ON",
+                "-DFOSSILIZE_VULKAN_LAYER=ON",
+                "-DFOSSILIZE_TESTS=ON",
+                "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+                "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+                "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+              ],
+              "decisive_repeat": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/release-exceptions-on",
+                "--output-on-failure",
+                "--no-tests=error",
+                "-R",
+                "^replay-timeout-",
+                "--repeat",
+                "until-fail:3",
+                "-j",
+                "1"
+              ],
+              "discovery": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/release-exceptions-on",
+                "--show-only=json-v1"
+              ],
+              "full_cpu": [
+                "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+                "--test-dir",
+                "/tmp/fossilize-issue70/build/${ROLE}/release-exceptions-on",
+                "--output-on-failure",
+                "--no-tests=error",
+                "-j",
+                "1"
+              ],
+              "variant": "release-exceptions-on"
+            }
+          ],
+          "execution": "Implementer runs matrix; fresh work-unit checker independently configures/builds/discovers and executes all four variants at the exact committed candidate. Each configure, build, discovery, suite and repeat is a separate published intent and wrapper receipt. Store CTest JSON inventory, actual executed IDs, logs/Testing Temporary data and elapsed/exit status, not only a build summary. Matrix may be sequential; cap build parallelism at 2 initially to keep memory/deadline bounded."
+        },
+        "prerequisites": [
+          "Exact clean committed candidate and immutable base/input; live issue requirements unchanged; coordinator publishes each exact argv/cwd/timeout intent before execution.",
+          "Populated pinned submodules, Linux GCC/libstdc++ pthread_cond_clockwait/link-wrap support, CMake/CTest/Ninja at supplied paths; private role-specific source/build/output directories; 600-second child deadlines via verification_lock.py."
+        ]
+      },
+      {
+        "cases": [
+          "M70-ORIGINAL-DEFECT",
+          "M70-FIFO-1",
+          "M70-FIFO-MULTI",
+          "M70-STALL",
+          "M70-NORMAL"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/4f30/fossilize",
+        "expected": "Both original-rule builds compile. Both thread counts detect the intended false timeout with explicit M70 assertions/native outcome; original-rule normal and genuine-stall controls pass. Candidate versions all pass unchanged. Missing fixtures, generic exit failure, crashes, emergency deadlines or build failures are rejected as controls.",
+        "id": "M70-MUTATION",
+        "kind": "work_unit",
+        "method": "Fresh work-unit checker independently constructs a disposable copy from the exact candidate with only watchdog progress restored to the original awaited-context rule. Configure/build replay-timeout-controller-test for Debug/Release exceptions OFF using the matrix argv adapted to unique mutation directories; invoke the registered FIFO 1/2-thread cases and normal/stall controls through a bounded expected-failure oracle. Publish each build/run/oracle intent separately; save mutant diff, compilation status, native results and exact M70 assertion IDs.",
+        "prerequisites": [
+          "Exact clean committed candidate and immutable base/input; live issue requirements unchanged; coordinator publishes each exact argv/cwd/timeout intent before execution.",
+          "Populated pinned submodules, Linux GCC/libstdc++ pthread_cond_clockwait/link-wrap support, CMake/CTest/Ninja at supplied paths; private role-specific source/build/output directories; 600-second child deadlines via verification_lock.py."
+        ]
+      },
+      {
+        "cases": [
+          "M70-FIFO-1",
+          "M70-FIFO-MULTI",
+          "M70-STALL",
+          "M70-NORMAL",
+          "M70-CONTRACTS",
+          "M70-ORIGINAL-DEFECT",
+          "M70-COMPATIBILITY-DOCS"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/4f30/fossilize",
+        "expected": "Fresh decisive executions all pass with nonzero discovered/executed IDs; all planned cases have valid current evidence; separate work-unit checker four-config matrix/mutation evidence is complete, criterion-level review and changelog remain accurate, no unresolved findings, native Windows marked waived/unverified rather than claimed. Closure target only #70; related #16/#46 are not inherited tasks.",
+        "id": "M70-FINAL-DECISIVE",
+        "kind": "final",
+        "method": {
+          "configuration": "Fresh separate final checker source at exact accepted candidate; own Debug and Release exceptions OFF builds, using configure/build argv in commands with ROLE=final. Build at least fossilize-replay, replay-timeout-test, replay-timeout-controller-test, replay-controller-test, replay-controller-compatibility-test, replay-outcome-test, replay-outcome-compatibility-test and diagnostic-compatibility-test, plus their linked dependencies.",
+          "discovery": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "${FINAL_BUILD}",
+            "--show-only=json-v1"
+          ],
+          "review": "Independently inspect full combined diff and exact candidate/base/plan/live issue, complete matrix and mutation evidence; map every planned case and all five textual issue criteria to executed IDs. Rerun all replay-timeout-* cases (includes decisive FIFO/stall/cancellation plus existing heartbeat/recovery controls) and stated controller/outcome/CLI compatibility selection in both builds. No source changes or reused unit acceptance substitute for this fresh gate.",
+          "tests": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "${FINAL_BUILD}",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(replay-timeout-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)",
+            "--repeat",
+            "until-fail:3",
+            "-j",
+            "1"
+          ]
+        },
+        "prerequisites": [
+          "Exact clean committed candidate and immutable base/input; live issue requirements unchanged; coordinator publishes each exact argv/cwd/timeout intent before execution.",
+          "Populated pinned submodules, Linux GCC/libstdc++ pthread_cond_clockwait/link-wrap support, CMake/CTest/Ninja at supplied paths; private role-specific source/build/output directories; 600-second child deadlines via verification_lock.py."
+        ]
+      },
+      {
+        "cases": [
+          "M70-COMPATIBILITY-DOCS"
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/4f30/fossilize",
+        "expected": "All required unit/final checks accepted at identical candidate; one actual non-draft open PR, accurate six-section description, attached artifacts and exact-tip confirmed publication. Issues remain open pending user-approved merge; no runtime Windows/GPU/Steam or cache-durability claims.",
+        "id": "M70-PUBLICATION",
+        "kind": "publication",
+        "method": "Coordinator re-reads live material issue snapshot, fetches target master, verifies accepted clean candidate/base/plan, publishes managed readiness and one source PR with explicit Closes https://github.com/robinwassen/Fossilize/issues/70; verifies actual PR head/base/state and artifact attachment under harness policy. Native Windows waiver is reported explicitly.",
+        "prerequisites": [
+          "Exact clean committed candidate and immutable base/input; live issue requirements unchanged; coordinator publishes each exact argv/cwd/timeout intent before execution.",
+          "Populated pinned submodules, Linux GCC/libstdc++ pthread_cond_clockwait/link-wrap support, CMake/CTest/Ninja at supplied paths; private role-specific source/build/output directories; 600-second child deadlines via verification_lock.py."
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "description": "In sync_worker_memory_context, snapshot worker-wide completed_count under pipeline_work_queue_mutex using a uint64_t sum over all NUM_MEMORY_CONTEXTS (or exact per-context snapshot comparison if chosen with equivalent coverage). Use the same observation for initial snapshot, wait predicate, ReplayDeadline reset and end-of-loop snapshot. Do not use queued counts or success-only counters as progress; any processed job is forward progress but outcome remains separate. Leave requested-context completion/fast path, heartbeat timing, report_timeout/timeout_handler/exit and cache reset untouched.",
+        "risk": "All reads must remain under existing mutex; do not sum in unsigned width or add unsynchronized atomics. Per-context notifications may remain because the existing one-second poll rechecks shared progress. No need to broadcast every completion or refactor scheduling.",
+        "step": 1
+      },
+      {
+        "description": "Extend test/replay_timeout_controller_test.cpp with actual FIFO worker and controlled dispatcher-clock/barrier scenarios identified in cases. Reuse production-including null-device/real-thread fixture patterns and valid read-back FOZ or complete private create infos; hold awaited parent parsing explicitly. Add state-based parent assertions and Release-active M70 IDs; virtual-time wait adapters must unlock the queue mutex while coordinating real completion, then reacquire and verify counter progress. Emergency process watchdogs are fixture failures only.",
+        "step": 2
+      },
+      {
+        "description": "Register new GPU-independent cases with finite TIMEOUT and isolated working directories in test/CMakeLists.txt, inherit FOSSILIZE_CXX_FLAGS/link flags, keep Linux syscall adapters guarded and all existing portable tests/Windows registration intact. Add ordinary successful 1/2-thread controls, real no-progress after prior cross-context progress, and bounded SIGINT/SIGTERM cancellation controls without changing shipping cancellation.",
+        "step": 3
+      },
+      {
+        "description": "Update the stale local-docs/verification.md timeout definition to worker-wide observed completions, explain context-specific drain and outcome/persistence limits, list new test procedures and explicit Windows waiver. Add/revise one short Unreleased CHANGELOG.md sentence linked to #70. Example scope: Replay watchdogs now observe completed jobs across memory contexts so useful FIFO work no longer triggers a false timeout.",
+        "step": 4
+      },
+      {
+        "description": "Initialize required pinned submodules in implementation/checker source worktrees if absent. Execute applicable CPU matrix and deliberate original-rule controls via coordinator intents/wrapper, commit only production/tests/docs/changelog, and return exact candidate plus case-to-executed-ID mappings and truthful limitations. Independent work-unit checker reruns four-config matrix and mutation; fresh final checker reruns decisive tests at unchanged exact candidate.",
+        "step": 5
+      }
+    ],
+    "non_goals": [
+      "CPU/allocation heuristics, per-pipeline elapsed watchdogs, scheduler/queue reordering, generic lifecycle redesign, timeout-origin diagnostics redesign, public API/options/file or protocol changes.",
+      "Cache-marker success policy, output durability, Steam scheduling, proprietary Sims corpus or live game/driver A/B timing.",
+      "Unrelated change-harness Python regression suite/skill validator: no harness implementation change is planned. Native Windows execution is explicitly user-waived and unverified, not a mandatory skipped gate; Apple/Android/other architectures and real GPU/Steam integration are outside this Linux CPU run."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "## Problem\n\n`sync_worker_memory_context(index)` uses only `completed_count[index]` to reset the work-progress timeout. The worker queue is FIFO. `enqueue_deferred_pipelines()` can enqueue ordinary pipeline jobs for contexts 0/1 before parent-pipeline parsing jobs for context 2, then wait for context 2. That counter cannot advance until the earlier jobs drain, even though the worker is successfully completing ordinary pipelines.\n\nThis converts legitimate queue delay into a timeout, invokes crash recovery and identifies whichever pipeline/shaders happen to be active as culprits. It can interrupt useful shader warming and cause repeated recovery before a game launch.\n\nSource at pinned upstream revision `556da9ff7d7616704dda515756219ab1dab693ec`: [watchdog](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L928), [parent parsing wait](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L3290), and [FIFO worker](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1792).\n\n## Evidence and required outcome\n\nA private Linux/NVIDIA diagnostic build reproduced this on a copied Sims 4 workload. At the false timeout after 10,001 ms:\n\n- Waiting context: 2; its queued/completed counts: 918/0.\n- Other-context work completed during the wait: 305 jobs.\n- The worker and queue head were both in context 0, with 2,218 jobs still queued.\n\nObserve actual worker-wide forward progress for hang detection while retaining the requested context's completion condition for synchronization. Legitimate FIFO work in another context must not cause a worker timeout. Allocation/CPU-activity heuristics are unnecessary for this reproduced defect.\n\n## Minimal candidate fix attached\n\n[Download the minimal candidate patch text](https://github.com/robinwassen/Fossilize/blob/harness-artifacts/runs/watchdog-context-progress/issue-filing-20261101/evidence/minimal-fix.patch.txt) (save as `.patch` to apply). The complete patch is also included below. This is a research candidate, not a merged fix. It changes only watchdog progress accounting, not queue ordering or the context-specific drain condition.\n\n```diff\n--- a/cli/fossilize_replay.cpp\n+++ b/cli/fossilize_replay.cpp\n@@ -939,14 +939,22 @@\n \t\t\treturn;\n \t\t}\n \n-\t\tunsigned current_completed = completed_count[index];\n+\t\t// The awaited context may be queued behind work from other contexts.\n+\t\t// Synchronization remains context-specific; hang detection observes the worker.\n+\t\tconst auto watchdog_completed = [&]() {\n+\t\t\tunsigned total = 0;\n+\t\t\tfor (unsigned count : completed_count)\n+\t\t\t    total += count;\n+\t\t\treturn total;\n+\t\t};\n+\t\tunsigned current_completed = watchdog_completed();\n \t\tunsigned num_second_timeouts = 0;\n \n \t\tdo\n \t\t{\n \t\t\tbool signalled = work_done_condition[index].wait_for(\n \t\t\t\t\tlock, std::chrono::seconds(1),\n-\t\t\t\t\t[&]() -> bool { return current_completed != completed_count[index]; });\n+\t\t\t\t\t[&]() -> bool { return current_completed != watchdog_completed(); });\n \n \t\t\t// Fire off a heartbeat every 500ms. No need to overwhelm the parent process.\n \t\t\tauto new_time = std::chrono::steady_clock::now();\n@@ -957,7 +965,7 @@\n \t\t\t\tlast_heartbeat = new_time;\n \t\t\t}\n \n-\t\t\tif (!signalled && completed_count[index] == current_completed)\n+\t\t\tif (!signalled && watchdog_completed() == current_completed)\n \t\t\t\tnum_second_timeouts++;\n \t\t\telse\n \t\t\t\tnum_second_timeouts = 0;\n@@ -969,7 +977,7 @@\n \t\t\t\texit(2);\n \t\t\t}\n \n-\t\t\tcurrent_completed = completed_count[index];\n+\t\t\tcurrent_completed = watchdog_completed();\n \t\t} while (queued_count[index] != completed_count[index]);\n \n \t\theartbeat();\n```\n\n## Acceptance criteria\n\n1. A wait on one context remains alive while the same worker makes real progress on finite work queued ahead of it in other contexts; the awaited context still must drain before synchronization returns.\n2. A genuinely stalled worker with no relevant completed work still triggers the configured work-progress deadline. Preserve the separate heartbeat, cancellation and crash-recovery contracts.\n3. Add registered GPU-independent regressions with controllable clocks/barriers: another-context FIFO progress beyond the deadline, eventual awaited-context completion, true no-progress stall, and normal successful completion. Exercise one and multiple compilation threads where supported. Do not use CPU use, allocation activity, log text or queue completion as a substitute for the applicable outcome contract.\n4. Keep CLI/options, capture/database formats and public interfaces unchanged. Document the intentional behavioral correction: productive workers no longer suffer this false timeout.\n5. Run applicable registered tests and platform checks, including Windows coverage for shared replay behavior where claimed. Report unavailable platforms and unsupported/missing-input work separately. Avoid changes to cache-marker success policy, output durability or Steam scheduling in this fix.\n\n## Verification already performed (research evidence)\n\nSame pinned replay translation unit and local support archives; fresh private driver and replay/validation caches for cold cases; one compilation thread; copied real input scope of 2,048 graphics entries plus dependencies:\n\n| Rule / cache | Observed result |\n| --- | --- |\n| Original rule, cold | False timeout reproduced; failing diagnostic capture stopped at 17.6 s, incomplete |\n| Worker-wide progress, cold | Natural completion in 70.7 s; 2,444 successful graphics creations; no timeout |\n| Original rule, completed driver cache | Natural completion in 13.25 s; same 2,444 creations |\n| Worker-wide progress, identical completed driver cache | Natural completion in 13.01 s; same 2,444 creations |\n\nThe changed rule also caught an intentionally stalled worker at a two-second threshold, and single-pipeline success controls passed with both rules. These are isolated replay timings, **not game-launch timings**. Native Steam's original binary separately reproduced 43 timeouts and 41 worker restarts during a three-minute full-input cold attempt. The exact internal counter state of that distributed binary was not read directly.\n\nLimitations: the corpus is proprietary and remains local; shader data/cache binaries are not attached. The source input has changed since the original upstream report and contains unsupported/missing-input work. Existing local support archives were reused, so diagnostic builds are not claimed to reproduce Steam's exact build. Windows and general multi-thread-per-child behavior remain unverified. Real Sims cold/second-start A/B tests are being conducted separately; no game-start speedup is claimed here yet.\n\n## Scope and related issues\n\nStandalone defect fix. Related [timeout-origin diagnostics](https://github.com/robinwassen/Fossilize/issues/16) addresses reporting, not this progress-accounting correction; it is not a prerequisite. [Worker lifecycle](https://github.com/robinwassen/Fossilize/issues/46) is related context, not an inherited implementation requirement. Upstream user report: https://github.com/ValveSoftware/Fossilize/issues/318.\n\n<!-- watchdog-context-progress-20261101-v1 -->\n"
+      }
+    ],
+    "scope": {
+      "boundaries": [
+        "Production change stays within ThreadedReplayer::sync_worker_memory_context and a small private internal helper only if needed; preserve mutex ownership, existing condition variables/1-second polling and queue ordering.",
+        "Tests may extend existing Linux production-including timeout fixture and its private link adapters; production APIs/options must not gain test injection hooks. Existing portable deadline units and controller/outcome registrations remain available on Windows."
+      ],
+      "expected_behavior": "Observe worker-wide actual completed jobs for hang detection while requiring only the requested memory context to drain before return; retain configured monotonic no-progress, heartbeat, cancellation, recovery and outcome contracts.",
+      "issue": "https://github.com/robinwassen/Fossilize/issues/70",
+      "problem": "The dispatcher currently snapshots and resets its monotonic work deadline from only completed_count[index], although a shared FIFO may execute useful jobs from other memory contexts before the awaited parent context.",
+      "unit": "One coherent unsplit implementation/testing/documentation change referencing the root issue; no sub-issues or native dependencies needed."
+    },
+    "verification_protocol": {
+      "cwd": "/home/robin/.codex/worktrees/4f30/fossilize",
+      "evidence": "Reports must state command/cwd/environment/revision/status/deadline/log paths, exact CTest IDs and per-case assertions. Preserve small sanitized logs/JSON and mutation diff/control results; distinguish passed, failed, waived/unavailable, unsupported and missing-input work. An empty suite, build-only result, log-only oracle or timer-driven fixture crash cannot accept.",
+      "execution_authority": "This planner executed no builds/tests/probes. Read-only live issue/source/submodule inspections informed design. All future build/test/probe argv need coordinator-published command-intent and unique intent_id before execution.",
+      "inventory": "Discover actual CTest JSON per configuration; FOSSILIZE_TEST_RUNTIME_LAYER=OFF excludes the real-GPU optional layer-test. Full CPU run includes all remaining registered tests, not dependency projects. Preserve discovered/executed unions and no mandatory skips; do not quote historical count as current coverage.",
+      "prerequisites": "Planner submodules are uninitialized (git submodule status reports leading - for RapidJSON, volk, SPIRV-* and dirent). Populate implementation/checker worktrees with git submodule update --init --recursive before configuring; record pinned statuses. CMake/CTest supplied under /tmp/fossilize-10/tools/cmake/data/bin, ninja under /tmp/fossilize-10/tools/bin. Build/test outputs stay outside source.",
+      "substitutions": "SOURCE is each role own source worktree at the exact committed candidate (implementation source above; independent detached checker/final worktrees supplied by coordinator); ROLE is unique implementer/checker/final/mutation attempt; expand all placeholders and publish exact argv/cwd/600-second timeout before invocation. Keep cwd fixed per wrapper/intent. Coordinator settles each receipt once before next budget gate. Do not nest wrappers.",
+      "wrapper": [
+        "python3",
+        "-B",
+        "${SOURCE}/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "${SOURCE}",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "${UNIQUE_ID}",
+        "--receipt",
+        "${FRESH_ABSOLUTE_RECEIPT}",
+        "--",
+        "${CHILD_ARGV...}"
+      ]
+    },
+    "version": 1,
+    "work_units": []
+  },
+  "plan_version": 0,
+  "role": "planner",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/70",
+  "worker_id": "/root/planner70"
+}
