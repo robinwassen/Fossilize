@@ -1,0 +1,32 @@
+{
+  "body_sha256": "312e0118540967f679120b49d07ad659cb1c0661805ede2f1cf78b10745ed14b",
+  "observed": 1793732148.977002,
+  "operation": "edit-pr-db9bfc67c3baed4308537470",
+  "pr": {
+    "baseRefName": "master",
+    "baseRefOid": "84fd2d97cbba2b3c9b9d4edafd4269c93d611523",
+    "body": "## Problem\n\nReplay can wait for parent-context jobs queued behind ordinary pipeline jobs in other memory contexts. The watchdog previously observed only completions in the awaited context, so productive FIFO work could trigger a false timeout and crash recovery.\n\n## What changes\n\nObserve completed jobs across all memory contexts when resetting the existing monotonic no-progress deadline. Synchronization still waits for the requested context to drain. Add eight deterministic GPU-independent FIFO, progress-then-stall, normal-completion and cancellation regressions, and document the corrected timeout semantics.\n\nFork setup regressions observe the actual startup offer and EOF before fatal injection, retaining strict native exit, reap and crash-counter assertions. Separate closed-reader controls cover startup delivery failure.\n\n## Why this matters\n\nUseful replay work no longer triggers recovery merely because its completions belong to a different memory context. A worker that stops completing work still reaches its configured deadline.\n\n## Why this approach\n\nRead the existing counters under the existing queue mutex and widen their sum to `uint64_t`. This keeps the correction within progress accounting while preserving queue ordering, heartbeat, cancellation, recovery, CLI options, public interfaces, formats and cache-marker policy.\n\n## Verification and limits\n\n- Independent Linux Debug/Release x exceptions OFF/ON: all 260 registered CPU tests passed per configuration, plus 99 decisive tests repeated three times per configuration (2,228 passing candidate executions).\n- Independent recovery stress: sigmask, stdout-dup2 and stdin-dup2 each passed 25 additional repetitions in both Debug and Release (150 executions), retaining all original native/counter/outcome assertions.\n- Independently compiled original-rule Debug/Release controls reproduced exactly the intended two false-timeout assertions and native/counter outcomes for one and two compilation threads. All eight zero-completion stall and normal-success controls passed. Candidate progress-then-stall assertions remain unchanged and passed throughout the matrix.\n- The current base includes [worker-reason reporting from #73](https://github.com/robinwassen/Fossilize/pull/73). The decisive selection covers rich/legacy events, native outcomes, retry, fork, cancellation and header/CLI compatibility together with the watchdog regressions.\n- A separate fresh final checker passed all 99 decisive tests three times in both Debug and Release (594 executions), with no findings.\n- [Independent work-unit report](https://github.com/robinwassen/Fossilize/blob/harness-artifacts/runs/issue-70/issue70-integrate73-20261103/reports/check-unit-3.json) and [separate final report](https://github.com/robinwassen/Fossilize/blob/harness-artifacts/runs/issue-70/issue70-integrate73-20261103/reports/check-final-2.json).\n- Native Windows execution was explicitly waived as unavailable on this machine and remains unverified. These CPU fixtures establish no GPU, driver, Steam timing or output-durability result.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/70\n\n<!-- harness-source-pr:issue70-integrate73-20261103:9ea00c4eb3587a8c6622578b718d9caac2c65442 -->\n",
+    "closingIssuesReferences": [
+      {
+        "id": "I_kwDOVZpjbc8AAAABbkyBXA",
+        "number": 70,
+        "repository": {
+          "id": "R_kgDOVZpjbQ",
+          "name": "Fossilize",
+          "owner": {
+            "id": "MDQ6VXNlcjMwMjE1MQ==",
+            "login": "robinwassen"
+          }
+        },
+        "url": "https://github.com/robinwassen/Fossilize/issues/70"
+      }
+    ],
+    "headRefName": "codex/issue-70-worker-progress",
+    "headRefOid": "9ea00c4eb3587a8c6622578b718d9caac2c65442",
+    "isDraft": false,
+    "state": "OPEN",
+    "title": "Avoid false replay watchdog timeouts across memory contexts",
+    "url": "https://github.com/robinwassen/Fossilize/pull/74"
+  },
+  "status": "verified"
+}
