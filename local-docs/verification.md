@@ -775,6 +775,15 @@ verification is user-waived and unverified; real GPU/driver and Steam execution
 are excluded. Public bool parse/callback declarations and shared progress layout
 remain unchanged; no complete parser-security or binary-ABI claim is made.
 
+The Linux fork-child setup fixture observes the actual startup OFFER and input
+EOF before each fatal setup injection, and asserts the exact worker/attempt and
+observation-before-injection order. This selects delivered-startup setup failures
+for its unchanged native exit, reap and clean/dirty legacy crash assertions;
+native OFFER delivery failure instead leads to controller cleanup, which does not
+add a legacy crash count. Healthy and controlled-retry paths replay the identical
+startup bytes into the production slave decoder. No sleep or child reaping by the
+fixture establishes the precondition.
+
 ## Worker origin reasons (issue #18)
 
 The private [worker event protocol](specs/replay-worker-events.md) carries controlled
