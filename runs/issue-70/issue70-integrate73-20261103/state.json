@@ -2012,7 +2012,30 @@
         "log": "/tmp/fossilize-issue70-integrate73/output/checker-2/check2-mutant-debug-positive_controls.log",
         "receipt": "/tmp/fossilize-issue70-integrate73/output/checker-2/check2-mutant-debug-positive_controls-receipt.json",
         "started": 1793723167.4383037,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793723733.9036329,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-issue70-integrate73/build/checker-2/mutant-debug",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^replay-timeout-controller-(no-progress|multithread|context-normal-[12])$",
+            "-j",
+            "1",
+            "-V"
+          ],
+          "cwd": "/tmp/fossilize-issue70-integrate73/checker-2",
+          "exit_code": 0,
+          "finished": 1793723733.935454,
+          "intent_id": "check2-mutant-debug-positive_controls",
+          "started": 1793723733.9013822,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 0
+        }
       },
       {
         "child_command": [
@@ -3299,7 +3322,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 90,
+  "revision": 91,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
