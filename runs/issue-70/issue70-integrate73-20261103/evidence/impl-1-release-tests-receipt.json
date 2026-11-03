@@ -1,0 +1,24 @@
+{
+  "intent_id": "impl1-release-tests",
+  "command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70-integrate73/build/implementer-1/release-exceptions-off",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-R",
+    "^(replay-timeout-|replay-event-|fork-child-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)",
+    "--repeat",
+    "until-fail:3",
+    "-j",
+    "1"
+  ],
+  "cwd": "/home/robin/.codex/worktrees/4f30/fossilize",
+  "timeout": 600.0,
+  "started": 1793721937.7868495,
+  "acquired": 1793721937.7899945,
+  "wait_seconds": 0.0,
+  "finished": 1793721947.7282362,
+  "exit_code": 0,
+  "timed_out": false
+}
