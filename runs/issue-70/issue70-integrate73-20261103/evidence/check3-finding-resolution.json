@@ -1,0 +1,62 @@
+{
+  "role": "checker",
+  "attempt_id": "check-unit-3",
+  "worker_id": "/root/checker70_integrate73_3",
+  "input_revision": 170,
+  "input_sha": "9ea00c4eb3587a8c6622578b718d9caac2c65442",
+  "candidate_sha": "9ea00c4eb3587a8c6622578b718d9caac2c65442",
+  "base_sha": "84fd2d97cbba2b3c9b9d4edafd4269c93d611523",
+  "plan_version": 2,
+  "operation": "work_unit",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/70",
+  "startup_finding_resolution": {
+    "role": "checker",
+    "finding_id": "M70-INTEGRATE73-FINAL1-STARTUP-COUNTER-RACE",
+    "affected_task": "https://github.com/robinwassen/Fossilize/issues/70",
+    "attempt_id": "check-unit-3",
+    "worker_id": "/root/checker70_integrate73_3",
+    "input_revision": 170,
+    "input_sha": "9ea00c4eb3587a8c6622578b718d9caac2c65442",
+    "candidate_sha": "9ea00c4eb3587a8c6622578b718d9caac2c65442",
+    "base_sha": "84fd2d97cbba2b3c9b9d4edafd4269c93d611523",
+    "plan_version": 2,
+    "operation": "work_unit",
+    "work_unit": "https://github.com/robinwassen/Fossilize/issues/70",
+    "evidence": "Independent source/spec review confirms real OFFER+EOF before fatal injection selects delivered-startup setup failure, whose original dirty-crash=1 oracle is valid. Parent startup EPIPE instead marks native_error/lost and enters parent-requested cleanup; process_shutdown explicitly excludes that cleanup from legacy crash counters. Existing deterministic startup-close/hash-close tests retain this opposite native-error/loss/unknown-origin contract using waitid(WNOWAIT), without fixture reaping. Own fresh Debug/Release OFF each built all targets and passed all260 CPU IDs, complete99 decisive IDs3 times, and affected recovery-sigmask/stdout-dup2/stdin-dup2 each25 additional times. Every original native exit/reap/no-fallthrough/atexit/destructor/stdio/progress/counter/outcome assertion is unchanged; new exact worker/attempt/OFFER-before-injection/outcome assertions also passed. Both native delivery error cases passed full+3 repeats in both builds. This repairs fixture ordering rather than changing production semantics or accepting a weaker crash/outcome result. No selective retry of the historical failed command was used; it remains historical failed evidence.",
+    "resolution_evidence": "Independent source/spec review confirms real OFFER+EOF before fatal injection selects delivered-startup setup failure, whose original dirty-crash=1 oracle is valid. Parent startup EPIPE instead marks native_error/lost and enters parent-requested cleanup; process_shutdown explicitly excludes that cleanup from legacy crash counters. Existing deterministic startup-close/hash-close tests retain this opposite native-error/loss/unknown-origin contract using waitid(WNOWAIT), without fixture reaping. Own fresh Debug/Release OFF each built all targets and passed all260 CPU IDs, complete99 decisive IDs3 times, and affected recovery-sigmask/stdout-dup2/stdin-dup2 each25 additional times. Every original native exit/reap/no-fallthrough/atexit/destructor/stdio/progress/counter/outcome assertion is unchanged; new exact worker/attempt/OFFER-before-injection/outcome assertions also passed. Both native delivery error cases passed full+3 repeats in both builds. This repairs fixture ordering rather than changing production semantics or accepting a weaker crash/outcome result. No selective retry of the historical failed command was used; it remains historical failed evidence.",
+    "affected_pass_counts": {
+      "debug": {
+        "fork-child-recovery-sigmask": 25,
+        "fork-child-recovery-stdout-dup2": 25,
+        "fork-child-recovery-stdin-dup2": 25
+      },
+      "release": {
+        "fork-child-recovery-sigmask": 25,
+        "fork-child-recovery-stdout-dup2": 25,
+        "fork-child-recovery-stdin-dup2": 25
+      }
+    },
+    "artifact_root": "runs/issue-70/issue70-integrate73-20261103/evidence/",
+    "artifacts": [
+      "check3-review.txt",
+      "check3-audit-5.txt",
+      "check3-debug-exceptions-off-affected.log",
+      "check3-release-exceptions-off-affected.log",
+      "check3-debug-startup-selected-native.log",
+      "check3-release-startup-selected-native.log"
+    ]
+  },
+  "prior_resolved_planner_finding_recheck": {
+    "finding_id": "M70-INTEGRATE73-CHECK1-PLANNER-STALL-CONTROL",
+    "status": "resolved",
+    "evidence": "Fresh9ea source and current plan2 rechecked. Candidate progress-then-stall1/2 retain their original measured3s/one-completion/native1/abort1/drained0 assertions and passed all4 complete suites+3 repeats each. Own Debug/Release helper-only old-rule builds preserve current M18 and repaired fork fixture. Both productive1/2 runners exhibit exactly FAIL M70/productive-FIFO-must-not-timeout and FAIL M70/productive-FIFO-natural-success-without-recovery, runner1, exactly summary failures2/native_exit1/completed2/abort1/drained0. Each variant no-progress (creates1) and multithread (creates2) has completed0 and retained2s/2.5s/native/origin/reap assertions passing; normals1/2 have failures0/native_exit0/completed4/abort0/drained1. Thus corrected true zero-completion positives resolve the invalid old-rule stall-positive design without weakening candidate progress-then-stall assertions. No generic failure/build/deadline/watchdog counts as detection.",
+    "artifacts": [
+      "check3-mutation.diff.txt",
+      "check3-oracle.py.txt",
+      "check3-mutant-debug-positive.log",
+      "check3-mutant-release-positive.log",
+      "check3-mutant-debug-oracle.json",
+      "check3-mutant-release-oracle.json"
+    ]
+  }
+}

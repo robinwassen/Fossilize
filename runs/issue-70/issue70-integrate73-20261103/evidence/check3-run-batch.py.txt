@@ -1,0 +1,14 @@
+import json,subprocess,pathlib,sys,time,shutil
+base=pathlib.Path('/tmp/fossilize-issue70-integrate73/output/checker-3');a=[]
+for file in ['check3-intents.json','check3-mutant-intents.json']:a+=json.load(open(base/file))['commands']
+for i in sys.argv[1:]:
+ x=next(x for x in a if x['intent_id']==i);print('START',i,flush=True)
+ with open(x['log'],'w') as f:r=subprocess.run(x['command'],cwd=x['cwd'],stdout=f,stderr=subprocess.STDOUT)
+ print('END',i,r.returncode,flush=True)
+ if '-discovery' in i:
+  try:d=json.load(open(x['log']));print('DISCOVERED',len(d['tests']),flush=True)
+  except Exception as e:print(e,flush=True)
+ if r.returncode:sys.exit(r.returncode)
+ if i.endswith(('-full','-decisive','-affected','-positive')):
+  j=x['child_command'].index('--test-dir');b=pathlib.Path(x['child_command'][j+1]);p=b/'Testing/Temporary/LastTest.log'
+  if p.exists():shutil.copyfile(p,base/(i+'-lasttest.log'))
