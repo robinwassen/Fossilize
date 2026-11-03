@@ -1658,7 +1658,31 @@
         "log": "/tmp/fossilize-issue70-integrate73/output/checker-2/check2-debug-exceptions-on-decisive_repeat.log",
         "receipt": "/tmp/fossilize-issue70-integrate73/output/checker-2/check2-debug-exceptions-on-decisive_repeat-receipt.json",
         "started": 1793723094.0037687,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793724238.315555,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-issue70-integrate73/build/checker-2/debug-exceptions-on",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(replay-timeout-|replay-event-|fork-child-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)",
+            "--repeat",
+            "until-fail:3",
+            "-j",
+            "1"
+          ],
+          "cwd": "/tmp/fossilize-issue70-integrate73/checker-2",
+          "exit_code": 0,
+          "finished": 1793724249.153397,
+          "intent_id": "check2-debug-exceptions-on-decisive_repeat",
+          "started": 1793724238.3132591,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 0
+        }
       },
       {
         "child_command": [
@@ -3535,7 +3559,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 101,
+  "revision": 102,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
