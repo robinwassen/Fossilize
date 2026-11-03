@@ -1,0 +1,24 @@
+{
+  "intent_id": "final1-debug-exceptions-off-decisive",
+  "command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70/build/final-1/debug-exceptions-off",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-R",
+    "^(replay-timeout-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)",
+    "--repeat",
+    "until-fail:3",
+    "-j",
+    "1"
+  ],
+  "cwd": "/tmp/fossilize-issue70/final-1",
+  "timeout": 600.0,
+  "started": 1793699645.1048453,
+  "acquired": 1793699645.108102,
+  "wait_seconds": 0.0,
+  "finished": 1793699652.5430267,
+  "exit_code": 0,
+  "timed_out": false
+}

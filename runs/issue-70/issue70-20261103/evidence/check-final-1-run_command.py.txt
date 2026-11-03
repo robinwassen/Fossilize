@@ -1,0 +1,11 @@
+import json, pathlib, subprocess, sys
+out=pathlib.Path('/tmp/fossilize-issue70/output/final-1')
+i=json.load(open(out/'intents.json'))[int(sys.argv[1])]
+receipt=out/(i['intent_id']+'.receipt.json')
+log=out/(i['intent_id']+'.log')
+argv=['python3','-B',i['cwd']+'/.agents/skills/implement-change-harness/scripts/verification_lock.py','--repo',i['cwd'],'--timeout','600','--intent-id',i['intent_id'],'--receipt',str(receipt),'--']+i['child_command']
+with log.open('w') as f:
+ p=subprocess.run(argv,cwd=i['cwd'],stdout=f,stderr=subprocess.STDOUT)
+print(json.dumps({'intent_id':i['intent_id'],'exit_code':p.returncode,'receipt':str(receipt),'log':str(log)}))
+print(log.read_text()[-2200:])
+sys.exit(p.returncode)
