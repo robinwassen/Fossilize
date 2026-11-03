@@ -1,0 +1,77 @@
+import json,pathlib,re,collections,subprocess,hashlib
+O=pathlib.Path('/tmp/fossilize-issue70-integrate73/output/checker-3');S=pathlib.Path('/tmp/fossilize-issue70-integrate73/checker-3');M=pathlib.Path('/tmp/fossilize-issue70-integrate73/checker-3-mutant');A='runs/issue-70/issue70-integrate73-20261103/evidence/'
+C='9ea00c4eb3587a8c6622578b718d9caac2c65442';B='84fd2d97cbba2b3c9b9d4edafd4269c93d611523'
+def git(*a):return subprocess.check_output(['git',*a],cwd=S,text=True,timeout=60)
+assert git('rev-parse','HEAD').strip()==C and not git('status','--porcelain')
+state=json.load(open('/tmp/fossilize-issue70-integrate73/state.json'))['state'];snap=state['issue_snapshot']['nodes']['https://github.com/robinwassen/Fossilize/issues/70']
+live=json.loads(subprocess.check_output(['gh','issue','view','70','--repo','robinwassen/Fossilize','--json','id,number,title,body,state,url'],cwd=S,text=True,timeout=60));assert live['id']==snap['node_id'] and live['body']==snap['body'] and live['title']==snap['title'] and live['state']=='OPEN';(O/'check3-live-final.json').write_text(json.dumps(live,indent=2))
+import sys
+sys.path.insert(0,str(S/'.agents/skills/implement-change-harness/scripts'))
+from github_issues import GitHub
+fresh=GitHub(repository='robinwassen/Fossilize',timeout=60).snapshot(state['issue_snapshot']['root'],state['issue_snapshot']['deliverables'])
+assert fresh==state['issue_snapshot'],'Material identity/body/title/hierarchy/prerequisite input drift'
+(O/'check3-material-snapshot.json').write_text(json.dumps(fresh,indent=2))
+changed=git('diff','--name-only',B,'HEAD').splitlines();assert changed==['CHANGELOG.md','cli/fossilize_replay.cpp','local-docs/verification.md','test/CMakeLists.txt','test/fork_child_setup_test.cpp','test/replay_timeout_controller_test.cpp']
+for file in ['test/CMakeLists.txt','test/replay_timeout_controller_test.cpp']:
+ assert git('show','b1e0c5d4f47a2191e0860eeaeea979cc89a8cfa2:'+file)==(S/file).read_text()
+def entry(t):return next(x for x in t.splitlines() if '(#18)' in x or '([#18]' in x)
+assert entry(git('show',B+':CHANGELOG.md'))==entry((S/'CHANGELOG.md').read_text())
+mutant_diffs=[]
+for p in S.rglob('*'):
+ if p.is_file() and '.git' not in p.parts:
+  q=M/p.relative_to(S);assert q.is_file(),str(q)
+  if p.read_bytes()!=q.read_bytes():mutant_diffs.append(str(p.relative_to(S)))
+assert mutant_diffs==['cli/fossilize_replay.cpp'],mutant_diffs
+intents=sum([json.load(open(O/f))['commands'] for f in ['check3-intents.json','check3-mutant-intents.json']],[])
+commands=[]
+for x in intents:
+ r=json.load(open(x['receipt']));assert r['exit_code']==0 and not r['timed_out'];assert r['command']==x['child_command'] and r['cwd']==x['cwd'];commands.append(dict(x,exit_code=0,started=r['started'],finished=r['finished'],environment={}))
+R=re.compile('^(replay-timeout-|replay-event-|fork-child-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)')
+def passed(p):return collections.Counter(re.findall(r'Test\s+#\d+:\s+(\S+)\s+\.+\s+Passed',p.read_text()))
+variants=[];ids0=None
+for v in ['debug-exceptions-off','release-exceptions-off','debug-exceptions-on','release-exceptions-on']:
+ build=pathlib.Path('/tmp/fossilize-issue70-integrate73/build/checker-3')/v
+ cache=(build/'CMakeCache.txt').read_text()
+ for item in ['CMAKE_HOME_DIRECTORY:INTERNAL='+str(S),'CMAKE_BUILD_TYPE:STRING='+v.split('-')[0].title(),'FOSSILIZE_ENABLE_EXCEPTIONS:BOOL='+v.split('-')[-1].upper(),'FOSSILIZE_CLI:BOOL=ON','FOSSILIZE_VULKAN_LAYER:BOOL=ON','FOSSILIZE_TESTS:BOOL=ON','FOSSILIZE_TEST_RUNTIME_LAYER:BOOL=OFF','FOSSILIZE_REPLAYER_SPIRV_VAL:BOOL=ON']:assert item in cache,(v,item)
+ cc=json.load(open(build/'compile_commands.json'))
+ for suffix in ['cli/fossilize_replay.cpp','test/fork_child_setup_test.cpp','test/replay_timeout_controller_test.cpp']:
+  rows=[x for x in cc if x['file'].endswith(suffix)];assert rows,(v,suffix)
+  for x in rows:
+   cmd=x.get('command',' '.join(x.get('arguments',[])))
+   assert ('-fno-exceptions' in cmd)==v.endswith('off'),(v,suffix,cmd)
+   assert ('-DNDEBUG' in cmd)==v.startswith('release'),(v,suffix,cmd)
+ ids=[x['name'] for x in json.load(open(O/f'check3-{v}-discovery.log'))['tests']];assert len(ids)==260 and len(set(ids))==260
+ if ids0 is None:ids0=ids
+ assert ids==ids0
+ selected=[x for x in ids if R.search(x)];assert len(selected)==99
+ full=passed(O/f'check3-{v}-full.log');repeat=passed(O/f'check3-{v}-decisive.log');assert full==collections.Counter(ids),(v,full);assert repeat==collections.Counter({x:3 for x in selected}),(v,repeat)
+ row=dict(variant=v,discovered=ids,decisive=selected,full_executions=sum(full.values()),repeat_executions=sum(repeat.values()),full_passed=dict(full),repeat_passed=dict(repeat))
+ if v.endswith('off'):
+  affected=passed(O/f'check3-{v}-affected.log');expected={f'fork-child-recovery-{x}':25 for x in ['sigmask','stdout-dup2','stdin-dup2']};assert affected==collections.Counter(expected);row['affected_passed']=dict(affected);row['affected_executions']=sum(affected.values())
+ variants.append(row)
+for v in ['debug','release']:
+ pos=passed(O/f'check3-mutant-{v}-positive.log');assert len(pos)==4 and sum(pos.values())==4
+ log=(O/f'check3-mutant-{v}-positive.log').read_text()
+ for c in ['no-progress','multithread']:assert f'Executed M16/controller-{c} failures=0 result=1' in log and re.search('Executed M16/controller-'+c+r' failures=0 result=1 creates=\d+ completed=0',log)
+ for n in [1,2]:assert f'Executed M70/context-normal-{n} failures=0 native_exit=0 completed=4 abort=0 drained=1' in log
+ result=json.load(open(O/f'mutant-{v}/oracle.json'));assert len(result)==2 and all(x['passed'] for x in result)
+summary=dict(candidate_sha=C,base_sha=B,attempt_id='check-unit-3',plan_version=2,variants=variants,full_executions=1040,decisive_executions=1188,affected_executions=150,candidate_total=2378,mutant_positive_executions=8,mutant_expected_defect_executions=4,commands=commands,source_changed_files=changed,mutant_changed_files=mutant_diffs,live_material_matches=True)
+(O/'check3-execution-summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps({k:v for k,v in summary.items() if k not in ['variants','commands']}))
+records={}
+for p in O.iterdir():
+ if p.is_file() and (p.name.startswith('check3-') or p.name in ['oracle.py','prepare_mutant.py','audit.py','summarize.py']):
+  name=p.name
+  if name.endswith('-records.json'):continue
+  if p.suffix=='.py':name='check3-'+name+'.txt'
+  elif p.suffix not in ['.json','.txt','.log']:continue
+  if p.stat().st_size>1048576:continue
+  if name=='check3-execution-summary.json':continue
+  records[A+name]=p.read_text()
+for v in ['debug','release']:
+ for p in (O/f'mutant-{v}').glob('*'):
+  if p.is_file():records[A+f'check3-mutant-{v}-{p.name}']=p.read_text()
+# Avoid recursive records/report; compact summary links raw exact command/ID artifacts separately.
+compact=dict(summary);compact.pop('commands');compact['variants']=[dict(variant=x['variant'],full_executions=x['full_executions'],repeat_executions=x['repeat_executions'],affected_executions=x.get('affected_executions',0)) for x in variants]
+records[A+'check3-execution-summary.json']=json.dumps(compact,indent=2)
+(O/'check3-final-records.json').write_text(json.dumps(records,indent=2))
+(O/'check3-commands.json').write_text(json.dumps(commands,indent=2));print('records',len(records),'each <=1MiB')
