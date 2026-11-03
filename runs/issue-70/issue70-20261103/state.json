@@ -3766,7 +3766,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -4380,6 +4380,18 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "artifact_record": "runs/issue-70/issue70-20261103/evidence/create-pr-f6cc3b486dfed2527b1607c6-dispatched.json",
+      "at": 1793700165.2388265,
+      "body_sha256": "231cc9da63c26249e1b8bc43d28c59838b7266b4f29234bc262e09f5b2c0953d",
+      "event": "create-dispatched",
+      "expected_prior": {
+        "all_states_exact_repository_base_head_matches": []
+      },
+      "marker": "<!-- harness-source-pr:issue70-20261103:a380f6a26b9129944ab8384d1952ae1610902779 -->",
+      "operation": "create-pr-f6cc3b486dfed2527b1607c6",
+      "title": "Avoid false replay watchdog timeouts across memory contexts"
+    },
     "intent": {
       "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
       "branch": "codex/issue-70-worker-progress",
@@ -4399,10 +4411,21 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "artifact_record": "runs/issue-70/issue70-20261103/evidence/create-pr-f6cc3b486dfed2527b1607c6-dispatched.json",
+        "body_sha256": "231cc9da63c26249e1b8bc43d28c59838b7266b4f29234bc262e09f5b2c0953d",
+        "event": "create-dispatched",
+        "expected_prior": {
+          "all_states_exact_repository_base_head_matches": []
+        },
+        "marker": "<!-- harness-source-pr:issue70-20261103:a380f6a26b9129944ab8384d1952ae1610902779 -->",
+        "operation": "create-pr-f6cc3b486dfed2527b1607c6",
+        "title": "Avoid false replay watchdog timeouts across memory contexts"
       }
     ],
     "remote_sha": "a380f6a26b9129944ab8384d1952ae1610902779",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
@@ -4415,7 +4438,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 157,
+  "revision": 158,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
