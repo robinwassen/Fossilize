@@ -3736,6 +3736,23 @@
         "receipt": "/tmp/fossilize-issue70-integrate73/output/implementer-3/impl3-cache-prerequisites-receipt.json",
         "started": 1793727347.391245,
         "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793727492.6894138,
+          "command": [
+            "python3",
+            "-B",
+            "-c",
+            "import pathlib,subprocess,json\nsource=pathlib.Path('/home/robin/.codex/worktrees/4f30/fossilize')\nassert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()=='b1e0c5d4f47a2191e0860eeaeea979cc89a8cfa2'\nprint(subprocess.check_output(['git','submodule','status','--recursive'],text=True))\nfor config in ['debug','release']:\n p=pathlib.Path('/tmp/fossilize-issue70-integrate73/build/implementer-1')/(config+'-exceptions-off')/'CMakeCache.txt'\n data=dict(l.split('=',1) for l in p.read_text().splitlines() if '=' in l and not l.startswith(('//','#')))\n expected={'CMAKE_HOME_DIRECTORY:INTERNAL':str(source),'CMAKE_BUILD_TYPE:STRING':config.title(),'FOSSILIZE_ENABLE_EXCEPTIONS:BOOL':'OFF','FOSSILIZE_CLI:BOOL':'ON','FOSSILIZE_VULKAN_LAYER:BOOL':'ON','FOSSILIZE_TESTS:BOOL':'ON','FOSSILIZE_TEST_RUNTIME_LAYER:BOOL':'OFF','FOSSILIZE_REPLAYER_SPIRV_VAL:BOOL':'ON'}\n for k,v in expected.items(): assert data.get(k)==v,(p,k,data.get(k),v)\n print(json.dumps({'cache':str(p),'verified':expected},sort_keys=True))\n"
+          ],
+          "cwd": "/home/robin/.codex/worktrees/4f30/fossilize",
+          "exit_code": 0,
+          "finished": 1793727493.0041707,
+          "intent_id": "impl3-cache-prerequisites",
+          "started": 1793727492.6864939,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 0
+        },
         "wrapper_command": [
           "python3",
           "-B",
@@ -5495,7 +5512,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 162,
+  "revision": 163,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
