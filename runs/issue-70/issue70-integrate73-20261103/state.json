@@ -3168,7 +3168,31 @@
         "log": "/tmp/fossilize-issue70-integrate73/output/final-1/final1-debug-decisive.log",
         "receipt": "/tmp/fossilize-issue70-integrate73/output/final-1/final1-debug-decisive-receipt.json",
         "started": 1793725915.754758,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793726077.6427019,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-issue70-integrate73/build/final-1/debug-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(replay-timeout-|replay-event-|fork-child-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)",
+            "--repeat",
+            "until-fail:3",
+            "-j",
+            "1"
+          ],
+          "cwd": "/tmp/fossilize-issue70-integrate73/checker-final-1",
+          "exit_code": 0,
+          "finished": 1793726089.4835696,
+          "intent_id": "final1-debug-decisive",
+          "started": 1793726077.6398706,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 0
+        }
       },
       {
         "child_command": [
@@ -4303,7 +4327,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 129,
+  "revision": 130,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
