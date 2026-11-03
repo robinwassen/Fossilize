@@ -1,0 +1,20 @@
+[1/2] Building CXX object test/CMakeFiles/fork-child-setup-test.dir/fork_child_setup_test.cpp.o
+In file included from /usr/include/c++/13/algorithm:61,
+                 from /home/robin/.codex/worktrees/4f30/fossilize/util/object_pool.hpp:28,
+                 from /home/robin/.codex/worktrees/4f30/fossilize/util/object_cache.hpp:27,
+                 from /home/robin/.codex/worktrees/4f30/fossilize/test/../cli/fossilize_replay.cpp:40,
+                 from /home/robin/.codex/worktrees/4f30/fossilize/test/fork_child_setup_test.cpp:7:
+In function ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = long unsigned int*; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’,
+    inlined from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = long unsigned int*; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’ at /usr/include/c++/13/bits/stl_algo.h:1854:5,
+    inlined from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = long unsigned int*; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’ at /usr/include/c++/13/bits/stl_algo.h:1950:31,
+    inlined from ‘void std::sort(_RAIter, _RAIter) [with _RAIter = long unsigned int*]’ at /usr/include/c++/13/bits/stl_algo.h:4861:18,
+    inlined from ‘bool fixture(DiagnosticChecks&)’ at /home/robin/.codex/worktrees/4f30/fossilize/test/fork_child_setup_test.cpp:293:12,
+    inlined from ‘int main(int, char**)’ at /home/robin/.codex/worktrees/4f30/fossilize/test/fork_child_setup_test.cpp:316:24:
+/usr/include/c++/13/bits/stl_algo.h:1859:32: warning: array subscript 16 is outside array bounds of ‘Fossilize::Hash [2]’ {aka ‘long unsigned int [2]’} [-Warray-bounds=]
+ 1859 |           std::__insertion_sort(__first, __first + int(_S_threshold), __comp);
+      |           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/robin/.codex/worktrees/4f30/fossilize/test/fork_child_setup_test.cpp: In function ‘int main(int, char**)’:
+/home/robin/.codex/worktrees/4f30/fossilize/test/fork_child_setup_test.cpp:291:22: note: at offset 128 into object ‘hashes’ of size 16
+  291 |                 Hash hashes[2] = {};
+      |                      ^~~~~~
+[2/2] Linking CXX executable test/fork-child-setup-test
