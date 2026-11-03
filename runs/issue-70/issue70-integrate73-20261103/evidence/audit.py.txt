@@ -1,0 +1,234 @@
+import collections
+import json
+import pathlib
+import re
+import subprocess
+
+ROOT = pathlib.Path('/tmp/fossilize-issue70-integrate73')
+SRC = ROOT / 'checker-final-2'
+OUT = ROOT / 'output/final-2'
+CANDIDATE = '9ea00c4eb3587a8c6622578b718d9caac2c65442'
+BASE = '84fd2d97cbba2b3c9b9d4edafd4269c93d611523'
+ORIGINAL = 'a380f6a26b9129944ab8384d1952ae1610902779'
+OLD_BASE = '4ea747ffa215f8057d12aa5525ba0e4497961e7d'
+MERGE = 'b1e0c5d4f47a2191e0860eeaeea979cc89a8cfa2'
+ISSUE = 'https://github.com/robinwassen/Fossilize/issues/70'
+REGEX = re.compile(r'^(replay-timeout-|replay-event-|fork-child-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)')
+checks = []
+
+def require(condition, name):
+    if not condition:
+        raise AssertionError(name)
+    checks.append(name)
+
+def run(argv):
+    r = subprocess.run(argv, cwd=SRC, capture_output=True, text=True, timeout=60)
+    if r.returncode:
+        raise AssertionError((argv, r.returncode, r.stderr))
+    return r.stdout
+
+def git(*args):
+    return run(['git', *args])
+
+def show(ref, path):
+    return git('show', ref + ':' + path)
+
+def patch_lines(a, b, path):
+    return [line for line in git('diff', '--unified=0', a, b, '--', path).splitlines()
+            if line[:1] in ('+', '-') and not line.startswith(('+++', '---'))]
+
+def assertions(text):
+    result = []
+    for match in re.finditer(r'checks\.(?:require|contains)\(', text):
+        begin = match.start()
+        pos = match.end()
+        depth = 1
+        quote = None
+        escape = False
+        while depth:
+            ch = text[pos]
+            pos += 1
+            if quote:
+                if escape:
+                    escape = False
+                elif ch == '\\':
+                    escape = True
+                elif ch == quote:
+                    quote = None
+            elif ch in ('"', "'"):
+                quote = ch
+            elif ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth -= 1
+        result.append(re.sub(r'\s+', '', text[begin:pos]))
+    return collections.Counter(result)
+
+def passed(log):
+    text = pathlib.Path(log).read_text()
+    require('100% tests passed' in text and '***Failed' not in text and '***Not Run' not in text,
+            'passing-complete-log:' + pathlib.Path(log).name)
+    return collections.Counter(re.findall(r'Test\s+#\d+:\s+(\S+)\s+\.+\s+Passed', text))
+
+state = json.loads((ROOT / 'state.json').read_text())['state']
+attempt = state['attempts'][-1]
+require(attempt['attempt_id'] == 'check-final-2' and attempt['status'] == 'running' and
+        attempt['input_revision'] == 246 and attempt['input_sha'] == CANDIDATE and
+        attempt['candidate_sha'] == CANDIDATE and attempt['base_sha'] == BASE and
+        attempt['plan_version'] == 2 and attempt['operation'] == 'final' and
+        attempt['worker_id'] == '/root/checker70_integrate73_final2', 'active-exact-envelope')
+require(state['plan']['original'] == state['original'], 'immutable-original-preserved-in-plan')
+require(git('rev-parse', 'HEAD').strip() == CANDIDATE and git('status', '--porcelain') == '',
+        'exact-clean-detached-source')
+require(git('rev-list', '--parents', '-1', MERGE).split() == [MERGE, ORIGINAL, BASE],
+        'normal-original-incoming-merge-parents')
+require(git('rev-parse', CANDIDATE + '^').strip() == MERGE, 'repair-descends-directly-from-integration')
+changed = git('diff', '--name-only', BASE, CANDIDATE).splitlines()
+require(changed == ['CHANGELOG.md', 'cli/fossilize_replay.cpp', 'local-docs/verification.md',
+                    'test/CMakeLists.txt', 'test/fork_child_setup_test.cpp',
+                    'test/replay_timeout_controller_test.cpp'], 'complete-six-file-delivered-scope')
+require(patch_lines(OLD_BASE, ORIGINAL, 'cli/fossilize_replay.cpp') ==
+        patch_lines(BASE, CANDIDATE, 'cli/fossilize_replay.cpp'), 'production-patch-exact-original-composition')
+for path in ['cli/fossilize_replay_linux.hpp', 'cli/fossilize_replay_windows.hpp',
+             'cli/replay_worker_outcome.hpp', 'cli/replay_timeout.hpp', 'replay_event.hpp',
+             'fossilize.hpp', 'fossilize_external_replayer.hpp',
+             'test/replay_controller_test.cpp', 'test/replay_event_test.cpp',
+             'test/replay_event_producer_test.cpp']:
+    require(show(BASE, path) == show(CANDIDATE, path), 'incoming-preserved:' + path)
+before = assertions(show(BASE, 'test/fork_child_setup_test.cpp'))
+after = assertions(show(CANDIDATE, 'test/fork_child_setup_test.cpp'))
+require(not (before - after), 'all-original-fork-assertion-expressions-preserved')
+old_m70 = collections.Counter({k:v for k,v in assertions(show(ORIGINAL, 'test/replay_timeout_controller_test.cpp')).items() if 'M70/' in k})
+new_m70 = collections.Counter({k:v for k,v in assertions(show(CANDIDATE, 'test/replay_timeout_controller_test.cpp')).items() if 'M70/' in k})
+require(old_m70 == new_m70 and old_m70, 'all-original-M70-assertions-preserved')
+submodules = git('submodule', 'status', '--recursive')
+require(submodules and all(line.startswith(' ') for line in submodules.splitlines()), 'pinned-initialized-submodules')
+(OUT / 'final2-submodules.txt').write_text(submodules)
+(OUT / 'final2-complete.diff.txt').write_text(git('diff', BASE, CANDIDATE))
+
+live = json.loads(run(['gh', 'api', '--hostname', 'github.com', 'repos/robinwassen/Fossilize/issues/70']))
+snapshot = state['issue_snapshot']['nodes'][ISSUE]
+require(live['body'] == state['original'][0]['requirement'], 'live-exact-immutable-original-requirement')
+for key in ['id', 'node_id', 'number', 'title', 'body', 'state', 'state_reason']:
+    require(live[key] == snapshot[key], 'live-material-issue:' + key)
+require(live['html_url'] == ISSUE and live['state'] == 'open' and 'pull_request' not in live,
+        'issue-identity-open-not-PR')
+for endpoint in ['sub_issues', 'dependencies/blocked_by']:
+    pages = json.loads(run(['gh', 'api', '--hostname', 'github.com',
+                           'repos/robinwassen/Fossilize/issues/70/' + endpoint,
+                           '--paginate', '--slurp']))
+    require(pages == [[]], 'native-empty:' + endpoint)
+closeout = state['closeout']
+require(closeout['stage'] == 'prepared' and closeout['candidate_sha'] == CANDIDATE and
+        closeout['base_sha'] == BASE and closeout['plan_version'] == 2 and
+        closeout['closing_references'] == ['Closes ' + ISSUE] and
+        [x['issue'] for x in closeout['targets']] == [ISSUE], 'renewed-readiness-exact-only-eligible-root')
+comments = sum(json.loads(run(['gh', 'api', '--hostname', 'github.com',
+                              'repos/robinwassen/Fossilize/issues/70/comments', '--paginate', '--slurp'])), [])
+current_comments = [c for c in comments if closeout['marker'] in c['body']]
+require(len(current_comments) == 1 and closeout['binding'] in current_comments[0]['body'],
+        'one-current-readiness-comment-readback')
+require(any('superseded' in c['body'].lower() and 'b1e0c5d4f47a2191e0860eeaeea979cc89a8cfa2' in c['body'] for c in comments),
+        'rejected-readiness-explicitly-superseded')
+require(all(x['status'] == 'resolved' for x in state['findings']), 'all-prior-findings-resolved')
+require(len(state['work_units']) == 1 and state['work_units'][0]['accepted'] ==
+        dict(attempt_id='check-unit-3', base_sha=BASE, candidate_sha=CANDIDATE, plan_version=2),
+        'current-unit-acceptance-distinct-from-final-publication')
+(OUT / 'final2-live-material.json').write_text(json.dumps({k:live[k] for k in
+       ['id', 'node_id', 'number', 'title', 'body', 'state', 'state_reason', 'html_url']}, indent=2) + '\n')
+(OUT / 'final2-readiness.json').write_text(json.dumps(dict(closeout=closeout,
+        current_comment_url=current_comments[0]['html_url'], issue_open=True,
+        native_children=[], native_blocked_by=[], source_publication='pending'), indent=2) + '\n')
+
+changelog = (SRC / 'CHANGELOG.md').read_text()
+entry18 = next(line for line in show(BASE, 'CHANGELOG.md').splitlines() if 'issues/18)' in line)
+entry70 = next(line for line in changelog.splitlines() if 'issues/70)' in line)
+require(entry18 in changelog and entry70.startswith('- **[Observability]** ') and
+        'false timeouts' in entry70 and 'requested context' in entry70 and
+        changelog.index(entry70) < changelog.index('## Completed changes'),
+        'both-linked-factual-short-Unreleased-changelog-entries')
+
+unit = json.loads((ROOT / 'output/check-unit-3.json').read_text())
+require(unit['verdict'] == 'accepted' and unit['candidate_sha'] == CANDIDATE and
+        unit['base_sha'] == BASE and unit['plan_version'] == 2 and unit['skipped'] == [] and
+        unit['findings'] == [], 'current-unit-report-bound-and-complete')
+unit_dir = ROOT / 'output/checker-3'
+unit_summary = json.loads((unit_dir / 'check3-execution-summary.json').read_text())
+unit_variants = []
+for variant in ['debug-exceptions-off', 'release-exceptions-off', 'debug-exceptions-on', 'release-exceptions-on']:
+    inventory = json.loads((unit_dir / ('check3-' + variant + '-discovery.log')).read_text())
+    ids = [t['name'] for t in inventory['tests']]
+    selected = [t for t in ids if REGEX.search(t)]
+    require(len(ids) == len(set(ids)) == 260 and len(selected) == 99, 'unit-actual-inventory:' + variant)
+    require(passed(unit_dir / ('check3-' + variant + '-full.log')) == collections.Counter(ids), 'unit-raw-full-union:' + variant)
+    require(passed(unit_dir / ('check3-' + variant + '-decisive.log')) == collections.Counter({t:3 for t in selected}), 'unit-raw-repeat-union:' + variant)
+    extra = 0
+    if variant.endswith('-off'):
+        affected = ['fork-child-recovery-' + fault for fault in ['sigmask', 'stdin-dup2', 'stdout-dup2']]
+        require(passed(unit_dir / ('check3-' + variant + '-affected.log')) == collections.Counter({t:25 for t in affected}), 'unit-raw-affected-stress:' + variant)
+        extra = 75
+    unit_variants.append(dict(variant=variant, discovered=len(ids), full=260, decisive=297, affected=extra))
+require(sum(v['full'] + v['decisive'] + v['affected'] for v in unit_variants) == 2378, 'unit-2378-raw-passes')
+require(len(unit['commands']) == 35 and all(c['exit_code'] == 0 for c in unit['commands']), 'unit-all35-commands-passed')
+candidate_source = show(CANDIDATE, 'cli/fossilize_replay.cpp')
+old_helper = '\t\t\tuint64_t total = 0;\n\t\t\tfor (unsigned count : completed_count)\n\t\t\t\ttotal += count;\n\t\t\treturn total;'
+require(candidate_source.count(old_helper) == 1 and
+        (ROOT / 'checker-3-mutant/cli/fossilize_replay.cpp').read_text() ==
+        candidate_source.replace(old_helper, '\t\t\treturn uint64_t(completed_count[index]);'),
+        'unit-compiled-mutant-source-only-original-observation-restored')
+for config in ['debug', 'release']:
+    oracle = json.loads((unit_dir / ('mutant-' + config) / 'oracle.json').read_text())
+    require(len(oracle) == 2 and all(x['runner_exit'] == 1 and x['failures'] ==
+            ['FAIL M70/productive-FIFO-must-not-timeout', 'FAIL M70/productive-FIFO-natural-success-without-recovery'] and
+            x['summary'] == [['2', '1', '2', '1', '0']] and x['passed'] for x in oracle), 'unit-mutant-exact-oracle:' + config)
+    for n in [1, 2]:
+        raw = (unit_dir / ('mutant-' + config) / ('context-progress-' + str(n) + '.log')).read_text()
+        require([s for s in raw.splitlines() if s.startswith('FAIL ')] == oracle[n-1]['failures'] and
+                len(re.findall('Executed M70/', raw)) == 1 and 'watchdog' not in raw.lower(), 'unit-mutant-raw-oracle:' + config + str(n))
+    positive = unit_dir / ('check3-mutant-' + config + '-positive.log')
+    require(passed(positive) == collections.Counter(['replay-timeout-controller-' + x for x in
+            ['context-normal-1', 'context-normal-2', 'no-progress', 'multithread']]), 'unit-mutant-positive-union:' + config)
+    raw = positive.read_text()
+    require(all('Executed M70/context-normal-' + str(n) + ' failures=0 native_exit=0 completed=4 abort=0 drained=1' in raw for n in [1, 2]) and
+            re.search(r'Executed M16/controller-no-progress failures=0 result=1 creates=[1-9]\d* completed=0', raw) and
+            re.search(r'Executed M16/controller-multithread failures=0 result=1 creates=[1-9]\d* completed=0', raw), 'unit-mutant-native-positive-oracles:' + config)
+
+variants = []
+for config in ['debug', 'release']:
+    commands = json.loads((OUT / ('final2-' + config + '-commands.json')).read_text())
+    require(len(commands) == 4 and all(c['exit_code'] == 0 for c in commands), 'own-all-final-commands:' + config)
+    for c in commands:
+        receipt = json.loads(pathlib.Path(c['receipt']).read_text())
+        require(receipt['exit_code'] == 0, 'own-wrapper-receipt:' + c['intent_id'])
+    inventory = json.loads((OUT / ('final2-' + config + '-discovery.log')).read_text())
+    ids = [t['name'] for t in inventory['tests']]
+    selected = [t for t in ids if REGEX.search(t)]
+    require(len(ids) == len(set(ids)) == 260 and len(selected) == len(set(selected)) == 99, 'own-actual-final-inventory:' + config)
+    require(passed(OUT / ('final2-' + config + '-decisive.log')) == collections.Counter({t:3 for t in selected}), 'own-complete-99x3-union:' + config)
+    native = (OUT / ('final2-' + config + '-lasttest.log')).read_text()
+    require('FAIL ' not in native and 'Test Failed.' not in native, 'own-native-no-failed-assertions:' + config)
+    for kind in ['progress', 'normal']:
+        for n in [1, 2]:
+            require(('Executed M70/context-' + kind + '-' + str(n) +
+                    ' failures=0 native_exit=0 completed=4 abort=0 drained=1') in native, 'own-native-success:' + config + kind + str(n))
+    for n in [1, 2]:
+        require(('Executed M70/context-stall-' + str(n) +
+                ' failures=0 native_exit=1 completed=1 abort=1 drained=0') in native, 'own-native-renewed-stall:' + config + str(n))
+    cache = (ROOT / 'build/final-2' / (config + '-exceptions-off') / 'CMakeCache.txt').read_text()
+    for option in ['FOSSILIZE_ENABLE_EXCEPTIONS:BOOL=OFF', 'FOSSILIZE_CLI:BOOL=ON', 'FOSSILIZE_VULKAN_LAYER:BOOL=ON',
+                   'FOSSILIZE_TESTS:BOOL=ON', 'FOSSILIZE_TEST_RUNTIME_LAYER:BOOL=OFF', 'FOSSILIZE_REPLAYER_SPIRV_VAL:BOOL=ON',
+                   'CMAKE_BUILD_TYPE:STRING=' + config.title(), 'CMAKE_HOME_DIRECTORY:INTERNAL=' + str(SRC)]:
+        require(option in cache, 'own-config-cache:' + config + ':' + option)
+    variants.append(dict(variant=config + '-exceptions-off', discovered=ids, selected=selected,
+                         passed={t:3 for t in selected}, executions=297))
+
+require(set(c['id'] for c in state['plan']['cases']) == {'M70-FIFO-1', 'M70-FIFO-MULTI', 'M70-STALL', 'M70-NORMAL',
+        'M70-CONTRACTS', 'M70-ORIGINAL-DEFECT', 'M70-COMPATIBILITY-DOCS', 'M70-EVENT-INTEGRATION'}, 'all8-authoritative-case-ids')
+summary = dict(candidate_sha=CANDIDATE, base_sha=BASE, plan_version=2, attempt_id='check-final-2',
+               input_revision=246, checks=checks, variants=variants,
+               unit_evidence_assessed=dict(variants=unit_variants, candidate_passes=2378,
+                   compiled_original_rule_false_timeout_cases=4, positive_controls=8),
+               own_final_executions=594, required_skipped=[], findings=[],
+               source_publication='pending; final checking does not certify publication or merged delivery')
+(OUT / 'final2-execution-summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+print(json.dumps(dict(result='passed', checks=len(checks), own_final_executions=594, unit_candidate_passes_assessed=2378)))
