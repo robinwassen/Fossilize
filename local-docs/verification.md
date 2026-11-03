@@ -662,7 +662,7 @@ from this Linux CPU matrix.
 ## Replay timeout causality (issue #16)
 
 `--timeout-seconds` measures the monotonic duration since the dispatcher last
-observed a completion in the memory context it is waiting for; zero disables
+observed a completed job across all memory contexts in that worker; zero disables
 that work deadline. It does not identify an individual pipeline's elapsed compile
 time. Linux heartbeat supervision retains its existing 10-second threshold;
 post-crash cleanup retains its existing 3-second threshold on Linux and Windows.
@@ -707,6 +707,22 @@ Direct ordinary CLI controls
 also exercise timeout and failed abort delivery without a controller. Mutation
 controls must compile and fail explicit `M16/` assertions; compilation failure,
 watchdog expiry and crashes are not original-defect evidence.
+
+The issue [#70](https://github.com/robinwassen/Fossilize/issues/70) Linux
+`context-progress-1/2` cases release real FIFO creation jobs in contexts 0/1
+while the dispatcher awaits a held parse-only job in context 2. Controlled
+1.5-second observations exceed the two-second deadline cumulatively; each real
+completion renews the worker deadline. Synchronization still requires the
+requested context to drain and retains its cache until then. Explicit creation
+outputs and parse/outcome assertions distinguish successful work from a drained
+queue. `context-stall-1/2` then withhold all remaining jobs and assert the measured
+3-second stall after productive work; `context-normal-1/2` provide successful
+short-duration controls. `cancel-int/term` deliver real signals after signalfd
+setup and assert incomplete work, native termination and no invented timeout.
+These Linux adapters do not provide native Windows execution coverage; Windows
+verification for #70 was explicitly waived as unavailable and remains unverified.
+Portable timeout units and shared source/registrations retain their existing
+platform coverage; no GPU or Steam timing claim follows from these CPU fixtures.
 
 The internal child protocol adds bounded, strictly decimal `TIMEOUT 1
 <threshold-ns> <elapsed-ns>` and `TERMINATE <mechanism> <delivery> <native-error>`

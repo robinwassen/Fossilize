@@ -968,7 +968,16 @@ struct ThreadedReplayer : StateCreatorInterface
 			return;
 		}
 
-		unsigned current_completed = completed_count[index];
+		// FIFO jobs from other contexts can precede the requested context.
+		// Observe the whole worker for hangs, but still drain only index below.
+		// The existing queue lock protects every counter read; widen before summing.
+		const auto watchdog_completed = [&]() {
+			uint64_t total = 0;
+			for (unsigned count : completed_count)
+				total += count;
+			return total;
+		};
+		uint64_t current_completed = watchdog_completed();
 		ReplayDeadline no_progress;
 		no_progress.arm(replay_monotonic_ns(), replay_seconds_ns(opts.timeout_seconds));
 
@@ -976,7 +985,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		{
 			work_done_condition[index].wait_for(
 					lock, std::chrono::seconds(1),
-					[&]() -> bool { return current_completed != completed_count[index]; });
+					[&]() -> bool { return current_completed != watchdog_completed(); });
 
 			// Fire off a heartbeat every 500ms. No need to overwhelm the parent process.
 			auto new_time = std::chrono::steady_clock::now();
@@ -988,7 +997,7 @@ struct ThreadedReplayer : StateCreatorInterface
 			}
 
 			auto now = replay_monotonic_ns();
-			if (completed_count[index] != current_completed)
+			if (watchdog_completed() != current_completed)
 				no_progress.arm(now, replay_seconds_ns(opts.timeout_seconds));
 
 			if (no_progress.expired(now))
@@ -1001,7 +1010,7 @@ struct ThreadedReplayer : StateCreatorInterface
 				exit(2);
 			}
 
-			current_completed = completed_count[index];
+			current_completed = watchdog_completed();
 		} while (queued_count[index] != completed_count[index]);
 
 		heartbeat();

@@ -31,6 +31,15 @@ static bool heartbeat_reset_parsed;
 static bool block_creation, hold_teardown;
 static bool direct_dispatcher;
 static unsigned reset_steps;
+static bool context_case() { return scenario.find("context-") == 0; }
+static int job_gate[4][2], parent_gate[2];
+class ThreadedReplayer;
+static ThreadedReplayer *context_replayer;
+static VkPipelineCache held_parent_cache;
+static const VkComputePipelineCreateInfo *context_infos;
+static unsigned context_steps;
+static bool cancellation_sent;
+
 static int reset_pipe[2], reset_ack[2];
 static void install_dispatch();
 class TimeoutDevice : public Fossilize::VulkanDevice
@@ -69,6 +78,12 @@ static void byte_read(int fd) { char x; ssize_t n; do { n = ::read(fd, &x, 1); }
 static VKAPI_ATTR VkResult VKAPI_CALL compute(VkDevice d, VkPipelineCache c, uint32_t n, const VkComputePipelineCreateInfo *i, const VkAllocationCallbacks *a, VkPipeline *p)
 {
 	barriers->creates.fetch_add(1);
+	if (context_case())
+	{
+		unsigned job = unsigned(i - context_infos);
+		if (job >= 4) _exit(93);
+		byte_read(job_gate[job][0]);
+	}
 	if (block_creation)
 	{
 		barriers->ready.store(1); byte_write(ready_pipe[1]);
@@ -147,6 +162,39 @@ extern "C" int __real_pthread_cond_clockwait(pthread_cond_t *, pthread_mutex_t *
 extern "C" int __wrap_pthread_cond_clockwait(pthread_cond_t *cv, pthread_mutex_t *mutex, clockid_t clock, const timespec *time)
 {
 	if (!dispatcher_clock) return __real_pthread_cond_clockwait(cv,mutex,clock,time);
+	if (context_case())
+	{
+		auto &r = *context_replayer;
+		bool stall = scenario.find("stall") != std::string::npos;
+		if (context_steps < (stall ? 1u : 4u))
+		{
+			unsigned job = context_steps++, context = job % 2;
+			byte_write(job_gate[job][1]);
+			// The production queue mutex is held on entry. Release it through
+			// the native wait until the real worker publishes its completion.
+			while (r.completed_count[context] != job / 2 + 1)
+				pthread_cond_wait(r.work_done_condition[context].native_handle(), mutex);
+			checks.require(r.completed_count[2] == 0 && r.queued_count[2] == 1,
+			               "M70/awaited-context-still-pending");
+			checks.require(r.memory_context_pipeline_cache[2] == held_parent_cache,
+			               "M70/awaited-cache-not-reset-before-drain");
+			barriers->ready.store(context_steps);
+			dispatcher_now += scenario.find("normal") != std::string::npos ? 100000000ull : 1500000000ull;
+			return 0;
+		}
+		if (stall)
+		{
+			dispatcher_now += context_steps++ == 1 ? 1999000000ull : 1001000000ull;
+			return ETIMEDOUT;
+		}
+		checks.require(r.completed_count[0] == 2 && r.completed_count[1] == 2 && r.completed_count[2] == 0,
+		               "M70/other-contexts-drained-without-early-return");
+		byte_write(parent_gate[1]);
+		while (r.completed_count[2] == 0)
+			pthread_cond_wait(r.work_done_condition[2].native_handle(),mutex);
+		context_steps++;
+		return 0;
+	}
 	if (scenario == "dispatcher-reset")
 	{
 		if (reset_steps++ == 0)
@@ -173,6 +221,15 @@ extern "C" int __wrap_pthread_cond_clockwait(pthread_cond_t *cv, pthread_mutex_t
 extern "C" int __real_pthread_kill(pthread_t, int);
 extern "C" int __wrap_pthread_kill(pthread_t thread, int signal)
 {
+	if (getpid() != master_pid && signal == SIGABRT && context_case())
+	{
+		barriers->abort_requested.store(1);
+		barriers->teardown.store(unsigned(checks.failures));
+		bool stall = scenario.find("stall") != std::string::npos;
+		barriers->signal_order.store(stall && context_steps == 3 && barriers->ready.load() == 1 ? 1 : 2);
+		fprintf(stderr,"M70/native-work-timeout completed=%u steps=%u expected_stall=%u\n",
+		        barriers->completed.load(),context_steps,unsigned(stall));
+	}
 	if (getpid() != master_pid && signal == SIGABRT && no_progress())
 	{
 		// Controller must parse the real child record before allowing delivery.
@@ -281,6 +338,13 @@ extern "C" int __real_epoll_wait(int,epoll_event *,int,int);
 extern "C" int __wrap_epoll_wait(int epoll, epoll_event *events, int count, int timeout)
 {
 	static bool abort_released, reset_done, early_reset_event;
+	if ((scenario == "cancel-int" || scenario == "cancel-term") && barriers->ready.load() && !cancellation_sent)
+	{
+		cancellation_sent = true;
+		checks.require(Global::signal_fd >= 0,"M70/cancellation-after-signalfd-setup");
+		checks.require(__real_kill(master_pid,scenario == "cancel-int" ? SIGINT : SIGTERM) == 0,
+		               "M70/cancellation-signal-delivered");
+	}
 	if (barriers->abort_requested.load() && !barriers->parsed.load() && !abort_released)
 	{
 		// Consume every already-written protocol byte before judging ordering.
@@ -450,6 +514,91 @@ static int ordinary_test()
 	if (scenario == "ordinary-delivery-failure") checks.contains(log,"delivery=failed native_error=22","M16/ordinary-raw-delivery-failure");
 	return checks.failures ? 1 : 0;
 }
+// A real database read keeps the parse-only parent job pending even with
+// multiple consumers. Ordinary jobs use complete private null-device infos.
+struct ParentDatabase : DatabaseInterface
+{
+	std::unique_ptr<DatabaseInterface> db;
+	ParentDatabase() : DatabaseInterface(DatabaseMode::ReadOnly), db(create_database("fixture.foz",DatabaseMode::ReadOnly)) {}
+	bool prepare() override { return db && db->prepare(); }
+	bool read_entry(ResourceTag t, Hash h, size_t *n, void *p, PayloadReadFlags f) override
+	{
+		if (p) byte_read(parent_gate[0]);
+		return db->read_entry(t,h,n,p,f);
+	}
+	bool write_entry(ResourceTag,Hash,const void *,size_t,PayloadWriteFlags) override { return false; }
+	bool has_entry(ResourceTag t,Hash h) override { return db->has_entry(t,h); }
+	bool get_hash_list_for_resource_tag(ResourceTag t,size_t *n,Hash *h) override { return db->get_hash_list_for_resource_tag(t,n,h); }
+	void flush() override {}
+};
+static int context_test()
+{
+	checks.require(fixture(),"M70/serialized-input-readback");
+	for (auto &gate : job_gate) if (pipe(gate)) return 90;
+	if (pipe(parent_gate)) return 90;
+	DiagnosticStderr capture;
+	pid_t child = fork();
+	if (child == 0)
+	{
+		barriers->child_pid.store(unsigned(getpid()));
+		direct_dispatcher = true;
+		Global::worker_thread_index = 0;
+		VulkanDevice::Options device; device.null_device = true;
+		ThreadedReplayer::Options opts; opts.num_threads = scenario.back() == '2' ? 2 : 1; opts.timeout_seconds = 2;
+		ThreadedReplayer r(device,opts); context_replayer = &r; r.non_lazy = false;
+		r.device.reset(new TimeoutDevice);
+		checks.require(r.device->init_device(device),"M70/null-device-initialized");
+		ParentDatabase db; checks.require(db.prepare(),"M70/parent-database-prepared");
+		StateReplayer global; r.global_database = &db; r.global_replayer = &global;
+		static const uint32_t code[] = {0x07230203,0x10000,0,1,0};
+		VkShaderModuleCreateInfo sm = {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO}; sm.codeSize = sizeof(code); sm.pCode = code;
+		VkShaderModule module = VK_NULL_HANDLE;
+		checks.require(vkCreateShaderModule(r.device->get_device(),&sm,nullptr,&module) == VK_SUCCESS && module,"M70/real-shader-output");
+		VkPipelineLayoutCreateInfo li = {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO}; VkPipelineLayout layout = VK_NULL_HANDLE;
+		checks.require(vkCreatePipelineLayout(r.device->get_device(),&li,nullptr,&layout) == VK_SUCCESS && layout,"M70/real-layout-output");
+		r.reset_memory_context_pipeline_cache(2); held_parent_cache = r.memory_context_pipeline_cache[2];
+		checks.require(held_parent_cache != VK_NULL_HANDLE,"M70/held-parent-cache-exists");
+		VkComputePipelineCreateInfo infos[4] = {}; VkPipeline outputs[4] = {};
+		context_infos = infos;
+		r.start_worker_threads();
+		checks.require(r.thread_initialized_count == opts.num_threads,"M70/all-real-workers-started");
+		for (unsigned j = 0; j < 4; j++)
+		{
+			auto &i = infos[j]; i.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO; i.layout = layout;
+			i.stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO; i.stage.module = module;
+			i.stage.stage = VK_SHADER_STAGE_COMPUTE_BIT; i.stage.pName = "main";
+			PipelineWorkItem item; item.tag = RESOURCE_COMPUTE_PIPELINE; item.hash = 0x300+j;
+			item.memory_context_index = j%2; item.create_info.compute_create_info = &i; item.output.pipeline = &outputs[j];
+			r.enqueue_work_item(item);
+		}
+		PipelineWorkItem parent; parent.tag = RESOURCE_SHADER_MODULE; parent.hash = 0x101;
+		parent.memory_context_index = 2; parent.parse_only = true; r.enqueue_work_item(parent);
+		install_trivial_crash_handlers(r); dispatcher_clock = true;
+		r.sync_worker_memory_context(2);
+		dispatcher_clock = false;
+		checks.require(r.completed_count[2] == 1 && context_steps == 5,"M70/natural-return-only-after-requested-drain");
+		checks.require(r.outcome.succeeded(),"M70/required-creation-and-parse-outcomes-successful");
+		for (auto output : outputs) checks.require(output != VK_NULL_HANDLE,"M70/real-successful-pipeline-output");
+		r.sync_worker_threads(); r.tear_down_threads();
+		barriers->parsed.store(1); _exit(checks.failures ? 3 : 0);
+	}
+	int status; checks.require(waitpid(child,&status,0) == child,"M70/real-child-reaped");
+	bool stall = scenario.find("stall") != std::string::npos;
+	checks.require(WIFEXITED(status) && WEXITSTATUS(status) == (stall ? 1 : 0),
+	               stall ? "M70/genuine-stall-native-timeout" : "M70/productive-FIFO-must-not-timeout");
+	if (stall)
+	{
+		checks.require(barriers->signal_order.load() == 1 && barriers->completed.load() == 1 && !barriers->teardown.load(),
+		               "M70/stall-after-one-real-completion-before-abort");
+	}
+	else checks.require(barriers->parsed.load() && barriers->completed.load() == 4 && !barriers->abort_requested.load(),
+	                    "M70/productive-FIFO-natural-success-without-recovery");
+	auto log = capture.finish();
+	if (stall) checks.contains(log,"threshold_ns=2000000000 elapsed_ns=3000000000","M70/stall-measured-since-last-worker-progress");
+	printf("Executed M70/%s failures=%d native_exit=%d completed=%u abort=%u drained=%u\n",scenario.c_str(),checks.failures,
+	       WIFEXITED(status) ? WEXITSTATUS(status) : -1,barriers->completed.load(),barriers->abort_requested.load(),barriers->parsed.load());
+	return checks.failures ? 1 : 0;
+}
 static void emergency_watchdog(int)
 {
 	// Test-only emergency cleanup. A watchdog is a failed fixture, never
@@ -477,6 +626,7 @@ int main(int argc, char **argv)
 	if (mapping == MAP_FAILED) return 90;
 	barriers = new (mapping) Shared;
 	if (pipe(ready_pipe) || pipe(release_pipe) || pipe(abort_pipe) || pipe(abort_release)) return 90;
+	if (context_case()) return context_test();
 	if (scenario == "protocol") return protocol_test();
 	if (scenario == "dispatcher-reset") return dispatcher_reset_test();
 	checks.require(fixture(),"M16/known-dependency-complete-input-readback");
@@ -492,6 +642,13 @@ int main(int argc, char **argv)
 		checks.require(result == (success ? 0 : 1),"M16/actual-final-work-status");
 		checks.require(r.complete == success,"M16/required-work-effect-distinct-from-attempt");
 		checks.require(e.native_observed,"M16/native-effect-independently-observed");
+		if (scenario == "cancel-int" || scenario == "cancel-term")
+		{
+			checks.require(cancellation_sent && !r.complete && result != 0,"M70/cancellation-incomplete-result");
+			checks.require(!e.triggers[0].present && !e.triggers[1].present && !e.triggers[2].present,
+			               "M70/cancellation-no-invented-timeout");
+			checks.require(WIFSIGNALED(e.native_status),"M70/cancellation-native-worker-termination");
+		}
 		if (no_progress() && scenario != "dispatcher-disabled")
 		{
 			checks.require(e.triggers[0].present && e.triggers[0].threshold_ns == 2000000000ull && e.triggers[0].elapsed_ns == 2500000000ull,"M16/no-progress-origin-threshold-actual-elapsed");
