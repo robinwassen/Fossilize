@@ -1,0 +1,15 @@
+import pathlib,shutil,subprocess
+s=pathlib.Path('/tmp/fossilize-issue70-integrate73/checker-3');m=pathlib.Path('/tmp/fossilize-issue70-integrate73/checker-3-mutant')
+shutil.copytree(s,m,ignore=shutil.ignore_patterns('.git'))
+p=m/'cli/fossilize_replay.cpp';t=p.read_text();before='''\t\tconst auto watchdog_completed = [&]() {
+\t\t\tuint64_t total = 0;
+\t\t\tfor (unsigned count : completed_count)
+\t\t\t\ttotal += count;
+\t\t\treturn total;
+\t\t};''';assert t.count(before)==1
+p.write_text(t.replace(before,'''\t\tconst auto watchdog_completed = [&]() {
+\t\t\treturn uint64_t(completed_count[index]);
+\t\t};'''))
+r=subprocess.run(['diff','-u',str(s/'cli/fossilize_replay.cpp'),str(p)],capture_output=True,text=True);assert r.returncode==1
+pathlib.Path('/tmp/fossilize-issue70-integrate73/output/checker-3/check3-mutation.diff.txt').write_text(r.stdout)
+print('Only watchdog_completed helper changed; source/current fixtures/dependencies copied without .git entries.')

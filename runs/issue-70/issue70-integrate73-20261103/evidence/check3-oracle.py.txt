@@ -1,0 +1,10 @@
+import argparse,subprocess,pathlib,re,json
+p=argparse.ArgumentParser();p.add_argument('--runner');p.add_argument('--output');p.add_argument('--variant');a=p.parse_args();o=pathlib.Path(a.output);o.mkdir(parents=True,exist_ok=True)
+expected=['FAIL M70/productive-FIFO-must-not-timeout','FAIL M70/productive-FIFO-natural-success-without-recovery'];results=[]
+for n in [1,2]:
+ case=f'context-progress-{n}';w=o/case;w.mkdir();r=subprocess.run([a.runner,case],cwd=w,capture_output=True,text=True,timeout=45);log=r.stdout+r.stderr;(o/(case+'.log')).write_text(log)
+ fails=[x.strip() for x in log.splitlines() if x.strip().startswith('FAIL ')]
+ sums=re.findall(r'Executed M70/'+case+r' failures=(\d+) native_exit=(-?\d+) completed=(\d+) abort=(\d+) drained=(\d+)',log)
+ ok=r.returncode==1 and fails==expected and sums==[('2','1','2','1','0')] and 'watchdog' not in log.lower()
+ results.append(dict(case=case,runner_exit=r.returncode,failures=fails,summary=sums,passed=ok));print(json.dumps(results[-1]));
+(o/'oracle.json').write_text(json.dumps(results,indent=2));assert all(x['passed'] for x in results)
