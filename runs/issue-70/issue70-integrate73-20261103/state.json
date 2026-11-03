@@ -159,11 +159,33 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/70",
+      "attempt_id": "check-unit-2",
       "evidence": "Plan-v1 cases[M70-ORIGINAL-DEFECT].assertions[1] requires genuine-stall controls to pass under restored awaited-context observation; gates[M70-MUTATION].method explicitly selects unchanged context-stall-1/2 and expected requires them to pass. These fixtures specifically require the candidate worker-wide reset: test/replay_timeout_controller_test.cpp:181-195 releases job0 in context0, waits for its real completion while context2 stays incomplete, then advances the dispatcher clock by1.5s. Lines197-200 withhold every other job and advance by1.999s then1.001s. The production deadline is armed before waiting (cli/fossilize_replay.cpp:1013-1015), reset only when the observed counter changes (1032-1034), and expires at elapsed>=threshold (cli/replay_timeout.hpp:44-47). Candidate reset at+1.5s gives no trigger at+3.499s and a3s trigger at+4.5s. Restoring completed_count[2] observation cannot reset at context0 completion, so it triggers at+3.499s after only two adapter steps. Unchanged assertions require elapsed3000000000ns, steps3/signal_order1 and one real completion (fixture236-241,620-625,631). Thus these are valid progress-then-stall candidate regressions, but cannot pass under the original rule. The host libstdc++13 condition_variable wait_until checks steady_clock after the wrapped wait; its predicate does not convert context0 completion into context2 progress.",
       "id": "M70-INTEGRATE73-CHECK1-PLANNER-STALL-CONTROL",
       "next_action": "Fresh planner must revise the mutation design while preserving all candidate context-stall assertions. Use source-supported true no-progress controls for original-rule positive controls, and optionally classify context-stall as additional expected failures with a precise native/assertion oracle. Renew independent checks at the revised plan tuple.",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/70",
+        "artifact_root": "runs/issue-70/issue70-integrate73-20261103/evidence/",
+        "artifacts": [
+          "check2-mutation.diff.txt",
+          "check2-oracle.py.txt",
+          "check2-mutant-debug-positive_controls.log",
+          "check2-mutant-release-positive_controls.log",
+          "check2-mutant-debug-expected_failure_command.log",
+          "check2-mutant-release-expected_failure_command.log",
+          "check2-debug-exceptions-off-lasttest.log"
+        ],
+        "attempt_id": "check-unit-2",
+        "base_sha": "84fd2d97cbba2b3c9b9d4edafd4269c93d611523",
+        "candidate_sha": "b1e0c5d4f47a2191e0860eeaeea979cc89a8cfa2",
+        "evidence": "Independently read unchanged candidate stall assertions and corrected plan2. Compiled fresh Debug/Release original-rule helper-only mutants; both configure/build/discovery/positive-controls/oracle commands exit0. Each actual productive1/2 runner exit1 has exactly FAIL M70/productive-FIFO-must-not-timeout and FAIL M70/productive-FIFO-natural-success-without-recovery; exactly one summary failures2/native_exit1/completed2/abort1/drained0. No generic process/build/signal/watchdog failure counted. Both variants true no-progress/multithread pass native/retained2s/2.5s/origin/abort/reap assertions with completed0; context-normal1/2 pass failures0/native_exit0/completed4/abort0/drained1. Candidate context-stall1/2 unchanged and already passed once full plus3 repeats in fresh Debug OFF; remaining candidate matrix still in progress. These valid old-rule positive controls replace only the impossible old-rule context-stall requirement; candidate renewed-deadline assertions remain mandatory unchanged.",
+        "finding_id": "M70-INTEGRATE73-CHECK1-PLANNER-STALL-CONTROL",
+        "plan_version": 2,
+        "resolution_evidence": "Independently read unchanged candidate stall assertions and corrected plan2. Compiled fresh Debug/Release original-rule helper-only mutants; both configure/build/discovery/positive-controls/oracle commands exit0. Each actual productive1/2 runner exit1 has exactly FAIL M70/productive-FIFO-must-not-timeout and FAIL M70/productive-FIFO-natural-success-without-recovery; exactly one summary failures2/native_exit1/completed2/abort1/drained0. No generic process/build/signal/watchdog failure counted. Both variants true no-progress/multithread pass native/retained2s/2.5s/origin/abort/reap assertions with completed0; context-normal1/2 pass failures0/native_exit0/completed4/abort0/drained1. Candidate context-stall1/2 unchanged and already passed once full plus3 repeats in fresh Debug OFF; remaining candidate matrix still in progress. These valid old-rule positive controls replace only the impossible old-rule context-stall requirement; candidate renewed-deadline assertions remain mandatory unchanged.",
+        "worker_id": "/root/checker70_integrate73_2"
+      },
       "route": "planner",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -3476,7 +3498,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 98,
+  "revision": 99,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
