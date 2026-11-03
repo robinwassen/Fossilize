@@ -1,0 +1,19 @@
+import json,os,sys,subprocess,time,pathlib,shutil
+out=pathlib.Path(__file__).parent
+intents=json.loads((out/'final2-intents.json').read_text())
+config=sys.argv[1]
+rows=[]
+for intent in intents:
+ if not intent['intent_id'].startswith('final2-'+config+'-'): continue
+ row=dict(intent);row['started']=time.time()
+ env=os.environ.copy();env.update(intent['environment'])
+ print('START '+intent['intent_id'],flush=True)
+ with open(intent['log'],'w') as log:
+  result=subprocess.run(intent['command'],cwd=intent['cwd'],env=env,stdout=log,stderr=subprocess.STDOUT)
+ row['exit_code']=result.returncode;row['finished']=time.time();rows.append(row)
+ (out/('final2-'+config+'-commands.json')).write_text(json.dumps(rows,indent=2)+'\n')
+ print('FINISH '+intent['intent_id']+' exit='+str(result.returncode),flush=True)
+ if result.returncode:sys.exit(result.returncode)
+ if intent['intent_id'].endswith('-decisive'):
+  build=pathlib.Path(intent['child_command'][2])
+  shutil.copyfile(build/'Testing/Temporary/LastTest.log',out/('final2-'+config+'-lasttest.log'))
