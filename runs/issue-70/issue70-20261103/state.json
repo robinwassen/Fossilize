@@ -3723,7 +3723,31 @@
         "eligible_deadline": 1793707710.5821679,
         "intent_id": "final1-release-exceptions-off-decisive",
         "started": 1793699501.4560761,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1793699839.8380134,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-issue70/build/final-1/release-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(replay-timeout-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)",
+            "--repeat",
+            "until-fail:3",
+            "-j",
+            "1"
+          ],
+          "cwd": "/tmp/fossilize-issue70/final-1",
+          "exit_code": 0,
+          "finished": 1793699846.0665236,
+          "intent_id": "final1-release-exceptions-off-decisive",
+          "started": 1793699839.8357723,
+          "timed_out": false,
+          "timeout": 600,
+          "wait_seconds": 0
+        }
       }
     ],
     "deadline": 1793707710.5821679,
@@ -4363,7 +4387,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 152,
+  "revision": 153,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
