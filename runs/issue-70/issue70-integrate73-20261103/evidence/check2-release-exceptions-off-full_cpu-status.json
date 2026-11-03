@@ -1,0 +1,50 @@
+{
+  "intent_id": "check2-release-exceptions-off-full_cpu",
+  "command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70-integrate73/build/checker-2/release-exceptions-off",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-j",
+    "1"
+  ],
+  "child_command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70-integrate73/build/checker-2/release-exceptions-off",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-j",
+    "1"
+  ],
+  "cwd": "/tmp/fossilize-issue70-integrate73/checker-2",
+  "timeout": 600,
+  "environment": {},
+  "log": "/tmp/fossilize-issue70-integrate73/output/checker-2/check2-release-exceptions-off-full_cpu.log",
+  "receipt": "/tmp/fossilize-issue70-integrate73/output/checker-2/check2-release-exceptions-off-full_cpu-receipt.json",
+  "wrapper": [
+    "python3",
+    "-B",
+    "/tmp/fossilize-issue70-integrate73/checker-2/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+    "--repo",
+    "/tmp/fossilize-issue70-integrate73/checker-2",
+    "--timeout",
+    "600",
+    "--intent-id",
+    "check2-release-exceptions-off-full_cpu",
+    "--receipt",
+    "/tmp/fossilize-issue70-integrate73/output/checker-2/check2-release-exceptions-off-full_cpu-receipt.json",
+    "--",
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70-integrate73/build/checker-2/release-exceptions-off",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-j",
+    "1"
+  ],
+  "exit_code": 0,
+  "started": 1793724758.5226686,
+  "finished": 1793724767.6687949
+}
