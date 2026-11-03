@@ -24,7 +24,7 @@ static thread_local bool dispatcher_clock;
 static thread_local uint64_t dispatcher_now = 100000000000ull;
 static uint64_t controller_now = 100000000000ull;
 static int ready_pipe[2], release_pipe[2], abort_pipe[2], abort_release[2];
-struct Shared { std::atomic<unsigned> ready{0}, teardown{0}, parsed{0}, signal_order{0}, kill_order{0}, abort_requested{0}, child_pid{0}, creates{0}, completed{0}; };
+struct Shared { std::atomic<unsigned> ready{0}, teardown{0}, parsed{0}, signal_order{0}, kill_order{0}, abort_requested{0}, child_pid{0}, creates{0}, completed{0}, produced{0}; };
 static Shared *barriers;
 static ReplayAttemptEvidence *parent_evidence;
 static bool heartbeat_reset_parsed;
@@ -90,7 +90,11 @@ static VKAPI_ATTR VkResult VKAPI_CALL compute(VkDevice d, VkPipelineCache c, uin
 		byte_read(release_pipe[0]);
 	}
 	auto result = real_compute(d,c,n,i,a,p);
-	if (result == VK_SUCCESS) barriers->completed.fetch_add(1);
+	if (result == VK_SUCCESS)
+	{
+		barriers->completed.fetch_add(1);
+		if (context_case() && p && *p != VK_NULL_HANDLE) barriers->produced.fetch_add(1);
+	}
 	return result;
 }
 static VKAPI_ATTR VkResult VKAPI_CALL cache_data(VkDevice d, VkPipelineCache c, size_t *n, void *p)
@@ -563,7 +567,7 @@ static int context_test()
 		checks.require(vkCreatePipelineLayout(r.device->get_device(),&li,nullptr,&layout) == VK_SUCCESS && layout,"M70/real-layout-output");
 		r.reset_memory_context_pipeline_cache(2); held_parent_cache = r.memory_context_pipeline_cache[2];
 		checks.require(held_parent_cache != VK_NULL_HANDLE,"M70/held-parent-cache-exists");
-		VkComputePipelineCreateInfo infos[4] = {}; VkPipeline outputs[4] = {};
+		VkComputePipelineCreateInfo infos[4] = {}; VkPipeline outputs[4] = {}, entries[4] = {};
 		r.start_worker_threads();
 		checks.require(r.thread_initialized_count == opts.num_threads,"M70/all-real-workers-started");
 		for (unsigned j = 0; j < 4; j++)
@@ -575,6 +579,7 @@ static int context_test()
 			i.stage.stage = VK_SHADER_STAGE_COMPUTE_BIT; i.stage.pName = "main";
 			PipelineWorkItem item; item.tag = RESOURCE_COMPUTE_PIPELINE; item.hash = 0x300+j;
 			item.memory_context_index = j%2; item.create_info.compute_create_info = &i; item.output.pipeline = &outputs[j];
+			item.hash_map_entry.pipeline = &entries[j];
 			r.enqueue_work_item(item);
 		}
 		PipelineWorkItem parent; parent.tag = RESOURCE_SHADER_MODULE; parent.hash = 0x101;
@@ -584,7 +589,9 @@ static int context_test()
 		dispatcher_clock = false;
 		checks.require(r.completed_count[2] == 1 && context_steps == 5,"M70/natural-return-only-after-requested-drain");
 		checks.require(r.outcome.succeeded(),"M70/required-creation-and-parse-outcomes-successful");
-		for (auto output : outputs) checks.require(output != VK_NULL_HANDLE,"M70/real-successful-pipeline-output");
+		checks.require(barriers->produced.load() == 4,"M70/real-successful-pipeline-outputs-before-destruction");
+		for (unsigned j = 0; j < 4; j++)
+			checks.require(outputs[j] == VK_NULL_HANDLE && entries[j] == VK_NULL_HANDLE,"M70/ordinary-output-cleanup");
 		r.sync_worker_threads(); r.tear_down_threads();
 		barriers->parsed.store(1); fflush(stdout); _exit(checks.failures ? 3 : 0);
 	}
