@@ -1,0 +1,94 @@
+import collections, hashlib, json, pathlib, re, subprocess
+O=pathlib.Path('/tmp/fossilize-issue70-integrate73/output/final-1')
+SOURCE='/tmp/fossilize-issue70-integrate73/checker-final-1'
+BASE='84fd2d97cbba2b3c9b9d4edafd4269c93d611523'
+CANDIDATE='b1e0c5d4f47a2191e0860eeaeea979cc89a8cfa2'
+ORIGINAL='a380f6a26b9129944ab8384d1952ae1610902779'
+OLDBASE='4ea747ffa215f8057d12aa5525ba0e4497961e7d'
+UNIT=pathlib.Path('/tmp/fossilize-issue70-integrate73/output/checker-2')
+def run(a): return subprocess.check_output(a,cwd=SOURCE,text=True,timeout=60)
+def git(*a): return run(['git',*a])
+def read(p): return pathlib.Path(p).read_text()
+def load(p): return json.loads(read(p))
+state=load('/tmp/fossilize-issue70-integrate73/state.json');state=state.get('state',state)
+tuple_fields=['role','attempt_id','worker_id','input_revision','input_sha','candidate_sha','base_sha','plan_version','operation','work_unit']
+expected=dict(role='checker',attempt_id='check-final-1',worker_id='/root/checker70_integrate73_final1',input_revision=118,input_sha=CANDIDATE,candidate_sha=CANDIDATE,base_sha=BASE,plan_version=2,operation='final',work_unit='https://github.com/robinwassen/Fossilize/issues/70')
+assert {k:state['attempts'][-1][k] for k in tuple_fields}==expected
+assert git('rev-parse','HEAD').strip()==CANDIDATE and not git('status','--porcelain=v1')
+assert git('show','--no-patch','--format=%P','HEAD').strip().split()==[ORIGINAL,BASE]
+files=git('diff','--name-only',BASE,CANDIDATE).splitlines()
+assert set(files)=={'CHANGELOG.md','cli/fossilize_replay.cpp','local-docs/verification.md','test/CMakeLists.txt','test/replay_timeout_controller_test.cpp'}
+def edits(a,b,f): return [l for l in git('diff','--unified=0',a,b,'--',f).splitlines() if l[:1] in '+-' and not l.startswith(('+++','---'))]
+for f in files: assert edits(OLDBASE,ORIGINAL,f)==edits(BASE,CANDIDATE,f),f
+incoming=git('diff','--name-only',OLDBASE,BASE).splitlines()
+for f in incoming:
+ if f not in files: assert git('rev-parse',BASE+':'+f)==git('rev-parse',CANDIDATE+':'+f),f
+submodules=git('submodule','status','--recursive');assert all(l.startswith(' ') for l in submodules.splitlines())
+(O/'final1-source.diff.txt').write_text(git('diff',BASE,CANDIDATE))
+issue=json.loads(run(['gh','api','--hostname','github.com','repos/robinwassen/Fossilize/issues/70']))
+nodes=state['issue_snapshot']['nodes'];node=nodes[0] if isinstance(nodes,list) else next(iter(nodes.values()))
+assert issue['body']==node['body']==state['plan']['original'][0]['requirement']
+assert issue['title']==node['title'] and issue['id']==node['id'] and issue['node_id']==node['node_id'] and issue['state']=='open'
+children=json.loads(run(['gh','api','--hostname','github.com','repos/robinwassen/Fossilize/issues/70/sub_issues','--paginate']))
+blocked=json.loads(run(['gh','api','--hostname','github.com','repos/robinwassen/Fossilize/issues/70/dependencies/blocked_by','--paginate']))
+assert children==blocked==[] and all(f['status']=='resolved' for f in state['findings'])
+closeout=state['closeout'];assert closeout['stage']=='prepared' and closeout['candidate_sha']==CANDIDATE and closeout['base_sha']==BASE and closeout['plan_version']==2
+assert closeout['closing_references']==['Closes https://github.com/robinwassen/Fossilize/issues/70']
+assert state['publishing']['stage']=='none'
+comments=json.loads(run(['gh','api','--hostname','github.com','repos/robinwassen/Fossilize/issues/70/comments?per_page=100','--paginate']))
+ready=[c for c in comments if closeout['marker'] in c['body']];assert len(ready)==1 and closeout['binding'] in ready[0]['body']
+assert any('superseded' in c['body'].lower() for c in comments)
+live=dict(number=70,id=issue['id'],node_id=issue['node_id'],title=issue['title'],body_sha256=hashlib.sha256(issue['body'].encode()).hexdigest(),state=issue['state'],children=children,blocked_by=blocked,readiness_id=ready[0]['id'],readiness_marker=closeout['marker'],closing_references=closeout['closing_references'],source_publication='pending')
+(O/'final1-live-material.json').write_text(json.dumps(live,indent=2)+'\n')
+intents=load(O/'command-intents.json')['commands'];regex=next(x for x in intents if x['intent_id']=='final1-debug-decisive')['child_command'][6]
+def ctest_counts(text): return collections.Counter(re.findall(r'Test\s+#\d+:\s+(\S+)\s+\.+\s+Passed\s',text))
+def inventory(p):
+ d=load(p);assert all(not any(v['name']=='DISABLED' and v['value'] for v in t.get('properties',[])) for t in d['tests']);return [t['name'] for t in d['tests']]
+def flags(build,typ,exceptions):
+ cache=read(build/'CMakeCache.txt')
+ for key,value in dict(CMAKE_BUILD_TYPE=typ.capitalize(),FOSSILIZE_ENABLE_EXCEPTIONS=exceptions.upper(),FOSSILIZE_CLI='ON',FOSSILIZE_VULKAN_LAYER='ON',FOSSILIZE_TESTS='ON',FOSSILIZE_TEST_RUNTIME_LAYER='OFF',FOSSILIZE_REPLAYER_SPIRV_VAL='ON').items():assert re.search(r'^'+key+r':[^=]+='+value+r'$',cache,re.M),key
+ commands=load(build/'compile_commands.json');cmd=next(c['command'] for c in commands if c['file'].endswith('/test/replay_timeout_controller_test.cpp'))
+ assert ('-fno-exceptions' in cmd)==(exceptions=='off') and ('-DNDEBUG' in cmd)==(typ=='release')
+def native_assertions(text,allow_fork_failure=False):
+ for typ in ['progress','normal']:
+  for n in [1,2]: assert f'Executed M70/context-{typ}-{n} failures=0 native_exit=0 completed=4 abort=0 drained=1' in text
+ for n in [1,2]: assert f'Executed M70/context-stall-{n} failures=0 native_exit=1 completed=1 abort=1 drained=0' in text
+ for sig in ['int','term']:assert f'Executed M16/controller-cancel-{sig} failures=0 result=1' in text
+ assert [l for l in text.splitlines() if l.startswith('FAIL ')]==(['FAIL production-no-progress-failure-retained'] if allow_fork_failure else [])
+configurations=[]
+for typ in ['debug','release']:
+ v=typ+'-exceptions-off';prefix='final1-'+typ
+ flags(pathlib.Path('/tmp/fossilize-issue70-integrate73/build/final-1')/v,typ,'off')
+ for op in ['configure','build','discovery','decisive']:
+  status=load(O/(prefix+'-'+op+'-status.json'));receipt=load(status['receipt']);expected_exit=8 if typ=='release' and op=='decisive' else 0;assert status['exit_code']==receipt['exit_code']==expected_exit and not receipt['timed_out']
+ ids=inventory(O/(prefix+'-discovery.json'));selected=[x for x in ids if re.search(regex,x)];assert len(ids)==260 and len(set(ids))==260 and len(selected)==99
+ counts=ctest_counts(read(O/(prefix+'-decisive.log')));expected_counts=collections.Counter({x:3 for x in selected if typ!='release' or x!='fork-child-recovery-stdout-dup2'});assert counts==expected_counts
+ if typ=='release':assert 'FAIL production-no-progress-failure-retained' in read(O/(prefix+'-decisive.log')) and '1 tests failed out of 99' in read(O/(prefix+'-decisive.log'))
+ native=pathlib.Path('/tmp/fossilize-issue70-integrate73/build/final-1')/v/'Testing/Temporary/LastTest.log';native_assertions(read(native),allow_fork_failure=typ=='release');(O/(prefix+'-lasttest.log')).write_text(read(native))
+ commands=load(pathlib.Path('/tmp/fossilize-issue70-integrate73/build/final-1')/v/'compile_commands.json');compile_command=next(c['command'] for c in commands if c['file'].endswith('/test/replay_timeout_controller_test.cpp'));assert '-fno-exceptions' in compile_command and ('-DNDEBUG' in compile_command)==(typ=='release')
+ configurations.append(dict(variant=v,discovered=ids,selected=selected,executed_counts=dict(counts),fixture_compile_command=compile_command))
+unit=load('/tmp/fossilize-issue70-integrate73/output/check-unit-2.json');assert unit['verdict']=='accepted' and unit['candidate_sha']==CANDIDATE and unit['base_sha']==BASE and unit['plan_version']==2 and unit['skipped']==unit['findings']==[]
+unit_configs=[]
+for typ in ['debug','release']:
+ for exceptions in ['off','on']:
+  v=typ+'-exceptions-'+exceptions;p='check2-'+v
+  flags(pathlib.Path('/tmp/fossilize-issue70-integrate73/build/checker-2')/v,typ,exceptions)
+  ids=inventory(UNIT/(p+'-discovery.json'));selected=[x for x in ids if re.search(regex,x)];assert len(ids)==260 and len(selected)==99
+  full=ctest_counts(read(UNIT/(p+'-full_cpu.log')));repeat=ctest_counts(read(UNIT/(p+'-decisive_repeat.log')));assert full==collections.Counter(ids) and repeat==collections.Counter({x:3 for x in selected})
+  native_assertions(read(UNIT/(p+'-lasttest.log')))
+  for op in ['configure','build','discovery','full_cpu','decisive_repeat']:assert load(UNIT/(p+'-'+op+'-status.json'))['exit_code']==0
+  unit_configs.append(dict(variant=v,discovered=len(ids),full_passes=sum(full.values()),selected=len(selected),repeated_passes=sum(repeat.values())))
+mutants=[]
+for typ in ['debug','release']:
+ oracle=load(UNIT/('mutant-'+typ+'-oracle/oracle.json'));assert oracle['passed'] and len(oracle['results'])==2
+ for r in oracle['results']:
+  assert r['exit_code']==1 and r['failures']==['FAIL M70/productive-FIFO-must-not-timeout','FAIL M70/productive-FIFO-natural-success-without-recovery']
+  assert r['summary']==[f"Executed M70/{r['case']} failures=2 native_exit=1 completed=2 abort=1 drained=0"]
+ positive=read(UNIT/('check2-mutant-'+typ+'-positive_controls.log'));assert len(ctest_counts(positive))==4 and all(n==1 for n in ctest_counts(positive).values())
+ for n in [1,2]:assert f'Executed M70/context-normal-{n} failures=0 native_exit=0 completed=4 abort=0 drained=1' in positive
+ for case in ['no-progress','multithread']:assert re.search(r'Executed M16/controller-'+case+r' failures=0 result=1 creates=[1-9][0-9]* completed=0',positive)
+ for op in ['configure-v2','build','discovery','positive_controls','expected_failure_command']:assert load(UNIT/('check2-mutant-'+typ+'-'+op+'-status.json'))['exit_code']==0
+ mutants.append(dict(variant=typ,expected_native_false_timeout_runs=2,valid_positive_controls=4,helper_only_diff='check2-mutation.diff.txt'))
+summary=dict(**expected,result='changes_required',failed_id='fork-child-recovery-stdout-dup2',failed_assertion='production-no-progress-failure-retained',failed_attempts=1,unexecuted_repetitions_due_to_until_fail=2,merge_parents=[ORIGINAL,BASE],original_topic_edits_unchanged=files,incoming_other_files_preserved=len(set(incoming)-set(files)),submodules=submodules,configurations=configurations,final_passes=sum(sum(c['executed_counts'].values()) for c in configurations),unit_configurations=unit_configs,unit_candidate_passes=sum(c['full_passes']+c['repeated_passes'] for c in unit_configs),mutants=mutants,live=live,findings='historical planner finding resolved; new final startup counter finding requires changes',windows='user-waived, native execution unverified',delivery='final acceptance failed; source publication and merged delivery blocked')
+(O/'final1-execution-summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+print(json.dumps({k:v for k,v in summary.items() if k not in ['configurations','submodules']},indent=2))
