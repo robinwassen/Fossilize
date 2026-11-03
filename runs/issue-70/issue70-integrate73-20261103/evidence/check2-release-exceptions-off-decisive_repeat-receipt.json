@@ -1,0 +1,24 @@
+{
+  "intent_id": "check2-release-exceptions-off-decisive_repeat",
+  "command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70-integrate73/build/checker-2/release-exceptions-off",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-R",
+    "^(replay-timeout-|replay-event-|fork-child-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)",
+    "--repeat",
+    "until-fail:3",
+    "-j",
+    "1"
+  ],
+  "cwd": "/tmp/fossilize-issue70-integrate73/checker-2",
+  "timeout": 600.0,
+  "started": 1793724767.714012,
+  "acquired": 1793724767.7163298,
+  "wait_seconds": 0.0,
+  "finished": 1793724776.7001402,
+  "exit_code": 0,
+  "timed_out": false
+}
