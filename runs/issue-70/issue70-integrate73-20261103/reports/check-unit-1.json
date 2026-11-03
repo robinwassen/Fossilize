@@ -1,0 +1,70 @@
+{
+  "attempt_id": "check-unit-1",
+  "base_sha": "84fd2d97cbba2b3c9b9d4edafd4269c93d611523",
+  "candidate_sha": "b1e0c5d4f47a2191e0860eeaeea979cc89a8cfa2",
+  "discovered": [],
+  "evidence": [
+    {
+      "details": "Read required project guidance, skill role/state contracts, worker-event and observability specifications, immutable original and plan. Live gh issue view70 --repo robinwassen/Fossilize matches issue snapshot requirements/title/node identity I_kwDOVZpjbc8AAAABbkyBXA. Exact detached candidate is the merge of original topic input a380f6a26b9129944ab8384d1952ae1610902779 and base84fd2d97cbba2b3c9b9d4edafd4269c93d611523. Inspected complete base-to-candidate diff: CHANGELOG.md, cli/fossilize_replay.cpp, local-docs/verification.md, test/CMakeLists.txt, test/replay_timeout_controller_test.cpp. Production change sums completed counters under the existing queue mutex, retains requested-context drain/cache reset and leaves event transport/public declarations/formats untouched. No independent material source fault identified; runtime remains unverified.",
+      "gate": "M70-REVIEW",
+      "method": "Read-only source and live-issue inspection",
+      "result": "changes_required"
+    },
+    {
+      "details": "CHANGELOG.md:13 contains one short factual Observability sentence, specific false-timeout benefit and full issue70 link; existing issue18 entry remains. Verification guide describes worker-wide observation, candidate progress-then-stall assertions, outcome distinction and explicit Windows/GPU/Steam limitations. These claims describe candidate scope, not this checker execution.",
+      "gate": "M70-COMPATIBILITY-DOCS",
+      "result": "source_review_only"
+    }
+  ],
+  "executed": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/70",
+      "evidence": "Plan-v1 cases[M70-ORIGINAL-DEFECT].assertions[1] requires genuine-stall controls to pass under restored awaited-context observation; gates[M70-MUTATION].method explicitly selects unchanged context-stall-1/2 and expected requires them to pass. These fixtures specifically require the candidate worker-wide reset: test/replay_timeout_controller_test.cpp:181-195 releases job0 in context0, waits for its real completion while context2 stays incomplete, then advances the dispatcher clock by1.5s. Lines197-200 withhold every other job and advance by1.999s then1.001s. The production deadline is armed before waiting (cli/fossilize_replay.cpp:1013-1015), reset only when the observed counter changes (1032-1034), and expires at elapsed>=threshold (cli/replay_timeout.hpp:44-47). Candidate reset at+1.5s gives no trigger at+3.499s and a3s trigger at+4.5s. Restoring completed_count[2] observation cannot reset at context0 completion, so it triggers at+3.499s after only two adapter steps. Unchanged assertions require elapsed3000000000ns, steps3/signal_order1 and one real completion (fixture236-241,620-625,631). Thus these are valid progress-then-stall candidate regressions, but cannot pass under the original rule. The host libstdc++13 condition_variable wait_until checks steady_clock after the wrapped wait; its predicate does not convert context0 completion into context2 progress.",
+      "id": "M70-INTEGRATE73-CHECK1-PLANNER-STALL-CONTROL",
+      "next_action": "Fresh planner must revise the mutation design while preserving all candidate context-stall assertions. Use source-supported true no-progress controls for original-rule positive controls, and optionally classify context-stall as additional expected failures with a precise native/assertion oracle. Renew independent checks at the revised plan tuple.",
+      "route": "planner",
+      "status": "open"
+    }
+  ],
+  "input_revision": 23,
+  "input_sha": "b1e0c5d4f47a2191e0860eeaeea979cc89a8cfa2",
+  "limitations": [
+    "Native Windows execution explicitly waived as unavailable; remains unverified.",
+    "No GPU/driver/Steam/cache-persistence evidence or claim.",
+    "No test process was launched, so no verification-lock receipts or runtime logs exist."
+  ],
+  "next_action": "Route finding M70-INTEGRATE73-CHECK1-PLANNER-STALL-CONTROL to a fresh planner for a versioned corrected mutation-control design, then renew work-unit checking; preserve candidate assertions and report all unrun gates honestly.",
+  "not_run": [
+    {
+      "gate": "M70-INTEGRATION-SMOKE",
+      "reason": "No independent runtime execution before concrete blocking design rejection."
+    },
+    {
+      "gate": "M70-LINUX-MATRIX",
+      "reason": "All four configurations, full CPU inventory and timeout/event/fork repeats remain unrun by this checker."
+    },
+    {
+      "gate": "M70-MUTATION",
+      "reason": "Required original-rule positive stall control contradicts fixture semantics; no builds, probes or mutation executions run."
+    },
+    {
+      "gate": "M70-FINAL-DECISIVE",
+      "reason": "Separate later final-checker gate; not reached."
+    },
+    {
+      "gate": "M70-PUBLICATION",
+      "reason": "Coordinator later gate; not reached."
+    }
+  ],
+  "operation": "work_unit",
+  "plan_version": 1,
+  "role": "checker",
+  "skipped": [],
+  "suggested_control_design": "Existing no-progress and multithread scenarios block real first creation before barriers->completed increments (fixture95-105,144-153), wait for ready, then advance2.5s without any completion (221-231); their main assertions require2s threshold/2.5s elapsed and native cause/order evidence (688-692). They are source-supported true no-progress positive-control candidates under either observation rule, subject to actual Debug/Release execution. Existing ordinary-no-progress and ordinary-delivery-failure are additional source-supported zero-completion controls with direct CLI assertions (512-529). Keep context-normal-1/2 as success controls and preserve context-stall-1/2 candidate assertions unchanged.",
+  "summary": "Plan-v1 requires an invalid positive original-rule stall control. Static review supports rejection; no runtime acceptance is claimed.",
+  "test_mapping": [],
+  "verdict": "changes_required",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/70",
+  "worker_id": "/root/checker70_integrate73_1"
+}

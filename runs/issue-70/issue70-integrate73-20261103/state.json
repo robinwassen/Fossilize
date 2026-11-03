@@ -65,13 +65,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "332584271ef978fd8512a97f02c86a0221592e9235f92bec2c02fd3dc44bb55d",
+      "report": "runs/issue-70/issue70-integrate73-20261103/reports/check-unit-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793722133.313735,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/70",
       "worker_id": "/root/checker70_integrate73_1"
     }
@@ -80,7 +82,16 @@
     "stage": "pending"
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/70",
+      "evidence": "Plan-v1 cases[M70-ORIGINAL-DEFECT].assertions[1] requires genuine-stall controls to pass under restored awaited-context observation; gates[M70-MUTATION].method explicitly selects unchanged context-stall-1/2 and expected requires them to pass. These fixtures specifically require the candidate worker-wide reset: test/replay_timeout_controller_test.cpp:181-195 releases job0 in context0, waits for its real completion while context2 stays incomplete, then advances the dispatcher clock by1.5s. Lines197-200 withhold every other job and advance by1.999s then1.001s. The production deadline is armed before waiting (cli/fossilize_replay.cpp:1013-1015), reset only when the observed counter changes (1032-1034), and expires at elapsed>=threshold (cli/replay_timeout.hpp:44-47). Candidate reset at+1.5s gives no trigger at+3.499s and a3s trigger at+4.5s. Restoring completed_count[2] observation cannot reset at context0 completion, so it triggers at+3.499s after only two adapter steps. Unchanged assertions require elapsed3000000000ns, steps3/signal_order1 and one real completion (fixture236-241,620-625,631). Thus these are valid progress-then-stall candidate regressions, but cannot pass under the original rule. The host libstdc++13 condition_variable wait_until checks steady_clock after the wrapped wait; its predicate does not convert context0 completion into context2 progress.",
+      "id": "M70-INTEGRATE73-CHECK1-PLANNER-STALL-CONTROL",
+      "next_action": "Fresh planner must revise the mutation design while preserving all candidate context-stall assertions. Use source-supported true no-progress controls for original-rule positive controls, and optionally classify context-stall as additional expected failures with a precise native/assertion oracle. Renew independent checks at the revised plan tuple.",
+      "route": "planner",
+      "status": "open"
+    }
+  ],
   "issue_snapshot": {
     "deliverables": [
       "https://github.com/robinwassen/Fossilize/issues/70"
@@ -598,8 +609,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Route finding M70-INTEGRATE73-CHECK1-PLANNER-STALL-CONTROL to a fresh planner for a versioned corrected mutation-control design, then renew work-unit checking; preserve candidate assertions and report all unrun gates honestly.",
+  "operation": "replan",
   "original": [
     {
       "id": "AC1",
@@ -611,7 +622,7 @@
     "output_directory": "/tmp/fossilize-issue70-integrate73/output",
     "source_worktree": "/home/robin/.codex/worktrees/4f30/fossilize"
   },
-  "phase": "checking",
+  "phase": "planning",
   "plan": {
     "assumptions_and_risks": [
       "Live #70 read by planner matches immutable new-run original; issue identity is6145474908 / I_kwDOVZpjbc8AAAABbkyBXA. Re-read snapshots at checker/publication boundaries; any material change invalidates approvals.",
@@ -1409,7 +1420,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 25,
+  "revision": 26,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
@@ -1419,7 +1430,7 @@
   },
   "run_id": "issue70-integrate73-20261103",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-70",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/70",
   "verification": [],
