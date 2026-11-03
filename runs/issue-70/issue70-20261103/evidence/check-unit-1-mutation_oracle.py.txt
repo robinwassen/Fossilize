@@ -1,0 +1,34 @@
+"""Independent exact-state original-rule oracle for issue 70."""
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+binary = str(Path(sys.argv[1]).resolve())
+output = Path(sys.argv[2]).resolve()
+output.mkdir(parents=True, exist_ok=True)
+cases = ['context-progress-1', 'context-progress-2', 'context-normal-1', 'context-normal-2', 'no-progress']
+results = []
+for case in cases:
+    work = output / case
+    work.mkdir()
+    child = subprocess.run([binary, case], cwd=work, capture_output=True, text=True, timeout=35)
+    log = child.stdout + child.stderr
+    (output / (case + '.log')).write_text(log)
+    failures = re.findall(r'^FAIL (\S+)$', log, re.M)
+    if case in ('context-progress-1', 'context-progress-2'):
+        expected = ['M70/productive-FIFO-must-not-timeout', 'M70/productive-FIFO-natural-success-without-recovery']
+        summary = f'Executed M70/{case} failures=2 native_exit=1 completed=2 abort=1 drained=0'
+        ok = child.returncode == 1 and sorted(failures) == sorted(expected) and summary in log.splitlines()
+    elif case in ('context-normal-1', 'context-normal-2'):
+        summary = f'Executed M70/{case} failures=0 native_exit=0 completed=4 abort=0 drained=1'
+        ok = child.returncode == 0 and not failures and summary in log.splitlines()
+    else:
+        ok = child.returncode == 0 and not failures and re.search(r'^Executed M16/controller-no-progress failures=0 result=1 creates=1 completed=0$', log, re.M) is not None
+    ok = ok and 'emergency watchdog' not in log and child.returncode >= 0
+    results.append(dict(case=case, argv=[binary, case], cwd=str(work), exit_code=child.returncode, assertion_failures=failures, intended_outcome=ok, log=str(output / (case + '.log'))))
+result = dict(result='passed' if all(r['intended_outcome'] for r in results) else 'failed', cases=results)
+(output / 'oracle.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps(result, indent=2))
+sys.exit(0 if result['result'] == 'passed' else 1)

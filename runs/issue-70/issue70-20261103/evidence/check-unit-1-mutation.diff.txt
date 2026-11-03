@@ -1,0 +1,47 @@
+--- /tmp/fossilize-issue70/checker-1/cli/fossilize_replay.cpp	2026-11-03 09:49:43.521147415 +0100
++++ /tmp/fossilize-issue70/checker-1-mutation/cli/fossilize_replay.cpp	2026-11-03 10:03:53.878815188 +0100
+@@ -968,16 +968,7 @@
+ 			return;
+ 		}
+ 
+-		// FIFO jobs from other contexts can precede the requested context.
+-		// Observe the whole worker for hangs, but still drain only index below.
+-		// The existing queue lock protects every counter read; widen before summing.
+-		const auto watchdog_completed = [&]() {
+-			uint64_t total = 0;
+-			for (unsigned count : completed_count)
+-				total += count;
+-			return total;
+-		};
+-		uint64_t current_completed = watchdog_completed();
++		unsigned current_completed = completed_count[index];
+ 		ReplayDeadline no_progress;
+ 		no_progress.arm(replay_monotonic_ns(), replay_seconds_ns(opts.timeout_seconds));
+ 
+@@ -985,7 +976,7 @@
+ 		{
+ 			work_done_condition[index].wait_for(
+ 					lock, std::chrono::seconds(1),
+-					[&]() -> bool { return current_completed != watchdog_completed(); });
++					[&]() -> bool { return current_completed != completed_count[index]; });
+ 
+ 			// Fire off a heartbeat every 500ms. No need to overwhelm the parent process.
+ 			auto new_time = std::chrono::steady_clock::now();
+@@ -997,7 +988,7 @@
+ 			}
+ 
+ 			auto now = replay_monotonic_ns();
+-			if (watchdog_completed() != current_completed)
++			if (completed_count[index] != current_completed)
+ 				no_progress.arm(now, replay_seconds_ns(opts.timeout_seconds));
+ 
+ 			if (no_progress.expired(now))
+@@ -1010,7 +1001,7 @@
+ 				exit(2);
+ 			}
+ 
+-			current_completed = watchdog_completed();
++			current_completed = completed_count[index];
+ 		} while (queued_count[index] != completed_count[index]);
+ 
+ 		heartbeat();

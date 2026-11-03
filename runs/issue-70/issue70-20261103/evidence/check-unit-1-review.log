@@ -1,0 +1,85 @@
+M70-REVIEW independent source/test/changelog review
+candidate_sha=a380f6a26b9129944ab8384d1952ae1610902779
+base_sha=4ea747ffa215f8057d12aa5525ba0e4497961e7d
+plan_version=1 attempt_id=check-unit-1 worker_id=/root/checker70_unit1
+command: git diff 4ea747ffa215f8057d12aa5525ba0e4497961e7d HEAD
+cwd: /tmp/fossilize-issue70/checker-1
+environment: Linux x86_64; detached clean exact candidate; source review (no execution claim)
+criteria: AC1 (all five textual acceptance criteria)
+
+Derived expectations BEFORE implementer report: live gh issue #70 body exactly
+equals plan.original[0].requirement; identity I_kwDOVZpjbc8AAAABbkyBXA, OPEN.
+Read AGENTS.md, required project guidance, verification/issue/changelog guides,
+accepted plan, skill and roles/state contract and relevant observability specs.
+The broader observability standard is proposed, not a current guarantee.
+
+Entire base-to-candidate diff is five files (219 insertions,9 deletions).
+Production change is confined to sync_worker_memory_context lines971-1013.
+Initial observation, wait predicate, deadline reset and loop snapshot consistently
+use a uint64_t sum of the three completed counters. Widening before accumulation
+avoids unsigned aggregate overflow. All reads and actual worker increments are
+protected by pipeline_work_queue_mutex; no new state or lock is introduced.
+Each processed job, including failed creation, is forward progress; outcome
+remains independently sticky. Existing worker work_done_condition notification
+and one-second dispatcher polling remain. Other-context notification is not
+required for correctness because the poll rechecks the aggregate.
+The requested-context fast path and loop drain condition, cache reset placement,
+heartbeat interval, ReplayDeadline zero-disable/expiry semantics, report_timeout,
+timeout_handler, CLI/options and controller protocols remain byte-for-byte
+unchanged. No capture/database/public API/shared progress or cache-marker changes.
+
+Fixture audit: private linker adapters include shipping replay/controller source.
+context_test starts one/two actual worker threads, enqueues four finite creation
+jobs alternating contexts0/1 before a parse-only shader read in context2. Per-job
+pipes order releases; native cond waits release the actual queue mutex and wait
+for production completed counters. A separate parent read pipe prevents early
+parse completion even with two consumers. Controlled dispatcher observations
+advance 1.5s per acknowledged completion (6s total beyond2s deadline); no sleeps
+order events. Assertions before every release's continuation prove parent pending
+and its nonnull cache retained. Both other contexts must drain before parent
+release. Successful null-device shader/layout and four pipeline producer outputs,
+parse/creation outcome, output cleanup, requested drain, natural native exit,
+thread teardown and real waitpid reaping are checked beyond queue counts.
+The short0.1s normal controls preserve successful behavior. Stall controls permit
+one real completion, then withhold remaining work and observe1.999s then3s elapsed
+since that progress. Exact2s threshold/3s elapsed, abort request, one completed
+job, native unsuccessful exit and absence of earlier fixture failures decide
+the result. The early2s boundary is inferred from state reaching the second
+controlled stall observation; an early abort would change context_steps and fail.
+
+Both real cancellation signals are delivered only after production signalfd
+setup with a worker held. Tests assert incomplete/nonzero result, no fabricated
+work/heartbeat/cleanup cause, native signal death, closed IPC and ECHILD.
+All existing M16 heartbeat/cleanup/retry/protocol/deadline/cancellation-adjacent
+controls remain registered. Existing outcome-worker-queue/matrix tests preserve
+the distinction between processed queue jobs and successful required work.
+DiagnosticChecks use explicit branches and failures, so survive NDEBUG. All8 new
+cases have45s CTest deadlines and isolated directories;20s emergency watchdog
+kills/reaps and fails the fixture, never establishes defect reproduction.
+
+Changelog is in Unreleased, one clear factual linked#70 sentence with meaningful
+Observability tag and concrete false-timeout benefit. Verification.md accurately
+changes progress semantics, describes Linux fixtures, preserves outcome/cache
+limits and explicitly marks native Windows waived/unverified. No speedup,
+GPU/Steam, cache durability or general ABI assertion is introduced.
+
+After independent expectations/source derivation, inspected impl-1.json, failed
+fixture/build history and logs. Earlier revisions failed compilation or crashed
+before creation; they are not accepted evidence for this exact candidate.
+The implementer's initial mutation-driver substring classification error was
+repaired. This checker uses its own exact-case/native-state oracle and fresh
+builds; prior report outcomes are not substituted for independent executions.
+
+Credible counterexamples checked in source/mandatory cases: pending requested
+context while other contexts drain, true stall after earlier useful work,
+two consumers reaching parent early, failed job completion versus sticky outcome,
+zero timeout, heartbeat-only activity, cancelled worker without timeout cause,
+recovery retaining originating evidence, and original awaited-context mutation.
+Counter wrap cannot overflow the widened three-counter aggregate. The bounded
+unsigned individual counters remain pre-existing behavior and are not altered.
+
+Review result: no implementation/planned-test/changelog fault identified.
+Execution acceptance is separately conditioned on completed matrix/mutation gates.
+Limits: cache retention asserts handle identity and control flow, not a destroy
+call counter or allocator instrumentation; native Windows unverified by explicit
+user waiver; null-device CPU fixtures do not demonstrate GPU or Steam behavior.

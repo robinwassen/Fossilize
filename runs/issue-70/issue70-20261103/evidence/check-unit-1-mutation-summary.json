@@ -1,0 +1,390 @@
+{
+  "candidate_sha": "a380f6a26b9129944ab8384d1952ae1610902779",
+  "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+  "plan_version": 1,
+  "attempt_id": "check-unit-1",
+  "criteria": [
+    "AC1"
+  ],
+  "environment": {
+    "os": "Linux x86_64",
+    "compiler": "GNU 13.3.0",
+    "python": "3.12.3",
+    "source": "/tmp/fossilize-issue70/checker-1",
+    "null_device": true,
+    "cli": true,
+    "vulkan_layer": true,
+    "spirv_validation": true,
+    "runtime_layer": false,
+    "build_parallelism": 2,
+    "child_timeout_seconds": 600,
+    "configurations": [
+      "debug-exceptions-off",
+      "debug-exceptions-on",
+      "release-exceptions-off",
+      "release-exceptions-on"
+    ]
+  },
+  "commands": [
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-issue70/checker-1-mutation",
+        "-B",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-debug",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+      ],
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-issue70/checker-1-mutation",
+        "-B",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-debug",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+      ],
+      "cwd": "/tmp/fossilize-issue70/checker-1",
+      "timeout": 600,
+      "intent_id": "check1-mutation-debug-configure",
+      "exit_code": 0,
+      "elapsed_seconds": 1.8680415153503418,
+      "wait_seconds": 0.0,
+      "receipt": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-debug-configure.receipt.json",
+      "log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-debug-configure.log"
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-debug",
+        "--target",
+        "replay-timeout-controller-test",
+        "--parallel",
+        "2"
+      ],
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-debug",
+        "--target",
+        "replay-timeout-controller-test",
+        "--parallel",
+        "2"
+      ],
+      "cwd": "/tmp/fossilize-issue70/checker-1",
+      "timeout": 600,
+      "intent_id": "check1-mutation-debug-build",
+      "exit_code": 0,
+      "elapsed_seconds": 18.10097599029541,
+      "wait_seconds": 0.0,
+      "receipt": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-debug-build.receipt.json",
+      "log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-debug-build.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "/tmp/fossilize-issue70/output/checker-1/mutation_oracle.py",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-debug/test/replay-timeout-controller-test",
+        "/tmp/fossilize-issue70/output/checker-1/mutation-debug"
+      ],
+      "child_command": [
+        "python3",
+        "-B",
+        "/tmp/fossilize-issue70/output/checker-1/mutation_oracle.py",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-debug/test/replay-timeout-controller-test",
+        "/tmp/fossilize-issue70/output/checker-1/mutation-debug"
+      ],
+      "cwd": "/tmp/fossilize-issue70/checker-1",
+      "timeout": 600,
+      "intent_id": "check1-mutation-debug-oracle",
+      "exit_code": 0,
+      "elapsed_seconds": 0.11441564559936523,
+      "wait_seconds": 0.0,
+      "receipt": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-debug-oracle.receipt.json",
+      "log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-debug-oracle.log"
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-issue70/checker-1-mutation",
+        "-B",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-release",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+      ],
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/tmp/fossilize-issue70/checker-1-mutation",
+        "-B",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-release",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+      ],
+      "cwd": "/tmp/fossilize-issue70/checker-1",
+      "timeout": 600,
+      "intent_id": "check1-mutation-release-configure",
+      "exit_code": 0,
+      "elapsed_seconds": 1.9682188034057617,
+      "wait_seconds": 0.0,
+      "receipt": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-release-configure.receipt.json",
+      "log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-release-configure.log"
+    },
+    {
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-release",
+        "--target",
+        "replay-timeout-controller-test",
+        "--parallel",
+        "2"
+      ],
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-release",
+        "--target",
+        "replay-timeout-controller-test",
+        "--parallel",
+        "2"
+      ],
+      "cwd": "/tmp/fossilize-issue70/checker-1",
+      "timeout": 600,
+      "intent_id": "check1-mutation-release-build",
+      "exit_code": 0,
+      "elapsed_seconds": 31.22777771949768,
+      "wait_seconds": 0.0,
+      "receipt": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-release-build.receipt.json",
+      "log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-release-build.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "/tmp/fossilize-issue70/output/checker-1/mutation_oracle.py",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-release/test/replay-timeout-controller-test",
+        "/tmp/fossilize-issue70/output/checker-1/mutation-release"
+      ],
+      "child_command": [
+        "python3",
+        "-B",
+        "/tmp/fossilize-issue70/output/checker-1/mutation_oracle.py",
+        "/tmp/fossilize-issue70/build/checker-1/mutation-release/test/replay-timeout-controller-test",
+        "/tmp/fossilize-issue70/output/checker-1/mutation-release"
+      ],
+      "cwd": "/tmp/fossilize-issue70/checker-1",
+      "timeout": 600,
+      "intent_id": "check1-mutation-release-oracle",
+      "exit_code": 0,
+      "elapsed_seconds": 0.06435227394104004,
+      "wait_seconds": 0.0,
+      "receipt": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-release-oracle.receipt.json",
+      "log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-check1-mutation-release-oracle.log"
+    }
+  ],
+  "mutations": [
+    {
+      "result": "passed",
+      "cases": [
+        {
+          "case": "context-progress-1",
+          "argv": [
+            "/tmp/fossilize-issue70/build/checker-1/mutation-debug/test/replay-timeout-controller-test",
+            "context-progress-1"
+          ],
+          "cwd": "/tmp/fossilize-issue70/output/checker-1/mutation-debug/context-progress-1",
+          "exit_code": 1,
+          "assertion_failures": [
+            "M70/productive-FIFO-must-not-timeout",
+            "M70/productive-FIFO-natural-success-without-recovery"
+          ],
+          "intended_outcome": true,
+          "log": "/tmp/fossilize-issue70/output/checker-1/mutation-debug/context-progress-1.log",
+          "artifact_log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-mutation-debug-context-progress-1.log"
+        },
+        {
+          "case": "context-progress-2",
+          "argv": [
+            "/tmp/fossilize-issue70/build/checker-1/mutation-debug/test/replay-timeout-controller-test",
+            "context-progress-2"
+          ],
+          "cwd": "/tmp/fossilize-issue70/output/checker-1/mutation-debug/context-progress-2",
+          "exit_code": 1,
+          "assertion_failures": [
+            "M70/productive-FIFO-must-not-timeout",
+            "M70/productive-FIFO-natural-success-without-recovery"
+          ],
+          "intended_outcome": true,
+          "log": "/tmp/fossilize-issue70/output/checker-1/mutation-debug/context-progress-2.log",
+          "artifact_log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-mutation-debug-context-progress-2.log"
+        },
+        {
+          "case": "context-normal-1",
+          "argv": [
+            "/tmp/fossilize-issue70/build/checker-1/mutation-debug/test/replay-timeout-controller-test",
+            "context-normal-1"
+          ],
+          "cwd": "/tmp/fossilize-issue70/output/checker-1/mutation-debug/context-normal-1",
+          "exit_code": 0,
+          "assertion_failures": [],
+          "intended_outcome": true,
+          "log": "/tmp/fossilize-issue70/output/checker-1/mutation-debug/context-normal-1.log",
+          "artifact_log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-mutation-debug-context-normal-1.log"
+        },
+        {
+          "case": "context-normal-2",
+          "argv": [
+            "/tmp/fossilize-issue70/build/checker-1/mutation-debug/test/replay-timeout-controller-test",
+            "context-normal-2"
+          ],
+          "cwd": "/tmp/fossilize-issue70/output/checker-1/mutation-debug/context-normal-2",
+          "exit_code": 0,
+          "assertion_failures": [],
+          "intended_outcome": true,
+          "log": "/tmp/fossilize-issue70/output/checker-1/mutation-debug/context-normal-2.log",
+          "artifact_log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-mutation-debug-context-normal-2.log"
+        },
+        {
+          "case": "no-progress",
+          "argv": [
+            "/tmp/fossilize-issue70/build/checker-1/mutation-debug/test/replay-timeout-controller-test",
+            "no-progress"
+          ],
+          "cwd": "/tmp/fossilize-issue70/output/checker-1/mutation-debug/no-progress",
+          "exit_code": 0,
+          "assertion_failures": [],
+          "intended_outcome": true,
+          "log": "/tmp/fossilize-issue70/output/checker-1/mutation-debug/no-progress.log",
+          "artifact_log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-mutation-debug-no-progress.log"
+        }
+      ],
+      "configuration": "debug-exceptions-off",
+      "candidate_sha": "a380f6a26b9129944ab8384d1952ae1610902779",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "plan_version": 1,
+      "attempt_id": "check-unit-1"
+    },
+    {
+      "result": "passed",
+      "cases": [
+        {
+          "case": "context-progress-1",
+          "argv": [
+            "/tmp/fossilize-issue70/build/checker-1/mutation-release/test/replay-timeout-controller-test",
+            "context-progress-1"
+          ],
+          "cwd": "/tmp/fossilize-issue70/output/checker-1/mutation-release/context-progress-1",
+          "exit_code": 1,
+          "assertion_failures": [
+            "M70/productive-FIFO-must-not-timeout",
+            "M70/productive-FIFO-natural-success-without-recovery"
+          ],
+          "intended_outcome": true,
+          "log": "/tmp/fossilize-issue70/output/checker-1/mutation-release/context-progress-1.log",
+          "artifact_log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-mutation-release-context-progress-1.log"
+        },
+        {
+          "case": "context-progress-2",
+          "argv": [
+            "/tmp/fossilize-issue70/build/checker-1/mutation-release/test/replay-timeout-controller-test",
+            "context-progress-2"
+          ],
+          "cwd": "/tmp/fossilize-issue70/output/checker-1/mutation-release/context-progress-2",
+          "exit_code": 1,
+          "assertion_failures": [
+            "M70/productive-FIFO-must-not-timeout",
+            "M70/productive-FIFO-natural-success-without-recovery"
+          ],
+          "intended_outcome": true,
+          "log": "/tmp/fossilize-issue70/output/checker-1/mutation-release/context-progress-2.log",
+          "artifact_log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-mutation-release-context-progress-2.log"
+        },
+        {
+          "case": "context-normal-1",
+          "argv": [
+            "/tmp/fossilize-issue70/build/checker-1/mutation-release/test/replay-timeout-controller-test",
+            "context-normal-1"
+          ],
+          "cwd": "/tmp/fossilize-issue70/output/checker-1/mutation-release/context-normal-1",
+          "exit_code": 0,
+          "assertion_failures": [],
+          "intended_outcome": true,
+          "log": "/tmp/fossilize-issue70/output/checker-1/mutation-release/context-normal-1.log",
+          "artifact_log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-mutation-release-context-normal-1.log"
+        },
+        {
+          "case": "context-normal-2",
+          "argv": [
+            "/tmp/fossilize-issue70/build/checker-1/mutation-release/test/replay-timeout-controller-test",
+            "context-normal-2"
+          ],
+          "cwd": "/tmp/fossilize-issue70/output/checker-1/mutation-release/context-normal-2",
+          "exit_code": 0,
+          "assertion_failures": [],
+          "intended_outcome": true,
+          "log": "/tmp/fossilize-issue70/output/checker-1/mutation-release/context-normal-2.log",
+          "artifact_log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-mutation-release-context-normal-2.log"
+        },
+        {
+          "case": "no-progress",
+          "argv": [
+            "/tmp/fossilize-issue70/build/checker-1/mutation-release/test/replay-timeout-controller-test",
+            "no-progress"
+          ],
+          "cwd": "/tmp/fossilize-issue70/output/checker-1/mutation-release/no-progress",
+          "exit_code": 0,
+          "assertion_failures": [],
+          "intended_outcome": true,
+          "log": "/tmp/fossilize-issue70/output/checker-1/mutation-release/no-progress.log",
+          "artifact_log": "runs/issue-70/issue70-20261103/evidence/check-unit-1-mutation-release-no-progress.log"
+        }
+      ],
+      "configuration": "release-exceptions-off",
+      "candidate_sha": "a380f6a26b9129944ab8384d1952ae1610902779",
+      "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+      "plan_version": 1,
+      "attempt_id": "check-unit-1"
+    }
+  ]
+}
