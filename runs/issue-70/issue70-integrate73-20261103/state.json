@@ -166,13 +166,15 @@
       "observations": [],
       "operation": "final",
       "plan_version": 2,
+      "rejection_signature": "9aad36b57a7d5a52aeeb04aa61ad79ff10778fa8953fc849b39b7a9ec2211ab8",
+      "report": "runs/issue-70/issue70-integrate73-20261103/reports/check-final-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1793725771.858919,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/70",
       "worker_id": "/root/checker70_integrate73_final1"
     }
@@ -187,7 +189,10 @@
     "generation": 117,
     "marker": "<!-- harness-ready:issue70-integrate73-20261103:dc074efc06f3b69292a226e38e4807d1bb24160b0da11710675abba68ac1b111 -->",
     "plan_version": 2,
-    "stage": "prepared",
+    "reason": "checker rejected proposed completion",
+    "resume_operation": "repair",
+    "resume_phase": "implementing",
+    "stage": "cleanup",
     "targets": [
       {
         "evidence": "Independent plan2 work-unit checking passed on the integrated #70/#73 candidate:260 CPU tests in each Linux Debug/Release x exceptions OFF/ON, plus99 decisive tests repeated3 times per configuration (2,228 candidate passes). Both compiled Debug/Release old-rule controls reproduce exactly the intended false-timeout assertions; all8 valid stall/normal controls pass. All8 planned M70 cases cover productive FIFO1/2, requested-context drain, renewed stall deadline, natural outcomes, cancellation, compatibility and incoming rich/legacy event contracts. Native Windows is user-waived/unverified; no GPU/Steam or game-launch claim. Separate fresh final checking and updated PR publication remain pending.",
@@ -227,6 +232,17 @@
       },
       "route": "planner",
       "status": "resolved"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/70",
+      "evidence": "Own fresh Release exceptionsOFF final gate exits8. First registered fork-child-recovery-stdout-dup2 execution exits1 with exactly FAIL production-no-progress-failure-retained; summary births=2 injections=1 normal-workers=0 failures=1. Generation1 emits zero-progress cursors, exits2 and retries. Generation2 reaches the intended fatal stdout dup2 injection and exits1; log first reports Failed to start child process and parent cleanup SIGKILL request. Source-supported race inference: child fatal setup can close stdin before parent OFFER write; start_child_process records input_error and returns false, recovery caller returns into ControllerChildrenCleanup, which sets expect_kill=true even if the child already exited. process_shutdown suppresses its dirty-process-death counter while unchanged fixture requires1. Other assertions passed. These incoming #18 files are unchanged versus base; mandatory integration still blocks. No selective retry was performed.",
+      "id": "M70-INTEGRATE73-FINAL1-STARTUP-COUNTER-RACE",
+      "location": "test/fork_child_setup_test.cpp:507; cli/fossilize_replay_linux.hpp:645-650,1050-1059,1110-1113,451-460",
+      "log": "runs/issue-70/issue70-integrate73-20261103/evidence/final1-release-decisive.log",
+      "native_log": "runs/issue-70/issue70-integrate73-20261103/evidence/final1-release-lasttest.log",
+      "next_action": "Resolve startup failure/counter semantics or deterministic planned fixture path while preserving required crash-counter/outcome assertions; renew unit and separate final acceptance and supersede stale readiness at the resulting tuple.",
+      "route": "implementation",
+      "status": "open"
     }
   ],
   "issue_snapshot": {
@@ -3706,8 +3722,8 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "final",
+  "next_action": "journal superseding issue evidence, then closeout-cleanup",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -3719,7 +3735,7 @@
     "output_directory": "/tmp/fossilize-issue70-integrate73/output",
     "source_worktree": "/home/robin/.codex/worktrees/4f30/fossilize"
   },
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "assumptions_and_risks": [
       "Live #70 read by planner matches immutable new-run original; issue identity is6145474908 / I_kwDOVZpjbc8AAAABbkyBXA. Re-read snapshots at checker/publication boundaries; any material change invalidates approvals.",
@@ -4620,7 +4636,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 141,
+  "revision": 142,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
@@ -4630,7 +4646,7 @@
   },
   "run_id": "issue70-integrate73-20261103",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-70",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/70",
   "verification": [
@@ -6573,16 +6589,11 @@
   ],
   "work_units": [
     {
-      "accepted": {
-        "attempt_id": "check-unit-2",
-        "base_sha": "84fd2d97cbba2b3c9b9d4edafd4269c93d611523",
-        "candidate_sha": "b1e0c5d4f47a2191e0860eeaeea979cc89a8cfa2",
-        "plan_version": 2
-      },
+      "accepted": null,
       "dependencies": [],
       "issue": "https://github.com/robinwassen/Fossilize/issues/70",
       "key": "https://github.com/robinwassen/Fossilize/issues/70",
-      "status": "accepted"
+      "status": "ready"
     }
   ]
 }
