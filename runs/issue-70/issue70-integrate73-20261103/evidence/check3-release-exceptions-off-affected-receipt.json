@@ -1,0 +1,24 @@
+{
+  "intent_id": "check3-release-exceptions-off-affected",
+  "command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70-integrate73/build/checker-3/release-exceptions-off",
+    "-V",
+    "--no-tests=error",
+    "-R",
+    "^fork-child-recovery-(sigmask|stdout-dup2|stdin-dup2)$",
+    "--repeat",
+    "until-fail:25",
+    "-j",
+    "1"
+  ],
+  "cwd": "/tmp/fossilize-issue70-integrate73/checker-3",
+  "timeout": 600.0,
+  "started": 1793729358.135215,
+  "acquired": 1793729358.1376033,
+  "wait_seconds": 0.0,
+  "finished": 1793729358.4521801,
+  "exit_code": 0,
+  "timed_out": false
+}

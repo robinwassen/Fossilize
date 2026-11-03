@@ -1,0 +1,14 @@
+--- /tmp/fossilize-issue70-integrate73/checker-3/cli/fossilize_replay.cpp	2026-11-03 18:43:06.446457669 +0100
++++ /tmp/fossilize-issue70-integrate73/checker-3-mutant/cli/fossilize_replay.cpp	2026-11-03 19:26:52.961676910 +0100
+@@ -1005,10 +1005,7 @@
+ 		// Observe the whole worker for hangs, but still drain only index below.
+ 		// The existing queue lock protects every counter read; widen before summing.
+ 		const auto watchdog_completed = [&]() {
+-			uint64_t total = 0;
+-			for (unsigned count : completed_count)
+-				total += count;
+-			return total;
++			return uint64_t(completed_count[index]);
+ 		};
+ 		uint64_t current_completed = watchdog_completed();
+ 		ReplayDeadline no_progress;
