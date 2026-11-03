@@ -1,0 +1,14 @@
+--- candidate/cli/fossilize_replay.cpp
++++ mutant/cli/fossilize_replay.cpp
+@@ -1005,10 +1005,7 @@
+ 		// Observe the whole worker for hangs, but still drain only index below.
+ 		// The existing queue lock protects every counter read; widen before summing.
+ 		const auto watchdog_completed = [&]() {
+-			uint64_t total = 0;
+-			for (unsigned count : completed_count)
+-				total += count;
+-			return total;
++			return uint64_t(completed_count[index]);
+ 		};
+ 		uint64_t current_completed = watchdog_completed();
+ 		ReplayDeadline no_progress;

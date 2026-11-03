@@ -1,0 +1,19 @@
+import argparse,json,pathlib,subprocess,re,sys
+p=argparse.ArgumentParser();p.add_argument('--runner',required=True);p.add_argument('--output',required=True);p.add_argument('--variant',required=True);a=p.parse_args()
+o=pathlib.Path(a.output);o.mkdir(parents=True,exist_ok=False)
+expected=['FAIL M70/productive-FIFO-must-not-timeout','FAIL M70/productive-FIFO-natural-success-without-recovery']
+results=[]
+for n in [1,2]:
+ case='context-progress-'+str(n); cwd=o/case;cwd.mkdir()
+ try:
+  r=subprocess.run([a.runner,case],cwd=cwd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,timeout=45)
+  (o/(case+'.log')).write_text(r.stdout+r.stderr)
+  fails=[x for x in r.stdout.splitlines() if x.startswith('FAIL ')]
+  summaries=[x for x in r.stdout.splitlines() if x.startswith('Executed M70/')]
+  summary=f'Executed M70/{case} failures=2 native_exit=1 completed=2 abort=1 drained=0'
+  ok=r.returncode==1 and fails==expected and summaries==[summary] and 'watchdog' not in (r.stdout+r.stderr).lower()
+  results.append(dict(case=case,command=[a.runner,case],cwd=str(cwd),exit_code=r.returncode,failures=fails,expected_failures=expected,summary=summaries,expected_summary=summary,passed=ok))
+ except subprocess.TimeoutExpired as e:
+  results.append(dict(case=case,passed=False,error='subprocess deadline'))
+report=dict(variant=a.variant,passed=all(x['passed'] for x in results),results=results)
+(o/'oracle.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2));sys.exit(0 if report['passed'] else 1)
