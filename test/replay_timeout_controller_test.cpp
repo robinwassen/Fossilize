@@ -19,6 +19,14 @@
 
 static DiagnosticChecks checks;
 static std::string scenario;
+static bool event_case;
+#include "../cli/logging.hpp"
+#undef LOGI
+#undef LOGW
+#undef LOGE
+#define LOGI(...) do { if (!event_case || getpid() == master_pid) { fprintf(stderr, __VA_ARGS__); } } while(0)
+#define LOGW(...) LOGI(__VA_ARGS__)
+#define LOGE(...) LOGI(__VA_ARGS__)
 static pid_t master_pid;
 static thread_local bool dispatcher_clock;
 static thread_local uint64_t dispatcher_now = 100000000000ull;
@@ -55,6 +63,7 @@ template <typename Children> static void observe(const Children &);
 #define VulkanDevice TimeoutDevice
 #define FOSSILIZE_REPLAY_TEST_WORKER worker
 #define FOSSILIZE_REPLAY_TEST_OBSERVE observe
+#define FOSSILIZE_REPLAY_TEST_PROSE_OFF
 #define main fossilize_replay_original_main
 #include "../cli/fossilize_replay.cpp"
 #undef main
@@ -472,6 +481,8 @@ int main(int argc, char **argv)
 {
 	if (argc != 2) return 2;
 	scenario = argv[1]; master_pid = getpid();
+ if(scenario=="event-timeout"){event_case=true;scenario="no-progress";}
+ if(scenario=="event-retry"){event_case=true;scenario="recovery";}
 	struct rlimit limit = {}; setrlimit(RLIMIT_CORE,&limit); signal(SIGALRM,emergency_watchdog); alarm(20);
 	void *mapping = mmap(nullptr,sizeof(Shared),PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANONYMOUS,-1,0);
 	if (mapping == MAP_FAILED) return 90;
@@ -498,6 +509,14 @@ int main(int argc, char **argv)
 			checks.require(barriers->signal_order.load() == 1,"M16/parent-stored-cause-before-actual-abort");
 		}
 		else checks.require(!e.triggers[0].present,"M16/no-invented-no-progress");
+  if(event_case)
+  {
+   const auto &origin=r.previous_event_count?r.previous_events[0]:r.events;
+   bool found=false;for(unsigned i=0;i<origin.count;i++){const auto &v=origin.events[i];found|=v.phase==Fossilize::ReplayEvent::Timeout&&v.reason==Fossilize::ReplayEvent::NoProgress&&v.threshold==2000000000ull&&v.elapsed==2500000000ull&&v.worker==0&&v.attempt==1&&(v.known&(Fossilize::ReplayEvent::Worker|Fossilize::ReplayEvent::Attempt|Fossilize::ReplayEvent::Duration))==(Fossilize::ReplayEvent::Worker|Fossilize::ReplayEvent::Attempt|Fossilize::ReplayEvent::Duration);checks.require(!(v.known&Fossilize::ReplayEvent::HasHash),"M18/no-timeout-invented-culprit");}
+   checks.require(origin.hello&&origin.eof&&found&&r.assigned[1].begin==0&&r.assigned[1].end==2,"M18/controller-actual-dispatcher-origin-fields");
+   if(scenario=="recovery")checks.require(r.complete&&r.events.final&&r.events.successful()&&r.events.attempt==2&&r.previous_event_count==1,"M18/retry-success-preserves-origin-attempt");
+  }
+
 		if (scenario == "heartbeat" || scenario == "heartbeat-reset") checks.require(e.triggers[1].present && e.triggers[1].threshold_ns == 10000000000ull && e.triggers[1].elapsed_ns == 10500000000ull,"M16/heartbeat-measured-origin");
 		else checks.require(!e.triggers[1].present,"M16/no-invented-heartbeat");
 		if (scenario == "cleanup" || scenario == "escalation" || scenario == "delivery-failure" || scenario == "kill-failure")

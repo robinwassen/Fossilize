@@ -758,3 +758,35 @@ It adds no callback rollback or allocator-exhaustion guarantee. Native Windows
 verification is user-waived and unverified; real GPU/driver and Steam execution
 are excluded. Public bool parse/callback declarations and shared progress layout
 remain unchanged; no complete parser-security or binary-ABI claim is made.
+
+## Worker origin reasons (issue #18)
+
+The private [worker event protocol](specs/replay-worker-events.md) carries controlled
+parser reasons, signed creation results and measured no-progress facts separately
+from human logs. `replay-event-unit-*` assert stable IDs, known/unknown fields,
+stream fragmentation, bounded malformed input, negotiation/attempts and a 768-case
+fixed-seed corpus. `replay-event-producer-{parse,creation}` use actual detectors;
+`replay-event-controller-*` retain production worker/controller facts over real
+processes and pipes with prose disabled in the controller fixture. Timeout/retry
+aliases retain the existing fake-clock/barrier dispatcher fixture. FINAL loss and
+pre-report death remain explicit uncertainty. `replay-event-old-header-compatibility`
+compiles unchanged callers with actual input public headers before candidate
+headers, links candidate libraries and executes the callers and CLI.
+
+Run the complete Linux CPU matrix in separate Debug/Release, exceptions OFF/ON
+builds with SPIR-V validation ON, then repeat event/controller, timeout and fork
+cases three times. Build codec/parser/producer runners with ASan+UBSan and run
+`^(replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)`.
+Use the published-intent verification lock for every command. Sensitivity controls
+in isolated copies suppress originating detail or bypass the FINAL completion gate;
+only compiled explicit M18 assertion failures count as detection. Native Windows
+verification is user-waived and remains unverified; no GPU/Steam/cache-persistence
+claim follows from these checks.
+
+The registered `replay-event-unit-startup` exercises the actual shared slave
+startup decoder with every nonempty OFFER prefix, malformed/oversized/invalid
+bytes, valid negotiation and exact first legacy hashes. The portable
+`replay-event-controller-startup-input` sends those binary inputs through the
+production CLI stdin slave path and checks native exit status and HELLO/FINAL
+presence. These checks remain active in Release; an empty stdin is an explicit
+legacy control rather than an incomplete offer claim.

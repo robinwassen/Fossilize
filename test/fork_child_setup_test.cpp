@@ -152,12 +152,29 @@ int __wrap_dup2(int from, int to)
 			event(to == STDOUT_FILENO ? Output : Input);
 			if (to == STDIN_FILENO)
 			{
-				// No banned modules are in this fixture. Read actual controller EOF,
-				// without setting stdio's EOF flag or replacing the worker protocol.
-				char byte;
+				// Observe the actual startup bytes and EOF before the fault/recovery
+				// barrier. Replay identical bytes through a private pipe so production
+				// slave negotiation still consumes the controller's original offer.
+				char startup[Fossilize::ReplayEvent::MaxFrame];
+				size_t used = 0;
 				ssize_t n;
-				do { n = __real_read(STDIN_FILENO, &byte, 1); } while (n < 0 && errno == EINTR);
+				do
+				{
+					do { n = __real_read(STDIN_FILENO, startup + used, sizeof(startup) - used); } while (n < 0 && errno == EINTR);
+					if (n > 0) used += size_t(n);
+					if (used == sizeof(startup)) { event(Fallthrough, 1); _exit(92); }
+				} while (n > 0);
 				if (n != 0) { event(Fallthrough, 1); _exit(92); }
+				if (used)
+				{
+					uint64_t worker_id = 0, attempt_id = 0; bool recognized = false;
+					if (!Fossilize::ReplayEvent::offer(startup, used, worker_id, attempt_id, recognized) || !recognized || worker_id > 1 || !attempt_id)
+					{ event(Fallthrough, 1); _exit(92); }
+					int replay_pipe[2];
+					if (__real_pipe(replay_pipe) != 0 || write(replay_pipe[1], startup, used) != ssize_t(used) ||
+					    __real_dup2(replay_pipe[0], STDIN_FILENO) < 0) _exit(92);
+					close(replay_pipe[0]); close(replay_pipe[1]);
+				}
 				event(InputEOF);
 				if (recovery && generation == 1)
 				{

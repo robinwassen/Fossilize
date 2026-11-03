@@ -1,3 +1,4 @@
+#include "replay_event.hpp"
 /* Copyright (c) 2018-2019 Hans-Kristian Arntzen
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -3008,6 +3009,12 @@ static uint64_t string_to_uint64(const char* str)
 // Keep a reason for each failed call, including repeated calls in an embedding host.
 static bool input_error(const char *reason, const char *field, const Hash *hash = nullptr)
 {
+	ReplayEvent::Event e; e.phase = ReplayEvent::Parse;
+	e.reason = !strcmp(reason, "incompatible-version") ? ReplayEvent::IncompatibleVersion :
+	           !strcmp(reason, "malformed-envelope") ? ReplayEvent::MalformedEnvelope :
+	           !strncmp(field, "shaderModules", 13) ? ReplayEvent::InvalidShader : ReplayEvent::InvalidRecord;
+	if (hash) { e.known = ReplayEvent::HasTag | ReplayEvent::HasHash; e.tag = RESOURCE_SHADER_MODULE; e.hash = *hash; }
+	ReplayEvent::detected(e);
 	if (get_thread_log_level() <= LOG_ERROR)
 	{
 		if (hash)
@@ -6390,7 +6397,14 @@ ScratchAllocator &StateReplayer::get_allocator()
 
 bool StateReplayer::parse(StateCreatorInterface &iface, DatabaseInterface *resolver, const void *buffer, size_t size)
 {
-	return impl->parse(iface, resolver, buffer, size);
+	ReplayEvent::ParseCapture capture(true);
+	bool ok = impl->parse(iface, resolver, buffer, size);
+	// A public reentrant call is independent from the outer parser operation.
+	// Only an explicitly scoped receiver gets this call's result; successful
+	// calls clear it. Impl dependency recursion keeps this operation's slot.
+	if (capture.previous && !capture.previous_boundary)
+		*capture.previous = ok ? ReplayEvent::Event{} : capture.result;
+	return ok;
 }
 
 void StateReplayer::set_resolve_derivative_pipeline_handles(bool enable)
@@ -6473,6 +6487,9 @@ bool StateReplayer::Impl::parse(StateCreatorInterface &iface, DatabaseInterface 
 	{
 		auto error = int(doc.GetParseError());
 		auto offset = static_cast<unsigned long long>(doc.GetErrorOffset());
+		ReplayEvent::Event e; e.phase = ReplayEvent::Parse; e.reason = ReplayEvent::InvalidJSON;
+		e.known = ReplayEvent::Raw | ReplayEvent::Offset; e.domain = ReplayEvent::RapidJSON; e.raw = error; e.offset = offset;
+		ReplayEvent::detected(e);
 		if (get_thread_log_level() <= LOG_ERROR &&
 		    !Internal::log_thread_callback(LOG_ERROR, "Parser input error: reason=invalid-json error=%d offset=%llu\n", error, offset))
 			LOGE("Parser input error: reason=invalid-json error=%d offset=%llu\n", error, offset);

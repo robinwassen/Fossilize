@@ -85,6 +85,7 @@ struct ProcessProgress
 
 	OVERLAPPED overlapped_pipe = {};
 	char async_pipe_buffer[1024];
+	Fossilize::ReplayEvent::Stream stream;
 
 	int compute_progress = -1;
 	int graphics_progress = -1;
@@ -111,7 +112,7 @@ bool ProcessProgress::kick_overlapped_io()
 	// The PIPE_TYPE_MESSSAGE mode makes sure that we read messages one at a time and not random binary data,
 	// so it's safe to do a large read here.
 	if (!ReadFile(crash_file_handle, async_pipe_buffer, sizeof(async_pipe_buffer), nullptr, &overlapped_pipe) &&
-	    GetLastError() != ERROR_IO_PENDING)
+	    GetLastError() != ERROR_IO_PENDING && GetLastError() != ERROR_MORE_DATA)
 	{
 		return false;
 	}
@@ -182,6 +183,7 @@ void ProcessProgress::parse(const char *cmd)
 		{
 			// Just forward the message.
 			char buffer[ControlBlockMessageSize] = {};
+			if (strlen(cmd) >= sizeof(buffer)) { outcome.events.lost = true; return; }
 			strcpy(buffer, cmd);
 
 			if (WaitForSingleObject(Global::shared_mutex, INFINITE) == WAIT_OBJECT_0)
@@ -259,6 +261,7 @@ void ProcessProgress::parse(const char *cmd)
 	}
 	else if (strncmp(cmd, "MODULE_UUID", 11) == 0)
 	{
+		if (strlen(cmd) != 12 + VK_UUID_SIZE * 2) { outcome.events.lost = true; return; }
 		memcpy(module_uuid_path, cmd + 12, VK_UUID_SIZE * 2);
 	}
 	else if (strncmp(cmd, "MODULE", 6) == 0)
@@ -270,6 +273,7 @@ void ProcessProgress::parse(const char *cmd)
 		{
 			Global::control_block->banned_modules.fetch_add(1, std::memory_order_relaxed);
 			char buffer[ControlBlockMessageSize] = {};
+			if (strlen(cmd) >= sizeof(buffer)) { outcome.events.lost = true; return; }
 			strcpy(buffer, cmd);
 
 			if (WaitForSingleObject(Global::shared_mutex, INFINITE) == WAIT_OBJECT_0)
@@ -297,23 +301,11 @@ bool ProcessProgress::process_once()
 		return false;
 	}
 
-	if (!GetOverlappedResult(crash_file_handle, &overlapped_pipe, &did_read, TRUE))
-		return false;
-
-	if (did_read < sizeof(async_pipe_buffer))
-	{
-		async_pipe_buffer[did_read] = '\0';
-		parse(async_pipe_buffer);
-		//LOGE("Parsed: %s", async_pipe_buffer);
-		if (!kick_overlapped_io())
-		{
-			LOGE("Failed to kick overlapped IO.\n");
-			return false;
-		}
-		return true;
-	}
-	else
-		return false;
+	BOOL ok = GetOverlappedResult(crash_file_handle, &overlapped_pipe, &did_read, TRUE);
+	if (!ok && GetLastError() != ERROR_MORE_DATA) return false;
+	if (did_read)
+		stream.feed(outcome.events, async_pipe_buffer, size_t(did_read), [this](const char *line) { parse(line); });
+	return kick_overlapped_io();
 }
 
 WorkerDisposition ProcessProgress::process_shutdown()
@@ -345,6 +337,8 @@ WorkerDisposition ProcessProgress::process_shutdown()
 	if (crash_file_handle != INVALID_HANDLE_VALUE)
 		CloseHandle(crash_file_handle);
 	crash_file_handle = INVALID_HANDLE_VALUE;
+
+	stream.finish(outcome.events);
 
 	// Close some handles.
 	if (timer_handle)
@@ -397,16 +391,22 @@ WorkerDisposition ProcessProgress::process_shutdown()
 	return disposition;
 }
 
-static void send_faulty_modules_and_close(HANDLE file)
+static unsigned send_faulty_modules_and_close(HANDLE file, unsigned worker, unsigned attempt)
 {
+	unsigned error = 0;
+	char payload[96], frame[ReplayEvent::MaxFrame];
+	snprintf(payload, sizeof(payload), "1 OFFER 2 %u %u", worker, attempt);
+	if (!ReplayEvent::frame(frame, sizeof(frame), payload)) error = ERROR_INVALID_DATA;
+	else if (!write_all(file, frame)) error = GetLastError();
 	for (auto &m : Global::faulty_spirv_modules)
 	{
+		if (error) break;
 		char buffer[18];
 		sprintf(buffer, "%" PRIx64 "\n", m);
-		write_all(file, buffer);
+		if (!write_all(file, buffer)) error = GetLastError();
 	}
-
-	CloseHandle(file);
+	if (!CloseHandle(file) && !error) error = GetLastError();
+	return error;
 }
 
 static bool CreateCustomPipe(HANDLE *read_pipe, HANDLE *write_pipe, LPSECURITY_ATTRIBUTES attrs, bool overlapped_read)
@@ -444,17 +444,10 @@ bool ProcessProgress::start_child_process()
 	compute_progress = -1;
 	raytracing_progress = -1;
 
-	if (start_graphics_index >= end_graphics_index &&
-	    start_compute_index >= end_compute_index &&
-	    start_raytracing_index >= end_raytracing_index)
-	{
-		// Nothing to do.
-		outcome.complete = !outcome.skipped();
-		return true;
-	}
-
 	outcome.attempts++;
 	outcome.timeout.begin(outcome.attempts);
+	outcome.begin_events(index);
+	stream = {};
 	cleanup_deadline = {};
 	expect_kill = false;
 	supervision_failed = false;
@@ -723,15 +716,15 @@ bool ProcessProgress::start_child_process()
 	CloseHandle(pi.hThread);
 	process = pi.hProcess;
 
-	// Send over which SPIR-V modules should be ignored.
-	send_faulty_modules_and_close(master_stdout_write);
-
 	crash_file_handle = master_stdout_read;
 	Global::active_processes++;
 
 	pipe_event = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 	if (!pipe_event)
 	{
+		outcome.native_error = GetLastError();
+		outcome.events.lost = true;
+		CloseHandle(master_stdout_write);
 		LOGE("Failed to create event.\n");
 		return false;
 	}
@@ -740,10 +733,20 @@ bool ProcessProgress::start_child_process()
 	// The pipe_event will signal once something happens.
 	if (!kick_overlapped_io())
 	{
+		outcome.native_error = GetLastError();
+		outcome.events.lost = true;
+		CloseHandle(master_stdout_write);
 		LOGE("Failed to start overlapped I/O.\n");
 		return false;
 	}
 
+	unsigned input_error = send_faulty_modules_and_close(master_stdout_write, index, outcome.attempts);
+	if (input_error)
+	{
+		outcome.native_error = input_error;
+		outcome.events.lost = true;
+		return false;
+	}
 	return true;
 }
 
@@ -1339,6 +1342,12 @@ static void install_trivial_crash_handlers(ThreadedReplayer &replayer)
 
 static void report_timeout(const ReplayTimeoutTrigger &trigger)
 {
+	if (global_replayer)
+	{
+		ReplayEvent::Event e; e.phase = ReplayEvent::Timeout; e.reason = ReplayEvent::NoProgress;
+		e.known = ReplayEvent::Duration; e.threshold = trigger.threshold_ns; e.elapsed = trigger.elapsed_ns;
+		global_replayer->emit_event(e);
+	}
 	if (crash_handle)
 	{
 		char buffer[128];
@@ -1420,19 +1429,13 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 
 	// In slave mode, we can receive a list of shader module hashes we should ignore.
 	// This is to avoid trying to replay the same faulty shader modules again and again.
-	char ignored_shader_module_hash[16 + 2];
-	while (fgets(ignored_shader_module_hash, sizeof(ignored_shader_module_hash), stdin))
-	{
-		errno = 0;
-		auto hash = strtoull(ignored_shader_module_hash, nullptr, 16);
-		if (hash == 0)
-			break;
-		if (errno == 0)
-		{
-			//LOGE("Ignoring module %llx\n", hash);
-			replayer.mask_shader_module(Hash(hash));
-		}
-	}
+	bool rich = false;
+	uint64_t event_worker = 0, event_attempt = 0;
+	// Preserve raw LF/CR/NUL bytes at the shared startup decoder boundary.
+	if (_setmode(_fileno(stdin), _O_BINARY) == -1) return EXIT_FAILURE;
+	if (!ReplayEvent::startup(stdin, rich, event_worker, event_attempt,
+	                          [&replayer](uint64_t hash) { replayer.mask_shader_module(Hash(hash)); }))
+		return EXIT_FAILURE;
 
 	// Make sure that the driver or some other agent cannot write to stdout and confuse the master process.
 	if (!DuplicateHandle(
@@ -1456,14 +1459,35 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 	// Release code however, is caught just fine.
 	signal(SIGABRT, abort_handler);
 
+	if (rich)
+	{
+		replayer.event_worker = event_worker; replayer.event_attempt = event_attempt;
+		replayer.event_writer = [](const char *frame) { return write_all(crash_handle, frame); };
+		char payload[96], frame[ReplayEvent::MaxFrame];
+		snprintf(payload,sizeof(payload),"1 HELLO %llu %llu",(unsigned long long)event_worker,(unsigned long long)event_attempt);
+		if (!ReplayEvent::frame(frame,sizeof(frame),payload) || !replayer.event_writer(frame)) return EXIT_FAILURE;
+	}
+
 	global_replayer = &replayer;
-	int code = run_normal_process(replayer, databases, nullptr, 0, reinterpret_cast<intptr_t>(Global::metadata_handle));
+	int code;
+	if (rich && replayer_opts.start_graphics_index >= replayer_opts.end_graphics_index &&
+	    replayer_opts.start_compute_index >= replayer_opts.end_compute_index &&
+	    replayer_opts.start_raytracing_index >= replayer_opts.end_raytracing_index)
+	{
+		// Preserve the controller's original no-device zero-assignment path,
+		// while making this launched worker's negotiation/finalization explicit.
+		replayer.work_drained = true;
+		code = EXIT_SUCCESS;
+	}
+	else
+		code = run_normal_process(replayer, databases, nullptr, 0, reinterpret_cast<intptr_t>(Global::metadata_handle));
 	if (code == EXIT_FAILURE)
 	{
 		char terminal[64];
 		snprintf(terminal, sizeof(terminal), "REPLAY_FAILED %u %u\n", replayer.outcome.failure_mask(), replayer.work_drained ? 1u : 0u);
 		write_all(crash_handle, terminal);
 	}
+	replayer.finish_events(code);
 	global_replayer = nullptr;
 
 	// Do not try to catch errors in teardown. Crashes here should never happen, and if they do,
