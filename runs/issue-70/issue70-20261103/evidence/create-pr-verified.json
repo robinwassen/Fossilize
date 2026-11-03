@@ -1,0 +1,24 @@
+{
+  "baseRefName": "master",
+  "body": "## Problem\n\nReplay can wait for parent-context jobs queued behind ordinary pipeline jobs in other memory contexts. The watchdog previously observed only completions in the awaited context, so productive FIFO work could trigger a false timeout and crash recovery.\n\n## What changes\n\nObserve completed jobs across all memory contexts when resetting the existing monotonic no-progress deadline. Synchronization still waits for the requested context to drain. Add deterministic GPU-independent FIFO, true-stall, normal-completion and cancellation regressions, and document the corrected timeout semantics.\n\n## Why this matters\n\nUseful replay work no longer triggers recovery merely because its completions belong to a different memory context. A worker that stops completing work still reaches its configured deadline.\n\n## Why this approach\n\nRead the existing counters under the existing queue mutex and widen their sum to `uint64_t`. This keeps the correction within progress accounting while preserving queue ordering, heartbeat, cancellation, recovery, CLI options, public interfaces, formats and cache-marker policy.\n\n## Verification and limits\n\n- Linux Debug/Release \u00d7 exceptions OFF/ON: all 222 registered CPU tests passed in each configuration; all 38 timeout tests passed three consecutive runs per configuration.\n- Candidate-derived original-rule Debug/Release controls compile and reproduce the intended false timeout with one and two compilation threads; normal completion and genuine-stall controls pass.\n- The independent work-unit checker reran the full four-configuration matrix and original-rule controls; a separate fresh final checker passed 47 decisive tests three times each in Debug and Release (282 executions), with no findings.\n- [Independent work-unit report](https://github.com/robinwassen/Fossilize/blob/harness-artifacts/runs/issue-70/issue70-20261103/reports/check-unit-1.json) and [separate final report](https://github.com/robinwassen/Fossilize/blob/harness-artifacts/runs/issue-70/issue70-20261103/reports/check-final-1.json).\n- Native Windows execution was explicitly waived as unavailable on this machine and remains unverified. These CPU fixtures establish no GPU, driver, Steam timing or output-durability result.\n\n## Task references\n\nCloses https://github.com/robinwassen/Fossilize/issues/70\n\n<!-- harness-source-pr:issue70-20261103:a380f6a26b9129944ab8384d1952ae1610902779 -->\n",
+  "closingIssuesReferences": [
+    {
+      "id": "I_kwDOVZpjbc8AAAABbkyBXA",
+      "number": 70,
+      "repository": {
+        "id": "R_kgDOVZpjbQ",
+        "name": "Fossilize",
+        "owner": {
+          "id": "MDQ6VXNlcjMwMjE1MQ==",
+          "login": "robinwassen"
+        }
+      },
+      "url": "https://github.com/robinwassen/Fossilize/issues/70"
+    }
+  ],
+  "headRefName": "codex/issue-70-worker-progress",
+  "headRefOid": "a380f6a26b9129944ab8384d1952ae1610902779",
+  "isDraft": false,
+  "state": "OPEN",
+  "url": "https://github.com/robinwassen/Fossilize/pull/74"
+}
