@@ -265,14 +265,52 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/70",
+      "attempt_id": "check-unit-3",
       "evidence": "Own fresh Release exceptionsOFF final gate exits8. First registered fork-child-recovery-stdout-dup2 execution exits1 with exactly FAIL production-no-progress-failure-retained; summary births=2 injections=1 normal-workers=0 failures=1. Generation1 emits zero-progress cursors, exits2 and retries. Generation2 reaches the intended fatal stdout dup2 injection and exits1; log first reports Failed to start child process and parent cleanup SIGKILL request. Source-supported race inference: child fatal setup can close stdin before parent OFFER write; start_child_process records input_error and returns false, recovery caller returns into ControllerChildrenCleanup, which sets expect_kill=true even if the child already exited. process_shutdown suppresses its dirty-process-death counter while unchanged fixture requires1. Other assertions passed. These incoming #18 files are unchanged versus base; mandatory integration still blocks. No selective retry was performed.",
       "id": "M70-INTEGRATE73-FINAL1-STARTUP-COUNTER-RACE",
       "location": "test/fork_child_setup_test.cpp:507; cli/fossilize_replay_linux.hpp:645-650,1050-1059,1110-1113,451-460",
       "log": "runs/issue-70/issue70-integrate73-20261103/evidence/final1-release-decisive.log",
       "native_log": "runs/issue-70/issue70-integrate73-20261103/evidence/final1-release-lasttest.log",
       "next_action": "Resolve startup failure/counter semantics or deterministic planned fixture path while preserving required crash-counter/outcome assertions; renew unit and separate final acceptance and supersede stale readiness at the resulting tuple.",
+      "recheck": {
+        "affected_pass_counts": {
+          "debug": {
+            "fork-child-recovery-sigmask": 25,
+            "fork-child-recovery-stdin-dup2": 25,
+            "fork-child-recovery-stdout-dup2": 25
+          },
+          "release": {
+            "fork-child-recovery-sigmask": 25,
+            "fork-child-recovery-stdin-dup2": 25,
+            "fork-child-recovery-stdout-dup2": 25
+          }
+        },
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/70",
+        "artifact_root": "runs/issue-70/issue70-integrate73-20261103/evidence/",
+        "artifacts": [
+          "check3-review.txt",
+          "check3-audit-5.txt",
+          "check3-debug-exceptions-off-affected.log",
+          "check3-release-exceptions-off-affected.log",
+          "check3-debug-startup-selected-native.log",
+          "check3-release-startup-selected-native.log"
+        ],
+        "attempt_id": "check-unit-3",
+        "base_sha": "84fd2d97cbba2b3c9b9d4edafd4269c93d611523",
+        "candidate_sha": "9ea00c4eb3587a8c6622578b718d9caac2c65442",
+        "evidence": "Independent source/spec review confirms real OFFER+EOF before fatal injection selects delivered-startup setup failure, whose original dirty-crash=1 oracle is valid. Parent startup EPIPE instead marks native_error/lost and enters parent-requested cleanup; process_shutdown explicitly excludes that cleanup from legacy crash counters. Existing deterministic startup-close/hash-close tests retain this opposite native-error/loss/unknown-origin contract using waitid(WNOWAIT), without fixture reaping. Own fresh Debug/Release OFF each built all targets and passed all260 CPU IDs, complete99 decisive IDs3 times, and affected recovery-sigmask/stdout-dup2/stdin-dup2 each25 additional times. Every original native exit/reap/no-fallthrough/atexit/destructor/stdio/progress/counter/outcome assertion is unchanged; new exact worker/attempt/OFFER-before-injection/outcome assertions also passed. Both native delivery error cases passed full+3 repeats in both builds. This repairs fixture ordering rather than changing production semantics or accepting a weaker crash/outcome result. No selective retry of the historical failed command was used; it remains historical failed evidence.",
+        "finding_id": "M70-INTEGRATE73-FINAL1-STARTUP-COUNTER-RACE",
+        "input_revision": 170,
+        "input_sha": "9ea00c4eb3587a8c6622578b718d9caac2c65442",
+        "operation": "work_unit",
+        "plan_version": 2,
+        "resolution_evidence": "Independent source/spec review confirms real OFFER+EOF before fatal injection selects delivered-startup setup failure, whose original dirty-crash=1 oracle is valid. Parent startup EPIPE instead marks native_error/lost and enters parent-requested cleanup; process_shutdown explicitly excludes that cleanup from legacy crash counters. Existing deterministic startup-close/hash-close tests retain this opposite native-error/loss/unknown-origin contract using waitid(WNOWAIT), without fixture reaping. Own fresh Debug/Release OFF each built all targets and passed all260 CPU IDs, complete99 decisive IDs3 times, and affected recovery-sigmask/stdout-dup2/stdin-dup2 each25 additional times. Every original native exit/reap/no-fallthrough/atexit/destructor/stdio/progress/counter/outcome assertion is unchanged; new exact worker/attempt/OFFER-before-injection/outcome assertions also passed. Both native delivery error cases passed full+3 repeats in both builds. This repairs fixture ordering rather than changing production semantics or accepting a weaker crash/outcome result. No selective retry of the historical failed command was used; it remains historical failed evidence.",
+        "role": "checker",
+        "work_unit": "https://github.com/robinwassen/Fossilize/issues/70",
+        "worker_id": "/root/checker70_integrate73_3"
+      },
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -7441,7 +7479,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 221,
+  "revision": 222,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
