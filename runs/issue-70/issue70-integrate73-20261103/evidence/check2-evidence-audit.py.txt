@@ -1,0 +1,77 @@
+import pathlib,json,re,collections,shutil
+b=pathlib.Path('/tmp/fossilize-issue70-integrate73');o=b/'output/checker-2';prefix='runs/issue-70/issue70-integrate73-20261103/evidence/'
+tuple_fields=['role','attempt_id','worker_id','input_revision','input_sha','candidate_sha','base_sha','plan_version','operation','work_unit'];state=json.load(open(b/'state.json'))['state'];a=state['attempts'][-1];assert a['attempt_id']=='check-unit-2';envelope={k:a[k] for k in tuple_fields}
+regex=re.compile(r'^(replay-timeout-|replay-event-|fork-child-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)')
+variants=['debug-exceptions-off','debug-exceptions-on','release-exceptions-off','release-exceptions-on'];configs=[];commands=[];all_names=None
+for v in variants:
+ d=json.load(open(o/f'check2-{v}-discovery.json'))['tests'];names=[t['name'] for t in d];selected=[x for x in names if regex.search(x)];assert len(names)==260 and len(selected)==99 and len(set(names))==260
+ assert not any(any(p['name']=='DISABLED' and p['value'] for p in t['properties']) for t in d)
+ if all_names is None:all_names=names
+ assert set(names)==set(all_names)
+ counts={}
+ for mode,expected in [('full_cpu',{n:1 for n in names}),('decisive_repeat',{n:3 for n in selected})]:
+  text=(o/f'check2-{v}-{mode}.log').read_text();passed=re.findall(r'Test\s+#\d+:\s+(\S+)\s+.*?Passed',text);observed=dict(collections.Counter(passed));assert observed==expected
+  assert not any(x in text for x in ['***Failed','***Skipped','Not Run','***Exception'])
+  counts[mode]=observed
+ for mode in ['configure','build','discovery','full_cpu','decisive_repeat']:
+  status=json.load(open(o/f'check2-{v}-{mode}-status.json'));assert status['exit_code']==0;commands.append(status)
+ last=b/'build/checker-2'/v/'Testing/Temporary/LastTest.log';shutil.copyfile(last,o/f'check2-{v}-lasttest.log');text=last.read_text()
+ for case in ['context-progress-1','context-progress-2','context-stall-1','context-stall-2','context-normal-1','context-normal-2']:
+  if 'stall' in case:summary=f'Executed M70/{case} failures=0 native_exit=1 completed=1 abort=1 drained=0'
+  else:summary=f'Executed M70/{case} failures=0 native_exit=0 completed=4 abort=0 drained=1'
+  assert text.count(summary)==3
+ cache=(b/'build/checker-2'/v/'CMakeCache.txt').read_text();opts=[x for x in cache.splitlines() if x.startswith(('CMAKE_BUILD_TYPE:','CMAKE_CXX_COMPILER:','FOSSILIZE_ENABLE_EXCEPTIONS:','FOSSILIZE_CLI:','FOSSILIZE_VULKAN_LAYER:','FOSSILIZE_TESTS:','FOSSILIZE_TEST_RUNTIME_LAYER:','FOSSILIZE_REPLAYER_SPIRV_VAL:'))]
+ cc=json.load(open(b/'build/checker-2'/v/'compile_commands.json'));compile=next(x['command'] for x in cc if x['file'].endswith('/test/replay_timeout_controller_test.cpp'));assert ('-DNDEBUG' in compile)==v.startswith('release');assert ('-fno-exceptions' in compile)==v.endswith('off')
+ configs.append(dict(variant=v,discovered=names,selected=selected,disabled=[],skipped=[],executed_counts=counts,cache_flags=opts,fixture_compile_command=compile,full_log=prefix+f'check2-{v}-full_cpu.log',repeat_log=prefix+f'check2-{v}-decisive_repeat.log',native_log=prefix+f'check2-{v}-lasttest.log'))
+mutation=[]
+for v in ['debug','release']:
+ oracle=json.load(open(o/f'mutant-{v}-oracle/oracle.json'));assert oracle['passed'] and len(oracle['results'])==2
+ pos=(o/f'check2-mutant-{v}-positive_controls.log').read_text();assert '100% tests passed out of 4' in pos and 'FAIL ' not in pos
+ assert 'Executed M16/controller-no-progress failures=0 result=1' in pos and 'Executed M16/controller-multithread failures=0 result=1' in pos
+ for case in ['no-progress','multithread']:
+  assert re.search(r'Executed M16/controller-'+case+r' failures=0 result=1 creates=\d+ completed=0',pos)
+ for n in [1,2]:assert f'Executed M70/context-normal-{n} failures=0 native_exit=0 completed=4 abort=0 drained=1' in pos
+ for mode in ['configure-v2','build','discovery','positive_controls','expected_failure_command']:
+  status=json.load(open(o/f'check2-mutant-{v}-{mode}-status.json'));assert status['exit_code']==0;commands.append(status)
+ mutation.append(dict(variant=v,oracle=oracle,positive_controls=['replay-timeout-controller-'+x for x in ['no-progress','multithread','context-normal-1','context-normal-2']],positive_output=prefix+f'check2-mutant-{v}-positive_controls.log'))
+summary={'candidate_sha':envelope['candidate_sha'],'base_sha':envelope['base_sha'],'plan_version':2,'attempt_id':'check-unit-2','configurations':configs,'mutations':mutation,'totals':{'cpu_ids_per_variant':260,'full_cpu_executions':1040,'decisive_ids_per_variant':99,'decisive_executions':1188,'candidate_passed_executions':2228,'mutant_positive_executions':8,'mutant_expected_defect_executions':4,'disabled':0,'mandatory_skipped':0}}
+(o/'check2-execution-summary.json').write_text(json.dumps(summary,indent=2))
+ids=lambda *cases:['replay-timeout-controller-'+x for x in cases]
+maptests={
+'M70-FIFO-1':ids('context-progress-1'),
+'M70-FIFO-MULTI':ids('context-progress-2'),
+'M70-STALL':ids('context-stall-1','context-stall-2','no-progress','multithread','dispatcher-reset','dispatcher-disabled','ordinary-no-progress','ordinary-delivery-failure'),
+'M70-NORMAL':ids('context-normal-1','context-normal-2','clean','dispatcher-disabled')+['replay-outcome-worker-queue','replay-outcome-matrix'],
+'M70-CONTRACTS':[n for n in all_names if n.startswith('replay-timeout-') or n in ['replay-controller-signal','replay-controller-held-sibling','replay-controller-recover','replay-outcome-worker-queue','replay-outcome-matrix']],
+'M70-ORIGINAL-DEFECT':ids('context-progress-1','context-progress-2','no-progress','multithread','context-normal-1','context-normal-2'),
+'M70-COMPATIBILITY-DOCS':[n for n in all_names if n in ['replay-controller-cli-compatibility','replay-outcome-cli-compatibility','diagnostic-compatibility-test','replay-event-old-header-compatibility']],
+'M70-EVENT-INTEGRATION':[n for n in all_names if n.startswith('replay-event-') or n.startswith('fork-child-') or n in ['replay-timeout-controller-protocol','replay-timeout-controller-recovery','replay-controller-cli-compatibility','replay-outcome-cli-compatibility','diagnostic-compatibility-test']]}
+assert len(maptests)==8 and all(ts and set(ts)<=set(all_names) for ts in maptests.values())
+notes={
+'M70-FIFO-1':'Actual FIFO ordinary contexts0/1 finish4 creations beyond2s cumulative while context2 remains held; real outputs/outcome and cache preservation asserted, native0/completed4/abort0/drained1; all4 configurations full+3 repeats.',
+'M70-FIFO-MULTI':'Same with2 actual started compilation workers; held parent read prevents early drain; real threads joined and fork child reaped; all4 configurations full+3 repeats.',
+'M70-STALL':'Unchanged progress-then-stall1/2 assert actual3s since last completion,2s threshold, no trigger at1.999s, one real completion then native1/abort1/drained0. Ordinary zero-completion, zero-disabled, dispatcher reset, cause/native/reap controls also pass.',
+'M70-NORMAL':'Normal1/2 native0/completed4/abort0/drained1, required creation/parse outcome and requested drain; already-drained and disabled paths retained. Existing outcome matrix distinguishes failed/unsupported processing from completed queue.',
+'M70-CONTRACTS':'Portable deadlines and real-controller heartbeat/reset/cleanup/cancellation/recovery/unknown attribution/failed delivery assertions stay Release-active. Eight added M70 registrations all executed.',
+'M70-ORIGINAL-DEFECT':'Two independently built helper-only old-rule mutants (Debug/Release exceptions OFF). Each productive1/2 runner fails exactly two intended named assertions with native1/completed2/abort1/drained0; driver0 requires exact match. True completed0 stall controls and normal1/2 pass; generic build/crash/watchdog failures excluded.',
+'M70-COMPATIBILITY-DOCS':'Complete source diff preserves public declarations/options/capture/database/progress layouts/cache policies; both linked concise changelog entries checked against authoritative guideline. Actual input-header callers compile/link/run and CLI compatibility pass in4 configs; source compatibility only. Windows waived/unverified.',
+'M70-EVENT-INTEGRATION':'Preserved rich measured NoProgress with absent individual hash, legacy timeout/termination, bounded framing/startup HELLO/FINAL/native gate, retry-attempt origins, parser/creation producers and fork cleanup. All current event registrations and complete selected compatibility/fork IDs pass4 configs,3 decisive repeats each.'}
+plan=json.load(open(b/'output/plan-2.json'))['plan'];locations={c['id']:c['location'] for c in plan['cases']}
+test_mapping={k:dict(location=locations[k],tests=v,evidence=notes[k]) for k,v in maptests.items()}
+criterion_evidence=[dict(original_id='AC1',textual_acceptance_criterion=n,cases=cases,evidence='; '.join(notes[x] for x in cases)) for n,cases in [(1,['M70-FIFO-1','M70-FIFO-MULTI']),(2,['M70-STALL','M70-CONTRACTS','M70-EVENT-INTEGRATION']),(3,['M70-FIFO-1','M70-FIFO-MULTI','M70-STALL','M70-NORMAL','M70-ORIGINAL-DEFECT']),(4,['M70-COMPATIBILITY-DOCS','M70-CONTRACTS']),(5,['M70-COMPATIBILITY-DOCS','M70-EVENT-INTEGRATION','M70-ORIGINAL-DEFECT'])]]
+env=dict(platform='Linux x86_64',compiler='GNU13.3.0 /usr/bin/c++',builds='fresh Debug/Release x exceptions OFF/ON',options='CLI/layer/tests/SPIRV validation ON; runtime-layer OFF',parallel_build=2,ctest_jobs=1,process_timeout_seconds=600,working_outputs='Role-private, registered isolated fixture directories; inherited environment with no test override')
+evidence=[]
+for gate,log,cmd in [('M70-REVIEW','check2-review.txt',['git','diff','84fd2d97cbba2b3c9b9d4edafd4269c93d611523..HEAD']),('M70-INTEGRATION-SMOKE','check2-execution-summary.json',next(c['child_command'] for c in commands if c['intent_id']=='check2-debug-exceptions-off-decisive_repeat')),('M70-LINUX-MATRIX','check2-execution-summary.json',next(c['child_command'] for c in commands if c['intent_id']=='check2-release-exceptions-on-full_cpu')),('M70-MUTATION','check2-execution-summary.json',next(c['child_command'] for c in commands if c['intent_id']=='check2-mutant-release-expected_failure_command'))]:
+ evidence.append(dict(gate=gate,result='passed',exit_code=0,command=cmd,cwd=str(b/'checker-2'),environment=env,log=prefix+log,criteria=['AC1'],**{k:envelope[k] for k in ['candidate_sha','base_sha','plan_version','attempt_id']}))
+records={}
+for path in o.iterdir():
+ if path.is_file() and path.suffix in ['.json','.txt','.log'] and not path.name.startswith(('make-report','run-batch','candidate-intents','mutant-intents','mutant-configure','report-audit','check2-report-audit')):
+  records[prefix+path.name]=path.read_text()
+for v in ['debug','release']:
+ for path in (o/f'mutant-{v}-oracle').glob('*.*'):records[prefix+f'check2-mutant-{v}-raw-'+path.name]=path.read_text()
+records[prefix+'check2-live-issue.json']=(b/'output/checker2-live-issue.json').read_text()
+assert all(len(path.rsplit('/',1)[-1])<=100 and len(text.encode())<=1024*1024 for path,text in records.items())
+report={**envelope,'verdict':'accepted','findings':[],'evidence':evidence,'discovered':all_names,'executed':all_names,'skipped':[],'test_mapping':test_mapping,'criterion_evidence':criterion_evidence,'commands':[{k:v for k,v in c.items() if k not in ['wrapper']} for c in commands],'execution_summary':summary['totals'],'configuration_records':[dict(variant=c['variant'],inventory=prefix+f"check2-{c['variant']}-discovery.json",full_log=c['full_log'],repeat_log=c['repeat_log'],native_log=c['native_log']) for c in configs],'review_summary':'Independent complete current-base delta, merge parents/original/incoming composition, unchanged rich protocol/outcome paths, registration/assertions and both changelogs reviewed. All work-unit gates passed under plan2; no implementation edits or inherited passing reports used. Final/publication/delivery gates remain coordinator-owned and unaccepted here.','finding_resolution_record':prefix+'check2-finding-resolution.json','limitations':['Native Windows explicitly waived and unverified; portable source/registration is not native execution.','No GPU, proprietary corpus, Steam/game-launch, durable output, sanitizer renewal or general C++ binary ABI claim.','Work-unit acceptance only; fresh final checking and publication/delivery remain separate.'],'abandoned_intents':['check2-mutant-debug-configure','check2-mutant-release-configure'],'abandoned_reason':'Unexpanded configure placeholder caught before execution; preserved unexecuted and replaced by separately published literal configure-v2 intents.'}
+assert len(json.dumps(report).encode())<200*1024
+json.dump(report,open(b/'output/check-unit-2.json','w'),indent=2);json.dump(records,open(b/'output/check-unit-2-records.json','w'),indent=2)
+print(json.dumps(dict(report=str(b/'output/check-unit-2.json'),records=str(b/'output/check-unit-2-records.json'),record_count=len(records),report_bytes=len(json.dumps(report).encode()),totals=summary['totals']),indent=2))
