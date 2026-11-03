@@ -36,7 +36,6 @@ static int job_gate[4][2], parent_gate[2];
 class ThreadedReplayer;
 static ThreadedReplayer *context_replayer;
 static VkPipelineCache held_parent_cache;
-static const VkComputePipelineCreateInfo *context_infos;
 static unsigned context_steps;
 static bool cancellation_sent;
 
@@ -80,7 +79,7 @@ static VKAPI_ATTR VkResult VKAPI_CALL compute(VkDevice d, VkPipelineCache c, uin
 	barriers->creates.fetch_add(1);
 	if (context_case())
 	{
-		unsigned job = unsigned(i - context_infos);
+		unsigned job = unsigned(i->basePipelineIndex);
 		if (job >= 4) _exit(93);
 		byte_read(job_gate[job][0]);
 	}
@@ -242,7 +241,10 @@ extern "C" int __wrap_pthread_kill(pthread_t thread, int signal)
 		if (scenario == "delivery-failure" || scenario == "ordinary-delivery-failure") return EINVAL;
 		if (scenario == "recovery") write_all(crash_fd, "GRAPHICS 0 0\nCOMPUTE 0 0\nRAYTRACE 0 0\n");
 	}
-	return __real_pthread_kill(thread,signal);
+	int result = __real_pthread_kill(thread,signal);
+	if (context_case() && signal == SIGABRT && result == 0)
+		for (;;) pause();
+	return result;
 }
 struct Timer { itimerspec spec = {}; epoll_event event = {}; bool injected = false; };
 static std::map<int,Timer> timers;
@@ -530,22 +532,25 @@ struct ParentDatabase : DatabaseInterface
 	bool has_entry(ResourceTag t,Hash h) override { return db->has_entry(t,h); }
 	bool get_hash_list_for_resource_tag(ResourceTag t,size_t *n,Hash *h) override { return db->get_hash_list_for_resource_tag(t,n,h); }
 	void flush() override {}
+	const char *get_db_path_for_hash(ResourceTag t,Hash h) override { return db->get_db_path_for_hash(t,h); }
 };
 static int context_test()
 {
 	checks.require(fixture(),"M70/serialized-input-readback");
 	for (auto &gate : job_gate) if (pipe(gate)) return 90;
-	if (pipe(parent_gate)) return 90;
+	int evidence_pipe[2];
+	if (pipe(parent_gate) || pipe(evidence_pipe)) return 90;
 	DiagnosticStderr capture;
 	pid_t child = fork();
 	if (child == 0)
 	{
 		barriers->child_pid.store(unsigned(getpid()));
+		close(evidence_pipe[0]); crash_fd = evidence_pipe[1];
 		direct_dispatcher = true;
 		Global::worker_thread_index = 0;
 		VulkanDevice::Options device; device.null_device = true;
 		ThreadedReplayer::Options opts; opts.num_threads = scenario.back() == '2' ? 2 : 1; opts.timeout_seconds = 2;
-		ThreadedReplayer r(device,opts); context_replayer = &r; r.non_lazy = false;
+		ThreadedReplayer r(device,opts); context_replayer = &r;
 		r.device.reset(new TimeoutDevice);
 		checks.require(r.device->init_device(device),"M70/null-device-initialized");
 		ParentDatabase db; checks.require(db.prepare(),"M70/parent-database-prepared");
@@ -559,12 +564,13 @@ static int context_test()
 		r.reset_memory_context_pipeline_cache(2); held_parent_cache = r.memory_context_pipeline_cache[2];
 		checks.require(held_parent_cache != VK_NULL_HANDLE,"M70/held-parent-cache-exists");
 		VkComputePipelineCreateInfo infos[4] = {}; VkPipeline outputs[4] = {};
-		context_infos = infos;
 		r.start_worker_threads();
 		checks.require(r.thread_initialized_count == opts.num_threads,"M70/all-real-workers-started");
 		for (unsigned j = 0; j < 4; j++)
 		{
-			auto &i = infos[j]; i.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO; i.layout = layout;
+			auto &i = infos[j]; i.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+			// maintenance4 expects the deferred layout description, not a live handle.
+			i.layout = (VkPipelineLayout)&li; i.basePipelineIndex = int(j);
 			i.stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO; i.stage.module = module;
 			i.stage.stage = VK_SHADER_STAGE_COMPUTE_BIT; i.stage.pName = "main";
 			PipelineWorkItem item; item.tag = RESOURCE_COMPUTE_PIPELINE; item.hash = 0x300+j;
@@ -580,18 +586,30 @@ static int context_test()
 		checks.require(r.outcome.succeeded(),"M70/required-creation-and-parse-outcomes-successful");
 		for (auto output : outputs) checks.require(output != VK_NULL_HANDLE,"M70/real-successful-pipeline-output");
 		r.sync_worker_threads(); r.tear_down_threads();
-		barriers->parsed.store(1); _exit(checks.failures ? 3 : 0);
+		barriers->parsed.store(1); fflush(stdout); _exit(checks.failures ? 3 : 0);
 	}
+	close(evidence_pipe[1]);
 	int status; checks.require(waitpid(child,&status,0) == child,"M70/real-child-reaped");
+	std::string protocol; char buffer[512]; ssize_t count;
+	while ((count = ::read(evidence_pipe[0],buffer,sizeof(buffer))) > 0) protocol.append(buffer,size_t(count));
+	close(evidence_pipe[0]);
+	ReplayAttemptEvidence evidence;
+	for (size_t end; (end = protocol.find('\n')) != std::string::npos; protocol.erase(0,end+1))
+		replay_parse_timeout(evidence,protocol.substr(0,end).c_str());
 	bool stall = scenario.find("stall") != std::string::npos;
 	checks.require(WIFEXITED(status) && WEXITSTATUS(status) == (stall ? 1 : 0),
 	               stall ? "M70/genuine-stall-native-timeout" : "M70/productive-FIFO-must-not-timeout");
 	if (stall)
 	{
+		checks.require(evidence.triggers[0].present && evidence.triggers[0].threshold_ns == 2000000000ull &&
+		               evidence.triggers[0].elapsed_ns == 3000000000ull && evidence.request_count &&
+		               evidence.requests[0].mechanism == ReplayTermination::AbortSignal,
+		               "M70/retained-work-cause-and-abort-request");
 		checks.require(barriers->signal_order.load() == 1 && barriers->completed.load() == 1 && !barriers->teardown.load(),
 		               "M70/stall-after-one-real-completion-before-abort");
 	}
-	else checks.require(barriers->parsed.load() && barriers->completed.load() == 4 && !barriers->abort_requested.load(),
+	else checks.require(barriers->parsed.load() && barriers->completed.load() == 4 && !barriers->abort_requested.load() &&
+	                    !evidence.triggers[0].present && !evidence.request_count,
 	                    "M70/productive-FIFO-natural-success-without-recovery");
 	auto log = capture.finish();
 	if (stall) checks.contains(log,"threshold_ns=2000000000 elapsed_ns=3000000000","M70/stall-measured-since-last-worker-progress");
