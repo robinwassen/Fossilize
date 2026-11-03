@@ -1,0 +1,47 @@
+"""Dispatch one already-journaled external effect under the repository lock."""
+import hashlib, json, subprocess, sys, time
+from pathlib import Path
+repo=Path('/home/robin/.codex/worktrees/4f30/fossilize')
+sys.path.insert(0,str(repo/'.agents/skills/implement-change-harness/scripts'))
+from harness_state import Harness, GitHub, repository_lock, git, REF, require
+request=json.loads(Path(sys.argv[1]).read_text())
+latest=json.loads(Path('/tmp/fossilize-issue70/state.json').read_text())
+require(latest['artifact_publication']['status']=='confirmed','unconfirmed artifact checkpoint')
+expected=latest['tip']
+helper=Harness(repo,root_issue='https://github.com/robinwassen/Fossilize/issues/70',run_id='issue70-20261103')
+started=time.time()
+with repository_lock(repo,blocking=True) as waited:
+    if waited:
+        print(json.dumps({'status':'wait-settlement-required','receipt':helper.wait_receipt(started,waited)}))
+        sys.exit(3)
+    require(git(repo,'rev-parse',REF).decode().strip()==expected,'artifact tip changed; confirm latest before retry')
+    policy=latest['artifact_publication']['destination']
+    endpoint=git(repo,'remote','get-url','--push','origin').decode().strip()
+    require(hashlib.sha256(endpoint.encode()).hexdigest()==policy['endpoint_sha256'],'artifact destination changed')
+    remote=git(repo,'ls-remote','--refs',endpoint,REF).decode().split()
+    require(remote and remote[0]==expected,'exact artifact tip is not remotely confirmed')
+    state=json.loads(git(repo,'show',expected+':runs/issue-70/issue70-20261103/state.json'))
+    operation=json.loads(git(repo,'show',expected+':'+request['record']))
+    require(operation['status']=='dispatched','effect must have a published dispatched record')
+    require(operation['repository']=='robinwassen/Fossilize','wrong repository')
+    actual_binding={'phase':state['phase'],'operation':state['operation'],'publishing_stage':state['publishing']['stage'],'closeout_stage':state.get('closeout',{}).get('stage')}
+    require(operation['state_binding']==actual_binding,'external operation stage changed')
+    for key,value in [('candidate_sha',state['repository']['candidate_sha']),('base_sha',state['repository']['base_sha']),('plan_version',state['plan']['version']),('issue_input',state['issue_snapshot']['digest'])]:
+        require(operation[key]==value,'external operation binding changed: '+key)
+    helper.source(state)
+    GitHub().unchanged(state['issue_snapshot'])
+    for filename,identity in operation.get('input_files',{}).items():
+        require(hashlib.sha256(Path(filename).read_bytes()).hexdigest()==identity,'external input file changed')
+    command=operation['command']
+    require(command[:1] in (['gh'],['git']),'unsupported effect command')
+    require(operation['cwd']==str(repo),'wrong effect cwd')
+    claim=Path(request['claim'])
+    with claim.open('x') as stream:
+        stream.write(json.dumps({'operation':operation['operation'],'checkpoint':expected,'started':time.time()}))
+    try:
+        result=subprocess.run(command,cwd=repo,capture_output=True,text=True,timeout=60)
+        returned={'operation':operation['operation'],'checkpoint':expected,'exit_code':result.returncode,'stdout':result.stdout,'stderr':result.stderr,'finished':time.time()}
+    except subprocess.TimeoutExpired:
+        returned={'operation':operation['operation'],'checkpoint':expected,'status':'response-uncertain','finished':time.time()}
+    Path(request['result']).write_text(json.dumps(returned,indent=2))
+    print(json.dumps({'status':'returned' if returned.get('exit_code')==0 else 'reconcile-required','result':request['result']}))
