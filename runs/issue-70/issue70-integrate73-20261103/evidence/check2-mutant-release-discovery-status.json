@@ -1,0 +1,41 @@
+{
+  "intent_id": "check2-mutant-release-discovery",
+  "command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70-integrate73/build/checker-2/mutant-release",
+    "--show-only=json-v1"
+  ],
+  "child_command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70-integrate73/build/checker-2/mutant-release",
+    "--show-only=json-v1"
+  ],
+  "cwd": "/tmp/fossilize-issue70-integrate73/checker-2",
+  "timeout": 600,
+  "environment": {},
+  "log": "/tmp/fossilize-issue70-integrate73/output/checker-2/check2-mutant-release-discovery.json",
+  "receipt": "/tmp/fossilize-issue70-integrate73/output/checker-2/check2-mutant-release-discovery-receipt.json",
+  "wrapper": [
+    "python3",
+    "-B",
+    "/tmp/fossilize-issue70-integrate73/checker-2/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+    "--repo",
+    "/tmp/fossilize-issue70-integrate73/checker-2",
+    "--timeout",
+    "600",
+    "--intent-id",
+    "check2-mutant-release-discovery",
+    "--receipt",
+    "/tmp/fossilize-issue70-integrate73/output/checker-2/check2-mutant-release-discovery-receipt.json",
+    "--",
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-issue70-integrate73/build/checker-2/mutant-release",
+    "--show-only=json-v1"
+  ],
+  "exit_code": 0,
+  "started": 1793723774.791402,
+  "finished": 1793723774.8718956
+}
