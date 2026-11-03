@@ -7166,6 +7166,56 @@
         "receipt": "/tmp/fossilize-issue70-integrate73/output/final-2/final2-debug-discovery-receipt.json",
         "started": 1793731164.712399,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-issue70-integrate73/build/final-2/debug-exceptions-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(replay-timeout-|replay-event-|fork-child-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)",
+          "--repeat",
+          "until-fail:3",
+          "-j",
+          "1"
+        ],
+        "command": [
+          "python3",
+          "-B",
+          "/tmp/fossilize-issue70-integrate73/checker-final-2/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+          "--repo",
+          "/tmp/fossilize-issue70-integrate73/checker-final-2",
+          "--timeout",
+          "600",
+          "--intent-id",
+          "final2-debug-decisive",
+          "--receipt",
+          "/tmp/fossilize-issue70-integrate73/output/final-2/final2-debug-decisive-receipt.json",
+          "--",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-issue70-integrate73/build/final-2/debug-exceptions-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(replay-timeout-|replay-event-|fork-child-|replay-controller-(signal|held-sibling|recover|cli-compatibility)$|replay-outcome-(worker-queue|matrix|creation|cli-compatibility)$|diagnostic-compatibility-test$)",
+          "--repeat",
+          "until-fail:3",
+          "-j",
+          "1"
+        ],
+        "cwd": "/tmp/fossilize-issue70-integrate73/checker-final-2",
+        "eligible_deadline": 1793735079.3879633,
+        "environment": {
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "intent_id": "final2-debug-decisive",
+        "log": "/tmp/fossilize-issue70-integrate73/output/final-2/final2-debug-decisive.log",
+        "receipt": "/tmp/fossilize-issue70-integrate73/output/final-2/final2-debug-decisive-receipt.json",
+        "started": 1793731169.8763394,
+        "timeout": 600
       }
     ],
     "deadline": 1793735079.3879633,
@@ -8117,7 +8167,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 251,
+  "revision": 252,
   "root_issue": {
     "id": 6145474908,
     "node_id": "I_kwDOVZpjbc8AAAABbkyBXA",
