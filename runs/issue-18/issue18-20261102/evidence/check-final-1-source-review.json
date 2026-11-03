@@ -1,0 +1,105 @@
+{
+  "attempt_id": "check-final-1",
+  "base_sha": "4ea747ffa215f8057d12aa5525ba0e4497961e7d",
+  "candidate_sha": "8a47fc863d72f06c7e0ec3dc380697a8a351724c",
+  "diff_files": [
+    "CHANGELOG.md",
+    "CMakeLists.txt",
+    "cli/fossilize_replay.cpp",
+    "cli/fossilize_replay_linux.hpp",
+    "cli/fossilize_replay_windows.hpp",
+    "cli/replay_worker_outcome.hpp",
+    "fossilize.cpp",
+    "local-docs/specs/replay-worker-events.md",
+    "local-docs/verification.md",
+    "replay_event.hpp",
+    "replay_parse_result.cpp",
+    "test/CMakeLists.txt",
+    "test/fork_child_setup_test.cpp",
+    "test/replay_controller_test.cpp",
+    "test/replay_event_old_headers.cmake",
+    "test/replay_event_producer_test.cpp",
+    "test/replay_event_startup.cmake",
+    "test/replay_event_test.cpp",
+    "test/replay_outcome_test.cpp",
+    "test/replay_timeout_controller_test.cpp"
+  ],
+  "matrix_summary": {
+    "debug-off": {
+      "discovered": 252,
+      "failed": 0,
+      "passed": 252,
+      "skipped": 0
+    },
+    "debug-on": {
+      "discovered": 252,
+      "failed": 0,
+      "passed": 252,
+      "skipped": 0
+    },
+    "release-off": {
+      "discovered": 252,
+      "failed": 0,
+      "passed": 252,
+      "skipped": 0
+    },
+    "release-on": {
+      "discovered": 252,
+      "failed": 0,
+      "passed": 252,
+      "skipped": 0
+    },
+    "repeat": {
+      "executions": 207,
+      "tests": 69
+    },
+    "sanitizer": {
+      "discovered": 20,
+      "flags": "ASan+UBSan, halt-on-error, leak detection, no recovery, frame pointers, GCC non-PIE",
+      "passed": 20
+    }
+  },
+  "new_findings": [],
+  "plan_version": 1,
+  "publication_review": {
+    "boundary": "PR publication and merge have not occurred; parent8 has remaining children and is ineligible for closing.",
+    "closing_targets": [
+      18
+    ],
+    "live_snapshot": "all six root/recursive prerequisite nodes exactly match canonical material snapshot",
+    "native_prerequisites": {
+      "10": "closed/completed; merged PR42",
+      "13": "closed/completed; merged PR67",
+      "14": "closed/completed; merged PR68",
+      "16": "closed/completed; merged PR71",
+      "17": "closed/completed; merged PR72"
+    },
+    "parent": 8,
+    "parent_state": "open",
+    "prerequisite_source_reachability": "All five actual merged prerequisite PR merge commits independently confirmed reachable from accepted base via git merge-base --is-ancestor.",
+    "readiness": "issue18 comment6580356434 matches exact candidate/base/plan/input digest/managed marker; accurately says source publication and separate final checking pending",
+    "root": 18,
+    "root_state": "open"
+  },
+  "reviewed_sensitivity": {
+    "final": "Compiled completion-gate-only bypass; clean exit0, missing-final exit99 M18/missing-final-never-success",
+    "origin": "Compiled origin-only suppression; clean exit0, parse exit99 M18/controller-origin-field-preservation",
+    "scope": "work_unit-only G18-test-sensitivity accepted evidence independently inspected, not rerun for final"
+  },
+  "runtime_verification": "All mandatory final/both Linux gates independently executed and passed from fresh exact candidate builds; original startup probe and production CLI corpus passed.",
+  "source_review": [
+    "Entire 20-file combined diff inspected, plus common codec, capture and actual producer/controller assertions and CTest registration.",
+    "Stable explicit phases/reasons/domains/known bits; zero remains known only by bit; absent fields encode zero; signed raw boundaries checked; unsupported IDs retained opaque.",
+    "Fixed 512-byte line parser and 16-event state; checked decimal overflow, every read split and byte fragmentation, malformed discard through LF, EOF finalization, bounded attempt history and omissions.",
+    "Actual startup uses shared fgetc byte-counted helper and mandatory LF, rejects NUL/CR/high bytes/oversized/incomplete prefixes, preserves first legacy hash; Windows stdin explicitly binary.",
+    "Both platform parents emit OFFER; children select offered version via HELLO before event production. Worker/attempt mismatches and malformed/duplicate HELLO/FINAL cannot certify success.",
+    "ParseCapture TLS tracks first originating controlled parser reason and genuine RapidJSON code/offset. Public independent recursive calls restore boundary; Impl dependency recursion retains current origin; valid captures clear stale result.",
+    "Actual parse and graphics/compute/raytracing/shader creation paths carry detector results independent of prose; successful compile-required fallback emits no failure; failure emits its actual signed VkResult.",
+    "Healthy timeout dispatcher emits threshold/elapsed before termination; existing timeout history keeps native delivery and status separate; no invented culprit hash.",
+    "Complete bounded event writes are serialized with ordinary-thread mutex; asynchronous signal handlers retain legacy small writes without entering that mutex. Linux startup confines newly generated SIGPIPE and preserves mask/disposition/preexisting pending signal.",
+    "Linux transport uses actual read count. Windows transport uses actual overlapped count, handles ERROR_MORE_DATA fragments and runs finish after terminal drain or error cleanup; platform-native execution is explicitly waived/unverified.",
+    "Negotiated success requires HELLO/FINAL/no loss/no unsupported/no omitted/no failure events plus independently observed native success; FINAL cannot override abnormal status. Failed attempts retain earlier events through successful retries.",
+    "Public headers and shared control block are unchanged; existing normal/master/progress/direct-slave compatibility and actual original-header callers remain registered. New private test adapters are only compiled in fixture translation units.",
+    "Changelog is one short factual linked Observability sentence within Unreleased; guide/spec document bounds, private scope, legacy behavior and Windows/no-GPU/Steam/persistence limits."
+  ]
+}
