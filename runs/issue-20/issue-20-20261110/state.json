@@ -3607,6 +3607,28 @@
         "intent_id": "i20-build-asan-ubsan-marker",
         "started": 1794310468.3627207,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+          "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+          "/tmp/fossilize-h20/toolenv/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+          "--output-on-failure",
+          "--no-tests=error",
+          "--output-junit",
+          "/tmp/fossilize-h20/output/implementer-1/full-asan-ubsan-marker.xml",
+          "-R",
+          "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)"
+        ],
+        "command": "env ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/asan-ubsan --output-on-failure --no-tests=error --output-junit /tmp/fossilize-h20/output/implementer-1/full-asan-ubsan-marker.xml -R '^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)'",
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "eligible_deadline": 1794315531.5729992,
+        "intent_id": "i20-full-asan-ubsan-marker",
+        "started": 1794310473.569,
+        "timeout": 600
       }
     ],
     "deadline": 1794315531.5729992,
@@ -4529,7 +4551,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 176,
+  "revision": 177,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
