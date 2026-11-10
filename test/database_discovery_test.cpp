@@ -87,10 +87,133 @@ static int injected_read_errno=EIO;
 extern "C" int __real_fseek(FILE *,long,int);
 extern "C" long __real_ftell(FILE *);
 extern "C" size_t __real_fread(void *,size_t,size_t,FILE *);
-extern "C" int __wrap_fseek(FILE *f,long n,int w) { if(fail_seek&&!--fail_seek){errno=ESPIPE;return positive_seek_error?1:-1;} return __real_fseek(f,n,w); }
-extern "C" long __wrap_ftell(FILE *f) { if(fail_tell&&!--fail_tell){errno=EIO;return -1;} return __real_ftell(f); }
-extern "C" size_t __wrap_fread(void *p,size_t n,size_t m,FILE *f) { if(fail_read&&!--fail_read){errno=injected_read_errno;return 0;} return __real_fread(p,n,m,f); }
+// Only metadata is backed by bytes. Payload advancement is logical: no large
+// file, allocation or payload read is involved, even at uint32_t size limits.
+static struct LogicalText
+{
+ bool enabled = false, tell_unrepresentable = false;
+ FILE *file = nullptr;
+ std::vector<uint8_t> metadata;
+ uint64_t position = 0, length = 0;
+ unsigned reads = 0, fail_payload_seek = 0;
+ int seek_errno = 0;
+ std::vector<long> payload_seeks;
+} logical_text;
+extern "C" int __wrap_fseek(FILE *f,long n,int w)
+{
+ if(logical_text.enabled && (!logical_text.file || logical_text.file==f))
+ {
+  logical_text.file=f;
+  if(w==SEEK_CUR)
+  {
+   logical_text.payload_seeks.push_back(n);
+   if(logical_text.fail_payload_seek && !--logical_text.fail_payload_seek)
+   {errno=logical_text.seek_errno;return 1;}
+  }
+  uint64_t base=w==SEEK_END?logical_text.length:w==SEEK_CUR?logical_text.position:0;
+  if(n<0 || uint64_t(n)>UINT64_MAX-base){errno=0;return -1;}
+  logical_text.position=base+uint64_t(n);
+  return 0;
+ }
+ if(fail_seek&&!--fail_seek){errno=ESPIPE;return positive_seek_error?1:-1;}
+ return __real_fseek(f,n,w);
+}
+extern "C" long __wrap_ftell(FILE *f)
+{
+ if(logical_text.enabled && logical_text.file==f)
+ {
+  if(logical_text.tell_unrepresentable || logical_text.position>uint64_t(std::numeric_limits<long>::max()))
+  {errno=0;return -1;}
+  return long(logical_text.position);
+ }
+ if(fail_tell&&!--fail_tell){errno=EIO;return -1;}
+ return __real_ftell(f);
+}
+extern "C" size_t __wrap_fread(void *p,size_t n,size_t m,FILE *f)
+{
+ if(logical_text.enabled && logical_text.file==f)
+ {
+  logical_text.reads++;
+  // Production scanning must only request the tiny magic/header regions.
+  if(n!=1 || m>56 || logical_text.position>logical_text.metadata.size() ||
+     m>logical_text.metadata.size()-size_t(logical_text.position))
+  {errno=0;return 0;}
+  memcpy(p,logical_text.metadata.data()+size_t(logical_text.position),m);
+  logical_text.position+=m;
+  errno=ERANGE; // A later failed seek must not inherit a previous operation's errno.
+  return m;
+ }
+ if(fail_read&&!--fail_read){errno=injected_read_errno;return 0;}
+ return __real_fread(p,n,m,f);
+}
 #endif
+static void text_spans()
+{
+ // Keep a real small archive and payload readback as the healthy backend control.
+ const char first[]="{}", second[]="hello";
+ {DB writer(create_dumb_file_database("text.txt",DatabaseMode::OverWrite));
+  c.require(writer->prepare()&&writer->write_entry(RESOURCE_COMPUTE_PIPELINE,0x20,first,2,0)&&
+   writer->write_entry(RESOURCE_SHADER_MODULE,0x21,second,5,0),"D20/text-writer");}
+ auto tiny=bytes("text.txt");
+ c.require(tiny.size()==139,"D20/text-tiny-fixture");
+ {DB db(create_database("text.txt",DatabaseMode::ReadOnly));c.require(db->prepare(),"D20/text-real-prepare");
+  auto report=db->get_preparation_report();
+  c.require(report.discovery_complete&&report.satisfies_required_scope()&&report.inputs[0].prefix_end==tiny.size()&&report.inputs[0].retained_count==2,"D20/text-real-complete");
+  size_t n=0;c.require(db->read_entry(RESOURCE_SHADER_MODULE,0x21,&n,nullptr,0)&&n==5,"D20/text-real-query");
+  char payload[5]={};c.require(db->read_entry(RESOURCE_SHADER_MODULE,0x21,&n,payload,0)&&memcmp(payload,second,5)==0,"D20/text-real-payload");}
+#ifdef __linux__
+ // The first entry ends at 76, the second metadata ends at 132. Only the
+ // second advertised uncompressed size changes; the physical fixture stays tiny.
+ for(uint32_t payload_size:{UINT32_MAX-2,UINT32_MAX-1,UINT32_MAX})
+ for(unsigned mode=0;mode<5;mode++)
+ {
+  logical_text={};logical_text.metadata=tiny;
+  for(unsigned byte=0;byte<4;byte++)logical_text.metadata[76+40+12+byte]=uint8_t(payload_size>>(8*byte));
+  uint64_t span=uint64_t(payload_size)+2, end=132+span;
+  logical_text.length=end+(mode==1?5:0);
+  logical_text.fail_payload_seek=mode==2||mode==3?2:0;
+  logical_text.seek_errno=mode==2?ESPIPE:0;
+  logical_text.tell_unrepresentable=mode==4;
+  logical_text.enabled=true;
+  DB db(create_database("text.txt",DatabaseMode::ReadOnly));bool prepared=db->prepare();
+  logical_text.enabled=false;
+  auto report=db->get_preparation_report();auto &input=report.inputs[0];
+  bool representable=logical_text.length<=uint64_t(std::numeric_limits<long>::max())&&
+   logical_text.length<=uint64_t(std::numeric_limits<size_t>::max());
+  if(!representable||mode==4)
+  {
+   c.require(!prepared&&input.state==DiscoveryState::Failed&&input.reason==DiscoveryReason::Tell&&
+    !input.raw_error_known&&input.raw_error==0&&!input.total_known&&!report.unread_total_known&&
+    input.retained_count==0&&report.discovered.empty()&&report.selected.empty()&&
+    !report.satisfies_required_scope(true)&&logical_text.payload_seeks.empty(),"D20/text-unrepresentable-unknown");
+   continue;
+  }
+  c.require(logical_text.reads==3&&logical_text.payload_seeks==std::vector<long>({4,long(span)}),"D20/text-exact-wide-seeks-bounded-reads");
+  if(mode==2||mode==3)
+  {
+   c.require(!prepared&&input.state==DiscoveryState::Failed&&input.reason==DiscoveryReason::Seek&&
+    input.raw_error_known==(mode==2)&&input.raw_error==(mode==2?ESPIPE:0)&&
+    !input.total_known&&!report.discovery_complete&&!report.unread_total_known&&
+    !report.satisfies_required_scope(true),"D20/text-seek-failed-unknown-honest-errno");
+   c.require(input.boundary_known&&input.prefix_end==76&&input.unread_offset==76&&input.retained_count==1&&
+    report.discovered==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x20}})&&report.selected==report.discovered,
+    "D20/text-seek-failure-keeps-only-accepted-prefix");
+  }
+  else
+  {
+   c.require(prepared&&input.prefix_end==end&&input.unread_offset==end&&input.boundary_known&&input.retained_count==2&&
+    report.discovered==std::vector<DiscoveryKey>({{RESOURCE_SHADER_MODULE,0x21},{RESOURCE_COMPUTE_PIPELINE,0x20}})&&
+    report.selected==report.discovered&&logical_text.position==end,"D20/text-wide-prefix-exact-scope");
+   c.require(input.state==(mode==1?DiscoveryState::RecoveredPrefix:DiscoveryState::Complete)&&
+    input.reason==(mode==1?DiscoveryReason::TruncatedHeader:DiscoveryReason::None)&&
+    input.total_known==(mode==0)&&report.discovery_complete==(mode==0)&&report.unread_total_known==(mode==0)&&
+    report.satisfies_required_scope()==(mode==0)&&report.satisfies_required_scope(true)&&!input.raw_error_known,
+    "D20/text-wide-complete-or-recovered-policy");
+  }
+ }
+ logical_text={};
+#endif
+}
 static void inputs()
 {
  make("base.foz",2); make("extra.foz",1);
@@ -112,6 +235,7 @@ static void inputs()
 }
 static void errors()
 {
+ text_spans();
  make("valid.foz"); auto b=bytes("valid.foz");
  for(unsigned mode=0;mode<3;mode++) { auto x=b; if(mode==0)x.resize(8); if(mode==1)x[0]^=0xff; if(mode==2)x[15]=255; save("bad.foz",x);auto db=open("bad.foz");
   c.require(!db->prepare(),"D20/invalid-fails");auto r=db->get_preparation_report();c.require(!r.discovery_complete&&!r.unread_total_known&&!r.satisfies_required_scope(true)&&r.inputs[0].state==DiscoveryState::Failed,"D20/invalid-is-not-empty"); }

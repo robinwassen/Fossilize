@@ -43,6 +43,7 @@
 #include <memory>
 #include <mutex>
 #include <atomic>
+#include <limits>
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -1451,8 +1452,7 @@ struct StreamArchive : DatabaseInterface
 			observation.state = DiscoveryState::Failed;
 			observation.reason = reason;
 			observation.raw_error_known = raw;
-			if (raw)
-				observation.raw_error = errno;
+			observation.raw_error = raw ? errno : 0;
 			observation.total_known = false;
 			return false;
 		};
@@ -1463,6 +1463,7 @@ struct StreamArchive : DatabaseInterface
 		if (impl->report_imported && (impl->report.inputs.empty() || impl->report.inputs.front().path != path))
 			return fail(DiscoveryReason::InvalidMagic);
 
+		errno = 0;
 		switch (mode)
 		{
 		case DatabaseMode::ReadOnly:
@@ -1509,7 +1510,7 @@ struct StreamArchive : DatabaseInterface
 		}
 
 		if (!file)
-			return fail(DiscoveryReason::Open, true);
+			return fail(DiscoveryReason::Open, errno != 0);
 		observation.opened = true;
 		if (!impl->report_imported)
 			observation.boundary_known = true;
@@ -1543,14 +1544,19 @@ struct StreamArchive : DatabaseInterface
 #endif
 
 			// Scan through the archive and get the list of files.
+			errno = 0;
 			if (fseek(file, 0, SEEK_END) != 0)
-				return fail(DiscoveryReason::Seek, true);
+				return fail(DiscoveryReason::Seek, errno != 0);
+			errno = 0;
 			auto length = ftell(file);
 			if (length < 0)
-				return fail(DiscoveryReason::Tell, true);
+				return fail(DiscoveryReason::Tell, errno != 0);
+			if (uintmax_t(length) > numeric_limits<size_t>::max())
+				return fail(DiscoveryReason::Tell);
 			size_t len = size_t(length);
+			errno = 0;
 			if (fseek(file, 0, SEEK_SET) != 0)
-				return fail(DiscoveryReason::Seek, true);
+				return fail(DiscoveryReason::Seek, errno != 0);
 			if (shutdown_requested.load(std::memory_order_relaxed))
 				return fail(DiscoveryReason::Cancelled);
 			if (len == 0 && mode == DatabaseMode::ReadOnly)
@@ -1559,8 +1565,9 @@ struct StreamArchive : DatabaseInterface
 			if (len != 0 && !shutdown_requested.load(std::memory_order_relaxed))
 			{
 				uint8_t magic[MagicSize];
+				errno = 0;
 				if (fread(magic, 1, MagicSize, file) != MagicSize)
-					return fail(ferror(file) ? DiscoveryReason::Read : DiscoveryReason::InvalidMagic, ferror(file)!=0);
+					return fail(ferror(file) ? DiscoveryReason::Read : DiscoveryReason::InvalidMagic, errno != 0);
 
 				if (memcmp(magic, stream_reference_magic_and_version, MagicSize - 1))
 					return fail(DiscoveryReason::InvalidMagic);
@@ -1607,7 +1614,8 @@ struct StreamArchive : DatabaseInterface
 					header = get_converted_header(*header_raw);
 
 					// Corrupt entry. Our process might have been killed before we could write all data.
-					if (scan_payload_span(header) > len - offset)
+					uint64_t payload_span = scan_payload_span(header);
+					if (payload_span > len - offset)
 					{
 						LOGW_LEVEL("Detected sliced file. Dropping entries from here.\n");
 						observation.state = DiscoveryState::RecoveredPrefix;
@@ -1616,6 +1624,11 @@ struct StreamArchive : DatabaseInterface
 						observation.unread_offset = begin_append_offset;
 						break;
 					}
+
+					// Publish a key only once the same validated span has been advanced.
+					Entry entry = fill_entry(header, offset);
+					if (!move_offset_through_payload(payload_span, offset))
+						return fail(DiscoveryReason::Seek, errno != 0);
 
 					char tag_str[16 + 1] = {};
 					char value_str[16 + 1] = {};
@@ -1626,23 +1639,20 @@ struct StreamArchive : DatabaseInterface
 					if (tag < RESOURCE_COUNT)
 					{
 						uint64_t value = strtoull(value_str, nullptr, 16);
-						Entry entry = fill_entry(header, offset);
 						observe_discovered(static_cast<ResourceTag>(tag), value);
 						observation.retained_count++;
 						if (test_resource_filter(static_cast<ResourceTag>(tag), value))
 							seen_blobs[tag].emplace(value, entry);
 					}
-
-					if (!move_offset_through_header_size(header, offset))
-						return fail(DiscoveryReason::Seek, true);
 					observation.prefix_end = offset;
-                    observation.unread_offset = offset;
+					observation.unread_offset = offset;
 				}
 
 				if (mode == DatabaseMode::Append && offset != len)
 				{
-					if (fseek(file, begin_append_offset, SEEK_SET) != 0)
-						return fail(DiscoveryReason::Seek, true);
+					errno = 0;
+					if (fseek(file, long(begin_append_offset), SEEK_SET) != 0)
+						return fail(DiscoveryReason::Seek, errno != 0);
 				}
 			}
 			else
@@ -2144,13 +2154,19 @@ protected:
 		return header.payload_size;
 	}
 
-	virtual bool move_offset_through_header_size(PayloadHeader header, size_t &offset)
+	bool move_offset_through_payload(uint64_t span, size_t &offset)
 	{
-		if (fseek(file, header.payload_size, SEEK_CUR) != 0)
+		// fseek takes long even on platforms with a wider size_t. A position
+		// limit is not a native I/O error, so do not inherit a stale errno.
+		errno = 0;
+		if (span > uintmax_t(numeric_limits<long>::max()) ||
+		    span > numeric_limits<size_t>::max() - offset ||
+		    uintmax_t(offset) > uintmax_t(numeric_limits<long>::max()) - span)
+			return false;
+		if (fseek(file, long(span), SEEK_CUR) != 0)
 			return false;
 
-		offset += header.payload_size;
-
+		offset += size_t(span);
 		return true;
 	}
 
@@ -2253,16 +2269,6 @@ protected:
 	uint64_t scan_payload_span(PayloadHeader header) const override
 	{
 		return uint64_t(header.payload_size) + 2;
-	}
-
-	bool move_offset_through_header_size(PayloadHeader header, size_t &offset) override
-	{
-		if (fseek(file, header.uncompressed_size + 2, SEEK_CUR) != 0) // + two newline symbols
-			return false;
-
-		offset += header.uncompressed_size + 2; // + two newline symbols
-
-		return true;
 	}
 
 	Entry fill_entry(PayloadHeader header, size_t offset) override

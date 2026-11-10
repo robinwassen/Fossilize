@@ -831,7 +831,11 @@ without a primary). Keys are deduplicated by tag/hash, with exclusions retained
 before filtering. No unread total is inferred from retained keys. Header/payload
 truncation names the retained byte boundary; read/seek errors and cancellation
 remain failed discovery. Linux deterministic I/O adapters are private test link
-wrappers, not shipping injection controls.
+wrappers, not shipping injection controls. The errors case retains a small real
+text archive readback and uses metadata-only logical positions to check text
+payload spans at uint32 limits, exact retained boundaries, and failed seek/tell
+uncertainty without large files or payload allocations. A key is retained only
+after its checked payload span has been advanced successfully.
 
 `replay-selection-{filters,ranges,prefix-policy,hints}` includes production replay
 and observes the typed report used by real dispatch. Ranges are half-open over
