@@ -136,6 +136,75 @@ static void grouping()
 	checks.contains(text, "maxPushConstantsSize", "M19/property-identifier");
 	checks.contains(text, "required=32 available=16", "M19/property-values");
 }
+// Both render-pass APIs share these nested predicates and one resource tag.
+// Exercise the real detectors and production collector, including differing masks.
+static void render_pass_grouping()
+{
+	DiagnosticStderr capture;
+	{
+		Replay r; limited(r);
+		VkPhysicalDeviceFeatures2 features = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
+		VkPhysicalDeviceProperties2 properties = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2};
+		auto &filter = r.device->legacy_filter;
+		checks.require(filter.init(VK_API_VERSION_1_2, nullptr, 0, &features, &properties),
+		               "M19/render-pass-grouping-init");
+		r.get_per_thread_data().expected_tag = RESOURCE_RENDER_PASS;
+		for (bool version2 : {false, true})
+		{
+			VkAttachmentDescription attachment = {};
+			VkAttachmentDescription2 attachment2 = {VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2};
+			VkSubpassDescription subpass = {};
+			VkSubpassDescription2 subpass2 = {VK_STRUCTURE_TYPE_SUBPASS_DESCRIPTION_2};
+			VkRenderPassCreateInfo pass = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};
+			VkRenderPassCreateInfo2 pass2 = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO_2};
+			SupportDetail detail;
+			auto supported = [&]() {
+				return version2 ? filter.render_pass2_is_supported(&pass2, detail) :
+				                  filter.render_pass_is_supported(&pass, detail);
+			};
+			for (bool nested_subpass : {false, true})
+			{
+				pass.attachmentCount = pass2.attachmentCount = nested_subpass ? 0 : 1;
+				pass.pAttachments = &attachment; pass2.pAttachments = &attachment2;
+				pass.subpassCount = pass2.subpassCount = nested_subpass ? 1 : 0;
+				pass.pSubpasses = &subpass; pass2.pSubpasses = &subpass2;
+				checks.require(supported() && detail.kind == SupportKind::None,
+				               "M19/render-pass-nested-supported-before");
+				for (uint32_t flags : {0x80000000u, 0x40000000u})
+				{
+					if (nested_subpass) subpass.flags = subpass2.flags = flags;
+					else attachment.flags = attachment2.flags = flags;
+					VkRenderPass out;
+					uint64_t hash = 0xa00 + version2 * 4 + nested_subpass * 2 + (flags == 0x40000000u);
+					bool ok = version2 ? r.enqueue_create_render_pass2(hash, &pass2, &out) :
+					                     r.enqueue_create_render_pass(hash, &pass, &out);
+					checks.require(!ok && !out, "M19/render-pass-nested-reject-before-create");
+					checks.require(!supported() && detail.kind == SupportKind::Constraint && detail.known == 3 &&
+					               detail.required == flags && detail.available == (nested_subpass ? 143u : 7u),
+					               "M19/render-pass-nested-numeric-observations");
+				}
+				attachment.flags = attachment2.flags = subpass.flags = subpass2.flags = 0;
+				checks.require(supported() && detail.kind == SupportKind::None,
+				               "M19/render-pass-nested-supported-after");
+			}
+		}
+		auto s = r.warnings.snapshot();
+		checks.require(s.count == 2, "M19/distinct-render-pass-predicate-context");
+		checks.require(s.examples == 4 && s.groups[0].count == 4 && s.groups[1].count == 4 &&
+		               s.groups[0].resources[RESOURCE_RENDER_PASS] == 4 &&
+		               s.groups[1].resources[RESOURCE_RENDER_PASS] == 4 && !s.overflow,
+		               "M19/render-pass-same-predicate-values-and-versions-coalesce");
+		checks.require(count(r, ReplayFailure::Unsupported) == 8 && !calls,
+		               "M19/render-pass-exact-rejected-outcomes");
+		r.finish_events(1);
+	}
+	auto text = capture.finish(); bounded(text);
+	checks.contains(text, "constraint VkAttachmentDescription.flags", "M19/attachment-predicate-human-identity");
+	checks.contains(text, "constraint VkSubpassDescription.flags", "M19/subpass-predicate-human-identity");
+	checks.contains(text, "required=2147483648 available=7", "M19/attachment-predicate-human-values");
+	checks.contains(text, "required=1073741824 available=143", "M19/subpass-predicate-human-values");
+	checks.require(occurrences(text, "4 render-pass") == 2, "M19/render-pass-two-exact-human-cause-counts");
+}
 static void shader_grouping()
 {
 	DiagnosticStderr capture;
@@ -461,7 +530,7 @@ int main(int argc, char **argv)
 	if (argc == 3 && std::string(argv[1]) == "--fixture") return graph(argv[2],"missing-module",64,1) ? 0 : 1;
 	if (argc != 2) return 2;
 	std::string c=argv[1];
-	if(c=="same-cause")same_cause(); else if(c=="grouping"){grouping();shader_grouping();} else if(c=="overflow"){overflow();saturation_rendering();}
+	if(c=="same-cause")same_cause(); else if(c=="grouping"){grouping();render_pass_grouping();shader_grouping();} else if(c=="overflow"){overflow();saturation_rendering();}
 	else if(c=="dependencies"){dependencies();dependency_prose_controls();unsupported_sources();} else if(c=="concurrency")concurrency(); else if(c=="lifecycle")lifecycle();
 	else if(c=="legacy-controls")legacy_controls(); else return 2;
 	printf("M19 warning %s failures=%d\n",c.c_str(),checks.failures);

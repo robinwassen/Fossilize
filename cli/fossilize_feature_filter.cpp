@@ -4871,7 +4871,7 @@ bool FeatureFilter::Impl::attachment_description_flags_are_supported(VkAttachmen
 			VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
 
 	if (flags & ~recognized_flags)
-		return support_reject(SupportKind::Constraint, "flags", 3, uint64_t(flags), uint64_t(recognized_flags));
+		return support_reject(SupportKind::Constraint, "VkAttachmentDescription.flags", 3, uint64_t(flags), uint64_t(recognized_flags));
 
 	if ((flags & (
 		     VK_ATTACHMENT_DESCRIPTION_RESOLVE_ENABLE_TRANSFER_FUNCTION_BIT_KHR |
@@ -4947,7 +4947,7 @@ bool FeatureFilter::Impl::subpass_description_flags_is_supported(VkSubpassDescri
 			VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_EXT;
 
 	if (flags & ~supported_flags)
-		return support_reject(SupportKind::Constraint, "flags", 3, uint64_t(flags), uint64_t(supported_flags));
+		return support_reject(SupportKind::Constraint, "VkSubpassDescription.flags", 3, uint64_t(flags), uint64_t(supported_flags));
 
 	if ((flags & (VK_SUBPASS_DESCRIPTION_PER_VIEW_ATTRIBUTES_BIT_NVX |
 	              VK_SUBPASS_DESCRIPTION_PER_VIEW_POSITION_X_ONLY_BIT_NVX)) != 0 &&
