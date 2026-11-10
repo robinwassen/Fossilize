@@ -134,6 +134,7 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "attempt_id": "checker-unit-2",
       "criteria": [
         "AC1"
       ],
@@ -141,9 +142,26 @@
       "id": "CU19-1",
       "location": "cli/fossilize_feature_filter.cpp:2388; test/replay_support_test.cpp static cases",
       "priority": 2,
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+        "evidence": {
+          "candidate_sha": "0c15f246a75c027daf2bac82c0547da8a14e6717",
+          "evidence": "Independent original probe compile0/run0; exact VkPipelineLayoutCreateInfo.flags kind7/known3/required1073741824. Registered source has exact flags/mask, bool parity and reused-output success.",
+          "fresh_checker_attempt": "checker-unit-2",
+          "id": "CU19-1",
+          "log": "runs/issue-19/issue19-20261110/evidence/checker-unit2-known-enum-probe.log",
+          "result": "passed",
+          "source": "test/replay_support_test.cpp:274-281; cli/fossilize_feature_filter.cpp:2388",
+          "tests": [
+            "CHECKER19-pipeline-layout-flags-identifier",
+            "CHECKER19-supported-before-after-controls"
+          ]
+        },
+        "finding_id": "CU19-1"
+      },
       "requested_change": "Return the pipeline-layout field identifier at this detector and add an explicit registered assertion plus supported/recovery control; audit similar copied detector identifiers.",
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
@@ -6333,7 +6351,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 266,
+  "revision": 267,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
