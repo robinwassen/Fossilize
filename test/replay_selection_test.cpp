@@ -114,9 +114,14 @@ static void prefix_policy()
  for(bool optional:{false,true})
  {
   auto opts=Replay::options(1,nullptr);if(optional)opts.optional_database_indices={0};ThreadedReplayer replay(device_options(),opts);calls=0;
-  optional_seek_failure=3;int status=run_normal_process(replay,{"optional-read-error.foz"},nullptr,0,-1);optional_seek_failure=0;auto &report=replay.selection_report;
+  // End, rewind, first payload, then fail the second payload movement.
+  optional_seek_failure=4;int status=run_normal_process(replay,{"optional-read-error.foz"},nullptr,0,-1);optional_seek_failure=0;auto &report=replay.selection_report;
   checks.require(status==(optional?0:1)&&calls==0&&report.selected.empty()&&report.dispatch.empty()&&!report.preparation.unread_total_known&&!report.preparation.discovery_complete,"D20/failed-prepare-never-dispatches-retained-keys");
   checks.require(!report.preparation_succeeded&&report.scope_satisfied==optional&&report.optional_inputs_excluded==optional&&report.selected_total_known==optional&&report.preparation.discovered.size()==1,"D20/optional-partial-exact-scope-policy");
+  const auto &input=report.preparation.inputs[0];
+  checks.require(input.state==DiscoveryState::Failed&&input.reason==DiscoveryReason::Seek&&input.raw_error_known&&input.raw_error==ESPIPE&&
+   input.retained_count==1&&input.boundary_known&&input.prefix_end>16&&input.unread_offset==input.prefix_end&&!input.total_known,
+   "D20/optional-partial-one-whole-entry-boundary");
   if(optional)checks.require(report.optional_unavailable.size()==1&&report.optional_unavailable[0].path=="optional-read-error.foz"&&report.excluded.size()==1&&report.excluded[0].key==report.preparation.discovered[0]&&report.excluded[0].policy==ReplayExclusionPolicy::OptionalInput&&replay.outcome.succeeded(),"D20/optional-partial-known-keys-excluded-not-succeeded-or-failed");
  }
 #endif
