@@ -1,0 +1,33 @@
+{
+  "receipt": {
+    "intent_id": "i20-focused-debug-off",
+    "command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(database-discovery-|replay-selection-|replay-discovery-)",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-1/focused-debug-off.xml"
+    ],
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600.0,
+    "started": 1794302094.135742,
+    "acquired": 1794302094.1386921,
+    "wait_seconds": 0.0,
+    "finished": 1794302100.1162095,
+    "exit_code": 8,
+    "timed_out": false
+  },
+  "candidate_sha": null,
+  "source_state": "historical source; not final evidence",
+  "actual_source": {
+    "source_sha": null,
+    "source_changed_during_execution": false,
+    "historical": true
+  },
+  "stdout_log": "/tmp/fossilize-h20/output/implementer-1/focused-debug-off.log",
+  "output": "Test project /tmp/fossilize-h20/build/implementer-1/debug-off\n      Start 261: database-discovery-empty\n 1/19 Test #261: database-discovery-empty ......................   Passed    0.00 sec\n      Start 262: database-discovery-truncated-zero\n 2/19 Test #262: database-discovery-truncated-zero .............   Passed    0.00 sec\n      Start 263: database-discovery-prefix\n 3/19 Test #263: database-discovery-prefix .....................   Passed    0.00 sec\n      Start 264: database-discovery-inputs\n 4/19 Test #264: database-discovery-inputs .....................   Passed    0.00 sec\n      Start 265: database-discovery-errors\n 5/19 Test #265: database-discovery-errors .....................   Passed    0.00 sec\n      Start 266: database-discovery-filters\n 6/19 Test #266: database-discovery-filters ....................   Passed    0.00 sec\n      Start 267: database-discovery-metadata\n 7/19 Test #267: database-discovery-metadata ...................   Passed    0.00 sec\n      Start 268: replay-selection-filters\n 8/19 Test #268: replay-selection-filters ......................***Failed    0.00 sec\nFossilize INFO: Creating null device.\nFossilize INFO: Creating Vulkan device took: 0 ms\nFossilize INFO: Total binary size for AppInfo: 0 (0 compressed)\nFossilize INFO: Total time decoding AppInfo in main thread: 0.000 s\nFossilize INFO: Total binary size for Descriptor Set Layout: 0 (0 compressed)\nFossilize INFO: Total time decoding Descriptor Set Layout in main thread: 0.000 s\nFossilize INFO: Total binary size for Pipeline Layout: 0 (0 compressed)\nFossilize INFO: Total time decoding Pipeline Layout in main thread: 0.000 s\nFossilize INFO: Total binary size for Render Pass: 0 (0 compressed)\nFossilize INFO: Total time decoding Render Pass in main thread: 0.000 s\nFossilize INFO: Total binary size for Graphics Pipeline: 0 (0 compressed)\nFossilize INFO: Total binary size for Compute Pipeline: 229 (245 compressed)\nFossilize INFO: Total binary size for Raytracing Pipeline: 0 (0 compressed)\nFossilize WARN: Referenced Pipeline layout 0000000000000102, but it does not exist.\nThis can be expected when replaying an archive from Steam.\nIf replaying just the application cache, make sure to replay together with the common cache, as application cache can depend on common cache.\nFossilize WARN: Did not replay blob (tag: 7, hash: 0x0000000000000202). See previous logs for context.\nFossilize INFO: Total binary size for Shader Module: 0 (0 compressed)\nFossilize INFO: Opening archive took 0 ms:\nFossilize INFO: Parsing archive took 0 ms:\nFossilize INFO: Playing back 0 shader modules took 0.000 s (accumulated time)\nFossilize INFO: Shader cache evicted 0 shader modules in total\nFossilize INFO: Playing back 0 graphics pipelines took 0.000 s (accumulated time)\nFossilize INFO: Playing back 0 compute pipelines took 0.000 s (accumulated time)\nFossilize INFO: Playing back 0 raytracing pipelines took 0.000 s (accumulated time)\nFossilize INFO: Threads were idling in total for 0.000 s (accumulated time)\nFossilize INFO: Threads were active in total for 0.000 s (accumulated time)\nFossilize INFO: Total peak memory consumption by parser: 0.066 MB.\nFossilize INFO: Replayed 0 objects in 0 ms:\nFossilize INFO:   compute pipelines:           0\nFossilize INFO:   graphics pipelines:          0\nFossilize INFO:   raytracing pipelines:        0\nFAIL D20/production-filter-exact-dispatch-and-report\n\n      Start 269: replay-selection-ranges\n 9/19 Test #269: replay-selection-ranges .......................   Passed    0.00 sec\n      Start 270: replay-selection-prefix-policy\n10/19 Test #270: replay-selection-prefix-policy ................   Passed    0.00 sec\n      Start 271: replay-selection-hints\n11/19 Test #271: replay-selection-hints ........................   Passed    0.03 sec\n      Start 272: replay-discovery-cli-empty\n12/19 Test #272: replay-discovery-cli-empty ....................   Passed    0.24 sec\n      Start 273: replay-discovery-cli-truncated-zero\n13/19 Test #273: replay-discovery-cli-truncated-zero ...........   Passed    0.06 sec\n      Start 274: replay-discovery-cli-prefix\n14/19 Test #274: replay-discovery-cli-prefix ...................   Passed    0.27 sec\n      Start 275: replay-discovery-cli-required\n15/19 Test #275: replay-discovery-cli-required .................   Passed    0.12 sec\n      Start 276: replay-discovery-cli-optional\n16/19 Test #276: replay-discovery-cli-optional .................   Passed    0.49 sec\n      Start 277: replay-discovery-cli-selection\n17/19 Test #277: replay-discovery-cli-selection ................   Passed    1.40 sec\n      Start 278: replay-discovery-legacy-invocations\n18/19 Test #278: replay-discovery-legacy-invocations ...........   Passed    1.43 sec\n      Start 279: database-discovery-old-header-compatibility\n19/19 Test #279: database-discovery-old-header-compatibility ...   Passed    1.87 sec\n\n95% tests passed, 1 tests failed out of 19\n\nTotal Test time (real) =   5.95 sec\n\nThe following tests FAILED:\n\t268 - replay-selection-filters (Failed)\nErrors while running CTest\n"
+}

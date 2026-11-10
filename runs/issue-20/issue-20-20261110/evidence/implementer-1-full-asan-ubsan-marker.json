@@ -1,0 +1,36 @@
+{
+  "receipt": {
+    "intent_id": "i20-full-asan-ubsan-marker",
+    "command": [
+      "env",
+      "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+      "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-1/full-asan-ubsan-marker.xml",
+      "-R",
+      "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)"
+    ],
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600.0,
+    "started": 1794310643.0824473,
+    "acquired": 1794310643.0856328,
+    "wait_seconds": 0.0,
+    "finished": 1794310647.2598934,
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "candidate_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "source_state": "frozen candidate",
+  "actual_source": {
+    "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+    "source_changed_during_execution": false,
+    "historical": false
+  },
+  "stdout_log": "/tmp/fossilize-h20/output/implementer-1/full-asan-ubsan-marker.log",
+  "output": "Test project /tmp/fossilize-h20/build/implementer-1/asan-ubsan\n      Start   2: varint-system-test\n 1/29 Test   #2: varint-system-test ..................   Passed    2.89 sec\n      Start 215: parser-input-envelope\n 2/29 Test #215: parser-input-envelope ...............   Passed    0.05 sec\n      Start 216: parser-input-containers\n 3/29 Test #216: parser-input-containers .............   Passed    0.06 sec\n      Start 217: parser-input-shader\n 4/29 Test #217: parser-input-shader .................   Passed    0.06 sec\n      Start 218: parser-input-link\n 5/29 Test #218: parser-input-link ...................   Passed    0.04 sec\n      Start 219: parser-input-diagnostics\n 6/29 Test #219: parser-input-diagnostics ............   Passed    0.03 sec\n      Start 220: parser-input-valid\n 7/29 Test #220: parser-input-valid ..................   Passed    0.03 sec\n      Start 221: parser-input-mutations\n 8/29 Test #221: parser-input-mutations ..............   Passed    0.14 sec\n      Start 222: parser-input-containment\n 9/29 Test #222: parser-input-containment ............   Passed    0.17 sec\n      Start 223: replay-event-unit-roundtrip\n10/29 Test #223: replay-event-unit-roundtrip .........   Passed    0.01 sec\n      Start 224: replay-event-unit-unknown\n11/29 Test #224: replay-event-unit-unknown ...........   Passed    0.03 sec\n      Start 225: replay-event-unit-streaming\n12/29 Test #225: replay-event-unit-streaming .........   Passed    0.02 sec\n      Start 226: replay-event-unit-malformed\n13/29 Test #226: replay-event-unit-malformed .........   Passed    0.02 sec\n      Start 227: replay-event-unit-negotiation\n14/29 Test #227: replay-event-unit-negotiation .......   Passed    0.01 sec\n      Start 228: replay-event-unit-attempts\n15/29 Test #228: replay-event-unit-attempts ..........   Passed    0.01 sec\n      Start 229: replay-event-unit-legacy\n16/29 Test #229: replay-event-unit-legacy ............   Passed    0.01 sec\n      Start 230: replay-event-unit-mutations\n17/29 Test #230: replay-event-unit-mutations .........   Passed    0.03 sec\n      Start 231: replay-event-unit-startup\n18/29 Test #231: replay-event-unit-startup ...........   Passed    0.02 sec\n      Start 261: database-discovery-empty\n19/29 Test #261: database-discovery-empty ............   Passed    0.03 sec\n      Start 262: database-discovery-truncated-zero\n20/29 Test #262: database-discovery-truncated-zero ...   Passed    0.02 sec\n      Start 263: database-discovery-prefix\n21/29 Test #263: database-discovery-prefix ...........   Passed    0.03 sec\n      Start 264: database-discovery-inputs\n22/29 Test #264: database-discovery-inputs ...........   Passed    0.03 sec\n      Start 265: database-discovery-errors\n23/29 Test #265: database-discovery-errors ...........   Passed    0.03 sec\n      Start 266: database-discovery-filters\n24/29 Test #266: database-discovery-filters ..........   Passed    0.03 sec\n      Start 267: database-discovery-metadata\n25/29 Test #267: database-discovery-metadata .........   Passed    0.03 sec\n      Start 268: replay-selection-filters\n26/29 Test #268: replay-selection-filters ............   Passed    0.05 sec\n      Start 269: replay-selection-ranges\n27/29 Test #269: replay-selection-ranges .............   Passed    0.04 sec\n      Start 270: replay-selection-prefix-policy\n28/29 Test #270: replay-selection-prefix-policy ......   Passed    0.06 sec\n      Start 271: replay-selection-hints\n29/29 Test #271: replay-selection-hints ..............   Passed    0.12 sec\n\n100% tests passed, 0 tests failed out of 29\n\nTotal Test time (real) =   4.13 sec\n"
+}

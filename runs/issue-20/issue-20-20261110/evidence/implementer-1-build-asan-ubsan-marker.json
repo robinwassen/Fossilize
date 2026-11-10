@@ -1,0 +1,35 @@
+{
+  "receipt": {
+    "intent_id": "i20-build-asan-ubsan-marker",
+    "command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+      "--parallel",
+      "2",
+      "--target",
+      "database-discovery-test",
+      "replay-selection-test",
+      "replay-event-test",
+      "parser-input-test",
+      "varint-test"
+    ],
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600.0,
+    "started": 1794310571.6180072,
+    "acquired": 1794310571.6209705,
+    "wait_seconds": 0.0,
+    "finished": 1794310581.5043988,
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "candidate_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "source_state": "frozen candidate",
+  "actual_source": {
+    "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+    "source_changed_during_execution": false,
+    "historical": false
+  },
+  "stdout_log": "/tmp/fossilize-h20/output/implementer-1/build-asan-ubsan-marker.log",
+  "output": "[1/7] Building CXX object CMakeFiles/fossilize.dir/fossilize_db.cpp.o\n/home/robin/.herdr/worktrees/fossilize/ticket-20/fossilize_db.cpp: In member function \u2018bool Fossilize::DatabaseInterface::Impl::parse_imported_metadata(const void*, size_t)\u2019:\n/home/robin/.herdr/worktrees/fossilize/ticket-20/fossilize_db.cpp:714:35: warning: declaration of \u2018report\u2019 shadows a member of \u2018Fossilize::DatabaseInterface::Impl\u2019 [-Wshadow]\n  714 |         DatabasePreparationReport report;\n      |                                   ^~~~~~\n/home/robin/.herdr/worktrees/fossilize/ticket-20/fossilize_db.cpp:146:35: note: shadowed declaration is here\n  146 |         DatabasePreparationReport report;\n      |                                   ^~~~~~\n[2/7] Linking CXX static library libfossilize.a\n[3/7] Linking CXX executable test/varint-test\n[4/7] Linking CXX executable test/replay-event-test\n[5/7] Linking CXX executable test/parser-input-test\n[6/7] Linking CXX executable test/database-discovery-test\n[7/7] Linking CXX executable test/replay-selection-test\n"
+}

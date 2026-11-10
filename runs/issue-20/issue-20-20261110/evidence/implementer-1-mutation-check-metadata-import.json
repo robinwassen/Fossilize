@@ -1,0 +1,32 @@
+{
+  "id": "database-discovery-sensitivity",
+  "mutation": "metadata-import",
+  "expected_assertion": "D20/metadata-no-false-completeness",
+  "passed": true,
+  "runs": [
+    {
+      "kind": "healthy",
+      "case": "empty",
+      "command": [
+        "/tmp/fossilize-h20/build/implementer-1/mutation-metadata-import/test/database-discovery-test",
+        "empty"
+      ],
+      "cwd": "/tmp/fossilize-h20/output/implementer-1/mutation-check-metadata-import-work/healthy",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "mutated",
+      "case": "metadata",
+      "command": [
+        "/tmp/fossilize-h20/build/implementer-1/mutation-metadata-import/test/database-discovery-test",
+        "metadata"
+      ],
+      "cwd": "/tmp/fossilize-h20/output/implementer-1/mutation-check-metadata-import-work/mutated",
+      "exit_code": 1,
+      "stdout": "FAIL D20/metadata-no-false-completeness\nFAIL D20/metadata-exact-input-facts\nFAIL D20/metadata-no-false-completeness\nFAIL D20/metadata-exact-input-facts\nFAIL D20/metadata-no-false-completeness\nFAIL D20/metadata-exact-input-facts\nFAIL D20/metadata-no-false-completeness\nFAIL D20/metadata-exact-input-facts\nFAIL D20/metadata-no-false-completeness\nFAIL D20/metadata-exact-input-facts\n",
+      "stderr": "Fossilize WARN: Detected sliced file. Dropping entries from here.\nFossilize WARN: Detected sliced file. Dropping entries from here.\n"
+    }
+  ]
+}

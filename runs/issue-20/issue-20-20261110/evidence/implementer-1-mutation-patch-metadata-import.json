@@ -1,0 +1,7 @@
+{
+  "mutation": "metadata-import",
+  "path": "/tmp/fossilize-h20/mutations/metadata-import/fossilize_db.cpp",
+  "before": "this->report = std::move(report);",
+  "after": "for (auto &input : report.inputs) { input.state=DiscoveryState::Complete; input.total_known=true; }\n\tthis->report = std::move(report);",
+  "replacements": 1
+}

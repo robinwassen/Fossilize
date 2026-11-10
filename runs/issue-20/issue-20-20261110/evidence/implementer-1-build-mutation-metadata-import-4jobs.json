@@ -1,0 +1,38 @@
+{
+  "receipt": {
+    "intent_id": "i20-build-mutation-metadata-import-4jobs",
+    "command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/implementer-1/mutation-metadata-import",
+      "--parallel",
+      "4",
+      "--target",
+      "database-discovery-test"
+    ],
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600.0,
+    "started": 1794309879.9773057,
+    "acquired": 1794309879.9804962,
+    "wait_seconds": 0.0,
+    "finished": 1794309889.119169,
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "candidate_sha": null,
+  "source_state": "isolated mutation of historical candidate",
+  "actual_source": {
+    "source_sha": null,
+    "source_changed_during_execution": false,
+    "historical": true,
+    "candidate_base_sha": "acaa61557cae859fcca34cf52de6359b42ee3d2b",
+    "source_kind": "isolated source mutation of candidate",
+    "script_source_sha": "acaa61557cae859fcca34cf52de6359b42ee3d2b",
+    "mutation": "metadata-import",
+    "modified_file": "/tmp/fossilize-h20/mutations/metadata-import/fossilize_db.cpp",
+    "modified_file_sha256": "cb0aec4abb51b32a76117522b6335bb8c2c8dfed6023f78af0a31337c7ab92bd",
+    "patch_evidence": "runs/issue-20/issue-20-20261110/evidence/implementer-1-mutation-patch-metadata-import.json"
+  },
+  "stdout_log": "/tmp/fossilize-h20/output/implementer-1/build-mutation-metadata-import-4jobs.log",
+  "output": "[1/12] Building CXX object CMakeFiles/fossilize.dir/replay_parse_result.cpp.o\n[2/12] Building CXX object CMakeFiles/fossilize.dir/varint.cpp.o\n[3/12] Building C object CMakeFiles/miniz.dir/miniz/miniz.c.o\n[4/12] Linking C static library libminiz.a\n[5/12] Building CXX object CMakeFiles/fossilize.dir/path.cpp.o\n[6/12] Building CXX object CMakeFiles/fossilize.dir/fossilize_application_filter.cpp.o\n[7/12] Building CXX object CMakeFiles/fossilize.dir/fossilize_external_replayer.cpp.o\n[8/12] Building CXX object test/CMakeFiles/database-discovery-test.dir/database_discovery_test.cpp.o\n/tmp/fossilize-h20/mutations/metadata-import/test/database_discovery_test.cpp: In function \u2018int main(int, char**)\u2019:\n/tmp/fossilize-h20/mutations/metadata-import/test/database_discovery_test.cpp:221:2: warning: this \u2018if\u2019 clause does not guard... [-Wmisleading-indentation]\n  221 |  if(argc!=2)return 2;std::string mode=argv[1];\n      |  ^~\n/tmp/fossilize-h20/mutations/metadata-import/test/database_discovery_test.cpp:221:22: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the \u2018if\u2019\n  221 |  if(argc!=2)return 2;std::string mode=argv[1];\n      |                      ^~~\n[9/12] Building CXX object CMakeFiles/fossilize.dir/fossilize_db.cpp.o\n/tmp/fossilize-h20/mutations/metadata-import/fossilize_db.cpp: In member function \u2018bool Fossilize::DatabaseInterface::Impl::parse_imported_metadata(const void*, size_t)\u2019:\n/tmp/fossilize-h20/mutations/metadata-import/fossilize_db.cpp:714:35: warning: declaration of \u2018report\u2019 shadows a member of \u2018Fossilize::DatabaseInterface::Impl\u2019 [-Wshadow]\n  714 |         DatabasePreparationReport report;\n      |                                   ^~~~~~\n/tmp/fossilize-h20/mutations/metadata-import/fossilize_db.cpp:146:35: note: shadowed declaration is here\n  146 |         DatabasePreparationReport report;\n      |                                   ^~~~~~\n[10/12] Building CXX object CMakeFiles/fossilize.dir/fossilize.cpp.o\n[11/12] Linking CXX static library libfossilize.a\n[12/12] Linking CXX executable test/database-discovery-test\n"
+}
