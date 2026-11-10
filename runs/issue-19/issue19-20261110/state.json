@@ -248,6 +248,7 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "attempt_id": "checker-unit-3",
       "criteria": [
         "AC1"
       ],
@@ -255,9 +256,28 @@
       "id": "CU19-3",
       "location": "cli/fossilize_feature_filter.cpp:4800; cli/fossilize_feature_filter.cpp:6240; test/replay_support_test.cpp static coverage",
       "priority": 2,
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+        "evidence": {
+          "candidate_sha": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
+          "checker_attempt": "checker-unit-3",
+          "checker_statement": "Independently compiled/ran exact candidate probe with unchanged old bool policy and precise Extension known3 required1 available0",
+          "commands": [
+            "cu3-layout-api-compile",
+            "cu3-layout-api-run"
+          ],
+          "compile_exit_code": 0,
+          "log": "/tmp/fossilize-h19/output/checker-4/layout-api-run.log",
+          "output": "layout=1000117001 ok=0 old_bool=0 kind=2 identifier=VK_KHR_maintenance2 known=3 required=1 available=0 raw=0\nlayout=1000117000 ok=0 old_bool=0 kind=2 identifier=VK_KHR_maintenance2 known=3 required=1 available=0 raw=0\nCHECKER19/image-layout-supported-before-after-and-extension-controls passed\n",
+          "run_exit_code": 0,
+          "source": "cli/fossilize_feature_filter.cpp image_layout_is_supported retains API>=1.1 OR maintenance2; test/replay_support_test.cpp both enums/positions/RP1/RP2 and API-only/extension-only/reuse/recovery controls",
+          "worker_id": "/root/issue19_checker_unit3"
+        },
+        "finding_id": "CU19-3"
+      },
       "requested_change": "Emit an actionable API-version or maintenance2 extension detail at this detector, preserving the existing OR support policy, and add registered Release-active assertions for both layouts plus valid/reused-receiver and extension/API-supported controls. Audit remaining bare support predicates so known facts cannot fall through generic overload reasons.",
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -578,6 +598,10 @@
       {
         "started": 1794312506.125002,
         "wait_seconds": 7.700188842834905
+      },
+      {
+        "started": 1794312521.4134989,
+        "wait_seconds": 7.75135193602182
       }
     ],
     "command_timeout": 600,
@@ -8218,7 +8242,7 @@
         "timeout": 600
       }
     ],
-    "deadline": 1794315793.1522462,
+    "deadline": 1794315800.903598,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -8906,7 +8930,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 370,
+  "revision": 371,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
