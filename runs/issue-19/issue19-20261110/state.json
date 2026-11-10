@@ -165,6 +165,7 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "attempt_id": "checker-unit-2",
       "criteria": [
         "AC1"
       ],
@@ -172,9 +173,27 @@
       "id": "CU19-2",
       "location": "cli/fossilize_feature_filter.cpp:5837; cli/fossilize_feature_filter.cpp:5849; cli/fossilize_feature_filter.cpp:6262",
       "priority": 2,
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+        "evidence": {
+          "candidate_sha": "0c15f246a75c027daf2bac82c0547da8a14e6717",
+          "evidence": "Independent original probe compile0/run0; VkDynamicState known4/raw1879048189 and graphicsShaderStage known4/raw32, with supported controls. Registered source asserts exact fields, bool parity and success clearing.",
+          "fresh_checker_attempt": "checker-unit-2",
+          "id": "CU19-2",
+          "log": "runs/issue-19/issue19-20261110/evidence/checker-unit2-known-enum-probe.log",
+          "result": "passed",
+          "source": "test/replay_support_test.cpp:125-147; cli/fossilize_feature_filter.cpp:5837,5849",
+          "tests": [
+            "CHECKER19-known-graphics-dynamic-enum",
+            "CHECKER19-known-graphics-stage-enum",
+            "CHECKER19-supported-before-after-controls"
+          ]
+        },
+        "finding_id": "CU19-2"
+      },
       "requested_change": "Record a specific constraint identifier and known offending enum value at each rejection detector without changing bool support policy; add Release-active registered graphics assertions for both paths and successful controls.",
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -6351,7 +6370,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 267,
+  "revision": 268,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
