@@ -1598,9 +1598,10 @@ struct StreamArchive : DatabaseInterface
 						break;
 					}
 
-					// NAME + HEADER in one read
+					// NAME + HEADER in one read. A short EOF need not carry an OS error.
+					errno = 0;
 					if (fread(bytes_to_read, 1, sizeof(bytes_to_read), file) != sizeof(bytes_to_read))
-						return fail(DiscoveryReason::Read, true);
+						return fail(DiscoveryReason::Read, errno != 0);
 					offset += sizeof(bytes_to_read);
 					header_raw = (PayloadHeaderRaw*)&bytes_to_read[FOSSILIZE_BLOB_HASH_LENGTH];
 					header = get_converted_header(*header_raw);

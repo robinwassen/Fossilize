@@ -83,12 +83,13 @@ static void truncated(unsigned retained)
 #ifdef __linux__
 static unsigned fail_seek,fail_tell,fail_read;
 static bool positive_seek_error;
+static int injected_read_errno=EIO;
 extern "C" int __real_fseek(FILE *,long,int);
 extern "C" long __real_ftell(FILE *);
 extern "C" size_t __real_fread(void *,size_t,size_t,FILE *);
 extern "C" int __wrap_fseek(FILE *f,long n,int w) { if(fail_seek&&!--fail_seek){errno=ESPIPE;return positive_seek_error?1:-1;} return __real_fseek(f,n,w); }
 extern "C" long __wrap_ftell(FILE *f) { if(fail_tell&&!--fail_tell){errno=EIO;return -1;} return __real_ftell(f); }
-extern "C" size_t __wrap_fread(void *p,size_t n,size_t m,FILE *f) { if(fail_read&&!--fail_read){errno=EIO;return 0;} return __real_fread(p,n,m,f); }
+extern "C" size_t __wrap_fread(void *p,size_t n,size_t m,FILE *f) { if(fail_read&&!--fail_read){errno=injected_read_errno;return 0;} return __real_fread(p,n,m,f); }
 #endif
 static void inputs()
 {
@@ -115,9 +116,9 @@ static void errors()
  for(unsigned mode=0;mode<3;mode++) { auto x=b; if(mode==0)x.resize(8); if(mode==1)x[0]^=0xff; if(mode==2)x[15]=255; save("bad.foz",x);auto db=open("bad.foz");
   c.require(!db->prepare(),"D20/invalid-fails");auto r=db->get_preparation_report();c.require(!r.discovery_complete&&!r.unread_total_known&&!r.satisfies_required_scope(true)&&r.inputs[0].state==DiscoveryState::Failed,"D20/invalid-is-not-empty"); }
 #ifdef __linux__
- for(unsigned mode=0;mode<4;mode++) {auto db=open("valid.foz");positive_seek_error=mode==3;fail_seek=mode==0?1:mode==3?3:0;fail_tell=mode==1?1:0;fail_read=mode==2?2:0;
+ for(unsigned mode=0;mode<5;mode++) {auto db=open("valid.foz");positive_seek_error=mode==3;injected_read_errno=mode==4?0:EIO;fail_seek=mode==0?1:mode==3?3:0;fail_tell=mode==1?1:0;fail_read=(mode==2||mode==4)?2:0;
   c.require(!db->prepare(),"D20/io-adapter-fails"); auto in=db->get_preparation_report().inputs[0];
-  c.require(in.state==DiscoveryState::Failed&&in.raw_error_known&&in.raw_error==((mode==0||mode==3)?ESPIPE:EIO)&&in.reason==((mode==0||mode==3)?DiscoveryReason::Seek:mode==1?DiscoveryReason::Tell:DiscoveryReason::Read)&&!in.total_known,"D20/io-origin-exact"); }
+  c.require(in.state==DiscoveryState::Failed&&in.raw_error_known==(mode!=4)&&in.raw_error==(mode==4?0:(mode==0||mode==3)?ESPIPE:EIO)&&in.reason==((mode==0||mode==3)?DiscoveryReason::Seek:mode==1?DiscoveryReason::Tell:DiscoveryReason::Read)&&!in.total_known,"D20/io-origin-exact"); }
 #endif
  auto db=open("valid.foz"); c.require(db->prepare()&&db->get_preparation_report().discovery_complete,"D20/error-independent-valid-control");
  // An uninstrumented custom backend must never acquire discovery facts.
