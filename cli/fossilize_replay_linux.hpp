@@ -1190,7 +1190,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 	unsigned raytracing_pipeline_offset = 0;
 
 	{
-		auto db = create_database(databases, !replayer_opts.optional_database_indices.empty());
+		auto db = create_database(databases);
 		configure_replay_inputs(*db,databases.size(),replayer_opts.optional_database_indices);
 
 		if (whitelist)
@@ -1207,18 +1207,18 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			for (auto index : replayer_opts.implicit_whitelist_database_indices)
 				db->promote_sub_database_to_whitelist(index);
 
-		if (!db->prepare())
+		bool prepared = db->prepare();
+		unsigned starts[] = {replayer_opts.start_graphics_index, replayer_opts.start_compute_index, replayer_opts.start_raytracing_index};
+		unsigned ends[] = {replayer_opts.end_graphics_index, replayer_opts.end_compute_index, replayer_opts.end_raytracing_index};
+		auto scope = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash,
+		                                 replayer_opts.accept_recovered_prefix, nullptr, prepared);
+		if (!scope.scope_satisfied)
 		{
-			for (auto &path : databases)
-				LOGE("Failed to parse database %s.\n", path);
+			LOGE("Required database preparation/discovery is incomplete.\n");
 			return EXIT_FAILURE;
 		}
-
-		if (!db->get_preparation_report().satisfies_required_scope(replayer_opts.accept_recovered_prefix))
-		{
-			LOGE("Required database discovery is incomplete.\n");
-			return EXIT_FAILURE;
-		}
+		if (scope.optional_inputs_excluded)
+			return EXIT_SUCCESS;
 
 		// An explicitly requested missing item is not an empty successful
 		// assignment, even when enumeration would launch no children.
@@ -1243,11 +1243,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 				Global::control_block->metadata_shared_size_mib.store(uint32_t(s.st_size / (1024 * 1024)), std::memory_order_relaxed);
 		}
 
-		unsigned starts[] = {replayer_opts.start_graphics_index, replayer_opts.start_compute_index, replayer_opts.start_raytracing_index};
-		unsigned ends[] = {replayer_opts.end_graphics_index, replayer_opts.end_compute_index, replayer_opts.end_raytracing_index};
-		auto scope = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash, replayer_opts.accept_recovered_prefix);
-		if (!scope.scope_satisfied)
-			return EXIT_FAILURE;
+
 		num_graphics_pipelines = scope.stable_hashes[0].size();
 		graphics_pipeline_offset = scope.ranges[0].effective_begin;
 		num_compute_pipelines = scope.stable_hashes[1].size();
@@ -1888,13 +1884,16 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 	{
 		// Preserve the controller's original no-device zero-assignment path,
 		// while making this launched worker's negotiation/finalization explicit.
-		auto db=create_database(databases, !replayer_opts.optional_database_indices.empty());
-		configure_replay_inputs(*db,databases.size(),replayer_opts.optional_database_indices);
-		bool prepared=(!DatabaseInterface::metadata_handle_is_valid(Global::metadata_fd) || db->import_metadata_from_os_handle(Global::metadata_fd)) && db->prepare();
-		replayer.selection_report.preparation=db->get_preparation_report();
-		replayer.selection_report.scope_satisfied=prepared && replayer.selection_report.preparation.satisfies_required_scope(replayer_opts.accept_recovered_prefix);
-		replayer.work_drained=replayer.selection_report.scope_satisfied;
-		ret=replayer.selection_report.scope_satisfied ? EXIT_SUCCESS : replayer.fail_run(ReplayFailure::Setup);
+		auto db = create_database(databases);
+		configure_replay_inputs(*db, databases.size(), replayer_opts.optional_database_indices);
+		bool prepared = (!DatabaseInterface::metadata_handle_is_valid(Global::metadata_fd) ||
+		                 db->import_metadata_from_os_handle(Global::metadata_fd)) && db->prepare();
+		unsigned starts[] = {replayer_opts.start_graphics_index, replayer_opts.start_compute_index, replayer_opts.start_raytracing_index};
+		unsigned ends[] = {replayer_opts.end_graphics_index, replayer_opts.end_compute_index, replayer_opts.end_raytracing_index};
+		replayer.selection_report = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash,
+		                                              replayer_opts.accept_recovered_prefix, nullptr, prepared);
+		replayer.work_drained = replayer.selection_report.scope_satisfied;
+		ret = replayer.selection_report.scope_satisfied ? EXIT_SUCCESS : replayer.fail_run(ReplayFailure::Setup);
 	}
 	else
 		ret = run_normal_process(replayer, databases, nullptr, 0, Global::metadata_fd);

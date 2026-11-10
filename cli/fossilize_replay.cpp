@@ -226,10 +226,10 @@ static BidirectionalItr unstable_remove_if(BidirectionalItr first, Bidirectional
 	return first;
 }
 
-static unique_ptr<DatabaseInterface> create_database(const vector<const char *> &databases, bool force_composite = false)
+static unique_ptr<DatabaseInterface> create_database(const vector<const char *> &databases)
 {
 	unique_ptr<DatabaseInterface> resolver;
-	if (databases.size() == 1 && !force_composite)
+	if (databases.size() == 1)
 	{
 		resolver.reset(create_database(databases.front(), DatabaseMode::ReadOnly));
 	}
@@ -4085,7 +4085,7 @@ static int run_progress_process(const VulkanDevice::Options &device_opts,
 
 	// Resolve selection through the same policy helper as normal and controller replay.
 	{
-		auto db = create_database(databases, !replayer_opts.optional_database_indices.empty());
+		auto db = create_database(databases);
 		configure_replay_inputs(*db, databases.size(), replayer_opts.optional_database_indices);
 		if (whitelist)
 		{
@@ -4096,11 +4096,10 @@ static int run_progress_process(const VulkanDevice::Options &device_opts,
 				for (auto index : replayer_opts.implicit_whitelist_database_indices)
 					db->promote_sub_database_to_whitelist(index);
 		}
-		if (!db->prepare())
-			return EXIT_FAILURE;
+		bool prepared = db->prepare();
 		unsigned starts[] = {opts.start_graphics_index, opts.start_compute_index, opts.start_raytracing_index};
 		unsigned ends[] = {opts.end_graphics_index, opts.end_compute_index, opts.end_raytracing_index};
-		auto scope = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash, replayer_opts.accept_recovered_prefix);
+		auto scope = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash, replayer_opts.accept_recovered_prefix, nullptr, prepared);
 		if (!scope.scope_satisfied)
 			return EXIT_FAILURE;
 		unsigned *out_starts[] = {&opts.start_graphics_index, &opts.start_compute_index, &opts.start_raytracing_index};
@@ -4408,7 +4407,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 {
 	auto start_time = chrono::steady_clock::now();
 	auto start_create_archive = chrono::steady_clock::now();
-	auto resolver = create_database(databases, !replayer.opts.optional_database_indices.empty());
+	auto resolver = create_database(databases);
 	configure_replay_inputs(*resolver, databases.size(), replayer.opts.optional_database_indices);
 
 	if (whitelist)
@@ -4437,12 +4436,19 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 	auto end_create_archive = chrono::steady_clock::now();
 
 	auto start_prepare = chrono::steady_clock::now();
-	if (!resolver->prepare())
-	{
-		LOGE("Failed to prepare database.\n");
-		return replayer.fail_run(ReplayFailure::Setup);
-	}
+	bool prepared = resolver->prepare();
 	replayer.selection_report.preparation = resolver->get_preparation_report();
+	if (!prepared || replay_inputs_unavailable(replayer.selection_report.preparation))
+	{
+		unsigned starts[] = {replayer.opts.start_graphics_index, replayer.opts.start_compute_index, replayer.opts.start_raytracing_index};
+		unsigned ends[] = {replayer.opts.end_graphics_index, replayer.opts.end_compute_index, replayer.opts.end_raytracing_index};
+		replayer.selection_report = select_replay_scope(*resolver, starts, ends, replayer.opts.pipeline_hash,
+		                                               replayer.opts.accept_recovered_prefix, nullptr, prepared);
+		if (!replayer.selection_report.scope_satisfied)
+			return replayer.fail_run(ReplayFailure::Setup);
+		replayer.work_drained = true;
+		return EXIT_SUCCESS;
+	}
 	replayer.selection_report.recovered_prefix_requested = replayer.opts.accept_recovered_prefix;
 	replayer.selection_report.scope_satisfied =
 		replayer.selection_report.preparation.satisfies_required_scope(replayer.opts.accept_recovered_prefix);

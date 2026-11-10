@@ -848,7 +848,11 @@ opened truncated source; original discovery and unread totals remain incomplete
 and unknown. It cannot accept an unreadable/missing required source or incomplete
 filter database. `--optional-database-index N` declares a zero-based source input
 optional; unavailable optional inputs retain their identity and unknown excluded
-scope. Filter/hash/range/hint exclusions never become execution successes or
+scope. Single sources retain their selected built-in backend, including ZIP, text
+and directory archives. If an optional-only prepare fails, every known key from
+that input is excluded under the optional-input policy and none is dispatched;
+the selected scope is known empty while original unread totals remain unknown.
+Master/composite metadata retains its existing stream-archive-only boundary. Filter/hash/range/hint exclusions never become execution successes or
 failures. These narrow policies are forwarded through ExternalReplayer's additive
 setter, both launchers and exact-commit metadata. Options and shared-progress
 layouts, worker reason frames and legacy messages remain unchanged. Direct-child

@@ -7,7 +7,7 @@
 
 namespace Fossilize
 {
-enum class ReplayExclusionPolicy { Whitelist, Blacklist, Range, HashSelection, ReplayV1Hint };
+enum class ReplayExclusionPolicy { Whitelist, Blacklist, Range, HashSelection, ReplayV1Hint, OptionalInput };
 struct ReplaySelectionExclusion
 {
 	DiscoveryKey key;
@@ -22,8 +22,11 @@ struct ReplaySelectionReport
 {
 	DatabasePreparationReport preparation;
 	bool recovered_prefix_requested = false;
+	bool preparation_succeeded = false;
 	bool scope_satisfied = false;
 	bool hash_found = true;
+	bool selected_total_known = false;
+	bool optional_inputs_excluded = false;
 	Hash requested_hash = 0;
 	ReplaySelectionRange ranges[3];
 	std::vector<Hash> stable_hashes[3]; // Selected before hints; indices preserve robust resume.
@@ -37,6 +40,18 @@ static const ResourceTag replay_pipeline_tags[3] = {
 	RESOURCE_GRAPHICS_PIPELINE, RESOURCE_COMPUTE_PIPELINE, RESOURCE_RAYTRACING_PIPELINE
 };
 
+inline bool replay_inputs_unavailable(const DatabasePreparationReport &preparation)
+{
+	if (preparation.inputs.empty())
+		return false;
+	for (auto &input : preparation.inputs)
+	{
+		if (input.required || input.state == DiscoveryState::Complete || input.state == DiscoveryState::RecoveredPrefix)
+			return false;
+	}
+	return true;
+}
+
 inline void configure_replay_inputs(DatabaseInterface &db, size_t count, const std::vector<unsigned> &optional)
 {
 	for (size_t i = 0; i < count; i++)
@@ -49,10 +64,12 @@ inline void configure_replay_inputs(DatabaseInterface &db, size_t count, const s
 
 inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const unsigned *starts,
                                                 const unsigned *ends, Hash hash, bool prefix,
-                                                const std::unordered_set<Hash> *hints = nullptr)
+                                                const std::unordered_set<Hash> *hints = nullptr,
+                                                bool preparation_succeeded = true)
 {
 	ReplaySelectionReport report;
 	report.preparation = db.get_preparation_report();
+	report.preparation_succeeded = preparation_succeeded;
 	report.recovered_prefix_requested = prefix;
 	report.scope_satisfied = report.preparation.satisfies_required_scope(prefix);
 	report.requested_hash = hash;
@@ -67,6 +84,29 @@ inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const un
 		auto policy = entry.policy == DiscoveryExclusion::Blacklist ?
 		              ReplayExclusionPolicy::Blacklist : ReplayExclusionPolicy::Whitelist;
 		report.excluded.push_back({entry.key, policy});
+	}
+	// A failed optional-only backend is excluded as an input, including every
+	// known key observed before failure. Retained keys are never dispatched from
+	// an interface whose prepare() failed. Original discovery uncertainty survives.
+	if (!preparation_succeeded || replay_inputs_unavailable(report.preparation))
+	{
+		report.optional_inputs_excluded = !report.preparation.inputs.empty();
+		for (auto &input : report.preparation.inputs)
+			report.optional_inputs_excluded &= !input.required;
+		report.scope_satisfied &= report.optional_inputs_excluded && report.hash_found;
+		if (report.optional_inputs_excluded)
+		{
+			report.optional_unavailable = report.preparation.inputs;
+			for (auto key : report.preparation.discovered)
+				report.excluded.push_back({key, ReplayExclusionPolicy::OptionalInput});
+		}
+		for (unsigned i = 0; i < 3; i++)
+		{
+			report.ranges[i].requested_begin = starts[i];
+			report.ranges[i].requested_end = ends[i];
+		}
+		report.selected_total_known = report.scope_satisfied;
+		return report;
 	}
 	for (unsigned i = 0; i < 3; i++)
 	{
@@ -114,6 +154,7 @@ inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const un
 		}
 	}
 	report.scope_satisfied &= report.hash_found;
+	report.selected_total_known = report.scope_satisfied;
 	return report;
 }
 }

@@ -1,5 +1,15 @@
 #define FOSSILIZE_OUTCOME_NO_MAIN
 #include "replay_outcome_test.cpp"
+#ifdef __linux__
+static unsigned optional_seek_failure;
+extern "C" int __real_fseek(FILE *, long, int);
+extern "C" int __wrap_fseek(FILE *file, long offset, int origin)
+{
+ if(optional_seek_failure && !--optional_seek_failure) { errno=ESPIPE;return 1; }
+ return __real_fseek(file,offset,origin);
+}
+#endif
+
 static void selection_input(const char *path)
 {
  std::unique_ptr<DatabaseInterface> db(create_stream_archive_database(path,DatabaseMode::OverWrite));
@@ -53,6 +63,25 @@ static void prefix_policy()
  checks.require(!select_replay_scope(*db,starts,ends,0,true).scope_satisfied,"D20/prefix-cannot-accept-missing-required");
  db.reset(create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,2));configure_replay_inputs(*db,2,{1});checks.require(db->prepare(),"D20/optional-prepare");auto optional=select_replay_scope(*db,starts,ends,0,true);
  checks.require(optional.scope_satisfied&&optional.optional_unavailable.size()==1&&optional.optional_unavailable[0].path=="absent.foz"&&!optional.preparation.unread_total_known,"D20/optional-input-exact-policy");
+ for(const char *path:{"optional-missing.foz","optional-invalid.foz"})
+ {
+  remove(path);if(std::string(path)=="optional-invalid.foz"){FILE *f=fopen(path,"wb");fputs("invalid",f);fclose(f);}
+  auto opts=Replay::options(1,nullptr);opts.optional_database_indices={0};ThreadedReplayer replay(device_options(),opts);calls=0;
+  int status=run_normal_process(replay,{path},nullptr,0,-1);auto &report=replay.selection_report;
+  checks.require(status==0&&calls==0&&report.scope_satisfied&&report.selected_total_known&&report.optional_inputs_excluded&&report.selected.empty()&&report.dispatch.empty()&&report.optional_unavailable.size()==1&&report.optional_unavailable[0].path==path&&!report.preparation.unread_total_known&&!report.preparation.discovery_complete&&replay.outcome.succeeded(),"D20/optional-only-unavailable-named-zero-selected-unknown-unread");
+ }
+#ifdef __linux__
+ checks.require(fixture("good","optional-read-error.foz"),"D20/optional-partial-fixture");
+ for(bool optional:{false,true})
+ {
+  auto opts=Replay::options(1,nullptr);if(optional)opts.optional_database_indices={0};ThreadedReplayer replay(device_options(),opts);calls=0;
+  optional_seek_failure=3;int status=run_normal_process(replay,{"optional-read-error.foz"},nullptr,0,-1);optional_seek_failure=0;auto &report=replay.selection_report;
+  checks.require(status==(optional?0:1)&&calls==0&&report.selected.empty()&&report.dispatch.empty()&&!report.preparation.unread_total_known&&!report.preparation.discovery_complete,"D20/failed-prepare-never-dispatches-retained-keys");
+  checks.require(!report.preparation_succeeded&&report.scope_satisfied==optional&&report.optional_inputs_excluded==optional&&report.selected_total_known==optional&&report.preparation.discovered.size()==1,"D20/optional-partial-exact-scope-policy");
+  if(optional)checks.require(report.optional_unavailable.size()==1&&report.optional_unavailable[0].path=="optional-read-error.foz"&&report.excluded.size()==1&&report.excluded[0].key==report.preparation.discovered[0]&&report.excluded[0].policy==ReplayExclusionPolicy::OptionalInput&&replay.outcome.succeeded(),"D20/optional-partial-known-keys-excluded-not-succeeded-or-failed");
+ }
+#endif
+
 }
 static void selection_filters()
 {
@@ -98,6 +127,9 @@ int main(int argc,char **argv)
   std::unique_ptr<DatabaseInterface> readback(create_database(argv[3],DatabaseMode::ReadOnly));readback->set_input_required(0,true);
   checks.require(readback->prepare()&&readback->get_preparation_report().discovery_complete&&readback->get_preparation_report().satisfies_required_scope(),"D20/formats-complete-real-producer");
   for(unsigned t=0;t<RESOURCE_COUNT;t++){size_t n=0,m=0;source->get_hash_list_for_resource_tag(ResourceTag(t),&n,nullptr);readback->get_hash_list_for_resource_tag(ResourceTag(t),&m,nullptr);checks.require(n==m,"D20/formats-readback-count");}
+  auto opts=Replay::options(1,nullptr);opts.optional_database_indices={0};ThreadedReplayer replay(device_options(),opts);marker_mode=true;results={VK_SUCCESS};calls=0;
+  int status=run_normal_process(replay,{argv[3]},nullptr,0,-1);marker_mode=false;
+  checks.require(status==0&&calls==2&&replay.selection_report.preparation_succeeded&&replay.selection_report.selected_total_known&&replay.selection_report.selected==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x201},{RESOURCE_COMPUTE_PIPELINE,0x202}})&&replay.selection_report.dispatch==replay.selection_report.selected&&replay.selection_report.preparation.discovery_complete&&!replay.selection_report.optional_inputs_excluded&&replay.selection_report.optional_unavailable.empty(),"D20/optional-valid-backend-exact-production-dispatch");
   return checks.failures?1:0;
  }
  if(argc!=2)return 2;std::string mode=argv[1];
