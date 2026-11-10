@@ -653,6 +653,10 @@
       {
         "started": 1794313977.2532108,
         "wait_seconds": 8.29283222486265
+      },
+      {
+        "started": 1794313991.8104513,
+        "wait_seconds": 21.693711412139237
       }
     ],
     "command_timeout": 600,
@@ -4933,9 +4937,31 @@
         "intent_id": "i20-span3-asan-inventory",
         "started": 1794313987.070712,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+          "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+          "/tmp/fossilize-h20/toolenv/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+          "--output-junit",
+          "/tmp/fossilize-h20/output/implementer-span-3/asan-tests.xml"
+        ],
+        "command": "env ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/asan-ubsan --output-on-failure --no-tests=error -R '^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)' --output-junit /tmp/fossilize-h20/output/implementer-span-3/asan-tests.xml",
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "eligible_deadline": 1794315738.6909828,
+        "intent_id": "i20-span3-asan-tests",
+        "started": 1794314015.037712,
+        "timeout": 600
       }
     ],
-    "deadline": 1794315716.9972713,
+    "deadline": 1794315738.6909828,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -5995,7 +6021,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 252,
+  "revision": 253,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
