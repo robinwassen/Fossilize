@@ -121,13 +121,15 @@
       "observations": [],
       "operation": "final",
       "plan_version": 1,
+      "rejection_signature": "29d87a3011ce026ab62bb5041625357b283bedd4575bfe4ff551ac610e584e9f",
+      "report": "runs/issue-19/issue19-text-warnings-20261110/reports/text-checker-final-2.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1794349567.7473137,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/19",
       "worker_id": "/root/issue19_text_checker_final2"
     }
@@ -142,7 +144,10 @@
     "generation": 175,
     "marker": "<!-- harness-ready:issue19-text-warnings-20261110:5f780e3f208314268caa7c4f4d2dc9bf86b13b144b1f7651904edbf06b20f849 -->",
     "plan_version": 1,
-    "stage": "prepared",
+    "reason": "checker rejected proposed completion",
+    "resume_operation": "repair",
+    "resume_phase": "implementing",
+    "stage": "cleanup",
     "targets": [
       {
         "evidence": "Independent unit checker accepted unchanged candidate e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d at base fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db, plan1: all23 cases and10 mandatory gates covered; four Linux CPU configurations passed282/282 each, focused ASan+UBSan38/38 with instrumentation verified, eight concurrency cases repeated3times, three independently compiled mutations failed intended assertions and strict verifier passed. Targeted support/dependency prose is grouped with fixed32 causes,8 global examples and42line/32KiB per-worker-attempt report bounds; overflow/repeated-observation counts and unknown context are explicit. Unrelated validation-policy/blacklist/parser/driver diagnostics retain existing behavior; no universal log cap. Native Windows user-waived/unverified; no GPU, Steam, cache persistence or general binary ABI claim. Separate final checking remains required.",
@@ -152,7 +157,23 @@
     ]
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "case": "M19-text-grouping",
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "cli/fossilize_feature_filter.cpp:4874 and :4950 both emit Constraint/flags for attachment-description and subpass-description masks. cli/replay_warnings.hpp:77-89 removes required/available values and keys Constraint context only by resource tag. Actual candidate FeatureFilter calls reject attachment flags=2147483648 against mask7 and subpass flags=2147483648 against mask143; ReplayWarnings combines them into one retained group with two observations and prose render-pass constraint flags. Isolated probe compiles exit0 and runs normal exit1 with FAIL independent/M19-distinct-render-pass-predicate-context; full output/digests in referenced artifact.",
+      "id": "H19-TEXT-CF2-01",
+      "location": "cli/fossilize_feature_filter.cpp:4874; cli/fossilize_feature_filter.cpp:4950; cli/replay_warnings.hpp:77",
+      "priority": 2,
+      "required_change": "Give these existing predicates distinct stable identities or bounded predicate contexts, and strengthen registered replay-warning-grouping using actual same-resource attachment/subpass detectors. Preserve coalescing of varying requested values within one predicate, fixed bounds and existing decisions.",
+      "route": "implementation",
+      "status": "open",
+      "title": "Preserve predicate identity for nested render-pass flags"
+    }
+  ],
   "issue_snapshot": {
     "deliverables": [
       "https://github.com/robinwassen/Fossilize/issues/19"
@@ -5332,8 +5353,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "final",
+  "next_action": "journal superseding issue evidence, then closeout-cleanup",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -5345,7 +5366,7 @@
     "output_directory": "/tmp/fossilize-h19-text/output",
     "source_worktree": "/home/robin/.codex/worktrees/1471/fossilize"
   },
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -6347,7 +6368,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 211,
+  "revision": 212,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
@@ -6357,7 +6378,7 @@
   },
   "run_id": "issue19-text-warnings-20261110",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-19",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/19",
   "verification": [
@@ -7682,16 +7703,11 @@
   ],
   "work_units": [
     {
-      "accepted": {
-        "attempt_id": "text-checker-unit-1",
-        "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
-        "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
-        "plan_version": 1
-      },
+      "accepted": null,
       "dependencies": [],
       "issue": "https://github.com/robinwassen/Fossilize/issues/19",
       "key": "https://github.com/robinwassen/Fossilize/issues/19",
-      "status": "accepted"
+      "status": "ready"
     }
   ]
 }
