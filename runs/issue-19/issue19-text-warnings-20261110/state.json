@@ -7262,6 +7262,41 @@
         "receipt": "/tmp/fossilize-h19-text/output/checker-repair-1/text-cr1-asan-build.receipt.json",
         "started": 1794351416.4735336,
         "timeout": 600
+      },
+      {
+        "candidate_sha": "c57dfc70b6a1f2abdbefb31aa0c90ba4a6ce3c94",
+        "child_command": [
+          "/usr/bin/env",
+          "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+          "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-h19/build/asan-ubsan",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(replay-warning-(same-cause|grouping|overflow|dependencies|concurrency|lifecycle|legacy-controls)$|replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+        ],
+        "command": [
+          "/usr/bin/env",
+          "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+          "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-h19/build/asan-ubsan",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(replay-warning-(same-cause|grouping|overflow|dependencies|concurrency|lifecycle|legacy-controls)$|replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+        ],
+        "cwd": "/tmp/fossilize-h19-text/checker-repair-1",
+        "eligible_deadline": 1808356836.0075197,
+        "expected_exit": 0,
+        "intent_id": "text-cr1-asan-tests",
+        "log": "/tmp/fossilize-h19-text/output/checker-repair-1/text-cr1-asan-tests.log",
+        "receipt": "/tmp/fossilize-h19-text/output/checker-repair-1/text-cr1-asan-tests.receipt.json",
+        "started": 1794351421.9354138,
+        "timeout": 600
       }
     ],
     "deadline": 1808356836.0075197,
@@ -8320,7 +8355,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 291,
+  "revision": 292,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
