@@ -91,13 +91,14 @@
       "observations": [],
       "operation": "replan",
       "plan_version": 1,
+      "report": "runs/issue-20/issue-20-20261110/reports/planner-waiver-2.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1794311251.242399,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
       "worker_id": "/root/planner_waiver20"
     }
@@ -3853,8 +3854,8 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "replan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -3866,12 +3867,12 @@
     "output_directory": "/tmp/fossilize-h20/output",
     "source_worktree": "/home/robin/.herdr/worktrees/fossilize/ticket-20"
   },
-  "phase": "planning",
+  "phase": "implementing",
   "plan": {
     "assumptions": [
       "Issue snapshot #20 matches live body read during planning; #18 is completed in supplied dependency snapshot. Coordinator rechecks snapshots at mandated boundaries.",
       "Absolute toolenv paths are planned following coordinator preflight (cmake/ctest/ninja absent initially); coordinator is installing them. Planner performed no builds/tests/probes.",
-      "Native Windows runner currently unavailable and user platform response pending. G20-native-windows is a mandatory unresolved prerequisite; no old waiver is inherited and planner does not weaken it.",
+      "Native Windows execution is user-waived only for root https://github.com/robinwassen/Fossilize/issues/20, run issue-20-20261110. Source: User reply in this conversation, exact answer \"Proceed; waive Windows for this run\", durably recorded at runs/issue-20/issue-20-20261110/evidence/user-native-windows-disposition.json. G20-native-windows is optional for this run and explicitly NOT RUN/unverified; no native Windows pass or general waiver is claimed. Every applicable Linux gate remains required unchanged.",
       "Source/report API names may be adjusted in implementation while retaining all semantics and planned assertion coverage; any actual scope/check reduction requires coordinator reconciliation/replanning, not silent omission.",
       "Coordinator has verified private CMake/CTest 4.1.3 and Ninja 1.13.0 executables; configuration includes CMAKE_POLICY_VERSION_MINIMUM=3.5 for older vendored subprojects. Their successful configuration/build remains to be established by execution."
     ],
@@ -4084,7 +4085,7 @@
         "kind": "both",
         "method": "Inspect exact base-to-candidate full diff and committed tests/CMake registration, CHANGELOG.md and local-docs/verification.md; compare current #20/#8 and recursive prerequisite snapshot. Review typed metadata state invariants and all production callers including capture append and both OS controllers. No runtime claim follows from reading.",
         "prerequisites": [
-          "Exact clean committed candidate/base and plan v1; current task snapshot; original AC1 unchanged"
+          "Exact clean committed candidate/base and plan v2; current task snapshot; original AC1 unchanged"
         ]
       },
       {
@@ -4505,16 +4506,26 @@
         ],
         "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
         "expected": [
-          "Native platform-specific automated evidence passes all applicable same behavioral cases and records platform/configuration; until explicit authorized reconciliation this gate is incomplete."
+          "Native Windows execution is user-waived for this run: NOT RUN and unverified. Unit/final reports and publication evidence retain this limitation and exact authorization provenance; never record native Windows as passed or skipped-as-success, and do not treat Linux or cross-platform source inspection as native execution. All applicable Linux required gates/cases remain unchanged."
         ],
         "id": "G20-native-windows",
-        "kind": "both",
+        "kind": "optional",
         "method": {
+          "authorization": {
+            "answer": "Proceed; waive Windows for this run",
+            "artifact": "runs/issue-20/issue-20-20261110/evidence/user-native-windows-disposition.json",
+            "disposition": "Native Windows execution waived by user for this run; NOT RUN and unverified. Continue all applicable Linux gates. Plan applicability must be reconciled before acceptance; no Windows pass is claimed.",
+            "original_acceptance": "Preserved verbatim; no change to issue scope.",
+            "question": "The shared requirements call for native Windows verification, but this workspace is Linux. Should this run proceed with Linux checks and explicitly leave Windows unverified, or is a Windows runner available?",
+            "root_issue": "https://github.com/robinwassen/Fossilize/issues/20",
+            "run_id": "issue-20-20261110",
+            "source": "User reply in this conversation"
+          },
           "commands": "On native Windows prepared Ninja compiler environment, configure separate Debug/Release and FOSSILIZE_ENABLE_EXCEPTIONS OFF/ON directories with the same CLI/layer/tests/SPIR-V flags; build, capture CTest JSON and run the full CPU CTest inventory plus three repeats of portable new database-discovery/replay-selection/replay-discovery, replay-event-controller and compatibility cases. MSVC does not implement the GCC no-exceptions flag; state actual compiler behavior. Windows production CreateProcess/named metadata mapping/ExternalReplayer forwarding are exercised by the portable CLI/integration cases.",
-          "policy": "Mandatory platform prerequisite currently unavailable; do not report passed, skipped-as-success or satisfied by Linux/mingw/wine. Coordinator must obtain a native runner or an explicit user platform disposition and reconcile the plan before acceptance."
+          "policy": "Optional only for https://github.com/robinwassen/Fossilize/issues/20, run issue-20-20261110, under the user's explicit answer \"Proceed; waive Windows for this run\". This plan reconciles applicability for both unit and final checking; native Windows is NOT RUN/unverified and is excluded from the required passing-gate set for this run. This authorization supersedes only this run's native Windows execution requirement, preserves original AC1 verbatim, grants no general or future waiver, and supplies no Windows runtime pass. Retain the limitation in readiness and PR evidence; all applicable Linux gates remain required unchanged."
         },
         "prerequisites": [
-          "Native Windows compiler/CMake/Ninja/dependencies and process runner OR explicit user decision pending; prior issues' waivers do not waive #20"
+          "Explicit user disposition confirmed for this root/run by the recorded exact question and answer in runs/issue-20/issue-20-20261110/evidence/user-native-windows-disposition.json; the native Windows environment prerequisite is waived only for this run, with native runtime behavior NOT RUN/unverified."
         ]
       },
       {
@@ -4613,16 +4624,146 @@
       "Hints suppress parsing at dispatch while retaining resume indices; filtering them out before partitioning would break robust index semantics. Report hint exclusions separately without changing that order.",
       "Whole key/exclusion sets can double metadata memory; use existing indexes/views or bounded query/pagination and avoid quadratic duplicate provenance. Exact logical sets are still required, while unknown tail count is never enumerated.",
       "Progress goes through ExternalReplayer and both platform launchers; option forwarding must be tested, not inferred. Changed public Options members preserve checked source callers only; prebuilt consumer compatibility is not asserted.",
-      "Native Windows availability can block final acceptance/publication despite passing Linux checks. Build/sanitizer runtime absence is environmental unavailability, never evidence of a pass."
+      "Native Windows execution is user-waived for this run and remains NOT RUN/unverified; Linux evidence, portable registration, mingw or wine cannot establish native Windows runtime behavior. Build/sanitizer runtime absence is environmental unavailability, never evidence of a pass."
     ],
     "scope": [
       "One coherent unsplit work unit for discovery/preparation and replay selection completeness, including production StreamArchive, ConcurrentDatabase, filter provenance, same-commit metadata transfer, actual normal/robust/progress selection and narrow explicit scope policy.",
       "Return typed preparation/discovery metadata from real database producers and a typed selection report from the shared helper that production replay actually uses. Metadata distinguishes input observation from policy-excluded logical work and from item execution outcomes."
     ],
-    "version": 1,
+    "version": 2,
     "work_units": []
   },
   "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ],
+        "digest": "47644aa2470ec5232315b208fbc937a06b6b2248b69ded4edcea18fc4e9c507d",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/10": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n",
+            "children": [],
+            "id": 6079794262,
+            "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
+            "number": 10,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000001 \u2014 Preserve precise context in existing diagnostics",
+            "url": "https://github.com/robinwassen/Fossilize/issues/10"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/13": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n",
+            "children": [],
+            "id": 6079809809,
+            "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
+            "number": 13,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000004 \u2014 Retain unrecoverable child loss in the controller",
+            "url": "https://github.com/robinwassen/Fossilize/issues/13"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/14": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/10",
+              "https://github.com/robinwassen/Fossilize/issues/13"
+            ],
+            "body": "Legacy identity: `FOS-000005`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n5. **FOS-000005 \u2014 Separate replay-thread work completion from item success.** **M; depends on `FOS-000001` and `FOS-000004` for complete propagation; \u00a72\u2013\u00a73.** [worker:1800](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1800) discards the parse return and increments `completed_count` after processing; creation helpers return void. [normal replay:4553](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L4553) returns success after the queue finishes (E7). Introduce a thread-safe outcome accumulator independent of optional shared memory. First cover parse/read and Vulkan creation failures, then setup/validation/support/dependency exits. Propagate the result through normal replay, child and controller. **Check:** E7, missing entry, injected Vulkan failure, and mixed success/failure. Keep queue progress as queue progress. Unsupported required work must be unsuccessful under the declared policy, even when it is not a crash.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Replay unit and CLI integration tests:** E7, missing input entries, injected creation errors, unsupported required work, validation failures and dependency-blocked work produce the expected distinct outcomes and nonzero aggregate exits. A fully successful workload returns zero.\n   - **Thread/mode matrix:** The same fixed mixed workload has the same final logical outcome in normal, child/controller and progress modes, with shared progress absent/present and one/multiple threads. Queue completion still reaches its expected count even when processing fails; it is never the success oracle.\n\n<!-- fossilize-migration-v1:FOS-000005 -->\n",
+            "children": [],
+            "id": 6079814916,
+            "node_id": "I_kwDOVZpjbc8AAAABamKdBA",
+            "number": 14,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000005 \u2014 Separate replay-thread work completion from item success",
+            "url": "https://github.com/robinwassen/Fossilize/issues/14"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/16": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/13"
+            ],
+            "body": "Legacy identity: `FOS-000007`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n7. **FOS-000007 \u2014 Record timeout origin before invoking crash recovery.** **S\u2013M; depends on `FOS-000004`; \u00a74\u2013\u00a75.** [no-progress wait:965](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L965) invokes the timeout handler before its diagnostic. [Linux:1589](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1589) sends SIGABRT; [Windows:1203](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1203) writes `CRASH`. Store/send a distinct trigger from the healthy dispatcher before termination. Distinguish configured work-no-progress timeout, controller heartbeat timeout, and post-crash cleanup timeout. Include actual monotonic elapsed time and configured threshold. **Check:** deterministic no-progress injection, spontaneous fault, heartbeat loss, failed signal delivery and escalation. An externally observed SIGKILL alone does not prove a controller timeout or OOM. Multiple threads imply unknown individual attribution unless independently established.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Fake-clock and termination-adapter unit tests:** Each configured no-progress, heartbeat and cleanup deadline records its own trigger, threshold and monotonic elapsed time before requesting termination. Progress resets only the applicable deadline; a spontaneous fault has no invented timeout trigger.\n   - **Controller integration tests:** Injected SIGABRT/Windows recovery, failed termination delivery and escalation preserve trigger, mechanism and final effect separately. An unexplained external SIGKILL remains unattributed; multi-thread cases without item evidence retain unknown attribution. Use synchronization barriers, not timing races, to order events.\n\n<!-- fossilize-migration-v1:FOS-000007 -->\n",
+            "children": [],
+            "id": 6079824724,
+            "node_id": "I_kwDOVZpjbc8AAAABamLDVA",
+            "number": 16,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000007 \u2014 Record timeout origin before invoking crash recovery",
+            "url": "https://github.com/robinwassen/Fossilize/issues/16"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/17": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/10",
+              "https://github.com/robinwassen/Fossilize/issues/14"
+            ],
+            "body": "Legacy identity: `FOS-000008`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n8. **FOS-000008 \u2014 Reject malformed resource envelopes as controlled input errors.** **S for envelope guard, M for nested validation; depends on `FOS-000001` and `FOS-000005`; \u00a71\u2013\u00a72.** [parse:6368](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize.cpp#L6368) indexes `doc[\"version\"].GetInt()` without checking object/member/type (E5). Start with the envelope, reporting invalid shape versus incompatible version; audit nested field reads in subsequent bounded patches. Preserve numeric parse error/offset and resource identity without dumping shader contents. **Check:** `{}`, `[]`, null, missing/string version, malformed nested records; none may assert, terminate the embedding host or be blamed on the driver. Test release and debug builds. This is an outcome/containment prerequisite, not merely prettier logging; no claim of a complete parser-security audit is made here.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Parser table tests in debug and release builds:** Null, arrays, {}, missing/wrong-type version, invalid JSON and malformed nested fixtures for every migrated parser return controlled reason-bearing errors without assertions, signals or host termination. Incompatible numeric versions have a different reason from malformed shape.\n   - **Containment and input-mutation tests:** A subprocess sentinel continues after each rejected input; valid fixtures still parse identically. A fixed-seed mutation corpus is run automatically with a bounded runtime, and newly found failures become deterministic fixtures. Diagnostics expose available error offsets/identity but no shader payload.\n\n<!-- fossilize-migration-v1:FOS-000008 -->\n",
+            "children": [],
+            "id": 6079829518,
+            "node_id": "I_kwDOVZpjbc8AAAABamLWDg",
+            "number": 17,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000008 \u2014 Reject malformed resource envelopes as controlled input errors",
+            "url": "https://github.com/robinwassen/Fossilize/issues/17"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/18": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/14",
+              "https://github.com/robinwassen/Fossilize/issues/16",
+              "https://github.com/robinwassen/Fossilize/issues/17"
+            ],
+            "body": "Legacy identity: `FOS-000009`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n9. **FOS-000009 \u2014 Carry reason data from the place that detects it.** **M; depends on `FOS-000005`, `FOS-000007`, `FOS-000008`; \u00a71, \u00a74\u2013\u00a75.** Add a small stable internal result/event representation: phase, reason ID, known raw error, tag/hash or range, worker and attempt, plus unknown-context flags. Start with parse, creation and timeout paths. Extend child messages on both platforms with explicit framing/version negotiation and bounded parsing; never require the controller to infer categories from human logs. **Check:** split/truncated messages, unknown version/reason, missing final message, worker exit before first report. Unknown information stays unknown. This is where downstream controllers acquire causes; a parent-only summary cannot recover details a worker never sends.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Result serialization and streaming-parser unit tests:** Each migrated producer preserves reason, phase, raw error and applicable identity through a round trip. Feed every split position, multiple records per read, truncated/oversized records and unknown versions/reasons; parsing stays bounded and never converts absent context into known values.\n   - **Worker/controller integration tests:** With worker prose disabled, injected parse, creation and timeout failures remain distinguishable at the controller. Death before the first report and loss of the final report yield explicit uncertainty rather than fabricated resource identity or success.\n\n<!-- fossilize-migration-v1:FOS-000009 -->\n",
+            "children": [],
+            "id": 6079834852,
+            "node_id": "I_kwDOVZpjbc8AAAABamLq5A",
+            "number": 18,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000009 \u2014 Carry reason data from the place that detects it",
+            "url": "https://github.com/robinwassen/Fossilize/issues/18"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/20": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/18"
+            ],
+            "body": "Legacy identity: `FOS-000011`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n11. **FOS-000011 \u2014 Expose discovery and selection completeness.** **M; depends on `FOS-000009`; \u00a72.** [stream scanning:1200](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize_db.cpp#L1200) intentionally salvages truncated tails (E9). Database composites may omit unavailable inputs; whitelists/ranges and replay-cache checks change observable work. Return preparation/discovery metadata: requested/opened inputs, excluded inputs/items with policy, selected logical scope, truncation/read failures, complete/unknown discovery. Keep salvage behavior and report its limits. **Check:** intact empty archive versus truncated archive with zero retained entries; missing optional versus required subdatabase; filters and ranges. Known processed items cannot establish full coverage when unread scope is unknown. A caller may explicitly accept a recovered prefix, but the report must name that scope.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Database/discovery integration tests:** E9 reports incomplete discovery even with zero retained items, while an intact empty archive reports known complete empty scope. The intact prefix remains readable; required missing/unreadable inputs prevent full-scope success.\n   - **Selection/policy table tests:** Ranges, whitelists, deliberately optional inputs and explicitly accepted recovered-prefix policy report the exact selected/excluded scope and policy. Unknown unread totals remain unknown, never zero or full coverage; excluded items are not counted as failures or successes.\n\n<!-- fossilize-migration-v1:FOS-000011 -->\n",
+            "children": [],
+            "id": 6079844260,
+            "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
+            "number": 20,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "FOS-000011 \u2014 Expose discovery and selection completeness",
+            "url": "https://github.com/robinwassen/Fossilize/issues/20"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/20"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    },
+    {
+      "superseded_plan": {
+        "version": 1,
+        "work_units": []
+      }
+    },
     {
       "prior_issue_snapshot": {
         "deliverables": [
@@ -4763,7 +4904,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 190,
+  "revision": 191,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
@@ -4773,7 +4914,7 @@
   },
   "run_id": "issue-20-20261110",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-20",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/20",
   "verification": [],

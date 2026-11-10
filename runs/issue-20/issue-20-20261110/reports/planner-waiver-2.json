@@ -1,0 +1,785 @@
+{
+  "attempt_id": "planner-waiver-2",
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "candidate_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "input_revision": 188,
+  "input_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "observations": [
+    "Read required project guidance, the complete verification guide, changelog guideline, tracked harness skill and role/state contracts, relevant observability/worker/harness specifications, immutable input state188 plan1/original AC1, and checker applicability finding F20-WINDOWS-DISPOSITION-PLAN1.",
+    "Read live issue20 and shared parent issue8 through gh with explicit --repo robinwassen/Fossilize; issue20 original requirement matches the immutable AC1. Parent native Windows requirements are preserved as original task data and superseded only for this run by the exact explicit user authorization.",
+    "Read the durable user-native-windows-disposition.json from refs/heads/harness-artifacts and the supplied local record. Its exact user answer is \"Proceed; waive Windows for this run\"; native Windows remains NOT RUN/unverified.",
+    "Minimal plan diff: version1 to2, resolved the pending Windows assumption and Windows availability risk, updated source-contract plan-version prerequisite, and changed only G20-native-windows from both to optional with NOT RUN/unverified applicability and exact run-bound authorization provenance.",
+    "Original AC1, scope, non-goals, implementation, every case/assertion, all Linux gates including all four Debug/Release x exceptions OFF/ON configurations, repeats, ASan+UBSan, baseline/five-family mutation controls, compatibility, publication gate, and work-unit design are unchanged. Existing scheduler-only root decision remains separate; plan command argv is preserved.",
+    "No builds, tests, runtime probes, source edits, production writes, Harness/Journal calls or canonical mutations were performed. No implementation or runtime acceptance is supplied; fresh implementer and independent unit/final checking remain required under plan2, with no prior acceptance carried."
+  ],
+  "operation": "replan",
+  "plan": {
+    "assumptions": [
+      "Issue snapshot #20 matches live body read during planning; #18 is completed in supplied dependency snapshot. Coordinator rechecks snapshots at mandated boundaries.",
+      "Absolute toolenv paths are planned following coordinator preflight (cmake/ctest/ninja absent initially); coordinator is installing them. Planner performed no builds/tests/probes.",
+      "Native Windows execution is user-waived only for root https://github.com/robinwassen/Fossilize/issues/20, run issue-20-20261110. Source: User reply in this conversation, exact answer \"Proceed; waive Windows for this run\", durably recorded at runs/issue-20/issue-20-20261110/evidence/user-native-windows-disposition.json. G20-native-windows is optional for this run and explicitly NOT RUN/unverified; no native Windows pass or general waiver is claimed. Every applicable Linux gate remains required unchanged.",
+      "Source/report API names may be adjusted in implementation while retaining all semantics and planned assertion coverage; any actual scope/check reduction requires coordinator reconciliation/replanning, not silent omission.",
+      "Coordinator has verified private CMake/CTest 4.1.3 and Ninja 1.13.0 executables; configuration includes CMAKE_POLICY_VERSION_MINIMUM=3.5 for older vendored subprojects. Their successful configuration/build remains to be established by execution."
+    ],
+    "cases": [
+      {
+        "assertions": [
+          "Create and close a valid 16-byte magic-only FOZ; read it back through production StreamArchive: prepare succeeds, every resource set is empty, discovery is complete and total zero is known.",
+          "Create E9 by cutting the first name/header and separately the first payload after valid magic; legacy prepare still salvages, no retained entries, discovery incomplete, unread item total unknown rather than zero, reason and first unread byte offset known. A zero-length OS file is not the intact-empty fixture."
+        ],
+        "id": "D20-empty-e9",
+        "location": "test/database_discovery_test.cpp",
+        "tests": [
+          "database-discovery-empty",
+          "database-discovery-truncated-zero"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Write distinct checksum-protected known payloads, retain two whole entries and cut the next name/header or payload; metadata gives exact retained tag/hash union and prefix boundary, unknown unread total, and selected full-scope result unsuccessful.",
+          "Two-call read_entry yields exact intact payload bytes and hashes after prepare and after the report is queried. Preparation does not rewrite/truncate the input in ReadOnly mode. Full intact archive provides the successful control."
+        ],
+        "id": "D20-prefix-read",
+        "location": "test/database_discovery_test.cpp",
+        "tests": [
+          "database-discovery-prefix"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Real concurrent database with valid, missing and invalid/unreadable inputs retains every requested path/index/policy after failed children are discarded; opened/discovered/failed/excluded identities and reasons are exact.",
+          "Default legacy composite prepare and tolerant capture append behavior stay compatible; an explicit required input prevents full required-scope satisfaction, while an explicitly optional unavailable input is an exclusion of unknown item count and is never a success or failure item.",
+          "Test both missing and unreadable/read-error paths deterministically: use a real absent file plus a private controlled file adapter for read/seek error, avoiding chmod-only permission assumptions when tests run as root. Known raw OS errors remain exact if available; format rejection has no invented errno.",
+          "Include primary base plus extras, no primary, duplicate paths, duplicate logical tag/hash across inputs and the same hash under different tags; input observations remain distinct while logical scope is a deduplicated tag/hash union."
+        ],
+        "id": "D20-input-policy",
+        "location": "test/database_discovery_test.cpp",
+        "tests": [
+          "database-discovery-inputs"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Invalid/short magic, unsupported version, controlled failed seek/tell/header read and cancelled discovery are reason-bearing failed/incomplete states, not known empty success. All offsets/length calculations are checked with subtraction after bounds checks.",
+          "Unknown or uninstrumented backend preparation remains explicitly unknown; default custom DatabaseInterface subclass report must not invent complete discovery. A subsequent valid independent database succeeds."
+        ],
+        "id": "D20-errors-unknown",
+        "location": "test/database_discovery_test.cpp",
+        "tests": [
+          "database-discovery-errors"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Real source FOZ plus real whitelist/blacklist and implicit whitelist subdatabases yield exact prefilter logical universe, effective masks, selected set and exclusions by named policy; preserve existing shader-empty-whitelist semantics and union/precedence behavior.",
+          "Observe filter exclusions at actual production scan/priming boundary before keys are discarded; do not infer an original universe from already-filtered get_hash_list results. Required missing/truncated filter input cannot silently become a known complete selection.",
+          "Omitted input, whitelist rejection and blacklist rejection are distinct from read/creation failure. Policy exclusions do not increment succeeded/failed counters."
+        ],
+        "id": "D20-filter-scope",
+        "location": "test/database_discovery_test.cpp and test/replay_selection_test.cpp",
+        "tests": [
+          "database-discovery-filters",
+          "replay-selection-filters"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Table covers all three pipeline tags, default full interval, empty interval, exact bounds, partially and wholly out-of-bounds half-open ranges, start beyond end under the declared existing clamping policy, and explicit hash selection including missing hashes.",
+          "Ranges use deterministic sorted filtered hash order and report requested interval, effective interval, exact selected tag/hash and excluded logical tag/hash sets. Duplicates are one logical item; same hash under another tag is separate.",
+          "Filter then range order is explicit; narrowing a range, choosing zero items or a present hash does not turn an unknown required unread tail into complete full-input discovery."
+        ],
+        "id": "D20-range-scope",
+        "location": "test/replay_selection_test.cpp",
+        "tests": [
+          "replay-selection-ranges"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Default full scope rejects recovered/truncated required input even if every discovered selected item succeeds or filters/ranges select no items.",
+          "Explicit accept-recovered-prefix names each opened input and retained byte boundary, selected known tag/hash union and exclusion policy; it can satisfy only that prefix selection while original discovery and unread total remain incomplete/unknown.",
+          "A missing/unreadable required input cannot be converted into an accepted recovered prefix; optional unknown inputs remain named input exclusions. No full-coverage percentage is inferred from a zero selected count."
+        ],
+        "id": "D20-prefix-policy",
+        "location": "test/replay_selection_test.cpp",
+        "tests": [
+          "replay-selection-prefix-policy"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Create a known dependency-complete recorder fixture with all three pipeline kinds, run successful creation, teardown/reopen and explicitly harvest replay-v1 fragments using existing merge behavior; subsequent production dispatch suppresses exactly hinted tag/hash items.",
+          "Report exact hint exclusions and version/device/UUID namespace policy separately from whitelist/range exclusions, retain stable prehint indices required by robust resume, and record zero actual creation calls for hinted items and expected calls for unhinted items.",
+          "Legacy UUID-only, unknown namespace, unavailable optional hint DB and nonmatching device mode cannot become successful work or hide unknown discovery. Hints prove neither physical Vulkan compilation nor driver cache hit or durable persistence. Existing validation whitelist behavior stays independent."
+        ],
+        "id": "D20-replay-hints",
+        "location": "test/replay_selection_test.cpp with production ThreadedReplayer dispatch",
+        "tests": [
+          "replay-selection-hints"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Export/import the actual production OS metadata handle for intact, truncated-zero, prefix, missing optional and missing required composite inputs; reopened reports preserve paths/indexes, policy, scan state, unknown counts, prefix boundary, filtered/excluded sets and exact readable payloads.",
+          "Do not reconstruct complete discovery from imported hash-list length. Portable Windows named mapping and Linux FD mechanisms share semantic assertions; reject malformed/unsupported private metadata records with bounded size checks.",
+          "Private metadata is same-commit only; worker reason frames and SharedControlBlock fields/layout/version retain their existing meaning."
+        ],
+        "id": "D20-metadata-transfer",
+        "location": "test/database_discovery_test.cpp",
+        "tests": [
+          "database-discovery-metadata"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Use real null-device CLI normal, direct slave, master and progress processes, one/four threads where supported; process watchdogs, isolated working dirs and actual exit statuses are the outcome oracle. Empty intact succeeds; full-scope truncated-zero/prefix and required missing/unreadable input return nonzero.",
+          "Explicit prefix acceptance succeeds for a valid prefix and names that scope in the structured in-process result exercised by the production fixture; default full discovery remains incomplete. Optional input policy succeeds only for remaining declared scope and retains unavailable-input exclusion.",
+          "Actual production selection/dispatch fixture observes the report returned by the helper used by shipping paths, plus parse/create call set, not a parallel toy model. Assertions inspect typed metadata without parsing human prose.",
+          "Master must check discovery before zero-worker shortcuts and before metadata export; progress forwards policy through ExternalReplayer; children importing metadata cannot erase required uncertainty. Direct-child whitelist selection remains the existing unsupported invocation boundary; test the supported controller-imported filtered metadata path instead.",
+          "Unsuccessful preparation cannot be erased by quiet/progress absence, all-hinted work, zero selected range or another successful input. No test-only flag/hook is installed in shipping CLI."
+        ],
+        "id": "D20-production-modes",
+        "location": "test/replay_discovery_cli.cmake and production-including replay_selection_test.cpp",
+        "tests": [
+          "replay-discovery-cli-empty",
+          "replay-discovery-cli-truncated-zero",
+          "replay-discovery-cli-prefix",
+          "replay-discovery-cli-required",
+          "replay-discovery-cli-optional",
+          "replay-discovery-cli-selection"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Extract actual input headers from fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db and put them before candidate includes; compile and link unchanged recorder/database/custom subclass and ExternalReplayer Options{} callers with candidate libraries, then execute valid/empty ordinary invocations.",
+          "No new pure virtual method or required override is imposed on old DatabaseInterface subclasses. Preserve legacy bool prepare salvage and tolerant composite behavior for existing library/capture callers while additive report/policy APIs describe limits.",
+          "Preserve original healthy CLI flags, metadata same-commit contract, worker #18 records and shared progress schema. Intentionally changed replay behavior is documented: required incomplete discovery now returns nonzero unless explicit recovered-prefix policy; binary ABI for arbitrary prebuilt C++ consumers and mixed-version private metadata are not claimed."
+        ],
+        "id": "D20-compatibility",
+        "location": "test/replay_discovery_compatibility.cmake and test/database_discovery_compatibility_test.cpp",
+        "tests": [
+          "database-discovery-old-header-compatibility",
+          "replay-discovery-legacy-invocations",
+          "replay-event-old-header-compatibility",
+          "diagnostic-compatibility-test",
+          "replay-controller-cli-compatibility",
+          "replay-outcome-cli-compatibility"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      },
+      {
+        "assertions": [
+          "Build unchanged input replay executable and run candidate-generated/readback-checked E9 fixture and valid empty control using old supported flags. Baseline empty succeeds; baseline E9 false-success exit zero is recorded by a baseline-compatible checker, while candidate E9 must be nonzero. Compile/deadline/crash failures are not defect reproduction.",
+          "In disposable candidate copies, mutate only (a) sliced-tail completeness to complete, (b) discard missing required input identity/policy or bypass full-scope gate, (c) unknown unread total to known zero, (d) filtered/ranged/hinted exclusion accounting, and (e) imported completeness propagation. Every mutation must build and fail a named explicit D20/M20 runtime assertion, with an appropriate unaffected healthy control still passing.",
+          "Controls cannot pass by expecting a compiler error from compiling new APIs against an old header; baseline behavior probe uses only old flags/API. Retain mutation patch, exact source/candidate, compile status, expected assertion name and execution status."
+        ],
+        "id": "D20-defect-sensitivity",
+        "location": "test/replay_discovery_cli.cmake baseline mode and isolated mutations",
+        "tests": [
+          "replay-discovery-original-defect",
+          "database-discovery-sensitivity",
+          "replay-selection-sensitivity"
+        ],
+        "work_units": [
+          "https://github.com/robinwassen/Fossilize/issues/20"
+        ]
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "expected": [
+          "All planned cases registered with Release-active assertions and watchdogs; production paths consume the report; changelog one short factual [Observability] sentence linked to #20; scope/compatibility and unknown semantics documented; no unsupported compliance claims."
+        ],
+        "id": "G20-source-contract",
+        "kind": "both",
+        "method": "Inspect exact base-to-candidate full diff and committed tests/CMake registration, CHANGELOG.md and local-docs/verification.md; compare current #20/#8 and recursive prerequisite snapshot. Review typed metadata state invariants and all production callers including capture append and both OS controllers. No runtime claim follows from reading.",
+        "prerequisites": [
+          "Exact clean committed candidate/base and plan v2; current task snapshot; original AC1 unchanged"
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "expected": [
+          "All four Linux Debug/Release x exceptions OFF/ON builds and complete CPU suites pass, with real SPIR-V validation ON, CLI/layer ON and no GPU runtime layer test. All D20 portable cases execute in each configuration."
+        ],
+        "id": "G20-linux-matrix",
+        "kind": "both",
+        "method": {
+          "build_chunking": "Build work may be split into dependency/target chunks and continuation invocations against the same exact source and effective build configuration (for example SPIRV-Tools-static, SPIRV-Tools-opt, CLI/layer, then test targets, followed by final all-target build). Coordinator publishes every individual invocation and wrapper receipt separately, each <=600 seconds. A timed-out invocation remains incomplete evidence, never a passing check; a later successful final build plus the complete final suite establishes the gate, with any initial timeout reported. Do not reduce target/test coverage, alter flags or increase individual deadlines.",
+          "configurations": [
+            {
+              "build": "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-off",
+              "commands": [
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/cmake",
+                  "-S",
+                  "{exact_candidate_worktree}",
+                  "-B",
+                  "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-off",
+                  "-G",
+                  "Ninja",
+                  "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+                  "-DCMAKE_BUILD_TYPE=Debug",
+                  "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+                  "-DFOSSILIZE_TESTS=ON",
+                  "-DFOSSILIZE_CLI=ON",
+                  "-DFOSSILIZE_VULKAN_LAYER=ON",
+                  "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+                  "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+                  "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+                  "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/cmake",
+                  "--build",
+                  "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-off",
+                  "--parallel",
+                  "2"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/ctest",
+                  "--test-dir",
+                  "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-off",
+                  "--show-only=json-v1"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/ctest",
+                  "--test-dir",
+                  "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-off",
+                  "--output-on-failure",
+                  "--no-tests=error",
+                  "--output-junit",
+                  "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-off/results.xml"
+                ]
+              ],
+              "configuration": "Debug",
+              "exceptions": "OFF"
+            },
+            {
+              "build": "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-on",
+              "commands": [
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/cmake",
+                  "-S",
+                  "{exact_candidate_worktree}",
+                  "-B",
+                  "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-on",
+                  "-G",
+                  "Ninja",
+                  "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+                  "-DCMAKE_BUILD_TYPE=Debug",
+                  "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+                  "-DFOSSILIZE_TESTS=ON",
+                  "-DFOSSILIZE_CLI=ON",
+                  "-DFOSSILIZE_VULKAN_LAYER=ON",
+                  "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+                  "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+                  "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+                  "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/cmake",
+                  "--build",
+                  "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-on",
+                  "--parallel",
+                  "2"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/ctest",
+                  "--test-dir",
+                  "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-on",
+                  "--show-only=json-v1"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/ctest",
+                  "--test-dir",
+                  "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-on",
+                  "--output-on-failure",
+                  "--no-tests=error",
+                  "--output-junit",
+                  "/tmp/fossilize-h20/build/{role-attempt}/debug-exceptions-on/results.xml"
+                ]
+              ],
+              "configuration": "Debug",
+              "exceptions": "ON"
+            },
+            {
+              "build": "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-off",
+              "commands": [
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/cmake",
+                  "-S",
+                  "{exact_candidate_worktree}",
+                  "-B",
+                  "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-off",
+                  "-G",
+                  "Ninja",
+                  "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+                  "-DCMAKE_BUILD_TYPE=Release",
+                  "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+                  "-DFOSSILIZE_TESTS=ON",
+                  "-DFOSSILIZE_CLI=ON",
+                  "-DFOSSILIZE_VULKAN_LAYER=ON",
+                  "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+                  "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+                  "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+                  "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/cmake",
+                  "--build",
+                  "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-off",
+                  "--parallel",
+                  "2"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/ctest",
+                  "--test-dir",
+                  "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-off",
+                  "--show-only=json-v1"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/ctest",
+                  "--test-dir",
+                  "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-off",
+                  "--output-on-failure",
+                  "--no-tests=error",
+                  "--output-junit",
+                  "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-off/results.xml"
+                ]
+              ],
+              "configuration": "Release",
+              "exceptions": "OFF"
+            },
+            {
+              "build": "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-on",
+              "commands": [
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/cmake",
+                  "-S",
+                  "{exact_candidate_worktree}",
+                  "-B",
+                  "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-on",
+                  "-G",
+                  "Ninja",
+                  "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+                  "-DCMAKE_BUILD_TYPE=Release",
+                  "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+                  "-DFOSSILIZE_TESTS=ON",
+                  "-DFOSSILIZE_CLI=ON",
+                  "-DFOSSILIZE_VULKAN_LAYER=ON",
+                  "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+                  "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+                  "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+                  "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/cmake",
+                  "--build",
+                  "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-on",
+                  "--parallel",
+                  "2"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/ctest",
+                  "--test-dir",
+                  "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-on",
+                  "--show-only=json-v1"
+                ],
+                [
+                  "/tmp/fossilize-h20/toolenv/bin/ctest",
+                  "--test-dir",
+                  "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-on",
+                  "--output-on-failure",
+                  "--no-tests=error",
+                  "--output-junit",
+                  "/tmp/fossilize-h20/build/{role-attempt}/release-exceptions-on/results.xml"
+                ]
+              ],
+              "configuration": "Release",
+              "exceptions": "ON"
+            }
+          ],
+          "evidence": "Retain configure/build logs, compiler version/effective compile flags, CTest JSON discovered IDs, JUnit actual executed IDs/status and candidate-bound logs for each independent configuration. Full CPU inventory, not only new tests. Full nonempty executed/discovered union must match; no disabled/skipped required tests.",
+          "policy": "All build/test/probe commands require a coordinator-published command-intent with exact argv/cwd/timeout, followed by python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ABS_WORKTREE --timeout 600 --intent-id UNIQUE --receipt UNIQUE.json -- CHILD_ARGV. Never nest wrappers. Return the receipt for coordinator command-wait before the next budget gate. Each configure/build/discovery/CTest/control invocation is separately wrapped with a 600-second real child deadline. Use fresh source/output paths per checker and isolated per-test directories."
+        },
+        "prerequisites": [
+          "Populated pinned submodules; CMake/CTest/Ninja absolute paths supplied by coordinator; g++; exact candidate; tests registered including all D20 cases except isolated controls"
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "expected": [
+          "Three successful iterations for focused new scope/transfer/CLI and existing process/IPC regressions. Tests use barriers/adapters rather than event-order sleeps; no orphan children."
+        ],
+        "id": "G20-repeat",
+        "kind": "both",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-h20/toolenv/bin/ctest",
+              "--test-dir",
+              "{debug-off-build}",
+              "--output-on-failure",
+              "--no-tests=error",
+              "-R",
+              "^(database-discovery-|replay-selection-|replay-discovery-|replay-event-controller-|replay-timeout-controller-|fork-child-)",
+              "--repeat",
+              "until-fail:3"
+            ]
+          ],
+          "policy": "All build/test/probe commands require a coordinator-published command-intent with exact argv/cwd/timeout, followed by python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ABS_WORKTREE --timeout 600 --intent-id UNIQUE --receipt UNIQUE.json -- CHILD_ARGV. Never nest wrappers. Return the receipt for coordinator command-wait before the next budget gate. Each configure/build/discovery/CTest/control invocation is separately wrapped with a 600-second real child deadline. Use fresh source/output paths per checker and isolated per-test directories."
+        },
+        "prerequisites": [
+          "Passing Debug exceptions OFF build and complete inventory"
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "expected": [
+          "Changed scanner, policy, metadata parsing/lifetimes and selection logic execute with effective instrumentation; no sanitizer diagnostics, abnormal termination or assertion failures. Runtime/environment inability remains unavailable and requires a decision."
+        ],
+        "id": "G20-sanitizers",
+        "kind": "both",
+        "method": {
+          "build": [
+            "/tmp/fossilize-h20/toolenv/bin/cmake",
+            "--build",
+            "{sanitizer-build}",
+            "--parallel",
+            "2",
+            "--target",
+            "database-discovery-test",
+            "replay-selection-test",
+            "replay-event-test",
+            "parser-input-test",
+            "varint-test"
+          ],
+          "build_chunking": "Build work may be split into dependency/target chunks and continuation invocations against the same exact source and effective build configuration (for example SPIRV-Tools-static, SPIRV-Tools-opt, CLI/layer, then test targets, followed by final all-target build). Coordinator publishes every individual invocation and wrapper receipt separately, each <=600 seconds. A timed-out invocation remains incomplete evidence, never a passing check; a later successful final build plus the complete final suite establishes the gate, with any initial timeout reported. Do not reduce target/test coverage, alter flags or increase individual deadlines.",
+          "configure": [
+            "/tmp/fossilize-h20/toolenv/bin/cmake",
+            "-S",
+            "{exact_candidate_worktree}",
+            "-B",
+            "/tmp/fossilize-h20/build/{role-attempt}/asan-ubsan",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+            "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+            "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer",
+            "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined",
+            "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=undefined",
+            "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+          ],
+          "environment": [
+            "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1"
+          ],
+          "policy": "All build/test/probe commands require a coordinator-published command-intent with exact argv/cwd/timeout, followed by python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ABS_WORKTREE --timeout 600 --intent-id UNIQUE --receipt UNIQUE.json -- CHILD_ARGV. Never nest wrappers. Return the receipt for coordinator command-wait before the next budget gate. Each configure/build/discovery/CTest/control invocation is separately wrapped with a 600-second real child deadline. Use fresh source/output paths per checker and isolated per-test directories.",
+          "run": [
+            "/tmp/fossilize-h20/toolenv/bin/ctest",
+            "--test-dir",
+            "{sanitizer-build}",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)"
+          ]
+        },
+        "prerequisites": [
+          "ASan+UBSan support verified by actual compile/run; exact candidate; no simultaneous TSan"
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "expected": [
+          "Baseline E9 false success and intact-empty healthy control observed with successful builds; candidate rejects full scope; all five mutation families compile and trigger intended explicit D20/M20 assertions while healthy controls pass. No build failure/timeout/crash substituted for sensitivity."
+        ],
+        "id": "G20-controls",
+        "kind": "both",
+        "method": {
+          "build_chunking": "Build work may be split into dependency/target chunks and continuation invocations against the same exact source and effective build configuration (for example SPIRV-Tools-static, SPIRV-Tools-opt, CLI/layer, then test targets, followed by final all-target build). Coordinator publishes every individual invocation and wrapper receipt separately, each <=600 seconds. A timed-out invocation remains incomplete evidence, never a passing check; a later successful final build plus the complete final suite establishes the gate, with any initial timeout reported. Do not reduce target/test coverage, alter flags or increase individual deadlines.",
+          "chunking": "If any full build exceeds one 600s invocation, it is incomplete; publish another bounded build invocation on the same unchanged candidate/build state, recording the previous deadline result honestly. Do not increase timeout or claim a timed-out test passed.",
+          "command_templates": [
+            [
+              "/tmp/fossilize-h20/toolenv/bin/cmake",
+              "-S",
+              "{baseline_or_one_mutation_source}",
+              "-B",
+              "{isolated_control_build}",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+              "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+            ],
+            [
+              "/tmp/fossilize-h20/toolenv/bin/cmake",
+              "--build",
+              "{isolated_control_build}",
+              "--parallel",
+              "2",
+              "--target",
+              "{control_target}"
+            ],
+            [
+              "/tmp/fossilize-h20/toolenv/bin/cmake",
+              "-DGENERATOR={candidate_fixture_generator}",
+              "-DREPLAY={candidate_replay}",
+              "-DBASELINE_REPLAY={unchanged_input_replay}",
+              "-DCASE=original-defect",
+              "-DWORK={isolated_original_defect_output}",
+              "-P",
+              "{candidate_source}/test/replay_discovery_cli.cmake"
+            ],
+            [
+              "python3",
+              "{candidate_source}/test/replay_discovery_controls.py",
+              "--check-mutation",
+              "{mutation_name}",
+              "--runner",
+              "{built_mutated_runner}",
+              "--case",
+              "{decisive_case}",
+              "--healthy-case",
+              "{healthy_case}",
+              "--expect-assertion",
+              "{D20_or_M20_assertion_id}",
+              "--output",
+              "{unique_evidence_json}"
+            ]
+          ],
+          "method": "Build isolated unchanged input replay with baseline Debug/off CLI configuration; invoke committed portable replay_discovery_cli.cmake baseline mode with GENERATOR=candidate database-discovery-test or dedicated fixture generator, REPLAY=candidate CLI, BASELINE_REPLAY=unchanged input CLI, CASE=original-defect, WORK=fresh directory. Use separate isolated candidate mutation trees for D20-defect-sensitivity; build database-discovery-test/replay-selection-test/fossilize-replay, then run explicit named target cases. Each configure/build/run is separately intent-published and wrapped. Implementer commits a bounded reproducible control script/CMake runner with exact mutation substitutions and assertion matching; final checker executes it independently.",
+          "policy": "All build/test/probe commands require a coordinator-published command-intent with exact argv/cwd/timeout, followed by python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ABS_WORKTREE --timeout 600 --intent-id UNIQUE --receipt UNIQUE.json -- CHILD_ARGV. Never nest wrappers. Return the receipt for coordinator command-wait before the next budget gate. Each configure/build/discovery/CTest/control invocation is separately wrapped with a 600-second real child deadline. Use fresh source/output paths per checker and isolated per-test directories.",
+          "required_control_runner": "Commit test/replay_discovery_controls.py with --inventory and --check-mutation modes, bounded child deadlines, exact source mutations and expected Release-active assertion matching; inventory exposes the three registered control IDs named in D20-defect-sensitivity and each mutation family. Configure/build invocations are separate published intents, never hidden unbounded build loops inside a script. Metadata-import mutation may use the database runner; filter/range/hint families use selection runner. Record all inventory/executed IDs in test_mapping."
+        },
+        "prerequisites": [
+          "Passing candidate focused cases; input revision accessible; disposable source copies with pinned dependencies; baseline and mutation logs distinct"
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "expected": [
+          "Unchanged database/custom-subclass/recorder/ExternalReplayer callers compile, link and execute; old ordinary healthy/empty/range/hash/whitelist/cache flags remain successful with expected logical work. Source/invocation evidence is reported precisely; no arbitrary C++ binary ABI or mixed-version metadata claim."
+        ],
+        "id": "G20-compatibility",
+        "kind": "both",
+        "method": {
+          "method": "New old-header CMake fixture uses git show fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db:HEADER, actual input includes first, candidate libraries second; subprocess deadlines and exact valid fixture readback. Existing older-input #18 compatibility fixture remains an additional regression, not a substitute for this input revision.",
+          "policy": "All build/test/probe commands require a coordinator-published command-intent with exact argv/cwd/timeout, followed by python3 -B .agents/skills/implement-change-harness/scripts/verification_lock.py --repo ABS_WORKTREE --timeout 600 --intent-id UNIQUE --receipt UNIQUE.json -- CHILD_ARGV. Never nest wrappers. Return the receipt for coordinator command-wait before the next budget gate. Each configure/build/discovery/CTest/control invocation is separately wrapped with a 600-second real child deadline. Use fresh source/output paths per checker and isolated per-test directories.",
+          "run": [
+            "/tmp/fossilize-h20/toolenv/bin/ctest",
+            "--test-dir",
+            "{debug-off-build}",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(database-discovery-old-header-compatibility|replay-discovery-legacy-invocations|replay-event-old-header-compatibility|diagnostic-compatibility-test|replay-controller-cli-compatibility|replay-outcome-cli-compatibility)$"
+          ]
+        },
+        "prerequisites": [
+          "Exact old headers available from input commit; candidate built; compatibility runner registered"
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "expected": [
+          "Native Windows execution is user-waived for this run: NOT RUN and unverified. Unit/final reports and publication evidence retain this limitation and exact authorization provenance; never record native Windows as passed or skipped-as-success, and do not treat Linux or cross-platform source inspection as native execution. All applicable Linux required gates/cases remain unchanged."
+        ],
+        "id": "G20-native-windows",
+        "kind": "optional",
+        "method": {
+          "authorization": {
+            "answer": "Proceed; waive Windows for this run",
+            "artifact": "runs/issue-20/issue-20-20261110/evidence/user-native-windows-disposition.json",
+            "disposition": "Native Windows execution waived by user for this run; NOT RUN and unverified. Continue all applicable Linux gates. Plan applicability must be reconciled before acceptance; no Windows pass is claimed.",
+            "original_acceptance": "Preserved verbatim; no change to issue scope.",
+            "question": "The shared requirements call for native Windows verification, but this workspace is Linux. Should this run proceed with Linux checks and explicitly leave Windows unverified, or is a Windows runner available?",
+            "root_issue": "https://github.com/robinwassen/Fossilize/issues/20",
+            "run_id": "issue-20-20261110",
+            "source": "User reply in this conversation"
+          },
+          "commands": "On native Windows prepared Ninja compiler environment, configure separate Debug/Release and FOSSILIZE_ENABLE_EXCEPTIONS OFF/ON directories with the same CLI/layer/tests/SPIR-V flags; build, capture CTest JSON and run the full CPU CTest inventory plus three repeats of portable new database-discovery/replay-selection/replay-discovery, replay-event-controller and compatibility cases. MSVC does not implement the GCC no-exceptions flag; state actual compiler behavior. Windows production CreateProcess/named metadata mapping/ExternalReplayer forwarding are exercised by the portable CLI/integration cases.",
+          "policy": "Optional only for https://github.com/robinwassen/Fossilize/issues/20, run issue-20-20261110, under the user's explicit answer \"Proceed; waive Windows for this run\". This plan reconciles applicability for both unit and final checking; native Windows is NOT RUN/unverified and is excluded from the required passing-gate set for this run. This authorization supersedes only this run's native Windows execution requirement, preserves original AC1 verbatim, grants no general or future waiver, and supplies no Windows runtime pass. Retain the limitation in readiness and PR evidence; all applicable Linux gates remain required unchanged."
+        },
+        "prerequisites": [
+          "Explicit user disposition confirmed for this root/run by the recorded exact question and answer in runs/issue-20/issue-20-20261110/evidence/user-native-windows-disposition.json; the native Windows environment prerequisite is waived only for this run, with native runtime behavior NOT RUN/unverified."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "expected": [
+          "One PR targets robinwassen/Fossilize master, contains accurate changelog and Closes https://github.com/robinwassen/Fossilize/issues/20 only for actually satisfied scope; issue open pending merge; no skipped/unverified facts presented as completion."
+        ],
+        "id": "G20-publication",
+        "kind": "publication",
+        "method": "Coordinator re-reads material issue inputs and target master; require exact candidate/base/plan unchanged from unit and separate final checker, all required gates/cases accepted and no unresolved findings. Read back managed readiness and actual PR issue linkage; keep #8 open. No merge authority is implied.",
+        "prerequisites": [
+          "Unit and separate final acceptance; platform requirement resolved; exact source/artifact publication"
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "design": "Add nonvirtual preparation/discovery queries and pre-prepare per-input required/optional policy backed by DatabaseInterface::Impl, without imposing overrides on old subclasses. Define report lifetime/thread contract: snapshot copies or read-only query valid until the next mutation/destruction, prepare serialized as today. Defaults for unknown/custom backends are unknown, never complete. Preserve legacy bool prepare, tolerant concurrent append/capture input behavior and readable salvage. A typed report separately evaluates whether a declared full required scope is satisfied.",
+        "files": [
+          "fossilize_db.hpp",
+          "fossilize_db.cpp"
+        ],
+        "step": "database-report"
+      },
+      {
+        "design": "Populate requested path/index, opened status, required/optional policy, preparation reason, known raw error, scan boundary and prefix end before any failure or child reset. Complete only after successful end-of-file discovery; sliced name/header or payload is recovered-prefix/incomplete even with zero retained entries. Failed seek/tell/read/cancel stays failed/incomplete with unknown remainder. Keep read-entry item errors distinct from discovery scanning errors. Snapshot all discovered logical keys and exclusions before destructive filters. Deduplicate logical tag/hash union while retaining per-input observations. Counts have explicit known flags; unknown unread scope never stores a semantically known zero.",
+        "files": [
+          "fossilize_db.cpp:StreamArchive::prepare",
+          "fossilize_db.cpp:ConcurrentDatabase::prepare",
+          "fossilize_db.cpp:DatabaseInterface::test_resource_filter"
+        ],
+        "step": "originating-scan"
+      },
+      {
+        "design": "Define a reusable typed ReplaySelectionReport returned from the actual helper used to prepare/select shipping replay work. It reports input policies, requested full versus recovered-prefix scope, deterministic filtered sorted tag/hash universe, requested/effective half-open ranges or hash, explicit exclusions by filter/range/optional-input/replay-v1 hint policy, dispatch subset and unknown unread totals. Stable robust indices are based on the existing prehint filtered ordering. A public DB query supplies preparation metadata; this private selection result is deliberately not a claim of a new public end-to-end run-result API. Production-including tests inspect it directly.",
+        "files": [
+          "cli/replay_selection.hpp (new shared private helper)",
+          "cli/fossilize_replay.cpp",
+          "cli/fossilize_replay_linux.hpp",
+          "cli/fossilize_replay_windows.hpp",
+          "fossilize_external_replayer.hpp",
+          "fossilize_external_replayer.cpp"
+        ],
+        "step": "selection-production"
+      },
+      {
+        "design": "Replay marks every explicitly supplied source input required by default; distinguish optional lookup/hint databases and legacy capture semantics. Add explicit --accept-recovered-prefix and --optional-database-index INDEX controls, document zero-based source input indexing, and append defaulted policy fields to ExternalReplayer::Options if forwarding requires them. Existing Options{} callers preserve defaults/source compatibility; no general binary ABI is claimed. Full required discovery failure yields nonzero before controller empty shortcuts/export and cannot disappear in quiet/progress mode. Explicit prefix acceptance permits only known retained prefix scope, never a missing required file. Forward exact policy into progress/master/slave/imported paths; preserve supported standalone child selection limitations.",
+        "files": [
+          "cli/fossilize_replay.cpp:create_database/run_normal_process/run_progress_process/main",
+          "cli/fossilize_replay_linux.hpp:run_master_process",
+          "cli/fossilize_replay_windows.hpp:run_master_process",
+          "fossilize_external_replayer.hpp:Options",
+          "fossilize_external_replayer.cpp"
+        ],
+        "step": "strict-replay-scope"
+      },
+      {
+        "design": "Retain source preparation states, input identities/policies, scan/known flags and exclusion metadata through exact-commit exported metadata with bounded counts/offset validation; do not replace uncertainty with imported hash-list length. Both OS mechanisms use the same semantic representation. Preserve worker #18/legacy protocols and shared progress schemas. Controller keeps authoritative preparation result independent of optional progress.",
+        "files": [
+          "fossilize_db.cpp:ExportedMetadataHeader/export/import helpers"
+        ],
+        "step": "metadata-transfer"
+      },
+      {
+        "design": "Register each planned portable case with CTest, per-test private work directories and Release-active checks; use actual recorder/FOZ producers and real CLI processes, with private controlled adapters only at deterministic I/O/Vulkan failure boundaries. Add reproducible baseline/sensitivity controls, compatibility fixtures and documentation of bounded supported scope plus intentional formerly false-success replay exit change. Update the Unreleased changelog with one short factual [Observability] sentence linked to #20.",
+        "files": [
+          "test/database_discovery_test.cpp (new)",
+          "test/replay_selection_test.cpp (new or extend production outcome fixture)",
+          "test/replay_discovery_cli.cmake (new)",
+          "test/replay_discovery_compatibility.cmake (new)",
+          "test/CMakeLists.txt",
+          "local-docs/verification.md",
+          "CHANGELOG.md",
+          "test/replay_discovery_controls.py (new bounded control runner)"
+        ],
+        "step": "assertions-docs"
+      }
+    ],
+    "non_goals": [
+      "No full observability-standard implementation, public end-to-end run-result schema, persistent item ledger, arbitrary parser security audit, driver-cache verification/durability contract, Steam scheduling/presentation, automatic replay fragment harvest or GPU performance claim.",
+      "No general prebuilt C++ binary ABI promise, mixed-version worker/metadata interoperability, new SharedControlBlock layout/version or changed #18 event grammar. Existing exact-commit private metadata may evolve with explicit validation.",
+      "No harness package changes expected, so separate harness Python suite is outside this C++ change per verification.md; if package changes become necessary, add its full bounded discovered/executed union gate rather than claiming it ran."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000011`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n11. **FOS-000011 \u2014 Expose discovery and selection completeness.** **M; depends on `FOS-000009`; \u00a72.** [stream scanning:1200](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize_db.cpp#L1200) intentionally salvages truncated tails (E9). Database composites may omit unavailable inputs; whitelists/ranges and replay-cache checks change observable work. Return preparation/discovery metadata: requested/opened inputs, excluded inputs/items with policy, selected logical scope, truncation/read failures, complete/unknown discovery. Keep salvage behavior and report its limits. **Check:** intact empty archive versus truncated archive with zero retained entries; missing optional versus required subdatabase; filters and ranges. Known processed items cannot establish full coverage when unread scope is unknown. A caller may explicitly accept a recovered prefix, but the report must name that scope.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Database/discovery integration tests:** E9 reports incomplete discovery even with zero retained items, while an intact empty archive reports known complete empty scope. The intact prefix remains readable; required missing/unreadable inputs prevent full-scope success.\n   - **Selection/policy table tests:** Ranges, whitelists, deliberately optional inputs and explicitly accepted recovered-prefix policy report the exact selected/excluded scope and policy. Unknown unread totals remain unknown, never zero or full coverage; excluded items are not counted as failures or successes.\n\n<!-- fossilize-migration-v1:FOS-000011 -->\n"
+      }
+    ],
+    "risks": [
+      "Filters are currently applied while StreamArchive discovers and ConcurrentDatabase primes; reporting only postfilter counts would irretrievably lose excluded identities. Preserve facts at those exact boundaries.",
+      "ConcurrentDatabase currently deletes failed child objects; report state must outlive them and preserve index/path policy. Imported metadata currently contains only lists, so naive import reports false complete.",
+      "Hints suppress parsing at dispatch while retaining resume indices; filtering them out before partitioning would break robust index semantics. Report hint exclusions separately without changing that order.",
+      "Whole key/exclusion sets can double metadata memory; use existing indexes/views or bounded query/pagination and avoid quadratic duplicate provenance. Exact logical sets are still required, while unknown tail count is never enumerated.",
+      "Progress goes through ExternalReplayer and both platform launchers; option forwarding must be tested, not inferred. Changed public Options members preserve checked source callers only; prebuilt consumer compatibility is not asserted.",
+      "Native Windows execution is user-waived for this run and remains NOT RUN/unverified; Linux evidence, portable registration, mingw or wine cannot establish native Windows runtime behavior. Build/sanitizer runtime absence is environmental unavailability, never evidence of a pass."
+    ],
+    "scope": [
+      "One coherent unsplit work unit for discovery/preparation and replay selection completeness, including production StreamArchive, ConcurrentDatabase, filter provenance, same-commit metadata transfer, actual normal/robust/progress selection and narrow explicit scope policy.",
+      "Return typed preparation/discovery metadata from real database producers and a typed selection report from the shared helper that production replay actually uses. Metadata distinguishes input observation from policy-excluded logical work and from item execution outcomes."
+    ],
+    "version": 2,
+    "work_units": []
+  },
+  "plan_version": 1,
+  "role": "planner",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
+  "worker_id": "/root/planner_waiver20"
+}
