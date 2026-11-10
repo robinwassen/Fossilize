@@ -9184,7 +9184,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "fetch target base, verify clean tuple, persist publication intent",
+  "next_action": "push implementation without force, then record remote head",
   "operation": "publish",
   "original": [
     {
@@ -10211,7 +10211,65 @@
   ],
   "publishing": {
     "ci_policy": "local",
-    "stage": "none"
+    "intent": {
+      "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+      "branch": "codex/issue-19-support-dependencies",
+      "candidate_sha": "c57dfc70b6a1f2abdbefb31aa0c90ba4a6ce3c94",
+      "effect": "normal non-force update of existing PR75 source branch",
+      "expected_prior_remote_branch_sha": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
+      "intended_remote_branch_sha": "c57dfc70b6a1f2abdbefb31aa0c90ba4a6ce3c94",
+      "observed_remote_base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+      "plan_version": 1,
+      "records": {
+        "runs/issue-19/issue19-text-warnings-20261110/evidence/publication-preflight-c57.json": {
+          "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+          "candidate_sha": "c57dfc70b6a1f2abdbefb31aa0c90ba4a6ce3c94",
+          "clean_source": true,
+          "diff_check": "passed",
+          "exact_all_states_PR": [
+            {
+              "baseRefName": "master",
+              "headRefName": "codex/issue-19-support-dependencies",
+              "headRefOid": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
+              "isDraft": false,
+              "state": "OPEN",
+              "url": "https://github.com/robinwassen/Fossilize/pull/75"
+            }
+          ],
+          "prior_pr_body_sha256": "869ea82d0d56d2a693b28fef7f22cc446abb4c0a4dd69e0cf7599275422649a7",
+          "remote_refs": {
+            "refs/heads/codex/issue-19-support-dependencies": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
+            "refs/heads/master": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db"
+          }
+        },
+        "runs/issue-19/issue19-text-warnings-20261110/evidence/source-push-c57-intent.json": {
+          "branch": "codex/issue-19-support-dependencies",
+          "effect": "normal non-force update of existing PR75 source branch",
+          "expected_prior_remote_branch_sha": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
+          "intended_remote_branch_sha": "c57dfc70b6a1f2abdbefb31aa0c90ba4a6ce3c94",
+          "observed_remote_base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+          "source_push": [
+            "git",
+            "push",
+            "origin",
+            "HEAD:refs/heads/codex/issue-19-support-dependencies"
+          ],
+          "target_branch": "master",
+          "target_remote": "origin",
+          "target_repository": "robinwassen/Fossilize"
+        }
+      },
+      "source_push": [
+        "git",
+        "push",
+        "origin",
+        "HEAD:refs/heads/codex/issue-19-support-dependencies"
+      ],
+      "target_branch": "master",
+      "target_remote": "origin",
+      "target_repository": "robinwassen/Fossilize"
+    },
+    "stage": "push"
   },
   "repository": {
     "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
@@ -10224,7 +10282,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 372,
+  "revision": 373,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
