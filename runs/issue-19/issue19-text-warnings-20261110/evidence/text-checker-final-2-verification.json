@@ -1,0 +1,380 @@
+{
+  "envelope": {
+    "role": "checker",
+    "attempt_id": "text-checker-final-2",
+    "worker_id": "/root/issue19_text_checker_final2",
+    "input_revision": 180,
+    "input_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+    "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+    "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+    "plan_version": 1,
+    "operation": "final",
+    "work_unit": "https://github.com/robinwassen/Fossilize/issues/19"
+  },
+  "summary": {
+    "decisive_each": 153,
+    "compatibility_each": 2,
+    "discovered": 282,
+    "executed_unique": 155,
+    "concurrency_unique": 8,
+    "concurrency_executions": 24,
+    "cases_mapped": 23,
+    "verdict": "changes_required"
+  },
+  "commands": [
+    {
+      "intent_id": "text-cf2-debug-exceptions-off-build",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-debug-exceptions-off-build.log",
+      "raw_log_bytes": 22,
+      "raw_log_sha256": "8c35b1682f73592d30612d7b0fabdb384fcfff35cb5a076cb48b85b1368aa794"
+    },
+    {
+      "intent_id": "text-cf2-debug-exceptions-off-discover",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-debug-exceptions-off-discover.log",
+      "raw_log_bytes": 216861,
+      "raw_log_sha256": "b19da73de033e305e7ce2a6f47da09c482eabfe3c96a653f414645b577ee8253"
+    },
+    {
+      "intent_id": "text-cf2-debug-exceptions-off-decisive",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4",
+        "-R",
+        "^(replay-warning-|replay-support-|replay-dependency-|feature-filter-test$|replay-event-|replay-outcome-|parser-input-|replay-timeout-|fork-child-)"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-debug-exceptions-off-decisive.log",
+      "raw_log_bytes": 23850,
+      "raw_log_sha256": "b0c37536834624fa678b555fc298d5593629e41c321313b8a67c95aa74d2aeb2"
+    },
+    {
+      "intent_id": "text-cf2-debug-exceptions-off-compat",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4",
+        "-R",
+        "^(diagnostic-compatibility-test|replay-outcome-compatibility)$"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-debug-exceptions-off-compat.log",
+      "raw_log_bytes": 238,
+      "raw_log_sha256": "8b65b611c2f9880485394b96d7255bbf9a89d228114d145feae7cfc9b7953e9f"
+    },
+    {
+      "intent_id": "text-cf2-release-exceptions-on-build",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-release-exceptions-on-build.log",
+      "raw_log_bytes": 22,
+      "raw_log_sha256": "8c35b1682f73592d30612d7b0fabdb384fcfff35cb5a076cb48b85b1368aa794"
+    },
+    {
+      "intent_id": "text-cf2-release-exceptions-on-discover",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-release-exceptions-on-discover.log",
+      "raw_log_bytes": 217601,
+      "raw_log_sha256": "81177258503c4093b63ad4cfbac360d8d572dea18481ab6d35300f5410cfee5b"
+    },
+    {
+      "intent_id": "text-cf2-release-exceptions-on-decisive",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4",
+        "-R",
+        "^(replay-warning-|replay-support-|replay-dependency-|feature-filter-test$|replay-event-|replay-outcome-|parser-input-|replay-timeout-|fork-child-)"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-release-exceptions-on-decisive.log",
+      "raw_log_bytes": 23851,
+      "raw_log_sha256": "8a3b61eb3c7040cee6b503ebc1a01243a7e6595fd3274128da22e8f7ca4f374e"
+    },
+    {
+      "intent_id": "text-cf2-release-exceptions-on-compat",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4",
+        "-R",
+        "^(diagnostic-compatibility-test|replay-outcome-compatibility)$"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-release-exceptions-on-compat.log",
+      "raw_log_bytes": 239,
+      "raw_log_sha256": "7d9d39c8279f11d1cb77398a563c3a001b94b9f387130fa622f031465f9eef63"
+    },
+    {
+      "intent_id": "text-cf2-concurrency",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--repeat",
+        "until-fail:3",
+        "-R",
+        "^(replay-warning-concurrency|replay-warning-cli-worker|replay-support-call-scope|replay-dependency-module-fanout|replay-dependency-parent-fanout|replay-support-worker-details|replay-dependency-worker-details|replay-support-bounded)$"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-concurrency.log",
+      "raw_log_bytes": 2923,
+      "raw_log_sha256": "a084fab4f13f697e0cf5badba0767673656b775255368f9ddb1bdcaa9bf56468"
+    },
+    {
+      "intent_id": "text-cf2-debug-exceptions-off-controller-compat",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^replay-controller-cli-compatibility$"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-debug-exceptions-off-controller-compat.log",
+      "raw_log_bytes": 251,
+      "raw_log_sha256": "4a298fd98d4ed0e6f562ad686a4df709dbf02b2d291cea25bacf45d568a61b26"
+    },
+    {
+      "intent_id": "text-cf2-release-exceptions-on-controller-compat",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^replay-controller-cli-compatibility$"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-release-exceptions-on-controller-compat.log",
+      "raw_log_bytes": 252,
+      "raw_log_sha256": "0ceb5867249dcb4a552cdb6bb80cf9e5822d4179df92419da0abb5a4ee935717"
+    },
+    {
+      "intent_id": "text-cf2-predicate-probe-build",
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-I/tmp/fossilize-h19-text/final-checker-2",
+        "-I/tmp/fossilize-h19-text/final-checker-2/cli",
+        "-I/tmp/fossilize-h19-text/final-checker-2/khronos",
+        "-I/tmp/fossilize-h19-text/final-checker-2/cli/volk",
+        "/tmp/fossilize-h19-text/output/final-checker-2/predicate-probe.cpp",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libcli-utils.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libvolk.a",
+        "-pthread",
+        "-ldl",
+        "-o",
+        "/tmp/fossilize-h19-text/output/final-checker-2/predicate-probe"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-predicate-probe-build.log",
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "intent_id": "text-cf2-predicate-probe",
+      "command": [
+        "/tmp/fossilize-h19-text/output/final-checker-2/predicate-probe"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 1,
+      "expected_exit": 1,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-predicate-probe.log",
+      "raw_log_bytes": 702,
+      "raw_log_sha256": "92e6e328d46e8fb81f0c4336c40caff6e6187f1e8e8f957cccde20792404e8a2"
+    },
+    {
+      "intent_id": "text-cf2-results-verify",
+      "command": [
+        "python3",
+        "/tmp/fossilize-h19-text/final-checker-2-verify.py"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/final-checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/final-checker-2/text-cf2-results-verify.log",
+      "raw_log_bytes": 498,
+      "raw_log_sha256": "49787239144d56822566f0aa0140a52b10670a7a185159a948ed147e5d0268d8"
+    }
+  ],
+  "repeat_counts": {
+    "replay-dependency-module-fanout": 3,
+    "replay-dependency-parent-fanout": 3,
+    "replay-dependency-worker-details": 3,
+    "replay-support-bounded": 3,
+    "replay-support-call-scope": 3,
+    "replay-support-worker-details": 3,
+    "replay-warning-cli-worker": 3,
+    "replay-warning-concurrency": 3
+  },
+  "unit_only_inspected": {
+    "matrix": [
+      282,
+      282,
+      282,
+      282
+    ],
+    "asan": 38,
+    "compiled_mutations": 3
+  },
+  "review": [
+    "Independently read project guidance, live issue19 and shared issue8; both are OPEN and issue19 includes the ordinary text-warning amendment. Read the whole combined base-to-candidate source/changelog/test-registration diff and the f49-to-candidate amendment, rather than carrying historical approval.",
+    "Existing bool FeatureFilter entrypoints remain; additive value receivers clear and own output with lexical TLS save/restore. Detailed first-origin predicates preserve known identifiers/values and numeric unknown IDs. Malformed shader inputs remain Parse and native OOM remains Create. One grouping defect is recorded separately.",
+    "Parser dependency capture owns scalar source identities; queued shader/static/base/library consumers retain exact tags/hashes. FOZ fixtures exercise actual parse, scheduling, lazy resolution and creation, asserting originating categories and zero blocked consumer creation. Operational resource caches remain separate from bounded diagnostic samples.",
+    "Warning storage is fixed at 32 groups, 8 global and 2-per-group examples, 64 source contexts; counters/overflow saturate explicitly, resource counts are attempt observations including repeats, and unavailable origin context remains unknown. Keys omit object/parent hashes and changing values, but same-resource nested flags lack sufficient predicate context.",
+    "Detailed replay filter calls suppress replaced unsupported logs; private parser captures suppress replaced missing/invalid-resource prose. Bare/generic parse, malformed shader, OOM and ordinary bool/non-replay diagnostics retain output. No global verbosity switch or support-policy change was found. Actual normal-log fixtures capture complete stderr and stdout protocol controls.",
+    "finish_events and destructor serialize ordinary finalization, drain/join producers before warning finish, and share a once-only collector flag even without an event writer. Empty/success-only and hard-exit controls cover no-noise/no-completion boundaries; signal/crash paths do not acquire warning locks.",
+    "Original source graph/count/identity assertions remain; changed original prose expectations assert replacement parent identity. New Release-active registered warning cases cover 100000 setup rejections, 4096 FOZ fanout, 70 unsupported roots, overflow, saturation, actual queues/memory contexts, lifecycle, CLI/controller/quiet paths and legacy controls. Current grouping test covers resource context across pipeline types but misses attachment versus subpass constraints within render-pass.",
+    "CHANGELOG.md has one short Unreleased Observability sentence naming bounded examples/cause counts, practical log-volume/causality benefit and the full issue19 URL. It accurately describes intended delivered scope at this candidate and makes no Windows/GPU/Steam/persistence/global-item claim; no changelog-specific finding.",
+    "Manually inspected fresh detached and actual build-source HEAD/clean status, populated submodules, CMakeCache source/options and Ninja effective compile/link bindings. Both independently executed builds were no-work. Debug exceptions OFF uses -g/-fno-exceptions; Release exceptions ON uses -O3/-DNDEBUG, with explicit runtime assertions still active. CLI/layer/SPIR-V validation ON and runtime-layer OFF.",
+    "Inspected candidate-bound unit-only raw matrix, sanitizer, compiled mutation logs, their receipts/digests and strict verifier. These were not rerun at final. Unit-only successful commands do not override the new counterexample."
+  ],
+  "findings": [
+    {
+      "id": "H19-TEXT-CF2-01",
+      "status": "open",
+      "route": "implementation",
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "priority": 2,
+      "title": "Preserve predicate identity for nested render-pass flags",
+      "evidence": "cli/fossilize_feature_filter.cpp:4874 and :4950 both emit Constraint/flags for attachment-description and subpass-description masks. cli/replay_warnings.hpp:77-89 removes required/available values and keys Constraint context only by resource tag. Actual candidate FeatureFilter calls reject attachment flags=2147483648 against mask7 and subpass flags=2147483648 against mask143; ReplayWarnings combines them into one retained group with two observations and prose render-pass constraint flags. Isolated probe compiles exit0 and runs normal exit1 with FAIL independent/M19-distinct-render-pass-predicate-context; full output/digests in referenced artifact.",
+      "criteria": [
+        "AC1"
+      ],
+      "case": "M19-text-grouping",
+      "location": "cli/fossilize_feature_filter.cpp:4874; cli/fossilize_feature_filter.cpp:4950; cli/replay_warnings.hpp:77",
+      "required_change": "Give these existing predicates distinct stable identities or bounded predicate contexts, and strengthen registered replay-warning-grouping using actual same-resource attachment/subpass detectors. Preserve coalescing of varying requested values within one predicate, fixed bounds and existing decisions."
+    }
+  ],
+  "probe": {
+    "source": "#include \"volk.h\"\n#include \"fossilize.hpp\"\n#include \"fossilize_feature_filter.hpp\"\n#include \"replay_warnings.hpp\"\n#include <cstring>\n#include <cstdio>\nusing namespace Fossilize;\nint main()\n{\n FeatureFilter f;\n VkPhysicalDeviceFeatures2 features={VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};\n VkPhysicalDeviceProperties2 props={VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2};\n if(!f.init(VK_API_VERSION_1_2,nullptr,0,&features,&props)) return 2;\n VkRenderPassCreateInfo p={VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};\n VkAttachmentDescription a={}; a.flags=0x80000000u;\n p.attachmentCount=1;p.pAttachments=&a;\n SupportDetail first,second;\n bool one=f.render_pass_is_supported(&p,first);\n VkSubpassDescription s={};s.flags=0x80000000u;\n p.attachmentCount=0;p.pAttachments=nullptr;p.subpassCount=1;p.pSubpasses=&s;\n bool two=f.render_pass_is_supported(&p,second);\n ReplayWarnings w;\n w.observe(ReplayFailure::Unsupported,RESOURCE_RENDER_PASS,0x100,first,{});\n w.observe(ReplayFailure::Unsupported,RESOURCE_RENDER_PASS,0x200,second,{});\n auto snapshot=w.snapshot();\n printf(\"attachment_supported=%d subpass_supported=%d first=%s required=%llu available=%llu second=%s required=%llu available=%llu groups=%u observations=%llu\\n\",one,two,first.identifier,(unsigned long long)first.required,(unsigned long long)first.available,second.identifier,(unsigned long long)second.required,(unsigned long long)second.available,snapshot.count,(unsigned long long)snapshot.groups[0].count);\n w.finish(0,0,[](const char*line){puts(line);});\n if(one||two||first.kind!=SupportKind::Constraint||second.kind!=SupportKind::Constraint) return 2;\n if(snapshot.count!=2){fputs(\"FAIL independent/M19-distinct-render-pass-predicate-context\\n\",stderr);return 1;}\n return 0;\n}\n",
+    "source_sha256": "934dc08197d1f3367351254675be01801fb1ea5b8786d5614c895472347047dd",
+    "output": "FAIL independent/M19-distinct-render-pass-predicate-context\nattachment_supported=0 subpass_supported=0 first=flags required=2147483648 available=7 second=flags required=2147483648 available=143 groups=1 observations=2\nReplay warning summary: worker=0 attempt=0; counts are attempt replay observations (including repeats).\nReplay cause 1: 2 observations [2 render-pass] could not be replayed because render-pass constraint flags is not supported.\nReplay example 1: render-pass 0000000000000100; parent=resource:0000000000000000; required=2147483648 available=7 raw=unknown.\nReplay example 1: render-pass 0000000000000200; parent=resource:0000000000000000; required=2147483648 available=143 raw=unknown.\n"
+  },
+  "result_verifier_output": "/tmp/fossilize-h19-text/final-checker-2-verify.py:22: SyntaxWarning: invalid escape sequence '\\*'\n  assert '100% tests passed out of 153' in log and not re.search('Skipped|Not Run|\\*\\*\\*Failed|\\*\\*\\*Exception',log)\n{\"candidate_sha\": \"e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d\", \"decisive_each\": 153, \"additional_compatibility_each\": 2, \"concurrency_unique\": 8, \"concurrency_executions\": 24, \"cases_mapped\": 23, \"unit_only_evidence_inspected\": true, \"counterexample_confirmed\": true, \"commands\": 13}\n",
+  "limitations": [
+    "Native Windows verification was explicitly user-waived and remains unverified; Linux CPU Vulkan adapters provide no physical GPU, driver-cache, Steam or persistence evidence.",
+    "Attempt counts include repeats; there is no global cross-worker unique-item ledger. Retained source support context is bounded and unretained roots stay unknown.",
+    "Identifiers retain at most 159 escaped printable bytes with explicit [truncated] disclosure. Different very long unknown extension names sharing the retained prefix may coalesce. I independently assessed this as disclosed bounded incomplete detail, not a full-name or distinct-cause cardinality guarantee; coordinator clarified the brief did not add an unchanged-plan full-name-fingerprint requirement. Known numeric enum/capability/sType distinctions and retained control/literal escaping remain required.",
+    "Unrelated malformed-input, native OOM/driver and pre-existing validation-blacklist policy warnings are outside the targeted report cap. The existing blacklist Dependency classification and its policy prose were not changed by this task.",
+    "Source/old-header/ordinary CLI checks provide preserved source and invocation evidence, not a general prebuilt C++ binary ABI or rich mixed-worker protocol guarantee.",
+    "Passing registered grouping tests are insufficient: confirmed same-resource predicate collision leaves AC1 and final source/text-production review failed. No final acceptance or publication readiness is granted."
+  ]
+}
