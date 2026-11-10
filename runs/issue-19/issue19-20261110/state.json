@@ -6770,7 +6770,27 @@
         "log": "/tmp/fossilize-h19/output/repair2/h19-r2-asan-tests.log",
         "receipt": "/tmp/fossilize-h19/output/repair2/h19-r2-asan-tests.json",
         "started": 1794311636.8073158,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1794311974.5252411,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h19/build/asan-ubsan",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+          ],
+          "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+          "exit_code": 0,
+          "finished": 1794311979.9500337,
+          "intent_id": "h19-r2-asan-tests",
+          "started": 1794311974.5220442,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "candidate_sha": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
@@ -7657,7 +7677,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 326,
+  "revision": 327,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
