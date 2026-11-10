@@ -4797,7 +4797,8 @@ bool FeatureFilter::Impl::image_layout_is_supported(VkImageLayout layout) const
 			   support_reject(SupportKind::Extension, VK_KHR_SHARED_PRESENTABLE_IMAGE_EXTENSION_NAME, 3, 1, 0);
 	case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL:
 	case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL:
-		return api_version >= VK_API_VERSION_1_1 || enabled_extensions.count(VK_KHR_MAINTENANCE2_EXTENSION_NAME) != 0;
+		return api_version >= VK_API_VERSION_1_1 || enabled_extensions.count(VK_KHR_MAINTENANCE2_EXTENSION_NAME) != 0 ||
+			   support_reject(SupportKind::Extension, VK_KHR_MAINTENANCE2_EXTENSION_NAME, 3, 1, 0);
 	case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL:
 	case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL:
 	case VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL:

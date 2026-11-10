@@ -328,6 +328,68 @@ static void static_test()
 	checks.require(!f.filter.render_pass2_is_supported(&pass2, d), "M19/pass2-feature-or-property");
 #undef CONTROL
 }
+static void split_depth_stencil_layout_test()
+{
+	VkPhysicalDeviceFeatures2 features = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
+	VkPhysicalDeviceProperties2 properties = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2};
+	const char *extensions[] = {VK_KHR_CREATE_RENDERPASS_2_EXTENSION_NAME, VK_KHR_MAINTENANCE2_EXTENSION_NAME};
+	FeatureFilter unavailable, extension_enabled, api_enabled;
+	checks.require(unavailable.init(VK_API_VERSION_1_0, extensions, 1, &features, &properties),
+				   "M19/split-layout-unavailable-init");
+	checks.require(extension_enabled.init(VK_API_VERSION_1_0, extensions, 2, &features, &properties),
+				   "M19/split-layout-extension-init");
+	checks.require(api_enabled.init(VK_API_VERSION_1_1, extensions, 1, &features, &properties),
+				   "M19/split-layout-api-init");
+	VkAttachmentDescription attachment = {};
+	attachment.format = VK_FORMAT_D32_SFLOAT_S8_UINT;
+	VkAttachmentDescription2 attachment2 = {VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2};
+	attachment2.format = attachment.format;
+	VkRenderPassCreateInfo pass = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};
+	pass.attachmentCount = 1;
+	pass.pAttachments = &attachment;
+	VkRenderPassCreateInfo2 pass2 = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO_2};
+	pass2.attachmentCount = 1;
+	pass2.pAttachments = &attachment2;
+	SupportDetail d;
+	for (bool version2 : {false, true})
+	{
+		auto supported = [&](FeatureFilter &filter) {
+			return version2 ? filter.render_pass2_is_supported(&pass2, d) : filter.render_pass_is_supported(&pass, d);
+		};
+		auto old_supported = [&](FeatureFilter &filter) {
+			return version2 ? filter.render_pass2_is_supported(&pass2) : filter.render_pass_is_supported(&pass);
+		};
+		for (auto split : {VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL,
+						   VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL})
+		{
+			for (bool initial : {false, true})
+			{
+				attachment.initialLayout = attachment2.initialLayout = VK_IMAGE_LAYOUT_GENERAL;
+				attachment.finalLayout = attachment2.finalLayout = VK_IMAGE_LAYOUT_GENERAL;
+				checks.require(supported(unavailable) && old_supported(unavailable), "M19/split-layout-valid-before");
+				detail(d, SupportKind::None, "");
+				if (initial)
+					attachment.initialLayout = attachment2.initialLayout = split;
+				else
+					attachment.finalLayout = attachment2.finalLayout = split;
+				checks.require(!supported(unavailable) && !old_supported(unavailable), "M19/split-layout-rejected-bool");
+				detail(d, SupportKind::Extension, VK_KHR_MAINTENANCE2_EXTENSION_NAME, 3, 1, 0);
+				checks.require(supported(extension_enabled) && old_supported(extension_enabled),
+							   "M19/split-layout-extension-supported");
+				detail(d, SupportKind::None, "");
+				checks.require(!supported(unavailable), "M19/split-layout-reused-rejection");
+				detail(d, SupportKind::Extension, VK_KHR_MAINTENANCE2_EXTENSION_NAME, 3, 1, 0);
+				checks.require(supported(api_enabled) && old_supported(api_enabled), "M19/split-layout-api-supported");
+				detail(d, SupportKind::None, "");
+				checks.require(!supported(unavailable), "M19/split-layout-reject-before-recovery");
+				attachment.initialLayout = attachment2.initialLayout = VK_IMAGE_LAYOUT_GENERAL;
+				attachment.finalLayout = attachment2.finalLayout = VK_IMAGE_LAYOUT_GENERAL;
+				checks.require(supported(unavailable) && old_supported(unavailable), "M19/split-layout-valid-after");
+				detail(d, SupportKind::None, "");
+			}
+		}
+	}
+}
 // Applicability: sampler has feature/extension/pNext checks, no independent
 // property predicate; descriptor layouts add descriptor limits; pipeline layouts
 // have feature/push-constant/set limits but no independent extension predicate;
@@ -620,6 +682,7 @@ int main(int argc, char **argv)
 	{
 		static_test();
 		additional_static_test();
+		split_depth_stencil_layout_test();
 	}
 	else if (c == "call-scope")
 	{
