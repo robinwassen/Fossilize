@@ -372,6 +372,10 @@
       {
         "started": 1794310144.157299,
         "wait_seconds": 0.04911763500422239
+      },
+      {
+        "started": 1794310154.7326763,
+        "wait_seconds": 20.9919196118135
       }
     ],
     "command_timeout": 600,
@@ -4634,7 +4638,40 @@
         "log": "/tmp/fossilize-h19/output/repair1/h19-r1-asan-config.log",
         "receipt": "/tmp/fossilize-h19/output/repair1/h19-r1-asan-config.json",
         "started": 1794309848.8272867,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1794310045.4938781,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/home/robin/.codex/worktrees/1471/fossilize",
+            "-B",
+            "/tmp/fossilize-h19/build/asan-ubsan",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+            "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+            "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-omit-frame-pointer",
+            "-DCMAKE_C_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer",
+            "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined",
+            "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=address,undefined"
+          ],
+          "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+          "exit_code": 0,
+          "finished": 1794310046.9610128,
+          "intent_id": "h19-r1-asan-config",
+          "started": 1794310045.4904692,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "candidate_sha": "0c15f246a75c027daf2bac82c0547da8a14e6717",
@@ -4831,7 +4868,7 @@
         "timeout": 600
       }
     ],
-    "deadline": 1794315462.076671,
+    "deadline": 1794315483.0685904,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -5519,7 +5556,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 227,
+  "revision": 228,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
