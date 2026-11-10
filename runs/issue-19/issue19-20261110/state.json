@@ -116,13 +116,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "191f0615d9c161f7d014cf8aa9995aacae4076c367d1bcfbff5defe90f5b3704",
+      "report": "runs/issue-19/issue19-20261110/reports/checker-unit-2.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1794310365.8664253,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/19",
       "worker_id": "/root/issue19_checker_unit2"
     }
@@ -194,6 +196,19 @@
       "requested_change": "Record a specific constraint identifier and known offending enum value at each rejection detector without changing bool support policy; add Release-active registered graphics assertions for both paths and successful controls.",
       "route": "implementation",
       "status": "resolved"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "The two split depth/stencil image-layout branches return a bare API>=Vulkan1.1 OR VK_KHR_maintenance2 predicate. On a Vulkan1.0 feature filter without maintenance2, a render-pass attachment using either layout is rejected with SupportKind::Constraint, identifier=render_pass_is_supported, known0 and all values0. The detector knows the missing API/extension boundary but the new overload replaces it with generic detail. Fresh compiled probe confirms both enum1000117001 and1000117000, with unchanged false bool results, successful GENERAL-layout before/after controls and a successful maintenance2-enabled equivalent. See runs/issue-19/issue19-20261110/evidence/checker-unit2-layout-api-probe.log.",
+      "id": "CU19-3",
+      "location": "cli/fossilize_feature_filter.cpp:4800; cli/fossilize_feature_filter.cpp:6240; test/replay_support_test.cpp static coverage",
+      "priority": 2,
+      "requested_change": "Emit an actionable API-version or maintenance2 extension detail at this detector, preserving the existing OR support policy, and add registered Release-active assertions for both layouts plus valid/reused-receiver and extension/API-supported controls. Audit remaining bare support predicates so known facts cannot fall through generic overload reasons.",
+      "route": "implementation",
+      "status": "open"
     }
   ],
   "issue_snapshot": {
@@ -5692,8 +5707,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Repair CU19-3 at the existing image-layout support detector without changing bool support policy; register explicit Release-active API/extension detail and supported/recovery controls, commit a clean new candidate, then dispatch a fresh checker over all original14cases and9unit-stage gates. Current matrix, sanitizer, repetition and sensitivity gates remain not run and required; no acceptance is carried.",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -5705,7 +5720,7 @@
     "output_directory": "/tmp/fossilize-h19/output",
     "source_worktree": "/home/robin/.codex/worktrees/1471/fossilize"
   },
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -6370,7 +6385,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 268,
+  "revision": 269,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
@@ -6380,7 +6395,7 @@
   },
   "run_id": "issue19-20261110",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-19",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/19",
   "verification": [],
