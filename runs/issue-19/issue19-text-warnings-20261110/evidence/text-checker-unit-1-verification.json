@@ -1,0 +1,945 @@
+{
+  "envelope": {
+    "role": "checker",
+    "attempt_id": "text-checker-unit-1",
+    "worker_id": "/root/issue19_text_checker1",
+    "input_revision": 111,
+    "input_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+    "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+    "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+    "plan_version": 1,
+    "operation": "work_unit",
+    "work_unit": "https://github.com/robinwassen/Fossilize/issues/19"
+  },
+  "summary": {
+    "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+    "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+    "matrix": {
+      "debug-off": {
+        "discovered_count": 282,
+        "executed_count": 282,
+        "warning_ids": [
+          "replay-warning-cli-worker",
+          "replay-warning-concurrency",
+          "replay-warning-dependencies",
+          "replay-warning-grouping",
+          "replay-warning-legacy-controls",
+          "replay-warning-lifecycle",
+          "replay-warning-overflow",
+          "replay-warning-same-cause"
+        ]
+      },
+      "debug-on": {
+        "discovered_count": 282,
+        "executed_count": 282,
+        "warning_ids": [
+          "replay-warning-cli-worker",
+          "replay-warning-concurrency",
+          "replay-warning-dependencies",
+          "replay-warning-grouping",
+          "replay-warning-legacy-controls",
+          "replay-warning-lifecycle",
+          "replay-warning-overflow",
+          "replay-warning-same-cause"
+        ]
+      },
+      "release-off": {
+        "discovered_count": 282,
+        "executed_count": 282,
+        "warning_ids": [
+          "replay-warning-cli-worker",
+          "replay-warning-concurrency",
+          "replay-warning-dependencies",
+          "replay-warning-grouping",
+          "replay-warning-legacy-controls",
+          "replay-warning-lifecycle",
+          "replay-warning-overflow",
+          "replay-warning-same-cause"
+        ]
+      },
+      "release-on": {
+        "discovered_count": 282,
+        "executed_count": 282,
+        "warning_ids": [
+          "replay-warning-cli-worker",
+          "replay-warning-concurrency",
+          "replay-warning-dependencies",
+          "replay-warning-grouping",
+          "replay-warning-legacy-controls",
+          "replay-warning-lifecycle",
+          "replay-warning-overflow",
+          "replay-warning-same-cause"
+        ]
+      }
+    },
+    "asan_ids": [
+      "parser-input-containers",
+      "parser-input-containment",
+      "parser-input-diagnostics",
+      "parser-input-envelope",
+      "parser-input-link",
+      "parser-input-mutations",
+      "parser-input-shader",
+      "parser-input-valid",
+      "replay-dependency-common-cache",
+      "replay-dependency-module-fanout",
+      "replay-dependency-parent-fanout",
+      "replay-dependency-static",
+      "replay-event-producer-creation",
+      "replay-event-producer-parse",
+      "replay-event-unit-attempts",
+      "replay-event-unit-legacy",
+      "replay-event-unit-malformed",
+      "replay-event-unit-mutations",
+      "replay-event-unit-negotiation",
+      "replay-event-unit-roundtrip",
+      "replay-event-unit-startup",
+      "replay-event-unit-streaming",
+      "replay-event-unit-unknown",
+      "replay-support-bounded",
+      "replay-support-call-scope",
+      "replay-support-categories",
+      "replay-support-compute",
+      "replay-support-graphics",
+      "replay-support-raytracing",
+      "replay-support-static",
+      "replay-warning-concurrency",
+      "replay-warning-dependencies",
+      "replay-warning-grouping",
+      "replay-warning-legacy-controls",
+      "replay-warning-lifecycle",
+      "replay-warning-overflow",
+      "replay-warning-same-cause",
+      "varint-system-test"
+    ],
+    "repeat_ids": [
+      "replay-dependency-module-fanout",
+      "replay-dependency-parent-fanout",
+      "replay-dependency-worker-details",
+      "replay-support-bounded",
+      "replay-support-call-scope",
+      "replay-support-worker-details",
+      "replay-warning-cli-worker",
+      "replay-warning-concurrency"
+    ],
+    "repeat_executions": 24,
+    "checker_setup_faults": [
+      "Initial binding cache parser fixed with unique binding-v2 intent/pass.",
+      "Initial optional probe main collision fixed with unique probe-build-v2 intent/pass."
+    ],
+    "optional_probes": [
+      "Long identifier two-group oracle exit1 observes explicit truncated-prefix coalescing; no full-identity cardinality guarantee inferred.",
+      "Blacklist universal-volume oracle exit1 observes unchanged validation-policy prose outside support cap; existing Dependency counts retained."
+    ]
+  },
+  "commands": [
+    {
+      "intent_id": "text-c2-source-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+        "HEAD"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-source-check.log",
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "intent_id": "text-c2-binding",
+      "command": [
+        "python3",
+        "/tmp/fossilize-h19-text/checker-binding.py"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 1,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-binding.log",
+      "raw_log_bytes": 854,
+      "raw_log_sha256": "d6755e3ad910bb484b1c7b94214f603f961c0e86ec5f51e307b444b73cfe26f1",
+      "classification": "Checker setup error; independently replaced by unique corrected v2 command, not candidate/defect evidence."
+    },
+    {
+      "intent_id": "text-c2-debug-off-build",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-debug-off-build.log",
+      "raw_log_bytes": 22,
+      "raw_log_sha256": "8c35b1682f73592d30612d7b0fabdb384fcfff35cb5a076cb48b85b1368aa794"
+    },
+    {
+      "intent_id": "text-c2-debug-off-inventory",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-debug-off-inventory.log",
+      "raw_log_bytes": 216861,
+      "raw_log_sha256": "b19da73de033e305e7ce2a6f47da09c482eabfe3c96a653f414645b577ee8253"
+    },
+    {
+      "intent_id": "text-c2-debug-off-full",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-debug-off-full.log",
+      "raw_log_bytes": 44045,
+      "raw_log_sha256": "44ada7cc6271ddff61e4531f5d3d2659584831136f5913d68319f79f5f501fef"
+    },
+    {
+      "intent_id": "text-c2-debug-on-build",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/debug-exceptions-on",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-debug-on-build.log",
+      "raw_log_bytes": 22,
+      "raw_log_sha256": "8c35b1682f73592d30612d7b0fabdb384fcfff35cb5a076cb48b85b1368aa794"
+    },
+    {
+      "intent_id": "text-c2-debug-on-inventory",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-on",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-debug-on-inventory.log",
+      "raw_log_bytes": 216121,
+      "raw_log_sha256": "909948cf225d442c15c8eaf3b503bfd05990312a21fed12d789610810b30a53c"
+    },
+    {
+      "intent_id": "text-c2-debug-on-full",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-debug-on-full.log",
+      "raw_log_bytes": 44044,
+      "raw_log_sha256": "406c76bd67b4cd960439385049f7d9918c5d5fc4a502ee5adea354abe4584383"
+    },
+    {
+      "intent_id": "text-c2-release-off-build",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/release-exceptions-off",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-release-off-build.log",
+      "raw_log_bytes": 22,
+      "raw_log_sha256": "8c35b1682f73592d30612d7b0fabdb384fcfff35cb5a076cb48b85b1368aa794"
+    },
+    {
+      "intent_id": "text-c2-release-off-inventory",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-release-off-inventory.log",
+      "raw_log_bytes": 218341,
+      "raw_log_sha256": "428ca9e752b0d9fd4b596f6e1e4d1812aec369f2b14da2694c39f679a62b6b0e"
+    },
+    {
+      "intent_id": "text-c2-release-off-full",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-release-off-full.log",
+      "raw_log_bytes": 44047,
+      "raw_log_sha256": "df7a113d2757647459a1c5e3b6dfa6e83edbbe2ad3bcf090770b27b44f4792c6"
+    },
+    {
+      "intent_id": "text-c2-release-on-build",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-release-on-build.log",
+      "raw_log_bytes": 22,
+      "raw_log_sha256": "8c35b1682f73592d30612d7b0fabdb384fcfff35cb5a076cb48b85b1368aa794"
+    },
+    {
+      "intent_id": "text-c2-release-on-inventory",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-release-on-inventory.log",
+      "raw_log_bytes": 217601,
+      "raw_log_sha256": "81177258503c4093b63ad4cfbac360d8d572dea18481ab6d35300f5410cfee5b"
+    },
+    {
+      "intent_id": "text-c2-release-on-full",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-release-on-full.log",
+      "raw_log_bytes": 44046,
+      "raw_log_sha256": "94fc06830f1de09916eaedf4476f7287098aebc4cb610ed6ce6ebd9094d350d6"
+    },
+    {
+      "intent_id": "text-c2-asan-build",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/asan-ubsan",
+        "--parallel",
+        "4",
+        "--target",
+        "replay-support-test",
+        "replay-support-dependency-test",
+        "replay-event-test",
+        "replay-event-producer-test",
+        "parser-input-test",
+        "varint-test",
+        "replay-warning-test"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-asan-build.log",
+      "raw_log_bytes": 22,
+      "raw_log_sha256": "8c35b1682f73592d30612d7b0fabdb384fcfff35cb5a076cb48b85b1368aa794"
+    },
+    {
+      "intent_id": "text-c2-asan-tests",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/asan-ubsan",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(replay-warning-(same-cause|grouping|overflow|dependencies|concurrency|lifecycle|legacy-controls)$|replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-asan-tests.log",
+      "raw_log_bytes": 4548,
+      "raw_log_sha256": "cb67e3f5cedd4affc547f5e1c57f3c19921bf685e2e98d0a4b0e21f841f25500"
+    },
+    {
+      "intent_id": "text-c2-repeat",
+      "command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--repeat",
+        "until-fail:3",
+        "-R",
+        "^(replay-warning-concurrency|replay-warning-cli-worker|replay-support-call-scope|replay-dependency-module-fanout|replay-dependency-parent-fanout|replay-support-worker-details|replay-dependency-worker-details|replay-support-bounded)$"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-repeat.log",
+      "raw_log_bytes": 2923,
+      "raw_log_sha256": "e2393f4d4a44a1d485b13c1e8332666c2ba2739919777c568da4cb2d1da2e81c"
+    },
+    {
+      "intent_id": "text-c2-support-mutant-build",
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-I/tmp/fossilize-h19-text/checker-2",
+        "-I/tmp/fossilize-h19-text/checker-2/rapidjson/include",
+        "-I/tmp/fossilize-h19-text/checker-2/khronos",
+        "-I/tmp/fossilize-h19-text/checker-2/miniz",
+        "-I/tmp/fossilize-h19-text/checker-2/cli",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/volk",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/SPIRV-Tools/include",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/SPIRV-Headers/include/spirv/unified1",
+        "/tmp/fossilize-h19-text/output/checker-2/mutations/support/fossilize_feature_filter.cpp",
+        "/tmp/fossilize-h19-text/checker-2/test/replay_support_test.cpp",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libcli-utils.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libvolk.a",
+        "-pthread",
+        "-ldl",
+        "-o",
+        "/tmp/fossilize-h19-text/output/checker-2/mutations/support/mutant"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-support-mutant-build.log",
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "intent_id": "text-c2-dependency-mutant-build",
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL",
+        "-I/tmp/fossilize-h19-text/checker-2",
+        "-I/tmp/fossilize-h19-text/checker-2/rapidjson/include",
+        "-I/tmp/fossilize-h19-text/checker-2/khronos",
+        "-I/tmp/fossilize-h19-text/checker-2/miniz",
+        "-I/tmp/fossilize-h19-text/checker-2/cli",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/volk",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/SPIRV-Tools/include",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/SPIRV-Headers/include/spirv/unified1",
+        "/tmp/fossilize-h19-text/output/checker-2/mutations/dependency/replay_support_dependency_test.cpp",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libfossilize.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libcli-utils.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/SPIRV-Tools/source/libSPIRV-Tools.a",
+        "-pthread",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libminiz.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libvolk.a",
+        "-ldl",
+        "-lrt",
+        "-o",
+        "/tmp/fossilize-h19-text/output/checker-2/mutations/dependency/mutant"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-dependency-mutant-build.log",
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "intent_id": "text-c2-text-mutant-build",
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL",
+        "-I/tmp/fossilize-h19-text/checker-2",
+        "-I/tmp/fossilize-h19-text/checker-2/rapidjson/include",
+        "-I/tmp/fossilize-h19-text/checker-2/khronos",
+        "-I/tmp/fossilize-h19-text/checker-2/miniz",
+        "-I/tmp/fossilize-h19-text/checker-2/cli",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/volk",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/SPIRV-Tools/include",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/SPIRV-Headers/include/spirv/unified1",
+        "/tmp/fossilize-h19-text/output/checker-2/mutations/text/replay_warning_test.cpp",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libfossilize.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libcli-utils.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/SPIRV-Tools/source/libSPIRV-Tools.a",
+        "-pthread",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libminiz.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libvolk.a",
+        "-ldl",
+        "-lrt",
+        "-o",
+        "/tmp/fossilize-h19-text/output/checker-2/mutations/text/mutant"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-text-mutant-build.log",
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "intent_id": "text-c2-support-mutant-run",
+      "command": [
+        "/usr/bin/env",
+        "--chdir=/tmp/fossilize-h19-text/output/checker-2/mutations/support/run",
+        "/tmp/fossilize-h19-text/output/checker-2/mutations/support/mutant",
+        "compute"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 1,
+      "expected_exit": 1,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-support-mutant-run.log",
+      "raw_log_bytes": 113,
+      "raw_log_sha256": "27df8fbe837297245321ed091d0e894a2b28b9d9c5b219d9a5db4b68b98ee5da"
+    },
+    {
+      "intent_id": "text-c2-dependency-mutant-run",
+      "command": [
+        "/usr/bin/env",
+        "--chdir=/tmp/fossilize-h19-text/output/checker-2/mutations/dependency/run",
+        "/tmp/fossilize-h19-text/output/checker-2/mutations/dependency/mutant",
+        "module-fanout"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 1,
+      "expected_exit": 1,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-dependency-mutant-run.log",
+      "raw_log_bytes": 198766,
+      "raw_log_sha256": "ddd0fa8462adb257da27f8f93b08e082f65977858c942424a80db39958f314a5"
+    },
+    {
+      "intent_id": "text-c2-text-mutant-run",
+      "command": [
+        "/usr/bin/env",
+        "--chdir=/tmp/fossilize-h19-text/output/checker-2/mutations/text/run",
+        "/tmp/fossilize-h19-text/output/checker-2/mutations/text/mutant",
+        "same-cause"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 1,
+      "expected_exit": 1,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-text-mutant-run.log",
+      "raw_log_bytes": 231,
+      "raw_log_sha256": "a8c8c82eaf5a315d27e9d0d14a121db172ef142b7263b7612b5b1e2508df8bb6"
+    },
+    {
+      "intent_id": "text-c2-strict-controls",
+      "command": [
+        "python3",
+        "/tmp/fossilize-h19-text/checker-strict-controls.py"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-strict-controls.log",
+      "raw_log_bytes": 227,
+      "raw_log_sha256": "fff914d18a72550a2b5446fd8481da1bbbb55a7e28a2b51296403fb0e163a74c"
+    },
+    {
+      "intent_id": "text-c2-probe-build",
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL",
+        "-I/tmp/fossilize-h19-text/checker-2",
+        "-I/tmp/fossilize-h19-text/checker-2/rapidjson/include",
+        "-I/tmp/fossilize-h19-text/checker-2/khronos",
+        "-I/tmp/fossilize-h19-text/checker-2/miniz",
+        "-I/tmp/fossilize-h19-text/checker-2/cli",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/volk",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/SPIRV-Tools/include",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/SPIRV-Headers/include/spirv/unified1",
+        "/tmp/fossilize-h19-text/output/checker-2/probes.cpp",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libfossilize.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libcli-utils.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/SPIRV-Tools/source/libSPIRV-Tools.a",
+        "-pthread",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libminiz.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libvolk.a",
+        "-ldl",
+        "-lrt",
+        "-o",
+        "/tmp/fossilize-h19-text/output/checker-2/probes"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 1,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-probe-build.log",
+      "raw_log_bytes": 930,
+      "raw_log_sha256": "a5dfefcd7336807aa04942ed09f6be196215110124bf7bb089aa7cc0f6d1a7fe",
+      "classification": "Checker setup error; independently replaced by unique corrected v2 command, not candidate/defect evidence."
+    },
+    {
+      "intent_id": "text-c2-probe-long-extension",
+      "command": [
+        "/usr/bin/env",
+        "--chdir=/tmp/fossilize-h19-text/output/checker-2/probe-long-extension",
+        "/tmp/fossilize-h19-text/output/checker-2/probes",
+        "long-extension"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 1,
+      "expected_exit": 1,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-probe-long-extension.log",
+      "raw_log_bytes": 1006,
+      "raw_log_sha256": "5bc3e6c0b6045f29907a9336bc1cfa0a05b1216fb77096487f8b92f2d7e3607c"
+    },
+    {
+      "intent_id": "text-c2-probe-blacklist",
+      "command": [
+        "/usr/bin/env",
+        "--chdir=/tmp/fossilize-h19-text/output/checker-2/probe-blacklist",
+        "/tmp/fossilize-h19-text/output/checker-2/probes",
+        "blacklist"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 1,
+      "expected_exit": 1,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-probe-blacklist.log",
+      "raw_log_bytes": 302,
+      "raw_log_sha256": "47f28b16617ddb1eefe7f9219b8d9a1f5a82fe20f8ad8f44c6acfe0af563cd9d"
+    },
+    {
+      "intent_id": "text-c2-binding-v2",
+      "command": [
+        "python3",
+        "/tmp/fossilize-h19-text/checker-binding.py"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-binding-v2.log",
+      "raw_log_bytes": 6787,
+      "raw_log_sha256": "736d204d9e67f5515aeee666bd74b13e68e3a3f9ddfabeac444a2f1d10fc9dd7"
+    },
+    {
+      "intent_id": "text-c2-probe-build-v2",
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL",
+        "-I/tmp/fossilize-h19-text/checker-2",
+        "-I/tmp/fossilize-h19-text/checker-2/rapidjson/include",
+        "-I/tmp/fossilize-h19-text/checker-2/khronos",
+        "-I/tmp/fossilize-h19-text/checker-2/miniz",
+        "-I/tmp/fossilize-h19-text/checker-2/cli",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/volk",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/SPIRV-Tools/include",
+        "-I/tmp/fossilize-h19-text/checker-2/cli/SPIRV-Headers/include/spirv/unified1",
+        "/tmp/fossilize-h19-text/output/checker-2/probes.cpp",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libfossilize.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libcli-utils.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/SPIRV-Tools/source/libSPIRV-Tools.a",
+        "-pthread",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libminiz.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libvolk.a",
+        "-ldl",
+        "-lrt",
+        "-o",
+        "/tmp/fossilize-h19-text/output/checker-2/probes"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-probe-build-v2.log",
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "intent_id": "text-c2-results-check",
+      "command": [
+        "python3",
+        "/tmp/fossilize-h19-text/checker-verify-results.py"
+      ],
+      "cwd": "/tmp/fossilize-h19-text/checker-2",
+      "exit_code": 0,
+      "timeout_seconds": 600.0,
+      "timed_out": false,
+      "measured_wait_seconds": 0.0,
+      "raw_log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-results-check.log",
+      "raw_log_bytes": 558,
+      "raw_log_sha256": "bbda97542838f9a366c1be5e950718ddc5671dc7882eddd11d145cb4cabded0b"
+    }
+  ],
+  "review": [
+    "Read complete combined source diff (filter predicates, scoped details, dependency captures, scheduling, event transport, warning collector) and amendment delta from f49ad7ad; source review occurs in fresh detached checker-2.",
+    "FeatureFilter bool declarations remain; detailed calls use caller-owned scalar output with TLS receiver save/restore. Predicates preserve prior decisions and numeric values; malformed shader inputs map to Parse, native OOM stays Create.",
+    "Graph fixtures record actual FOZ through StateRecorder, read back exact tag/hash/payloads, execute production parse/queue/resolve/create with CPU Vulkan adapters, and require exact consumer/parent identity, status, categories and zero blocked pipeline creation calls.",
+    "Warnings use fixed 32 groups, 8 global/2 group examples, 64 origin slots, mutex-protected counts, explicit overflow and saturation. Semantic keys discard object/parent hash and requested/available values; keep kind/identifier/raw enum/capability/sType and constraint resource context.",
+    "Scoped replay parser suppression affects missing/invalid resource prose only; detailed filter suppresses known unsupported prose. Generic parse, malformed shader, OOM/native errors and non-replay/bool diagnostics remain. Reporter uses stderr LOGW; protocol stdout remains separate.",
+    "finish_events and destructor share finalization mutex, join thread pool before warning finish; warning finished flag provides once-only standalone/worker reporting and no empty success report. Crash/hard exit does not flush.",
+    "Original common-cache/static prose assertion changes require replacement parent hashes; no original graph/count/creation assertion deleted. New 8 warning registrations use actual stderr and explicit Release-active assertions with CTest watchdogs/private workdirs.",
+    "CHANGELOG.md contains one Unreleased short sentence with Observability topic, bounded-example/cause-count benefit, full issue #19 URL and no GPU/Steam/Windows/unique-item/persistence claim; combined entry matches candidate scope subject to open review leads."
+  ],
+  "mutations": {
+    "support": {
+      "diff": "--- candidate/cli/fossilize_feature_filter.cpp\n+++ mutant/cli/fossilize_feature_filter.cpp\n@@ -5934,8 +5934,7 @@\n \n \tif ((flags & VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT) != 0)\n \t\tif (!features.descriptor_buffer.descriptorBuffer)\n-\t\t\treturn support_reject(SupportKind::Feature, \"descriptorBuffer\", 3, 1,\n-\t\t\t\t\t\t\t\t  uint64_t(features.descriptor_buffer.descriptorBuffer));\n+\t\t\treturn false;\n \n \tif ((flags & VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV) != 0 &&\n \t    features.device_generated_commands_compute_nv.deviceGeneratedCompute == VK_FALSE)\n",
+      "diff_sha256": "4f0354dbfce0c3dc6c37029ae239cc8b63c7e7f3a31deb56571d482f61dfd3ab",
+      "assertion": "FAIL M19/exact-identifier/descriptorBuffer"
+    },
+    "dependency": {
+      "diff": "--- candidate/cli/fossilize_replay.cpp\n+++ mutant/cli/fossilize_replay.cpp\n@@ -3475,7 +3475,7 @@\n \t\tauto result = shader_modules.find_object(source);\n \t\tif (!result.first)\n \t\t\tReplayDependency::retain_first(\n-\t\t\t\tblocker, parent_detail(RESOURCE_SHADER_MODULE, source, ReplayDependency::Status::Missing));\n+\t\t\t\tblocker, parent_detail(RESOURCE_SHADER_MODULE, source ^ 1, ReplayDependency::Status::Missing));\n \t\tconst_cast<VkComputePipelineCreateInfo*>(info)->stage.module = result.first;\n \t\treturn blocker;\n \t}\n",
+      "diff_sha256": "3084c83e582650cd73ba5dd5eaebd52b50bd24221ff62da2b8bce50d8babdf19",
+      "assertion": "FAIL M19/original-parent-tag-and-hash-before-remapping/invalid-module/lazy"
+    },
+    "text": {
+      "diff": "--- candidate/cli/fossilize_replay.cpp\n+++ mutant/cli/fossilize_replay.cpp\n@@ -740,6 +740,7 @@\n \t}\n \tvoid record_unsupported(ResourceTag tag, Hash hash, const SupportDetail &detail)\n \t{\n+\t\tLOGW(\"Unsupported replay resource %u:%016llx.\\n\", unsigned(tag), (unsigned long long)hash);\n \t\tReplayEvent::Event e;\n \t\te.phase = ReplayEvent::Support;\n \t\te.reason = ReplayEvent::Unsupported;\n",
+      "diff_sha256": "76291fe7ae71b1c5be4f2141f9e9abaaf80c8136e8f34833c1c592cd9a01b126",
+      "assertion": "FAIL M19/text-output-byte-bound"
+    }
+  },
+  "binding": {
+    "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+    "fresh_review_source": "/tmp/fossilize-h19-text/checker-2",
+    "execution_source": "/home/robin/.codex/worktrees/1471/fossilize",
+    "both_clean": true,
+    "submodules": "populated at tracked revisions",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "builds": {
+      "debug-exceptions-off": {
+        "type": "Debug",
+        "exceptions": "OFF",
+        "sanitizer": false,
+        "source": "/home/robin/.codex/worktrees/1471/fossilize",
+        "compiler": "/usr/bin/c++",
+        "binaries": {
+          "test/replay-warning-test": "e3556f1bfe7eb95ed1abaec2922842bd3d654e5ada4c1e27b7be8f0f085d1711",
+          "test/replay-support-test": "2a298ac3989616541e5ab43c31a6918072ae755067f9aa7d985b71cf225abd63",
+          "test/replay-support-dependency-test": "658ded0b5b1894fadbc56585694683345f0130af47a2722e041a909b345bb9c9",
+          "cli/fossilize-replay": "3d9f64291e27728d5cbd9847ca1a061dc80bee28d2991fdf7150030a658befc5",
+          "layer/libVkLayer_fossilize.so": "b7f6411f979808581e7697b526b009573d337f8754b35cd67f1847774cc7a939"
+        },
+        "compile_blocks_sha256": {
+          "fossilize_feature_filter.cpp": "a8ade4649fc7be331b04579fee7b0fc0eb604a14d6d32fbcde6fb16254816141",
+          "fossilize.cpp": "20cdb34170089dc814a63ada392c57f0fddb62e01f33988a360b9624adbfc887",
+          "replay_warning_test.cpp": "ea854cab87b732a9906a4f040670a583f663a795e8d22d9159a5d3a02a751ce1",
+          "replay_support_test.cpp": "25552240f6abe00956bfc177009cd2620a6f773a9fc079973e8e4068c0069452",
+          "replay_support_dependency_test.cpp": "b7431d2181f7a2cc4f772f6b503c528174a253341f783954ba5c3b6f184db424"
+        }
+      },
+      "debug-exceptions-on": {
+        "type": "Debug",
+        "exceptions": "ON",
+        "sanitizer": false,
+        "source": "/home/robin/.codex/worktrees/1471/fossilize",
+        "compiler": "/usr/bin/c++",
+        "binaries": {
+          "test/replay-warning-test": "0b7f969a46d6dfc5a69817d7950f877ac9fe5d9402a3e33ac79d27c066cea048",
+          "test/replay-support-test": "a988d89cefb9002c0dcdddf7176ec9a1a4d328b09f97b8934c139b3aa8f08534",
+          "test/replay-support-dependency-test": "5839b32a2b62c801065e528b8b40d71a1e75b4ea0b481a64d43f912a4a0e56e7",
+          "cli/fossilize-replay": "96e286410f4da02542907abab15610945f77898ca6edc3d4d37a1f3985c3c1c7",
+          "layer/libVkLayer_fossilize.so": "adfec1fe670a47b06dbbccca20eca29ea97458057b07f18d1a26a030df81ff3c"
+        },
+        "compile_blocks_sha256": {
+          "fossilize_feature_filter.cpp": "83846f2c3e901bdbd91f0dd2b6b169024c51795a79cc6badb41e9a32f2b9f6e9",
+          "fossilize.cpp": "af0fd4e65d5688b96224fc4804ae92ecccf3f17a24e12bdd5a9a238efda11db0",
+          "replay_warning_test.cpp": "bc684beefb394e8a7aeb84ee79c1f42d3160d0418c5e0dbebad81fcb38042fc4",
+          "replay_support_test.cpp": "bb28c4474f5e52b735929fa209864efdfcb20fb13cf483e9af41715e59f3e07a",
+          "replay_support_dependency_test.cpp": "ce74a12120bc667766c9a166fb65161fce43213f8bb929182310724c25a0bcaf"
+        }
+      },
+      "release-exceptions-off": {
+        "type": "Release",
+        "exceptions": "OFF",
+        "sanitizer": false,
+        "source": "/home/robin/.codex/worktrees/1471/fossilize",
+        "compiler": "/usr/bin/c++",
+        "binaries": {
+          "test/replay-warning-test": "1e9b657bf3811c40bd55b26b9a8f26f852d6992d2941800e3d24ed03f641f5a5",
+          "test/replay-support-test": "16679d4c258a27cb84cf638ac01bcac1cc46034cf6712e43ff6a55f4cd1bebbc",
+          "test/replay-support-dependency-test": "bccfdf14674ff50a8e1270aff44bd7b3b136fac98c41452a914d723d66f3788b",
+          "cli/fossilize-replay": "d2b22c28071ab6a8201c8619117cb7bbb5366d302a546ac7834487d3d03853a9",
+          "layer/libVkLayer_fossilize.so": "881e57087f0effe987bc576f665342e73cd91d0025b5408bcf16a1bbd263ba59"
+        },
+        "compile_blocks_sha256": {
+          "fossilize_feature_filter.cpp": "f8c2c2ff745f910d1700b5cc1dab4213ccaf5b1227fe88910fecb9406dd02145",
+          "fossilize.cpp": "41e4f023b65e9cfcaccce2bb75d55b3d27df6d7c1368244f4099bc3a71cf4f8b",
+          "replay_warning_test.cpp": "7ef1e28d72d784f71d35fee87d60fe169d588ab0e042cb7b87b7661a581009c5",
+          "replay_support_test.cpp": "a85fea93c0a1caaee0aabe0d180b227ac1d0e2b6d53b46b2a8f1be1e5196c919",
+          "replay_support_dependency_test.cpp": "f4ee75116a5de57887dc615660f5183b0a51d2109d5c338cf09ff6f0a85e7146"
+        }
+      },
+      "release-exceptions-on": {
+        "type": "Release",
+        "exceptions": "ON",
+        "sanitizer": false,
+        "source": "/home/robin/.codex/worktrees/1471/fossilize",
+        "compiler": "/usr/bin/c++",
+        "binaries": {
+          "test/replay-warning-test": "ea703f0a824c14b7dc9ff566b4483d423eeb7932e52cc671dba6dd1ed7304d7d",
+          "test/replay-support-test": "e94a62d1c6e763bb5fa5558963007b63df7ae00cc1e00d4ac704dbcc9de3fd50",
+          "test/replay-support-dependency-test": "d0c8e181f31bf6cacdf02bccd924b023cc5c6053ae3b6a48e5d41c8af5e3221b",
+          "cli/fossilize-replay": "f3f372c08fa96ca2879a457bda521401ced4abc0ced1be5fd50d01fbfa75286b",
+          "layer/libVkLayer_fossilize.so": "31ea2d72ba23362468ff01c19ceb7f33261f30d7e73ffb7ca58f6701d3bb4609"
+        },
+        "compile_blocks_sha256": {
+          "fossilize_feature_filter.cpp": "dbe0e9dd39f0d6ffd361ce37c305ea695308808753eee982cda736d1ff279761",
+          "fossilize.cpp": "a60166d3639b69c737a22f682df78ad2c282d91aacdaf1a2e9bd31dccb514f7d",
+          "replay_warning_test.cpp": "f0caed24d60121efa7081eecb22acc1e56b11a0a69ff6590599feaf848ac5c84",
+          "replay_support_test.cpp": "4090a35e9532732dca16bda0603bb25d26d656b0bcf4c853cdedab6aa8dfae5a",
+          "replay_support_dependency_test.cpp": "5c4e7f63303c7faa7ee3f810a96893028a6f73db4915f0d797493f8d418561d7"
+        }
+      },
+      "asan-ubsan": {
+        "type": "Debug",
+        "exceptions": "ON",
+        "sanitizer": true,
+        "source": "/home/robin/.codex/worktrees/1471/fossilize",
+        "compiler": "/usr/bin/c++",
+        "binaries": {
+          "test/replay-warning-test": "dbbf7d55587cb067d99d0f0901271da4f2adf4c5a838a345388672808b1f96b1",
+          "test/replay-support-test": "f55c9ef146118a85717b80474204aefd4387ae7df2ad538eeffe6a6246f7011b",
+          "test/replay-support-dependency-test": "5527ce1f5ad0f63415bc968d5452fe410d5e96474e1dd408dd37148f8aa09c24"
+        },
+        "compile_blocks_sha256": {
+          "fossilize_feature_filter.cpp": "42e14c227a4a7574dc023293361bf9692c95e91d4c4de3bb1f263db8a9a60580",
+          "fossilize.cpp": "9e5f2f8e9a58b311a0c8e159a83c84152f557e82a372b96ceb3b39663cb41153",
+          "replay_warning_test.cpp": "e84cff9e87ffd30af036f1f52f254bbc7b9b1849641747cbb7d640603ecabf39",
+          "replay_support_test.cpp": "a8e7820ba2fb475fe8aa3a2953e930c24b94bcb892ecf5e3d4691e419ed3fcd7",
+          "replay_support_dependency_test.cpp": "5a6a21cda91b3b909e868816532b251d85410f67a195bb319a6a9a4c43b99f13"
+        }
+      }
+    }
+  },
+  "result_verifier_output": "/tmp/fossilize-h19-text/checker-verify-results.py:15: SyntaxWarning: invalid escape sequence '\\*'\n  assert re.search(r'100% tests passed(?:, 0 tests failed)? out of 282',full) and not re.search('Skipped|Not Run|\\*\\*\\*Failed|\\*\\*\\*Exception',full)\n{\"asan_count\": 38, \"candidate_sha\": \"e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d\", \"commands\": 29, \"compiled_mutations\": 3, \"four_matrix_counts\": [282, 282, 282, 282], \"mandatory_skipped\": [], \"repeat_executions\": 24, \"repeat_unique\": 8, \"summary\": \"/tmp/fossilize-h19-text/output/checker-2/results-summary.json\"}\n",
+  "optional_probes": {
+    "text-c2-probe-long-extension": "Fossilize INFO: Creating null device.\nFossilize WARN: Replay warning summary: worker=0 attempt=0; counts are attempt replay observations (including repeats).\nFossilize WARN: Replay cause 1: 2 observations [2 shader-module] could not be replayed because extension SPV_unknown_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...[truncated] is not supported.\nFossilize WARN: Replay example 1: shader-module 0000000000000700; parent=resource:0000000000000000; required=1 available=0 raw=unknown.\nFossilize WARN: Replay example 1: shader-module 0000000000000701; parent=resource:0000000000000000; required=1 available=0 raw=unknown.\nFAIL independent/distinct-long-extension-cause-identity\ndistinct_input_extensions=2 retained_groups=1 first_group_count=2 identifier=SPV_unknown_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...[truncated]\n",
+    "text-c2-probe-blacklist": "FAIL independent/blacklist-dependency-warning-bypass\nblacklist_observations=10000 stderr_bytes=510631 legacy_lines=10000 summaries=1\nsummary_cause=Replay cause 1: 10000 observations [10000 compute-pipeline] could not be replayed because a dependency is unknown (origin=unknown; support cause unknown).\n"
+  }
+}
