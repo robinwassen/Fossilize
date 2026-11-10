@@ -210,6 +210,10 @@
       {
         "started": 1794304497.5716934,
         "wait_seconds": 7.641118263127282
+      },
+      {
+        "started": 1794304567.1177313,
+        "wait_seconds": 13.410869561135769
       }
     ],
     "command_timeout": 600,
@@ -1193,9 +1197,26 @@
         "intent_id": "i19-asan-build",
         "started": 1794304562.2835937,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-h19/build/asan-ubsan",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+        ],
+        "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-h19/build/asan-ubsan --output-on-failure --no-tests=error -R '^(replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)'",
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "eligible_deadline": 1794315289.840387,
+        "intent_id": "i19-asan-tests",
+        "started": 1794304582.0434706,
+        "timeout": 600
       }
     ],
-    "deadline": 1794315276.4295175,
+    "deadline": 1794315289.840387,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -1883,7 +1904,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 56,
+  "revision": 57,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
