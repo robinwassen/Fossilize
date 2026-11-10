@@ -1,0 +1,25 @@
+{
+  "intent_id": "i20-span3-asan-tests",
+  "command": [
+    "env",
+    "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+    "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+    "/tmp/fossilize-h20/toolenv/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-R",
+    "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+    "--output-junit",
+    "/tmp/fossilize-h20/output/implementer-span-3/asan-tests.xml"
+  ],
+  "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+  "timeout": 600.0,
+  "started": 1794315309.7237628,
+  "acquired": 1794315309.7261286,
+  "wait_seconds": 0.0,
+  "finished": 1794315313.697884,
+  "exit_code": 0,
+  "timed_out": false
+}

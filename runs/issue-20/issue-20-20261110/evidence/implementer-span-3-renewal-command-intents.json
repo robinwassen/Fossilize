@@ -1,0 +1,96 @@
+[
+  {
+    "intent_id": "i20-span3-debug2-build",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--parallel",
+      "4"
+    ],
+    "command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--parallel",
+      "4"
+    ],
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout_seconds": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug2-build-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-span-3/debug2-build.log"
+  },
+  {
+    "intent_id": "i20-span3-debug2-inventory",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--show-only=json-v1"
+    ],
+    "command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--show-only=json-v1"
+    ],
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout_seconds": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug2-inventory-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-span-3/debug2-inventory.log"
+  },
+  {
+    "intent_id": "i20-span3-debug2-focused",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(database-discovery-errors|replay-selection-prefix-policy)$",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-span-3/debug2-focused.xml"
+    ],
+    "command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(database-discovery-errors|replay-selection-prefix-policy)$",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-span-3/debug2-focused.xml"
+    ],
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout_seconds": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug2-focused-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-span-3/debug2-focused.log"
+  },
+  {
+    "intent_id": "i20-span3-debug2-full",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-span-3/debug2-full.xml"
+    ],
+    "command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-span-3/debug2-full.xml"
+    ],
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout_seconds": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug2-full-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-span-3/debug2-full.log"
+  }
+]
