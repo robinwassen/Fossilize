@@ -159,12 +159,18 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+      "attempt_id": "checker-unit-1",
       "evidence": "Plan1 retains G20-native-windows kind=both, with expected native platform automated evidence passing and explicit policy requiring an explicit user platform disposition AND plan reconciliation before acceptance. The report contract requires each required gate evidence entry to say result=passed and exit_code=0. The durable user record explicitly answers \"Proceed; waive Windows for this run\" and says Windows is NOT RUN/unverified. This supplies task-specific authority to change applicability, but no updated plan exists in the reviewed input. Acceptance under plan1 would still require misleading native-pass evidence or silently omit a mandatory gate.",
       "id": "F20-WINDOWS-DISPOSITION-PLAN1",
       "location": "Plan version 1 gates[6] G20-native-windows; .agents/skills/implement-change-harness/references/state.md:114-151; runs/issue-20/issue-20-20261110/evidence/user-native-windows-disposition.json",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+        "evidence": "Fresh active checker /root/checker_unit20 independently read live #20/#8/#18, immutable original AC1, plan1, state204 plan2 and durable exact run-bound user authorization. Confirmed originalAC1, all cases/assertions and Linux gates1:6 unchanged; plan2 G20-native-windows is optional with exact question/answer/root/run and NOT RUN/unverified. Only source-contract version prerequisite and applicability assumption/risk otherwise differ. This resolves the plan applicability defect without any native Windows pass; actual Linux acceptance gates remain pending. Candidate0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025/basefd380aafe1df5a5379216d70c4fe4bfcf7f4b5db/plan2/checker-unit-1.",
+        "finding_id": "F20-WINDOWS-DISPOSITION-PLAN1"
+      },
       "requested_change": "Dispatch a fresh planner to reconcile ONLY native Windows applicability for this run using the durable user authorization. Preserve immutable original AC1 verbatim and every applicable Linux gate/case. Represent native Windows as user-waived NOT RUN/unverified, never passed, and make the revised required gate set honest for both unit and final acceptance. Renew independent checking under the new plan version.",
       "route": "planner",
-      "status": "open",
+      "status": "resolved",
       "title": "Reconcile user-authorized native Windows applicability before acceptance"
     }
   ],
@@ -504,6 +510,10 @@
       {
         "started": 1794312292.920545,
         "wait_seconds": 0.17112432094290853
+      },
+      {
+        "started": 1794312395.137608,
+        "wait_seconds": 0.6862800570670515
       }
     ],
     "command_timeout": 600,
@@ -4104,7 +4114,7 @@
         }
       }
     ],
-    "deadline": 1794315598.0783274,
+    "deadline": 1794315598.7646074,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -5164,7 +5174,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 206,
+  "revision": 207,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
