@@ -364,6 +364,10 @@
       {
         "started": 1794309806.9594805,
         "wait_seconds": 7.439298019045964
+      },
+      {
+        "started": 1794309859.1106207,
+        "wait_seconds": 11.138428045902401
       }
     ],
     "command_timeout": 600,
@@ -4263,9 +4267,30 @@
         "receipt": "/tmp/fossilize-h19/output/repair1/h19-r1-asan-build.json",
         "started": 1794309854.0201693,
         "timeout": 600
+      },
+      {
+        "candidate_sha": "0c15f246a75c027daf2bac82c0547da8a14e6717",
+        "child_command": [
+          "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-h19/build/asan-ubsan",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+        ],
+        "command": "/tmp/fossilize-10/tools/cmake/data/bin/ctest --test-dir /tmp/fossilize-h19/build/asan-ubsan --output-on-failure --no-tests=error -R '^(replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)'",
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "eligible_deadline": 1794315460.5700822,
+        "expected_exit": 0,
+        "intent_id": "h19-r1-asan-tests",
+        "log": "/tmp/fossilize-h19/output/repair1/h19-r1-asan-tests.log",
+        "receipt": "/tmp/fossilize-h19/output/repair1/h19-r1-asan-tests.json",
+        "started": 1794309871.716201,
+        "timeout": 600
       }
     ],
-    "deadline": 1794315449.4316542,
+    "deadline": 1794315460.5700822,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -4953,7 +4978,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 201,
+  "revision": 202,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
