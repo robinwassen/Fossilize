@@ -1,0 +1,5376 @@
+{
+  "attempt_id": "implementer-span-3",
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "candidate_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "checks": [
+    {
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "discovered": 279,
+      "executed": 279,
+      "failures": 0,
+      "id": "implementation-debug-off",
+      "result": "passed",
+      "skipped": 0
+    },
+    {
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "discovered": 29,
+      "executed": 29,
+      "failures": 0,
+      "id": "implementation-asan-ubsan",
+      "result": "passed",
+      "skipped": 0
+    },
+    {
+      "candidate_sha": "7c82e06df34fbbde995764bc55bff4245f533e94",
+      "executed": 279,
+      "failures": 1,
+      "id": "historical-debug-full",
+      "reason": "Existing optional partial-input fixture injected failure on the first payload yet expected one discovered item. Changed to the second movement with stronger whole-prefix assertions; renewed focused and full checks passed at the final candidate.",
+      "result": "failed"
+    }
+  ],
+  "commands": [
+    {
+      "actual_source": {
+        "historical": true,
+        "source_changed_during_execution": false,
+        "source_sha": "7c82e06df34fbbde995764bc55bff4245f533e94"
+      },
+      "candidate_sha": "7c82e06df34fbbde995764bc55bff4245f533e94",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-span3-debug-build",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug-build.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug-build-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug-build-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600.0
+    },
+    {
+      "actual_source": {
+        "historical": true,
+        "source_changed_during_execution": false,
+        "source_sha": "7c82e06df34fbbde995764bc55bff4245f533e94"
+      },
+      "candidate_sha": "7c82e06df34fbbde995764bc55bff4245f533e94",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "file-helper-string-open",
+        "file-helper-string-short-write",
+        "file-helper-string-flush",
+        "file-helper-string-close",
+        "file-helper-string-first-error",
+        "file-helper-string-success",
+        "file-helper-string-filesystem",
+        "file-helper-string-dev-full",
+        "file-helper-buffer-open",
+        "file-helper-buffer-short-write",
+        "file-helper-buffer-flush",
+        "file-helper-buffer-close",
+        "file-helper-buffer-first-error",
+        "file-helper-buffer-success",
+        "file-helper-buffer-filesystem",
+        "file-helper-buffer-dev-full",
+        "file-helper-legacy-compatibility",
+        "file-helper-legacy-completion",
+        "fork-child-healthy",
+        "fork-child-healthy-recovery",
+        "fork-child-parent-death",
+        "fork-child-prctl-failure",
+        "fork-child-parent-race",
+        "fork-child-initial-first-sigmask",
+        "fork-child-initial-last-sigmask",
+        "fork-child-recovery-sigmask",
+        "fork-child-initial-first-stdout-dup2",
+        "fork-child-initial-last-stdout-dup2",
+        "fork-child-recovery-stdout-dup2",
+        "fork-child-initial-first-stdin-dup2",
+        "fork-child-initial-last-stdin-dup2",
+        "fork-child-recovery-stdin-dup2",
+        "replay-controller-clean",
+        "replay-controller-zero",
+        "replay-controller-empty-archive",
+        "replay-controller-lost",
+        "replay-controller-lost-progress",
+        "replay-controller-mixed-success-first",
+        "replay-controller-mixed-loss-first",
+        "replay-controller-recover",
+        "replay-controller-skip-graphics",
+        "replay-controller-skip-compute",
+        "replay-controller-skip-raytracing",
+        "replay-controller-skip-graphics-final",
+        "replay-controller-skip-compute-final",
+        "replay-controller-skip-raytracing-final",
+        "replay-controller-skip-graphics-progress",
+        "replay-controller-skip-graphics-final-progress",
+        "replay-controller-partial",
+        "replay-controller-loss-after-retry",
+        "replay-controller-held-sibling",
+        "replay-controller-signal",
+        "replay-controller-status-error",
+        "replay-controller-outcome-state",
+        "replay-controller-cli-normal",
+        "replay-controller-cli-master",
+        "replay-controller-cli-progress",
+        "replay-controller-cli-e5",
+        "replay-controller-cli-e6",
+        "replay-controller-cli-parser-normal",
+        "replay-controller-cli-parser-child",
+        "replay-controller-cli-compatibility",
+        "replay-cache-creation-rerun",
+        "replay-cache-success-policy",
+        "replay-cache-loop",
+        "replay-cache-compile-required",
+        "replay-cache-write-failure",
+        "replay-cache-legacy-provenance",
+        "replay-cache-null-provenance",
+        "replay-cache-whitelist",
+        "replay-cache-legacy-invocation",
+        "replay-outcome-state",
+        "replay-outcome-parse-read",
+        "replay-outcome-creation",
+        "replay-outcome-compile-required-loop",
+        "replay-outcome-support",
+        "replay-outcome-setup-dependency",
+        "replay-outcome-worker-queue",
+        "replay-outcome-matrix",
+        "replay-outcome-validation",
+        "replay-outcome-entry-good",
+        "replay-outcome-entry-create",
+        "replay-outcome-entry-layout",
+        "replay-outcome-entry-device",
+        "replay-outcome-cli-e7",
+        "replay-outcome-cli-missing",
+        "replay-outcome-cli-unsupported",
+        "replay-outcome-cli-unsupported-shader",
+        "replay-outcome-cli-library",
+        "replay-outcome-cli-mixed",
+        "replay-outcome-cli-good",
+        "replay-outcome-cli-empty",
+        "replay-outcome-cli-missinghash",
+        "replay-outcome-cli-emptyhash",
+        "replay-outcome-cli-selection",
+        "replay-outcome-cli-hashselection",
+        "replay-outcome-cli-whitelist",
+        "replay-outcome-cli-compatibility",
+        "replay-outcome-cli-validation",
+        "replay-outcome-controller-success-first-absent",
+        "replay-outcome-controller-success-first-progress",
+        "replay-outcome-controller-failure-first-absent",
+        "replay-outcome-controller-failure-first-progress",
+        "replay-timeout-unit-deadlines",
+        "replay-timeout-unit-reset",
+        "replay-timeout-unit-delivery",
+        "replay-timeout-unit-unknown",
+        "replay-timeout-unit-protocol",
+        "replay-timeout-controller-context-progress-1",
+        "replay-timeout-controller-context-progress-2",
+        "replay-timeout-controller-context-stall-1",
+        "replay-timeout-controller-context-stall-2",
+        "replay-timeout-controller-context-normal-1",
+        "replay-timeout-controller-context-normal-2",
+        "replay-timeout-controller-cancel-int",
+        "replay-timeout-controller-cancel-term",
+        "replay-timeout-controller-clean",
+        "replay-timeout-controller-no-progress",
+        "replay-timeout-controller-heartbeat",
+        "replay-timeout-controller-heartbeat-reset",
+        "replay-timeout-controller-cleanup",
+        "replay-timeout-controller-spontaneous",
+        "replay-timeout-controller-escalation",
+        "replay-timeout-controller-delivery-failure",
+        "replay-timeout-controller-kill-failure",
+        "replay-timeout-controller-external-kill",
+        "replay-timeout-controller-multithread",
+        "replay-timeout-controller-recovery",
+        "replay-timeout-controller-protocol",
+        "replay-timeout-controller-dispatcher-reset",
+        "replay-timeout-controller-dispatcher-disabled",
+        "replay-timeout-controller-ordinary-no-progress",
+        "replay-timeout-controller-ordinary-delivery-failure",
+        "replay-timeout-controller-timer-create-failure",
+        "replay-timeout-controller-timer-arm-failure",
+        "replay-timeout-controller-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-create-failure",
+        "replay-timeout-controller-heartbeat-timer-arm-failure",
+        "replay-timeout-controller-heartbeat-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-read-failure",
+        "replay-timeout-controller-heartbeat-timer-rearm-failure",
+        "parser-input-envelope",
+        "parser-input-containers",
+        "parser-input-shader",
+        "parser-input-link",
+        "parser-input-diagnostics",
+        "parser-input-valid",
+        "parser-input-mutations",
+        "parser-input-containment",
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown",
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed",
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts",
+        "replay-event-unit-legacy",
+        "replay-event-unit-mutations",
+        "replay-event-unit-startup",
+        "replay-event-producer-parse",
+        "replay-event-producer-creation",
+        "replay-event-controller-clean",
+        "replay-event-controller-empty",
+        "replay-event-controller-parse",
+        "replay-event-controller-initial-parse",
+        "replay-event-controller-creation",
+        "replay-event-controller-progress",
+        "replay-event-controller-pre-report-death",
+        "replay-event-controller-missing-final",
+        "replay-event-controller-missing-final-origin",
+        "replay-event-controller-truncated",
+        "replay-event-controller-truncated-prefix",
+        "replay-event-controller-truncated-length",
+        "replay-event-controller-truncated-payload",
+        "replay-event-controller-truncated-newline",
+        "replay-event-controller-unknown",
+        "replay-event-controller-unknown-version",
+        "replay-event-controller-oversized",
+        "replay-event-controller-drop-hello",
+        "replay-event-controller-duplicate-final",
+        "replay-event-controller-abnormal-final",
+        "replay-event-controller-timeout",
+        "replay-event-controller-retry",
+        "replay-event-producer-timeout",
+        "replay-event-old-header-compatibility",
+        "replay-event-controller-startup-close",
+        "replay-event-controller-startup-hash-close",
+        "replay-event-controller-startup-input",
+        "database-discovery-empty",
+        "database-discovery-truncated-zero",
+        "database-discovery-prefix",
+        "database-discovery-inputs",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints",
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-selection",
+        "replay-discovery-legacy-invocations",
+        "database-discovery-old-header-compatibility"
+      ],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-span3-debug-inventory",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug-inventory.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug-inventory-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug-inventory-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600.0
+    },
+    {
+      "actual_source": {
+        "historical": true,
+        "source_changed_during_execution": false,
+        "source_sha": "7c82e06df34fbbde995764bc55bff4245f533e94"
+      },
+      "candidate_sha": "7c82e06df34fbbde995764bc55bff4245f533e94",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^database-discovery-errors$",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-span-3/debug-focused.xml"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [
+        {
+          "id": "database-discovery-errors",
+          "status": "passed"
+        }
+      ],
+      "exit_code": 0,
+      "intent_id": "i20-span3-debug-focused",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug-focused.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug-focused-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug-focused-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600.0
+    },
+    {
+      "actual_source": {
+        "historical": true,
+        "source_changed_during_execution": false,
+        "source_sha": "7c82e06df34fbbde995764bc55bff4245f533e94"
+      },
+      "candidate_sha": "7c82e06df34fbbde995764bc55bff4245f533e94",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-span-3/debug-full.xml"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [
+        {
+          "id": "fossilize-system-test",
+          "status": "passed"
+        },
+        {
+          "id": "varint-system-test",
+          "status": "passed"
+        },
+        {
+          "id": "application-info-filter-test",
+          "status": "passed"
+        },
+        {
+          "id": "object-cache-test",
+          "status": "passed"
+        },
+        {
+          "id": "feature-filter-test",
+          "status": "passed"
+        },
+        {
+          "id": "linux-futex-test",
+          "status": "passed"
+        },
+        {
+          "id": "replay-diagnostic-test",
+          "status": "passed"
+        },
+        {
+          "id": "device-diagnostic-test",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "diagnostic-compatibility-test",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-version",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-invalid-json",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-empty",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-populated",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-dependency-failure",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-empty-dependencies",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-legacy-invocations",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-version",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-invalid-json",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-empty",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-populated",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-version",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-invalid-json",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-empty",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-populated",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-rejected-application",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-open",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-short-write",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-flush",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-close",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-first-error",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-success",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-filesystem",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-dev-full",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-open",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-short-write",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-flush",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-close",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-first-error",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-success",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-filesystem",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-dev-full",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-legacy-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-legacy-completion",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-healthy",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-healthy-recovery",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-parent-death",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-prctl-failure",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-parent-race",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-sigmask",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-sigmask",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-sigmask",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-stdout-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-stdout-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-stdout-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-stdin-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-stdin-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-stdin-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-clean",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-zero",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-empty-archive",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-lost",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-lost-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-mixed-success-first",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-mixed-loss-first",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-recover",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-compute",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-raytracing",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-compute-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-raytracing-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-final-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-partial",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-loss-after-retry",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-held-sibling",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-signal",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-status-error",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-outcome-state",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-normal",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-master",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-e5",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-e6",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-parser-normal",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-parser-child",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-creation-rerun",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-success-policy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-loop",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-compile-required",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-write-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-legacy-provenance",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-null-provenance",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-whitelist",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-legacy-invocation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-state",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-parse-read",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-creation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-compile-required-loop",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-support",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-setup-dependency",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-worker-queue",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-matrix",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-validation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-good",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-create",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-layout",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-device",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-e7",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-missing",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-unsupported",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-unsupported-shader",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-library",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-good",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-empty",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-missinghash",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-emptyhash",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-selection",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-hashselection",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-whitelist",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-validation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-success-first-absent",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-success-first-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-failure-first-absent",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-failure-first-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-deadlines",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-reset",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-delivery",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-protocol",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-progress-1",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-progress-2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-stall-1",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-stall-2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-normal-1",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-normal-2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cancel-int",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cancel-term",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-clean",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-no-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-reset",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cleanup",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-spontaneous",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-escalation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-delivery-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-kill-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-external-kill",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-multithread",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-recovery",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-protocol",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-dispatcher-reset",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-dispatcher-disabled",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-ordinary-no-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-ordinary-delivery-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-create-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-arm-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-register-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-create-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-arm-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-register-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-read-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-rearm-failure",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-envelope",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containers",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-shader",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-link",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-diagnostics",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-valid",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-mutations",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containment",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-roundtrip",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-streaming",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-malformed",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-negotiation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-attempts",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-legacy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-mutations",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-startup",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-parse",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-creation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-clean",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-empty",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-parse",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-initial-parse",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-creation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-pre-report-death",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-missing-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-missing-final-origin",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-length",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-payload",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-newline",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-unknown-version",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-oversized",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-drop-hello",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-duplicate-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-abnormal-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-timeout",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-retry",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-timeout",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-old-header-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-close",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-hash-close",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-input",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-empty",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-truncated-zero",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-inputs",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-errors",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-filters",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-metadata",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-ranges",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "status": "failed"
+        },
+        {
+          "id": "replay-selection-hints",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-empty",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-truncated-zero",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-required",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-optional",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-selection",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-legacy-invocations",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-old-header-compatibility",
+          "status": "passed"
+        }
+      ],
+      "exit_code": 8,
+      "intent_id": "i20-span3-debug-full",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug-full.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug-full-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug-full-receipt.json",
+      "status": "failed",
+      "timed_out": false,
+      "timeout": 600.0
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5"
+      },
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-span3-debug2-build",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug2-build.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug2-build-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug2-build-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600.0
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5"
+      },
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "file-helper-string-open",
+        "file-helper-string-short-write",
+        "file-helper-string-flush",
+        "file-helper-string-close",
+        "file-helper-string-first-error",
+        "file-helper-string-success",
+        "file-helper-string-filesystem",
+        "file-helper-string-dev-full",
+        "file-helper-buffer-open",
+        "file-helper-buffer-short-write",
+        "file-helper-buffer-flush",
+        "file-helper-buffer-close",
+        "file-helper-buffer-first-error",
+        "file-helper-buffer-success",
+        "file-helper-buffer-filesystem",
+        "file-helper-buffer-dev-full",
+        "file-helper-legacy-compatibility",
+        "file-helper-legacy-completion",
+        "fork-child-healthy",
+        "fork-child-healthy-recovery",
+        "fork-child-parent-death",
+        "fork-child-prctl-failure",
+        "fork-child-parent-race",
+        "fork-child-initial-first-sigmask",
+        "fork-child-initial-last-sigmask",
+        "fork-child-recovery-sigmask",
+        "fork-child-initial-first-stdout-dup2",
+        "fork-child-initial-last-stdout-dup2",
+        "fork-child-recovery-stdout-dup2",
+        "fork-child-initial-first-stdin-dup2",
+        "fork-child-initial-last-stdin-dup2",
+        "fork-child-recovery-stdin-dup2",
+        "replay-controller-clean",
+        "replay-controller-zero",
+        "replay-controller-empty-archive",
+        "replay-controller-lost",
+        "replay-controller-lost-progress",
+        "replay-controller-mixed-success-first",
+        "replay-controller-mixed-loss-first",
+        "replay-controller-recover",
+        "replay-controller-skip-graphics",
+        "replay-controller-skip-compute",
+        "replay-controller-skip-raytracing",
+        "replay-controller-skip-graphics-final",
+        "replay-controller-skip-compute-final",
+        "replay-controller-skip-raytracing-final",
+        "replay-controller-skip-graphics-progress",
+        "replay-controller-skip-graphics-final-progress",
+        "replay-controller-partial",
+        "replay-controller-loss-after-retry",
+        "replay-controller-held-sibling",
+        "replay-controller-signal",
+        "replay-controller-status-error",
+        "replay-controller-outcome-state",
+        "replay-controller-cli-normal",
+        "replay-controller-cli-master",
+        "replay-controller-cli-progress",
+        "replay-controller-cli-e5",
+        "replay-controller-cli-e6",
+        "replay-controller-cli-parser-normal",
+        "replay-controller-cli-parser-child",
+        "replay-controller-cli-compatibility",
+        "replay-cache-creation-rerun",
+        "replay-cache-success-policy",
+        "replay-cache-loop",
+        "replay-cache-compile-required",
+        "replay-cache-write-failure",
+        "replay-cache-legacy-provenance",
+        "replay-cache-null-provenance",
+        "replay-cache-whitelist",
+        "replay-cache-legacy-invocation",
+        "replay-outcome-state",
+        "replay-outcome-parse-read",
+        "replay-outcome-creation",
+        "replay-outcome-compile-required-loop",
+        "replay-outcome-support",
+        "replay-outcome-setup-dependency",
+        "replay-outcome-worker-queue",
+        "replay-outcome-matrix",
+        "replay-outcome-validation",
+        "replay-outcome-entry-good",
+        "replay-outcome-entry-create",
+        "replay-outcome-entry-layout",
+        "replay-outcome-entry-device",
+        "replay-outcome-cli-e7",
+        "replay-outcome-cli-missing",
+        "replay-outcome-cli-unsupported",
+        "replay-outcome-cli-unsupported-shader",
+        "replay-outcome-cli-library",
+        "replay-outcome-cli-mixed",
+        "replay-outcome-cli-good",
+        "replay-outcome-cli-empty",
+        "replay-outcome-cli-missinghash",
+        "replay-outcome-cli-emptyhash",
+        "replay-outcome-cli-selection",
+        "replay-outcome-cli-hashselection",
+        "replay-outcome-cli-whitelist",
+        "replay-outcome-cli-compatibility",
+        "replay-outcome-cli-validation",
+        "replay-outcome-controller-success-first-absent",
+        "replay-outcome-controller-success-first-progress",
+        "replay-outcome-controller-failure-first-absent",
+        "replay-outcome-controller-failure-first-progress",
+        "replay-timeout-unit-deadlines",
+        "replay-timeout-unit-reset",
+        "replay-timeout-unit-delivery",
+        "replay-timeout-unit-unknown",
+        "replay-timeout-unit-protocol",
+        "replay-timeout-controller-context-progress-1",
+        "replay-timeout-controller-context-progress-2",
+        "replay-timeout-controller-context-stall-1",
+        "replay-timeout-controller-context-stall-2",
+        "replay-timeout-controller-context-normal-1",
+        "replay-timeout-controller-context-normal-2",
+        "replay-timeout-controller-cancel-int",
+        "replay-timeout-controller-cancel-term",
+        "replay-timeout-controller-clean",
+        "replay-timeout-controller-no-progress",
+        "replay-timeout-controller-heartbeat",
+        "replay-timeout-controller-heartbeat-reset",
+        "replay-timeout-controller-cleanup",
+        "replay-timeout-controller-spontaneous",
+        "replay-timeout-controller-escalation",
+        "replay-timeout-controller-delivery-failure",
+        "replay-timeout-controller-kill-failure",
+        "replay-timeout-controller-external-kill",
+        "replay-timeout-controller-multithread",
+        "replay-timeout-controller-recovery",
+        "replay-timeout-controller-protocol",
+        "replay-timeout-controller-dispatcher-reset",
+        "replay-timeout-controller-dispatcher-disabled",
+        "replay-timeout-controller-ordinary-no-progress",
+        "replay-timeout-controller-ordinary-delivery-failure",
+        "replay-timeout-controller-timer-create-failure",
+        "replay-timeout-controller-timer-arm-failure",
+        "replay-timeout-controller-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-create-failure",
+        "replay-timeout-controller-heartbeat-timer-arm-failure",
+        "replay-timeout-controller-heartbeat-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-read-failure",
+        "replay-timeout-controller-heartbeat-timer-rearm-failure",
+        "parser-input-envelope",
+        "parser-input-containers",
+        "parser-input-shader",
+        "parser-input-link",
+        "parser-input-diagnostics",
+        "parser-input-valid",
+        "parser-input-mutations",
+        "parser-input-containment",
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown",
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed",
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts",
+        "replay-event-unit-legacy",
+        "replay-event-unit-mutations",
+        "replay-event-unit-startup",
+        "replay-event-producer-parse",
+        "replay-event-producer-creation",
+        "replay-event-controller-clean",
+        "replay-event-controller-empty",
+        "replay-event-controller-parse",
+        "replay-event-controller-initial-parse",
+        "replay-event-controller-creation",
+        "replay-event-controller-progress",
+        "replay-event-controller-pre-report-death",
+        "replay-event-controller-missing-final",
+        "replay-event-controller-missing-final-origin",
+        "replay-event-controller-truncated",
+        "replay-event-controller-truncated-prefix",
+        "replay-event-controller-truncated-length",
+        "replay-event-controller-truncated-payload",
+        "replay-event-controller-truncated-newline",
+        "replay-event-controller-unknown",
+        "replay-event-controller-unknown-version",
+        "replay-event-controller-oversized",
+        "replay-event-controller-drop-hello",
+        "replay-event-controller-duplicate-final",
+        "replay-event-controller-abnormal-final",
+        "replay-event-controller-timeout",
+        "replay-event-controller-retry",
+        "replay-event-producer-timeout",
+        "replay-event-old-header-compatibility",
+        "replay-event-controller-startup-close",
+        "replay-event-controller-startup-hash-close",
+        "replay-event-controller-startup-input",
+        "database-discovery-empty",
+        "database-discovery-truncated-zero",
+        "database-discovery-prefix",
+        "database-discovery-inputs",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints",
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-selection",
+        "replay-discovery-legacy-invocations",
+        "database-discovery-old-header-compatibility"
+      ],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-span3-debug2-inventory",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug2-inventory.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug2-inventory-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug2-inventory-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600.0
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5"
+      },
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(database-discovery-errors|replay-selection-prefix-policy)$",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-span-3/debug2-focused.xml"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [
+        {
+          "id": "database-discovery-errors",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "status": "passed"
+        }
+      ],
+      "exit_code": 0,
+      "intent_id": "i20-span3-debug2-focused",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug2-focused.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug2-focused-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug2-focused-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600.0
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5"
+      },
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-span-3/debug2-full.xml"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [
+        {
+          "id": "fossilize-system-test",
+          "status": "passed"
+        },
+        {
+          "id": "varint-system-test",
+          "status": "passed"
+        },
+        {
+          "id": "application-info-filter-test",
+          "status": "passed"
+        },
+        {
+          "id": "object-cache-test",
+          "status": "passed"
+        },
+        {
+          "id": "feature-filter-test",
+          "status": "passed"
+        },
+        {
+          "id": "linux-futex-test",
+          "status": "passed"
+        },
+        {
+          "id": "replay-diagnostic-test",
+          "status": "passed"
+        },
+        {
+          "id": "device-diagnostic-test",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "diagnostic-compatibility-test",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-version",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-invalid-json",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-empty",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-populated",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-dependency-failure",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-empty-dependencies",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-legacy-invocations",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-version",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-invalid-json",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-empty",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-populated",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-version",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-invalid-json",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-empty",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-populated",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-rejected-application",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-open",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-short-write",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-flush",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-close",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-first-error",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-success",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-filesystem",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-dev-full",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-open",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-short-write",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-flush",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-close",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-first-error",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-success",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-filesystem",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-dev-full",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-legacy-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-legacy-completion",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-healthy",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-healthy-recovery",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-parent-death",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-prctl-failure",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-parent-race",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-sigmask",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-sigmask",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-sigmask",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-stdout-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-stdout-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-stdout-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-stdin-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-stdin-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-stdin-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-clean",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-zero",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-empty-archive",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-lost",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-lost-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-mixed-success-first",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-mixed-loss-first",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-recover",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-compute",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-raytracing",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-compute-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-raytracing-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-final-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-partial",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-loss-after-retry",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-held-sibling",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-signal",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-status-error",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-outcome-state",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-normal",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-master",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-e5",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-e6",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-parser-normal",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-parser-child",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-creation-rerun",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-success-policy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-loop",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-compile-required",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-write-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-legacy-provenance",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-null-provenance",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-whitelist",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-legacy-invocation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-state",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-parse-read",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-creation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-compile-required-loop",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-support",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-setup-dependency",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-worker-queue",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-matrix",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-validation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-good",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-create",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-layout",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-device",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-e7",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-missing",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-unsupported",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-unsupported-shader",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-library",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-good",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-empty",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-missinghash",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-emptyhash",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-selection",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-hashselection",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-whitelist",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-validation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-success-first-absent",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-success-first-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-failure-first-absent",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-failure-first-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-deadlines",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-reset",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-delivery",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-protocol",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-progress-1",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-progress-2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-stall-1",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-stall-2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-normal-1",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-normal-2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cancel-int",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cancel-term",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-clean",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-no-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-reset",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cleanup",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-spontaneous",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-escalation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-delivery-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-kill-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-external-kill",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-multithread",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-recovery",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-protocol",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-dispatcher-reset",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-dispatcher-disabled",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-ordinary-no-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-ordinary-delivery-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-create-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-arm-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-register-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-create-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-arm-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-register-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-read-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-rearm-failure",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-envelope",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containers",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-shader",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-link",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-diagnostics",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-valid",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-mutations",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containment",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-roundtrip",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-streaming",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-malformed",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-negotiation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-attempts",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-legacy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-mutations",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-startup",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-parse",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-creation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-clean",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-empty",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-parse",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-initial-parse",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-creation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-pre-report-death",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-missing-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-missing-final-origin",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-length",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-payload",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-newline",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-unknown-version",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-oversized",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-drop-hello",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-duplicate-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-abnormal-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-timeout",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-retry",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-timeout",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-old-header-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-close",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-hash-close",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-input",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-empty",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-truncated-zero",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-inputs",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-errors",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-filters",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-metadata",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-ranges",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-hints",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-empty",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-truncated-zero",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-required",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-optional",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-selection",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-legacy-invocations",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-old-header-compatibility",
+          "status": "passed"
+        }
+      ],
+      "exit_code": 0,
+      "intent_id": "i20-span3-debug2-full",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug2-full.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/debug2-full-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-debug2-full-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600.0
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5"
+      },
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+        "--parallel",
+        "2",
+        "--target",
+        "database-discovery-test",
+        "replay-selection-test",
+        "replay-event-test",
+        "parser-input-test",
+        "varint-test"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-span3-asan-build",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-asan-build.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/asan-build-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-asan-build-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600.0
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5"
+      },
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+        "--show-only=json-v1",
+        "-R",
+        "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [
+        "varint-system-test",
+        "parser-input-envelope",
+        "parser-input-containers",
+        "parser-input-shader",
+        "parser-input-link",
+        "parser-input-diagnostics",
+        "parser-input-valid",
+        "parser-input-mutations",
+        "parser-input-containment",
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown",
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed",
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts",
+        "replay-event-unit-legacy",
+        "replay-event-unit-mutations",
+        "replay-event-unit-startup",
+        "database-discovery-empty",
+        "database-discovery-truncated-zero",
+        "database-discovery-prefix",
+        "database-discovery-inputs",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints"
+      ],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-span3-asan-inventory",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-asan-inventory.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/asan-inventory-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-asan-inventory-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600.0
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5"
+      },
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "command": [
+        "env",
+        "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-span-3/asan-tests.xml"
+      ],
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [
+        {
+          "id": "varint-system-test",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-envelope",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containers",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-shader",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-link",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-diagnostics",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-valid",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-mutations",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containment",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-roundtrip",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-streaming",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-malformed",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-negotiation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-attempts",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-legacy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-mutations",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-startup",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-empty",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-truncated-zero",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-inputs",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-errors",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-filters",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-metadata",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-ranges",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-hints",
+          "status": "passed"
+        }
+      ],
+      "exit_code": 0,
+      "intent_id": "i20-span3-asan-tests",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-asan-tests.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-span-3/asan-tests-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-span-3-asan-tests-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600.0
+    }
+  ],
+  "commits": [
+    {
+      "change": "Shared checked movement and bounded text discovery regression with verification documentation.",
+      "sha": "7c82e06df34fbbde995764bc55bff4245f533e94"
+    },
+    {
+      "change": "Move existing optional-source failure injection to the second payload and assert one whole-entry boundary.",
+      "sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5"
+    }
+  ],
+  "discovered": [
+    {
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "configuration": "Debug exceptions OFF",
+      "ids": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "file-helper-string-open",
+        "file-helper-string-short-write",
+        "file-helper-string-flush",
+        "file-helper-string-close",
+        "file-helper-string-first-error",
+        "file-helper-string-success",
+        "file-helper-string-filesystem",
+        "file-helper-string-dev-full",
+        "file-helper-buffer-open",
+        "file-helper-buffer-short-write",
+        "file-helper-buffer-flush",
+        "file-helper-buffer-close",
+        "file-helper-buffer-first-error",
+        "file-helper-buffer-success",
+        "file-helper-buffer-filesystem",
+        "file-helper-buffer-dev-full",
+        "file-helper-legacy-compatibility",
+        "file-helper-legacy-completion",
+        "fork-child-healthy",
+        "fork-child-healthy-recovery",
+        "fork-child-parent-death",
+        "fork-child-prctl-failure",
+        "fork-child-parent-race",
+        "fork-child-initial-first-sigmask",
+        "fork-child-initial-last-sigmask",
+        "fork-child-recovery-sigmask",
+        "fork-child-initial-first-stdout-dup2",
+        "fork-child-initial-last-stdout-dup2",
+        "fork-child-recovery-stdout-dup2",
+        "fork-child-initial-first-stdin-dup2",
+        "fork-child-initial-last-stdin-dup2",
+        "fork-child-recovery-stdin-dup2",
+        "replay-controller-clean",
+        "replay-controller-zero",
+        "replay-controller-empty-archive",
+        "replay-controller-lost",
+        "replay-controller-lost-progress",
+        "replay-controller-mixed-success-first",
+        "replay-controller-mixed-loss-first",
+        "replay-controller-recover",
+        "replay-controller-skip-graphics",
+        "replay-controller-skip-compute",
+        "replay-controller-skip-raytracing",
+        "replay-controller-skip-graphics-final",
+        "replay-controller-skip-compute-final",
+        "replay-controller-skip-raytracing-final",
+        "replay-controller-skip-graphics-progress",
+        "replay-controller-skip-graphics-final-progress",
+        "replay-controller-partial",
+        "replay-controller-loss-after-retry",
+        "replay-controller-held-sibling",
+        "replay-controller-signal",
+        "replay-controller-status-error",
+        "replay-controller-outcome-state",
+        "replay-controller-cli-normal",
+        "replay-controller-cli-master",
+        "replay-controller-cli-progress",
+        "replay-controller-cli-e5",
+        "replay-controller-cli-e6",
+        "replay-controller-cli-parser-normal",
+        "replay-controller-cli-parser-child",
+        "replay-controller-cli-compatibility",
+        "replay-cache-creation-rerun",
+        "replay-cache-success-policy",
+        "replay-cache-loop",
+        "replay-cache-compile-required",
+        "replay-cache-write-failure",
+        "replay-cache-legacy-provenance",
+        "replay-cache-null-provenance",
+        "replay-cache-whitelist",
+        "replay-cache-legacy-invocation",
+        "replay-outcome-state",
+        "replay-outcome-parse-read",
+        "replay-outcome-creation",
+        "replay-outcome-compile-required-loop",
+        "replay-outcome-support",
+        "replay-outcome-setup-dependency",
+        "replay-outcome-worker-queue",
+        "replay-outcome-matrix",
+        "replay-outcome-validation",
+        "replay-outcome-entry-good",
+        "replay-outcome-entry-create",
+        "replay-outcome-entry-layout",
+        "replay-outcome-entry-device",
+        "replay-outcome-cli-e7",
+        "replay-outcome-cli-missing",
+        "replay-outcome-cli-unsupported",
+        "replay-outcome-cli-unsupported-shader",
+        "replay-outcome-cli-library",
+        "replay-outcome-cli-mixed",
+        "replay-outcome-cli-good",
+        "replay-outcome-cli-empty",
+        "replay-outcome-cli-missinghash",
+        "replay-outcome-cli-emptyhash",
+        "replay-outcome-cli-selection",
+        "replay-outcome-cli-hashselection",
+        "replay-outcome-cli-whitelist",
+        "replay-outcome-cli-compatibility",
+        "replay-outcome-cli-validation",
+        "replay-outcome-controller-success-first-absent",
+        "replay-outcome-controller-success-first-progress",
+        "replay-outcome-controller-failure-first-absent",
+        "replay-outcome-controller-failure-first-progress",
+        "replay-timeout-unit-deadlines",
+        "replay-timeout-unit-reset",
+        "replay-timeout-unit-delivery",
+        "replay-timeout-unit-unknown",
+        "replay-timeout-unit-protocol",
+        "replay-timeout-controller-context-progress-1",
+        "replay-timeout-controller-context-progress-2",
+        "replay-timeout-controller-context-stall-1",
+        "replay-timeout-controller-context-stall-2",
+        "replay-timeout-controller-context-normal-1",
+        "replay-timeout-controller-context-normal-2",
+        "replay-timeout-controller-cancel-int",
+        "replay-timeout-controller-cancel-term",
+        "replay-timeout-controller-clean",
+        "replay-timeout-controller-no-progress",
+        "replay-timeout-controller-heartbeat",
+        "replay-timeout-controller-heartbeat-reset",
+        "replay-timeout-controller-cleanup",
+        "replay-timeout-controller-spontaneous",
+        "replay-timeout-controller-escalation",
+        "replay-timeout-controller-delivery-failure",
+        "replay-timeout-controller-kill-failure",
+        "replay-timeout-controller-external-kill",
+        "replay-timeout-controller-multithread",
+        "replay-timeout-controller-recovery",
+        "replay-timeout-controller-protocol",
+        "replay-timeout-controller-dispatcher-reset",
+        "replay-timeout-controller-dispatcher-disabled",
+        "replay-timeout-controller-ordinary-no-progress",
+        "replay-timeout-controller-ordinary-delivery-failure",
+        "replay-timeout-controller-timer-create-failure",
+        "replay-timeout-controller-timer-arm-failure",
+        "replay-timeout-controller-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-create-failure",
+        "replay-timeout-controller-heartbeat-timer-arm-failure",
+        "replay-timeout-controller-heartbeat-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-read-failure",
+        "replay-timeout-controller-heartbeat-timer-rearm-failure",
+        "parser-input-envelope",
+        "parser-input-containers",
+        "parser-input-shader",
+        "parser-input-link",
+        "parser-input-diagnostics",
+        "parser-input-valid",
+        "parser-input-mutations",
+        "parser-input-containment",
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown",
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed",
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts",
+        "replay-event-unit-legacy",
+        "replay-event-unit-mutations",
+        "replay-event-unit-startup",
+        "replay-event-producer-parse",
+        "replay-event-producer-creation",
+        "replay-event-controller-clean",
+        "replay-event-controller-empty",
+        "replay-event-controller-parse",
+        "replay-event-controller-initial-parse",
+        "replay-event-controller-creation",
+        "replay-event-controller-progress",
+        "replay-event-controller-pre-report-death",
+        "replay-event-controller-missing-final",
+        "replay-event-controller-missing-final-origin",
+        "replay-event-controller-truncated",
+        "replay-event-controller-truncated-prefix",
+        "replay-event-controller-truncated-length",
+        "replay-event-controller-truncated-payload",
+        "replay-event-controller-truncated-newline",
+        "replay-event-controller-unknown",
+        "replay-event-controller-unknown-version",
+        "replay-event-controller-oversized",
+        "replay-event-controller-drop-hello",
+        "replay-event-controller-duplicate-final",
+        "replay-event-controller-abnormal-final",
+        "replay-event-controller-timeout",
+        "replay-event-controller-retry",
+        "replay-event-producer-timeout",
+        "replay-event-old-header-compatibility",
+        "replay-event-controller-startup-close",
+        "replay-event-controller-startup-hash-close",
+        "replay-event-controller-startup-input",
+        "database-discovery-empty",
+        "database-discovery-truncated-zero",
+        "database-discovery-prefix",
+        "database-discovery-inputs",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints",
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-selection",
+        "replay-discovery-legacy-invocations",
+        "database-discovery-old-header-compatibility"
+      ]
+    },
+    {
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "configuration": "Debug exceptions OFF ASan+UBSan subset",
+      "ids": [
+        "varint-system-test",
+        "parser-input-envelope",
+        "parser-input-containers",
+        "parser-input-shader",
+        "parser-input-link",
+        "parser-input-diagnostics",
+        "parser-input-valid",
+        "parser-input-mutations",
+        "parser-input-containment",
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown",
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed",
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts",
+        "replay-event-unit-legacy",
+        "replay-event-unit-mutations",
+        "replay-event-unit-startup",
+        "database-discovery-empty",
+        "database-discovery-truncated-zero",
+        "database-discovery-prefix",
+        "database-discovery-inputs",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints"
+      ]
+    }
+  ],
+  "executed": [
+    {
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "run": "i20-span3-debug2-full",
+      "tests": [
+        {
+          "id": "fossilize-system-test",
+          "status": "passed"
+        },
+        {
+          "id": "varint-system-test",
+          "status": "passed"
+        },
+        {
+          "id": "application-info-filter-test",
+          "status": "passed"
+        },
+        {
+          "id": "object-cache-test",
+          "status": "passed"
+        },
+        {
+          "id": "feature-filter-test",
+          "status": "passed"
+        },
+        {
+          "id": "linux-futex-test",
+          "status": "passed"
+        },
+        {
+          "id": "replay-diagnostic-test",
+          "status": "passed"
+        },
+        {
+          "id": "device-diagnostic-test",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-reject",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-success",
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-vulkan-error",
+          "status": "passed"
+        },
+        {
+          "id": "diagnostic-compatibility-test",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-version",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-invalid-json",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-empty",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-populated",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-dependency-failure",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-empty-dependencies",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-legacy-invocations",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-version",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-invalid-json",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-empty",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-populated",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-version",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-invalid-json",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-empty",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-populated",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-rejected-application",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-open",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-short-write",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-flush",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-close",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-first-error",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-success",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-filesystem",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-dev-full",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-open",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-short-write",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-flush",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-close",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-first-error",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-success",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-filesystem",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-dev-full",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-legacy-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-legacy-completion",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-healthy",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-healthy-recovery",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-parent-death",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-prctl-failure",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-parent-race",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-sigmask",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-sigmask",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-sigmask",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-stdout-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-stdout-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-stdout-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-stdin-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-stdin-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-stdin-dup2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-clean",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-zero",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-empty-archive",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-lost",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-lost-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-mixed-success-first",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-mixed-loss-first",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-recover",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-compute",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-raytracing",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-compute-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-raytracing-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-final-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-partial",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-loss-after-retry",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-held-sibling",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-signal",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-status-error",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-outcome-state",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-normal",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-master",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-e5",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-e6",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-parser-normal",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-parser-child",
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-creation-rerun",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-success-policy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-loop",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-compile-required",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-write-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-legacy-provenance",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-null-provenance",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-whitelist",
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-legacy-invocation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-state",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-parse-read",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-creation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-compile-required-loop",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-support",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-setup-dependency",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-worker-queue",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-matrix",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-validation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-good",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-create",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-layout",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-device",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-e7",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-missing",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-unsupported",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-unsupported-shader",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-library",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-mixed",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-good",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-empty",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-missinghash",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-emptyhash",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-selection",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-hashselection",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-whitelist",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-validation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-success-first-absent",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-success-first-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-failure-first-absent",
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-failure-first-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-deadlines",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-reset",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-delivery",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-protocol",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-progress-1",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-progress-2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-stall-1",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-stall-2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-normal-1",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-normal-2",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cancel-int",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cancel-term",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-clean",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-no-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-reset",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cleanup",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-spontaneous",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-escalation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-delivery-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-kill-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-external-kill",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-multithread",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-recovery",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-protocol",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-dispatcher-reset",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-dispatcher-disabled",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-ordinary-no-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-ordinary-delivery-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-create-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-arm-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-register-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-create-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-arm-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-register-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-read-failure",
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-rearm-failure",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-envelope",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containers",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-shader",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-link",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-diagnostics",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-valid",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-mutations",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containment",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-roundtrip",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-streaming",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-malformed",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-negotiation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-attempts",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-legacy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-mutations",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-startup",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-parse",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-creation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-clean",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-empty",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-parse",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-initial-parse",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-creation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-progress",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-pre-report-death",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-missing-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-missing-final-origin",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-length",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-payload",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-newline",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-unknown-version",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-oversized",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-drop-hello",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-duplicate-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-abnormal-final",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-timeout",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-retry",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-timeout",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-old-header-compatibility",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-close",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-hash-close",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-input",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-empty",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-truncated-zero",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-inputs",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-errors",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-filters",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-metadata",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-ranges",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-hints",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-empty",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-truncated-zero",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-required",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-optional",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-selection",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-legacy-invocations",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-old-header-compatibility",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+      "run": "i20-span3-asan-tests",
+      "tests": [
+        {
+          "id": "varint-system-test",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-envelope",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containers",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-shader",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-link",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-diagnostics",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-valid",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-mutations",
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containment",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-roundtrip",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-unknown",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-streaming",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-malformed",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-negotiation",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-attempts",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-legacy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-mutations",
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-startup",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-empty",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-truncated-zero",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-prefix",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-inputs",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-errors",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-filters",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-metadata",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-ranges",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-hints",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "findings": [],
+  "input_revision": 244,
+  "input_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "limitations": [
+    "This implementer report is not independent acceptance. Entire base-to-candidate/final acceptance remains incomplete; the fresh unit and separate final checkers must execute all six mandatory plan2 gates, including all four Linux configurations, repeats, compatibility and baseline/five mutation families.",
+    "Only Debug exceptions OFF full CPU and the planned Debug ASan+UBSan subset were renewed by this repair attempt. Release and exceptions ON configurations, repeat gate and defect-control gate were NOT RUN in this attempt; earlier-candidate results remain historical.",
+    "The native seek/size_t representability guards were statically reviewed. On this LP64 host, boundary cases are representable; the bounded adapter exercises errno-free tell refusal and native/no-errno seek failures. This is not native 32-bit or Windows execution.",
+    "Native Windows is NOT RUN/unverified under the exact run-specific user answer \"Proceed; waive Windows for this run\"; no Linux gate is waived and no arbitrary prebuilt C++ ABI compatibility is claimed.",
+    "Build directories were reused only as implementation checks at their unchanged configured main source root; effective cached flags and generated Ninja entries are retained. compile_commands.json was unavailable, so flag provenance uses build.ninja. These are not independent checker build evidence.",
+    "Historical 7c82e06d full-suite failure is retained honestly. Final 2b7e8214 full279 and ASan29 checks passed; no result from 0b1/acaa or another source is used as current evidence.",
+    "No canonical Harness/Journal/state mutation, production external write, source push, PR publication, huge archive reproduction or nested delegation was performed."
+  ],
+  "next_action": "Fresh independent checker rechecks F20-DUMB-SPAN-U32-WRAP and all required plan2 gates at clean committed 2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5; coordinator alone records finding resolution and acceptance.",
+  "observations": [
+    {
+      "finding_id": "F20-DUMB-SPAN-U32-WRAP",
+      "implementation": "Repair committed; finding status remains for the fresh independent checker/coordinator to adjudicate. No finding resolution or acceptance performed."
+    },
+    {
+      "bounded_regression": "Existing registered database-discovery-errors calls text_spans(). A 139-byte real text archive is reopened and its 5-byte payload read back. Linux adapters keep only tiny metadata bytes and logical positions, covering uint32 max-2/max-1/max with exact spans 4294967295/4294967296/4294967297 across complete, recovered-tail, ESPIPE seek, errno-free seek and tell-refusal modes (15 rows, at most three metadata reads per normal scan). No huge file, payload allocation or payload generation."
+    },
+    {
+      "assertions": [
+        "D20/text-exact-wide-seeks-bounded-reads",
+        "D20/text-wide-prefix-exact-scope",
+        "D20/text-wide-complete-or-recovered-policy",
+        "D20/text-seek-failed-unknown-honest-errno",
+        "D20/text-seek-failure-keeps-only-accepted-prefix",
+        "D20/text-unrepresentable-unknown",
+        "D20/text-real-payload",
+        "D20/optional-partial-one-whole-entry-boundary"
+      ],
+      "registration": "All checks run under existing database-discovery-errors or replay-selection-prefix-policy CTest entries and DiagnosticChecks remains active with NDEBUG."
+    },
+    {
+      "defect_sensitivity": "The bounded maximum/max-minus-one assertions require the full widened seeks and exact prefix; the former uint32 additions yield 0/1 and cannot satisfy them. This is static sensitivity reasoning, not an executed old-expression/mutant control. Extra width-control execution was held by the coordinator."
+    },
+    {
+      "changelog_review": "Read local-docs/changelog-guidelines.md and independently reviewed existing combined-candidate #20 entry: one short factual [Observability] sentence, explicit practical scope-policy benefit and full issue link. This narrow arithmetic/fixture correction preserves advertised scope; no rewrite warranted."
+    },
+    {
+      "task_authority": "Read live issue20, shared8 and dependency18 through gh with explicit robinwassen/Fossilize plus original AC1/plan2 input; no GitHub writes performed. Live18 was closed; supplied authoritative snapshot states completed."
+    }
+  ],
+  "operation": "repair",
+  "plan_version": 2,
+  "records_file": "/tmp/fossilize-h20/implementer-span-records.json",
+  "result": "repair_implemented_ready_for_independent_checking",
+  "result_candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+  "role": "implementer",
+  "root_issue": "https://github.com/robinwassen/Fossilize/issues/20",
+  "run_id": "issue-20-20261110",
+  "summary": "Use one widened, checked payload span for archive bounds, seek and position advancement; publish entries only after successful movement and retain honest native-error uncertainty. Added bounded logical text-position regression coverage and updated the optional-failure fixture to retain a whole entry.",
+  "test_mapping": [
+    {
+      "case": "D20-empty-e9",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-empty",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-truncated-zero",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-prefix-read",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-prefix",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-input-policy",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-inputs",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-errors-unknown",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-errors",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-focused",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-filter-scope",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-filters",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-range-scope",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "replay-selection-ranges",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-prefix-policy",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "replay-selection-prefix-policy",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-focused",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-replay-hints",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "replay-selection-hints",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-metadata-transfer",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-metadata",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            },
+            {
+              "run": "i20-span3-asan-tests",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-production-modes",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "replay-discovery-cli-empty",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-truncated-zero",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-prefix",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-required",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-optional",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-selection",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-compatibility",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-old-header-compatibility",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-legacy-invocations",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-old-header-compatibility",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "diagnostic-compatibility-test",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-compatibility",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-compatibility",
+          "runs": [
+            {
+              "run": "i20-span3-debug2-full",
+              "source_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-defect-sensitivity",
+      "criteria": [
+        "AC1"
+      ],
+      "scope": "Runtime case execution only; no gate or independent acceptance is inferred.",
+      "tests": [
+        {
+          "id": "replay-discovery-original-defect",
+          "runs": [],
+          "status": "NOT RUN"
+        },
+        {
+          "id": "database-discovery-sensitivity",
+          "runs": [],
+          "status": "NOT RUN"
+        },
+        {
+          "id": "replay-selection-sensitivity",
+          "runs": [],
+          "status": "NOT RUN"
+        }
+      ]
+    }
+  ],
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
+  "worker_id": "/root/implementer_span20"
+}
