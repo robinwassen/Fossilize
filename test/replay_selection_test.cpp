@@ -55,7 +55,7 @@ static void prefix_policy()
   auto opts=Replay::options(1,nullptr);opts.accept_recovered_prefix=accept; ThreadedReplayer r(device_options(),opts);
   marker_mode=true;results={VK_SUCCESS};calls=0;
   int status=run_normal_process(r,{"prefix.foz"},nullptr,0,-1);
-  checks.require(status==(accept?0:1)&&r.selection_report.scope_satisfied==accept,"D20/production-prefix-policy-status");
+  checks.require(status==(accept?0:1)&&r.selection_report.preparation_succeeded&&r.selection_report.scope_satisfied==accept,"D20/production-prefix-policy-status");
   if(accept)checks.require(r.selection_report.selected.size()==2&&r.selection_report.dispatch.size()==2&&calls==2,"D20/production-prefix-exact-dispatch");
   marker_mode=false;
  }

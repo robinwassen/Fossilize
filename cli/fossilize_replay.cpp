@@ -4437,6 +4437,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 
 	auto start_prepare = chrono::steady_clock::now();
 	bool prepared = resolver->prepare();
+	replayer.selection_report.preparation_succeeded = prepared;
 	replayer.selection_report.preparation = resolver->get_preparation_report();
 	if (!prepared || replay_inputs_unavailable(replayer.selection_report.preparation))
 	{
