@@ -1,0 +1,4442 @@
+{
+  "attempt_id": "implementer-assertions-4",
+  "audit": {
+    "all_12_plan_cases_reviewed_before_edits_and_verification": true,
+    "oracle_correction_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-oracle-correction.json",
+    "record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-planned-case-audit.json",
+    "source_and_changelog_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-source-and-changelog-review.json"
+  },
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+  "checks": {
+    "current_candidate": {
+      "asan_ubsan": {
+        "diagnostics": "No sanitizer diagnostics observed.",
+        "environment": [
+          "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+          "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1"
+        ],
+        "failed": 0,
+        "passed": 29,
+        "skipped": 0
+      },
+      "debug_affected": {
+        "failed": 0,
+        "passed": 7
+      },
+      "debug_full": {
+        "discovered_count": 279,
+        "exact_discovered_executed_union": true,
+        "executed_count": 279,
+        "failed": 0,
+        "passed": 279,
+        "skipped": 0
+      },
+      "release_affected": {
+        "assertions": "DiagnosticChecks remains active with -O3 -DNDEBUG.",
+        "failed": 0,
+        "passed": 7
+      },
+      "source_check": "passed",
+      "source_clean": true,
+      "source_sha": "679085c45ff02af180739bb578691b31b2537720"
+    },
+    "effective_build_facts": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-effective-build-facts.json",
+    "historical_failed_candidate": {
+      "classification": "Unsupported test oracle assumptions, corrected with source facts and a private API-call observer; not a demonstrated product fault.",
+      "exit_code": 8,
+      "failed": 2,
+      "intent": "i20-a4-focused-debug",
+      "passed": 5,
+      "record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-oracle-correction.json",
+      "source_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71"
+    },
+    "required_independent_gates": "All six required Linux gates must be independently renewed at the exact new candidate; these implementer checks are not acceptance."
+  },
+  "commands": [
+    {
+      "actual_source": {
+        "historical": true,
+        "source_changed_during_execution": false,
+        "source_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71"
+      },
+      "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+        "HEAD"
+      ],
+      "command_text": "git diff --check fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db HEAD",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-a4-source-check",
+      "junit_summary": null,
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/source-check.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-source-check.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/source-check-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-source-check-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-source-check",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/source-check-receipt.json",
+        "--",
+        "git",
+        "diff",
+        "--check",
+        "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+        "HEAD"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": true,
+        "source_changed_during_execution": false,
+        "source_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71"
+      },
+      "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--parallel",
+        "4"
+      ],
+      "command_text": "/tmp/fossilize-h20/toolenv/bin/cmake --build /tmp/fossilize-h20/build/implementer-1/debug-off --parallel 4",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-a4-build-debug",
+      "junit_summary": null,
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/build-debug.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-build-debug.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/build-debug-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-build-debug-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-build-debug",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/build-debug-receipt.json",
+        "--",
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--parallel",
+        "4"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": true,
+        "source_changed_during_execution": false,
+        "source_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71"
+      },
+      "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--show-only=json-v1"
+      ],
+      "command_text": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --show-only=json-v1",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "file-helper-string-open",
+        "file-helper-string-short-write",
+        "file-helper-string-flush",
+        "file-helper-string-close",
+        "file-helper-string-first-error",
+        "file-helper-string-success",
+        "file-helper-string-filesystem",
+        "file-helper-string-dev-full",
+        "file-helper-buffer-open",
+        "file-helper-buffer-short-write",
+        "file-helper-buffer-flush",
+        "file-helper-buffer-close",
+        "file-helper-buffer-first-error",
+        "file-helper-buffer-success",
+        "file-helper-buffer-filesystem",
+        "file-helper-buffer-dev-full",
+        "file-helper-legacy-compatibility",
+        "file-helper-legacy-completion",
+        "fork-child-healthy",
+        "fork-child-healthy-recovery",
+        "fork-child-parent-death",
+        "fork-child-prctl-failure",
+        "fork-child-parent-race",
+        "fork-child-initial-first-sigmask",
+        "fork-child-initial-last-sigmask",
+        "fork-child-recovery-sigmask",
+        "fork-child-initial-first-stdout-dup2",
+        "fork-child-initial-last-stdout-dup2",
+        "fork-child-recovery-stdout-dup2",
+        "fork-child-initial-first-stdin-dup2",
+        "fork-child-initial-last-stdin-dup2",
+        "fork-child-recovery-stdin-dup2",
+        "replay-controller-clean",
+        "replay-controller-zero",
+        "replay-controller-empty-archive",
+        "replay-controller-lost",
+        "replay-controller-lost-progress",
+        "replay-controller-mixed-success-first",
+        "replay-controller-mixed-loss-first",
+        "replay-controller-recover",
+        "replay-controller-skip-graphics",
+        "replay-controller-skip-compute",
+        "replay-controller-skip-raytracing",
+        "replay-controller-skip-graphics-final",
+        "replay-controller-skip-compute-final",
+        "replay-controller-skip-raytracing-final",
+        "replay-controller-skip-graphics-progress",
+        "replay-controller-skip-graphics-final-progress",
+        "replay-controller-partial",
+        "replay-controller-loss-after-retry",
+        "replay-controller-held-sibling",
+        "replay-controller-signal",
+        "replay-controller-status-error",
+        "replay-controller-outcome-state",
+        "replay-controller-cli-normal",
+        "replay-controller-cli-master",
+        "replay-controller-cli-progress",
+        "replay-controller-cli-e5",
+        "replay-controller-cli-e6",
+        "replay-controller-cli-parser-normal",
+        "replay-controller-cli-parser-child",
+        "replay-controller-cli-compatibility",
+        "replay-cache-creation-rerun",
+        "replay-cache-success-policy",
+        "replay-cache-loop",
+        "replay-cache-compile-required",
+        "replay-cache-write-failure",
+        "replay-cache-legacy-provenance",
+        "replay-cache-null-provenance",
+        "replay-cache-whitelist",
+        "replay-cache-legacy-invocation",
+        "replay-outcome-state",
+        "replay-outcome-parse-read",
+        "replay-outcome-creation",
+        "replay-outcome-compile-required-loop",
+        "replay-outcome-support",
+        "replay-outcome-setup-dependency",
+        "replay-outcome-worker-queue",
+        "replay-outcome-matrix",
+        "replay-outcome-validation",
+        "replay-outcome-entry-good",
+        "replay-outcome-entry-create",
+        "replay-outcome-entry-layout",
+        "replay-outcome-entry-device",
+        "replay-outcome-cli-e7",
+        "replay-outcome-cli-missing",
+        "replay-outcome-cli-unsupported",
+        "replay-outcome-cli-unsupported-shader",
+        "replay-outcome-cli-library",
+        "replay-outcome-cli-mixed",
+        "replay-outcome-cli-good",
+        "replay-outcome-cli-empty",
+        "replay-outcome-cli-missinghash",
+        "replay-outcome-cli-emptyhash",
+        "replay-outcome-cli-selection",
+        "replay-outcome-cli-hashselection",
+        "replay-outcome-cli-whitelist",
+        "replay-outcome-cli-compatibility",
+        "replay-outcome-cli-validation",
+        "replay-outcome-controller-success-first-absent",
+        "replay-outcome-controller-success-first-progress",
+        "replay-outcome-controller-failure-first-absent",
+        "replay-outcome-controller-failure-first-progress",
+        "replay-timeout-unit-deadlines",
+        "replay-timeout-unit-reset",
+        "replay-timeout-unit-delivery",
+        "replay-timeout-unit-unknown",
+        "replay-timeout-unit-protocol",
+        "replay-timeout-controller-context-progress-1",
+        "replay-timeout-controller-context-progress-2",
+        "replay-timeout-controller-context-stall-1",
+        "replay-timeout-controller-context-stall-2",
+        "replay-timeout-controller-context-normal-1",
+        "replay-timeout-controller-context-normal-2",
+        "replay-timeout-controller-cancel-int",
+        "replay-timeout-controller-cancel-term",
+        "replay-timeout-controller-clean",
+        "replay-timeout-controller-no-progress",
+        "replay-timeout-controller-heartbeat",
+        "replay-timeout-controller-heartbeat-reset",
+        "replay-timeout-controller-cleanup",
+        "replay-timeout-controller-spontaneous",
+        "replay-timeout-controller-escalation",
+        "replay-timeout-controller-delivery-failure",
+        "replay-timeout-controller-kill-failure",
+        "replay-timeout-controller-external-kill",
+        "replay-timeout-controller-multithread",
+        "replay-timeout-controller-recovery",
+        "replay-timeout-controller-protocol",
+        "replay-timeout-controller-dispatcher-reset",
+        "replay-timeout-controller-dispatcher-disabled",
+        "replay-timeout-controller-ordinary-no-progress",
+        "replay-timeout-controller-ordinary-delivery-failure",
+        "replay-timeout-controller-timer-create-failure",
+        "replay-timeout-controller-timer-arm-failure",
+        "replay-timeout-controller-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-create-failure",
+        "replay-timeout-controller-heartbeat-timer-arm-failure",
+        "replay-timeout-controller-heartbeat-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-read-failure",
+        "replay-timeout-controller-heartbeat-timer-rearm-failure",
+        "parser-input-envelope",
+        "parser-input-containers",
+        "parser-input-shader",
+        "parser-input-link",
+        "parser-input-diagnostics",
+        "parser-input-valid",
+        "parser-input-mutations",
+        "parser-input-containment",
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown",
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed",
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts",
+        "replay-event-unit-legacy",
+        "replay-event-unit-mutations",
+        "replay-event-unit-startup",
+        "replay-event-producer-parse",
+        "replay-event-producer-creation",
+        "replay-event-controller-clean",
+        "replay-event-controller-empty",
+        "replay-event-controller-parse",
+        "replay-event-controller-initial-parse",
+        "replay-event-controller-creation",
+        "replay-event-controller-progress",
+        "replay-event-controller-pre-report-death",
+        "replay-event-controller-missing-final",
+        "replay-event-controller-missing-final-origin",
+        "replay-event-controller-truncated",
+        "replay-event-controller-truncated-prefix",
+        "replay-event-controller-truncated-length",
+        "replay-event-controller-truncated-payload",
+        "replay-event-controller-truncated-newline",
+        "replay-event-controller-unknown",
+        "replay-event-controller-unknown-version",
+        "replay-event-controller-oversized",
+        "replay-event-controller-drop-hello",
+        "replay-event-controller-duplicate-final",
+        "replay-event-controller-abnormal-final",
+        "replay-event-controller-timeout",
+        "replay-event-controller-retry",
+        "replay-event-producer-timeout",
+        "replay-event-old-header-compatibility",
+        "replay-event-controller-startup-close",
+        "replay-event-controller-startup-hash-close",
+        "replay-event-controller-startup-input",
+        "database-discovery-empty",
+        "database-discovery-truncated-zero",
+        "database-discovery-prefix",
+        "database-discovery-inputs",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints",
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-selection",
+        "replay-discovery-legacy-invocations",
+        "database-discovery-old-header-compatibility"
+      ],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-a4-inventory-debug",
+      "junit_summary": null,
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/inventory-debug.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-inventory-debug-inventory-summary.json",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/inventory-debug-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-inventory-debug-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-inventory-debug",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/inventory-debug-receipt.json",
+        "--",
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--show-only=json-v1"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": true,
+        "source_changed_during_execution": false,
+        "source_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71"
+      },
+      "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/focused-debug.xml"
+      ],
+      "command_text": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --output-on-failure --no-tests=error -R '^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)' --output-junit /tmp/fossilize-h20/output/implementer-assertions-4/focused-debug.xml",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [
+        "database-discovery-inputs",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints"
+      ],
+      "executed": [
+        {
+          "id": "database-discovery-inputs",
+          "seconds": 0.00671201,
+          "status": "failed"
+        },
+        {
+          "id": "database-discovery-filters",
+          "seconds": 0.00401393,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-metadata",
+          "seconds": 0.00639608,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "seconds": 0.00482861,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-ranges",
+          "seconds": 0.00263318,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "seconds": 0.0122044,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-hints",
+          "seconds": 0.033822,
+          "status": "failed"
+        }
+      ],
+      "exit_code": 8,
+      "intent_id": "i20-a4-focused-debug",
+      "junit_summary": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-focused-debug-junit-summary.json",
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/focused-debug.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-focused-debug.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/focused-debug-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-focused-debug-receipt.json",
+      "status": "failed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-focused-debug",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/focused-debug-receipt.json",
+        "--",
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/focused-debug.xml"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "679085c45ff02af180739bb578691b31b2537720"
+      },
+      "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+        "HEAD"
+      ],
+      "command_text": "git diff --check fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db HEAD",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-a4-r1-source-check",
+      "junit_summary": null,
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-source-check.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-source-check.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-source-check-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-source-check-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-r1-source-check",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-source-check-receipt.json",
+        "--",
+        "git",
+        "diff",
+        "--check",
+        "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+        "HEAD"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "679085c45ff02af180739bb578691b31b2537720"
+      },
+      "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--parallel",
+        "4"
+      ],
+      "command_text": "/tmp/fossilize-h20/toolenv/bin/cmake --build /tmp/fossilize-h20/build/implementer-1/debug-off --parallel 4",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-a4-r1-build-debug",
+      "junit_summary": null,
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-build-debug.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-build-debug.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-build-debug-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-build-debug-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-r1-build-debug",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-build-debug-receipt.json",
+        "--",
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--parallel",
+        "4"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "679085c45ff02af180739bb578691b31b2537720"
+      },
+      "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--show-only=json-v1"
+      ],
+      "command_text": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --show-only=json-v1",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "file-helper-string-open",
+        "file-helper-string-short-write",
+        "file-helper-string-flush",
+        "file-helper-string-close",
+        "file-helper-string-first-error",
+        "file-helper-string-success",
+        "file-helper-string-filesystem",
+        "file-helper-string-dev-full",
+        "file-helper-buffer-open",
+        "file-helper-buffer-short-write",
+        "file-helper-buffer-flush",
+        "file-helper-buffer-close",
+        "file-helper-buffer-first-error",
+        "file-helper-buffer-success",
+        "file-helper-buffer-filesystem",
+        "file-helper-buffer-dev-full",
+        "file-helper-legacy-compatibility",
+        "file-helper-legacy-completion",
+        "fork-child-healthy",
+        "fork-child-healthy-recovery",
+        "fork-child-parent-death",
+        "fork-child-prctl-failure",
+        "fork-child-parent-race",
+        "fork-child-initial-first-sigmask",
+        "fork-child-initial-last-sigmask",
+        "fork-child-recovery-sigmask",
+        "fork-child-initial-first-stdout-dup2",
+        "fork-child-initial-last-stdout-dup2",
+        "fork-child-recovery-stdout-dup2",
+        "fork-child-initial-first-stdin-dup2",
+        "fork-child-initial-last-stdin-dup2",
+        "fork-child-recovery-stdin-dup2",
+        "replay-controller-clean",
+        "replay-controller-zero",
+        "replay-controller-empty-archive",
+        "replay-controller-lost",
+        "replay-controller-lost-progress",
+        "replay-controller-mixed-success-first",
+        "replay-controller-mixed-loss-first",
+        "replay-controller-recover",
+        "replay-controller-skip-graphics",
+        "replay-controller-skip-compute",
+        "replay-controller-skip-raytracing",
+        "replay-controller-skip-graphics-final",
+        "replay-controller-skip-compute-final",
+        "replay-controller-skip-raytracing-final",
+        "replay-controller-skip-graphics-progress",
+        "replay-controller-skip-graphics-final-progress",
+        "replay-controller-partial",
+        "replay-controller-loss-after-retry",
+        "replay-controller-held-sibling",
+        "replay-controller-signal",
+        "replay-controller-status-error",
+        "replay-controller-outcome-state",
+        "replay-controller-cli-normal",
+        "replay-controller-cli-master",
+        "replay-controller-cli-progress",
+        "replay-controller-cli-e5",
+        "replay-controller-cli-e6",
+        "replay-controller-cli-parser-normal",
+        "replay-controller-cli-parser-child",
+        "replay-controller-cli-compatibility",
+        "replay-cache-creation-rerun",
+        "replay-cache-success-policy",
+        "replay-cache-loop",
+        "replay-cache-compile-required",
+        "replay-cache-write-failure",
+        "replay-cache-legacy-provenance",
+        "replay-cache-null-provenance",
+        "replay-cache-whitelist",
+        "replay-cache-legacy-invocation",
+        "replay-outcome-state",
+        "replay-outcome-parse-read",
+        "replay-outcome-creation",
+        "replay-outcome-compile-required-loop",
+        "replay-outcome-support",
+        "replay-outcome-setup-dependency",
+        "replay-outcome-worker-queue",
+        "replay-outcome-matrix",
+        "replay-outcome-validation",
+        "replay-outcome-entry-good",
+        "replay-outcome-entry-create",
+        "replay-outcome-entry-layout",
+        "replay-outcome-entry-device",
+        "replay-outcome-cli-e7",
+        "replay-outcome-cli-missing",
+        "replay-outcome-cli-unsupported",
+        "replay-outcome-cli-unsupported-shader",
+        "replay-outcome-cli-library",
+        "replay-outcome-cli-mixed",
+        "replay-outcome-cli-good",
+        "replay-outcome-cli-empty",
+        "replay-outcome-cli-missinghash",
+        "replay-outcome-cli-emptyhash",
+        "replay-outcome-cli-selection",
+        "replay-outcome-cli-hashselection",
+        "replay-outcome-cli-whitelist",
+        "replay-outcome-cli-compatibility",
+        "replay-outcome-cli-validation",
+        "replay-outcome-controller-success-first-absent",
+        "replay-outcome-controller-success-first-progress",
+        "replay-outcome-controller-failure-first-absent",
+        "replay-outcome-controller-failure-first-progress",
+        "replay-timeout-unit-deadlines",
+        "replay-timeout-unit-reset",
+        "replay-timeout-unit-delivery",
+        "replay-timeout-unit-unknown",
+        "replay-timeout-unit-protocol",
+        "replay-timeout-controller-context-progress-1",
+        "replay-timeout-controller-context-progress-2",
+        "replay-timeout-controller-context-stall-1",
+        "replay-timeout-controller-context-stall-2",
+        "replay-timeout-controller-context-normal-1",
+        "replay-timeout-controller-context-normal-2",
+        "replay-timeout-controller-cancel-int",
+        "replay-timeout-controller-cancel-term",
+        "replay-timeout-controller-clean",
+        "replay-timeout-controller-no-progress",
+        "replay-timeout-controller-heartbeat",
+        "replay-timeout-controller-heartbeat-reset",
+        "replay-timeout-controller-cleanup",
+        "replay-timeout-controller-spontaneous",
+        "replay-timeout-controller-escalation",
+        "replay-timeout-controller-delivery-failure",
+        "replay-timeout-controller-kill-failure",
+        "replay-timeout-controller-external-kill",
+        "replay-timeout-controller-multithread",
+        "replay-timeout-controller-recovery",
+        "replay-timeout-controller-protocol",
+        "replay-timeout-controller-dispatcher-reset",
+        "replay-timeout-controller-dispatcher-disabled",
+        "replay-timeout-controller-ordinary-no-progress",
+        "replay-timeout-controller-ordinary-delivery-failure",
+        "replay-timeout-controller-timer-create-failure",
+        "replay-timeout-controller-timer-arm-failure",
+        "replay-timeout-controller-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-create-failure",
+        "replay-timeout-controller-heartbeat-timer-arm-failure",
+        "replay-timeout-controller-heartbeat-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-read-failure",
+        "replay-timeout-controller-heartbeat-timer-rearm-failure",
+        "parser-input-envelope",
+        "parser-input-containers",
+        "parser-input-shader",
+        "parser-input-link",
+        "parser-input-diagnostics",
+        "parser-input-valid",
+        "parser-input-mutations",
+        "parser-input-containment",
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown",
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed",
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts",
+        "replay-event-unit-legacy",
+        "replay-event-unit-mutations",
+        "replay-event-unit-startup",
+        "replay-event-producer-parse",
+        "replay-event-producer-creation",
+        "replay-event-controller-clean",
+        "replay-event-controller-empty",
+        "replay-event-controller-parse",
+        "replay-event-controller-initial-parse",
+        "replay-event-controller-creation",
+        "replay-event-controller-progress",
+        "replay-event-controller-pre-report-death",
+        "replay-event-controller-missing-final",
+        "replay-event-controller-missing-final-origin",
+        "replay-event-controller-truncated",
+        "replay-event-controller-truncated-prefix",
+        "replay-event-controller-truncated-length",
+        "replay-event-controller-truncated-payload",
+        "replay-event-controller-truncated-newline",
+        "replay-event-controller-unknown",
+        "replay-event-controller-unknown-version",
+        "replay-event-controller-oversized",
+        "replay-event-controller-drop-hello",
+        "replay-event-controller-duplicate-final",
+        "replay-event-controller-abnormal-final",
+        "replay-event-controller-timeout",
+        "replay-event-controller-retry",
+        "replay-event-producer-timeout",
+        "replay-event-old-header-compatibility",
+        "replay-event-controller-startup-close",
+        "replay-event-controller-startup-hash-close",
+        "replay-event-controller-startup-input",
+        "database-discovery-empty",
+        "database-discovery-truncated-zero",
+        "database-discovery-prefix",
+        "database-discovery-inputs",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints",
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-selection",
+        "replay-discovery-legacy-invocations",
+        "database-discovery-old-header-compatibility"
+      ],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-a4-r1-inventory-debug",
+      "junit_summary": null,
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-inventory-debug.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-inventory-debug-inventory-summary.json",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-inventory-debug-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-inventory-debug-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-r1-inventory-debug",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-inventory-debug-receipt.json",
+        "--",
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--show-only=json-v1"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "679085c45ff02af180739bb578691b31b2537720"
+      },
+      "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-debug.xml"
+      ],
+      "command_text": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --output-on-failure --no-tests=error -R '^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)' --output-junit /tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-debug.xml",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [
+        "database-discovery-inputs",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints"
+      ],
+      "executed": [
+        {
+          "id": "database-discovery-inputs",
+          "seconds": 0.00451046,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-filters",
+          "seconds": 0.00389028,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-metadata",
+          "seconds": 0.00605081,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "seconds": 0.00534329,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-ranges",
+          "seconds": 0.00304334,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "seconds": 0.00885849,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-hints",
+          "seconds": 0.0255433,
+          "status": "passed"
+        }
+      ],
+      "exit_code": 0,
+      "intent_id": "i20-a4-r1-focused-debug",
+      "junit_summary": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-focused-debug-junit-summary.json",
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-debug.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-focused-debug.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-debug-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-focused-debug-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-r1-focused-debug",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-debug-receipt.json",
+        "--",
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-debug.xml"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "679085c45ff02af180739bb578691b31b2537720"
+      },
+      "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-full-debug.xml"
+      ],
+      "command_text": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --output-on-failure --no-tests=error --output-junit /tmp/fossilize-h20/output/implementer-assertions-4/r1-full-debug.xml",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [
+        "fossilize-system-test",
+        "varint-system-test",
+        "application-info-filter-test",
+        "object-cache-test",
+        "feature-filter-test",
+        "linux-futex-test",
+        "replay-diagnostic-test",
+        "device-diagnostic-test",
+        "capture-diagnostic-normal-graphics-reject",
+        "capture-diagnostic-normal-graphics-success",
+        "capture-diagnostic-normal-graphics-vulkan-error",
+        "capture-diagnostic-normal-compute-reject",
+        "capture-diagnostic-normal-compute-success",
+        "capture-diagnostic-normal-compute-vulkan-error",
+        "capture-diagnostic-normal-raytracing-reject",
+        "capture-diagnostic-normal-raytracing-success",
+        "capture-diagnostic-normal-raytracing-vulkan-error",
+        "capture-diagnostic-qa-graphics-reject",
+        "capture-diagnostic-qa-graphics-success",
+        "capture-diagnostic-qa-graphics-vulkan-error",
+        "capture-diagnostic-qa-compute-reject",
+        "capture-diagnostic-qa-compute-success",
+        "capture-diagnostic-qa-compute-vulkan-error",
+        "capture-diagnostic-qa-raytracing-reject",
+        "capture-diagnostic-qa-raytracing-success",
+        "capture-diagnostic-qa-raytracing-vulkan-error",
+        "capture-diagnostic-paranoid-graphics-reject",
+        "capture-diagnostic-paranoid-graphics-success",
+        "capture-diagnostic-paranoid-graphics-vulkan-error",
+        "capture-diagnostic-paranoid-compute-reject",
+        "capture-diagnostic-paranoid-compute-success",
+        "capture-diagnostic-paranoid-compute-vulkan-error",
+        "capture-diagnostic-paranoid-raytracing-reject",
+        "capture-diagnostic-paranoid-raytracing-success",
+        "capture-diagnostic-paranoid-raytracing-vulkan-error",
+        "capture-diagnostic-eager-graphics-reject",
+        "capture-diagnostic-eager-graphics-success",
+        "capture-diagnostic-eager-graphics-vulkan-error",
+        "capture-diagnostic-eager-compute-reject",
+        "capture-diagnostic-eager-compute-success",
+        "capture-diagnostic-eager-compute-vulkan-error",
+        "capture-diagnostic-eager-raytracing-reject",
+        "capture-diagnostic-eager-raytracing-success",
+        "capture-diagnostic-eager-raytracing-vulkan-error",
+        "capture-diagnostic-binary-graphics-reject",
+        "capture-diagnostic-binary-graphics-success",
+        "capture-diagnostic-binary-graphics-vulkan-error",
+        "capture-diagnostic-binary-compute-reject",
+        "capture-diagnostic-binary-compute-success",
+        "capture-diagnostic-binary-compute-vulkan-error",
+        "capture-diagnostic-binary-raytracing-reject",
+        "capture-diagnostic-binary-raytracing-success",
+        "capture-diagnostic-binary-raytracing-vulkan-error",
+        "diagnostic-compatibility-test",
+        "utility-parse-list-version",
+        "utility-parse-list-invalid-json",
+        "utility-parse-list-empty",
+        "utility-parse-list-populated",
+        "utility-parse-list-mixed",
+        "utility-parse-list-dependency-failure",
+        "utility-parse-list-empty-dependencies",
+        "utility-parse-list-legacy-invocations",
+        "utility-parse-rehash-version",
+        "utility-parse-rehash-invalid-json",
+        "utility-parse-rehash-empty",
+        "utility-parse-rehash-populated",
+        "utility-parse-rehash-mixed",
+        "utility-parse-prune-version",
+        "utility-parse-prune-invalid-json",
+        "utility-parse-prune-empty",
+        "utility-parse-prune-populated",
+        "utility-parse-prune-mixed",
+        "utility-parse-prune-rejected-application",
+        "file-helper-string-open",
+        "file-helper-string-short-write",
+        "file-helper-string-flush",
+        "file-helper-string-close",
+        "file-helper-string-first-error",
+        "file-helper-string-success",
+        "file-helper-string-filesystem",
+        "file-helper-string-dev-full",
+        "file-helper-buffer-open",
+        "file-helper-buffer-short-write",
+        "file-helper-buffer-flush",
+        "file-helper-buffer-close",
+        "file-helper-buffer-first-error",
+        "file-helper-buffer-success",
+        "file-helper-buffer-filesystem",
+        "file-helper-buffer-dev-full",
+        "file-helper-legacy-compatibility",
+        "file-helper-legacy-completion",
+        "fork-child-healthy",
+        "fork-child-healthy-recovery",
+        "fork-child-parent-death",
+        "fork-child-prctl-failure",
+        "fork-child-parent-race",
+        "fork-child-initial-first-sigmask",
+        "fork-child-initial-last-sigmask",
+        "fork-child-recovery-sigmask",
+        "fork-child-initial-first-stdout-dup2",
+        "fork-child-initial-last-stdout-dup2",
+        "fork-child-recovery-stdout-dup2",
+        "fork-child-initial-first-stdin-dup2",
+        "fork-child-initial-last-stdin-dup2",
+        "fork-child-recovery-stdin-dup2",
+        "replay-controller-clean",
+        "replay-controller-zero",
+        "replay-controller-empty-archive",
+        "replay-controller-lost",
+        "replay-controller-lost-progress",
+        "replay-controller-mixed-success-first",
+        "replay-controller-mixed-loss-first",
+        "replay-controller-recover",
+        "replay-controller-skip-graphics",
+        "replay-controller-skip-compute",
+        "replay-controller-skip-raytracing",
+        "replay-controller-skip-graphics-final",
+        "replay-controller-skip-compute-final",
+        "replay-controller-skip-raytracing-final",
+        "replay-controller-skip-graphics-progress",
+        "replay-controller-skip-graphics-final-progress",
+        "replay-controller-partial",
+        "replay-controller-loss-after-retry",
+        "replay-controller-held-sibling",
+        "replay-controller-signal",
+        "replay-controller-status-error",
+        "replay-controller-outcome-state",
+        "replay-controller-cli-normal",
+        "replay-controller-cli-master",
+        "replay-controller-cli-progress",
+        "replay-controller-cli-e5",
+        "replay-controller-cli-e6",
+        "replay-controller-cli-parser-normal",
+        "replay-controller-cli-parser-child",
+        "replay-controller-cli-compatibility",
+        "replay-cache-creation-rerun",
+        "replay-cache-success-policy",
+        "replay-cache-loop",
+        "replay-cache-compile-required",
+        "replay-cache-write-failure",
+        "replay-cache-legacy-provenance",
+        "replay-cache-null-provenance",
+        "replay-cache-whitelist",
+        "replay-cache-legacy-invocation",
+        "replay-outcome-state",
+        "replay-outcome-parse-read",
+        "replay-outcome-creation",
+        "replay-outcome-compile-required-loop",
+        "replay-outcome-support",
+        "replay-outcome-setup-dependency",
+        "replay-outcome-worker-queue",
+        "replay-outcome-matrix",
+        "replay-outcome-validation",
+        "replay-outcome-entry-good",
+        "replay-outcome-entry-create",
+        "replay-outcome-entry-layout",
+        "replay-outcome-entry-device",
+        "replay-outcome-cli-e7",
+        "replay-outcome-cli-missing",
+        "replay-outcome-cli-unsupported",
+        "replay-outcome-cli-unsupported-shader",
+        "replay-outcome-cli-library",
+        "replay-outcome-cli-mixed",
+        "replay-outcome-cli-good",
+        "replay-outcome-cli-empty",
+        "replay-outcome-cli-missinghash",
+        "replay-outcome-cli-emptyhash",
+        "replay-outcome-cli-selection",
+        "replay-outcome-cli-hashselection",
+        "replay-outcome-cli-whitelist",
+        "replay-outcome-cli-compatibility",
+        "replay-outcome-cli-validation",
+        "replay-outcome-controller-success-first-absent",
+        "replay-outcome-controller-success-first-progress",
+        "replay-outcome-controller-failure-first-absent",
+        "replay-outcome-controller-failure-first-progress",
+        "replay-timeout-unit-deadlines",
+        "replay-timeout-unit-reset",
+        "replay-timeout-unit-delivery",
+        "replay-timeout-unit-unknown",
+        "replay-timeout-unit-protocol",
+        "replay-timeout-controller-context-progress-1",
+        "replay-timeout-controller-context-progress-2",
+        "replay-timeout-controller-context-stall-1",
+        "replay-timeout-controller-context-stall-2",
+        "replay-timeout-controller-context-normal-1",
+        "replay-timeout-controller-context-normal-2",
+        "replay-timeout-controller-cancel-int",
+        "replay-timeout-controller-cancel-term",
+        "replay-timeout-controller-clean",
+        "replay-timeout-controller-no-progress",
+        "replay-timeout-controller-heartbeat",
+        "replay-timeout-controller-heartbeat-reset",
+        "replay-timeout-controller-cleanup",
+        "replay-timeout-controller-spontaneous",
+        "replay-timeout-controller-escalation",
+        "replay-timeout-controller-delivery-failure",
+        "replay-timeout-controller-kill-failure",
+        "replay-timeout-controller-external-kill",
+        "replay-timeout-controller-multithread",
+        "replay-timeout-controller-recovery",
+        "replay-timeout-controller-protocol",
+        "replay-timeout-controller-dispatcher-reset",
+        "replay-timeout-controller-dispatcher-disabled",
+        "replay-timeout-controller-ordinary-no-progress",
+        "replay-timeout-controller-ordinary-delivery-failure",
+        "replay-timeout-controller-timer-create-failure",
+        "replay-timeout-controller-timer-arm-failure",
+        "replay-timeout-controller-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-create-failure",
+        "replay-timeout-controller-heartbeat-timer-arm-failure",
+        "replay-timeout-controller-heartbeat-timer-register-failure",
+        "replay-timeout-controller-heartbeat-timer-read-failure",
+        "replay-timeout-controller-heartbeat-timer-rearm-failure",
+        "parser-input-envelope",
+        "parser-input-containers",
+        "parser-input-shader",
+        "parser-input-link",
+        "parser-input-diagnostics",
+        "parser-input-valid",
+        "parser-input-mutations",
+        "parser-input-containment",
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown",
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed",
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts",
+        "replay-event-unit-legacy",
+        "replay-event-unit-mutations",
+        "replay-event-unit-startup",
+        "replay-event-producer-parse",
+        "replay-event-producer-creation",
+        "replay-event-controller-clean",
+        "replay-event-controller-empty",
+        "replay-event-controller-parse",
+        "replay-event-controller-initial-parse",
+        "replay-event-controller-creation",
+        "replay-event-controller-progress",
+        "replay-event-controller-pre-report-death",
+        "replay-event-controller-missing-final",
+        "replay-event-controller-missing-final-origin",
+        "replay-event-controller-truncated",
+        "replay-event-controller-truncated-prefix",
+        "replay-event-controller-truncated-length",
+        "replay-event-controller-truncated-payload",
+        "replay-event-controller-truncated-newline",
+        "replay-event-controller-unknown",
+        "replay-event-controller-unknown-version",
+        "replay-event-controller-oversized",
+        "replay-event-controller-drop-hello",
+        "replay-event-controller-duplicate-final",
+        "replay-event-controller-abnormal-final",
+        "replay-event-controller-timeout",
+        "replay-event-controller-retry",
+        "replay-event-producer-timeout",
+        "replay-event-old-header-compatibility",
+        "replay-event-controller-startup-close",
+        "replay-event-controller-startup-hash-close",
+        "replay-event-controller-startup-input",
+        "database-discovery-empty",
+        "database-discovery-truncated-zero",
+        "database-discovery-prefix",
+        "database-discovery-inputs",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints",
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-selection",
+        "replay-discovery-legacy-invocations",
+        "database-discovery-old-header-compatibility"
+      ],
+      "executed": [
+        {
+          "id": "fossilize-system-test",
+          "seconds": 0.307456,
+          "status": "passed"
+        },
+        {
+          "id": "varint-system-test",
+          "seconds": 1.47088,
+          "status": "passed"
+        },
+        {
+          "id": "application-info-filter-test",
+          "seconds": 0.00531905,
+          "status": "passed"
+        },
+        {
+          "id": "object-cache-test",
+          "seconds": 0.00941566,
+          "status": "passed"
+        },
+        {
+          "id": "feature-filter-test",
+          "seconds": 0.00412766,
+          "status": "passed"
+        },
+        {
+          "id": "linux-futex-test",
+          "seconds": 0.648221,
+          "status": "passed"
+        },
+        {
+          "id": "replay-diagnostic-test",
+          "seconds": 0.0133865,
+          "status": "passed"
+        },
+        {
+          "id": "device-diagnostic-test",
+          "seconds": 0.0057759,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-reject",
+          "seconds": 0.0149572,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-success",
+          "seconds": 0.00469138,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-graphics-vulkan-error",
+          "seconds": 0.00373507,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-reject",
+          "seconds": 0.00366259,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-success",
+          "seconds": 0.00380812,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-compute-vulkan-error",
+          "seconds": 0.00306818,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-reject",
+          "seconds": 0.00403487,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-success",
+          "seconds": 0.00420925,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-normal-raytracing-vulkan-error",
+          "seconds": 0.00362446,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-reject",
+          "seconds": 0.00409317,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-success",
+          "seconds": 0.00426015,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-graphics-vulkan-error",
+          "seconds": 0.00409221,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-reject",
+          "seconds": 0.00420712,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-success",
+          "seconds": 0.003622,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-compute-vulkan-error",
+          "seconds": 0.00342735,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-reject",
+          "seconds": 0.00376221,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-success",
+          "seconds": 0.00390809,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-qa-raytracing-vulkan-error",
+          "seconds": 0.0040349,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-reject",
+          "seconds": 0.00388266,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-success",
+          "seconds": 0.00376597,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-graphics-vulkan-error",
+          "seconds": 0.00384156,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-reject",
+          "seconds": 0.00290804,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-success",
+          "seconds": 0.00397714,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-compute-vulkan-error",
+          "seconds": 0.00427078,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-reject",
+          "seconds": 0.00312462,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-success",
+          "seconds": 0.00319919,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-paranoid-raytracing-vulkan-error",
+          "seconds": 0.00378065,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-reject",
+          "seconds": 0.00325025,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-success",
+          "seconds": 0.00306753,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-graphics-vulkan-error",
+          "seconds": 0.0038899,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-reject",
+          "seconds": 0.00236755,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-success",
+          "seconds": 0.00383649,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-compute-vulkan-error",
+          "seconds": 0.00445638,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-reject",
+          "seconds": 0.00316552,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-success",
+          "seconds": 0.003607,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-eager-raytracing-vulkan-error",
+          "seconds": 0.00394982,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-reject",
+          "seconds": 0.0039059,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-success",
+          "seconds": 0.00422359,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-graphics-vulkan-error",
+          "seconds": 0.00377765,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-reject",
+          "seconds": 0.00386194,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-success",
+          "seconds": 0.00398985,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-compute-vulkan-error",
+          "seconds": 0.00376153,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-reject",
+          "seconds": 0.00396518,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-success",
+          "seconds": 0.00426118,
+          "status": "passed"
+        },
+        {
+          "id": "capture-diagnostic-binary-raytracing-vulkan-error",
+          "seconds": 0.0042724,
+          "status": "passed"
+        },
+        {
+          "id": "diagnostic-compatibility-test",
+          "seconds": 0.0352235,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-version",
+          "seconds": 0.029654,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-invalid-json",
+          "seconds": 0.0109921,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-empty",
+          "seconds": 0.0117374,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-populated",
+          "seconds": 0.0117629,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-mixed",
+          "seconds": 0.0184394,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-dependency-failure",
+          "seconds": 0.019675,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-empty-dependencies",
+          "seconds": 0.0120621,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-list-legacy-invocations",
+          "seconds": 0.0336888,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-version",
+          "seconds": 0.0225317,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-invalid-json",
+          "seconds": 0.0153525,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-empty",
+          "seconds": 0.01579,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-populated",
+          "seconds": 0.0169496,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-rehash-mixed",
+          "seconds": 0.0251963,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-version",
+          "seconds": 0.0218665,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-invalid-json",
+          "seconds": 0.0126802,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-empty",
+          "seconds": 0.0124323,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-populated",
+          "seconds": 0.0164217,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-mixed",
+          "seconds": 0.0232026,
+          "status": "passed"
+        },
+        {
+          "id": "utility-parse-prune-rejected-application",
+          "seconds": 0.0325989,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-open",
+          "seconds": 0.00332463,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-short-write",
+          "seconds": 0.00243817,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-flush",
+          "seconds": 0.0025217,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-close",
+          "seconds": 0.00199198,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-first-error",
+          "seconds": 0.0019919,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-success",
+          "seconds": 0.00217131,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-filesystem",
+          "seconds": 0.00354641,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-string-dev-full",
+          "seconds": 0.00217583,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-open",
+          "seconds": 0.00251666,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-short-write",
+          "seconds": 0.00194342,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-flush",
+          "seconds": 0.0019331,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-close",
+          "seconds": 0.00210242,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-first-error",
+          "seconds": 0.00194201,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-success",
+          "seconds": 0.00200841,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-filesystem",
+          "seconds": 0.0026506,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-buffer-dev-full",
+          "seconds": 0.00233776,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-legacy-compatibility",
+          "seconds": 0.00388125,
+          "status": "passed"
+        },
+        {
+          "id": "file-helper-legacy-completion",
+          "seconds": 0.00841651,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-healthy",
+          "seconds": 0.0195268,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-healthy-recovery",
+          "seconds": 0.00600253,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-parent-death",
+          "seconds": 0.00375867,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-prctl-failure",
+          "seconds": 0.0052761,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-parent-race",
+          "seconds": 0.00548166,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-sigmask",
+          "seconds": 0.00521306,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-sigmask",
+          "seconds": 0.00565398,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-sigmask",
+          "seconds": 0.00418479,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-stdout-dup2",
+          "seconds": 0.00602587,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-stdout-dup2",
+          "seconds": 0.00575236,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-stdout-dup2",
+          "seconds": 0.00476995,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-first-stdin-dup2",
+          "seconds": 0.00539782,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-initial-last-stdin-dup2",
+          "seconds": 0.00544438,
+          "status": "passed"
+        },
+        {
+          "id": "fork-child-recovery-stdin-dup2",
+          "seconds": 0.0040525,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-clean",
+          "seconds": 0.0235259,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-zero",
+          "seconds": 0.0120986,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-empty-archive",
+          "seconds": 0.0105429,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-lost",
+          "seconds": 0.0104815,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-lost-progress",
+          "seconds": 0.0110064,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-mixed-success-first",
+          "seconds": 0.0108476,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-mixed-loss-first",
+          "seconds": 0.0109555,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-recover",
+          "seconds": 0.0130743,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics",
+          "seconds": 0.0120569,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-compute",
+          "seconds": 0.0121758,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-raytracing",
+          "seconds": 0.0105693,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-final",
+          "seconds": 0.0111847,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-compute-final",
+          "seconds": 0.0114326,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-raytracing-final",
+          "seconds": 0.0137997,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-progress",
+          "seconds": 0.0122994,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-skip-graphics-final-progress",
+          "seconds": 0.0115929,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-partial",
+          "seconds": 0.0115932,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-loss-after-retry",
+          "seconds": 0.0120138,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-held-sibling",
+          "seconds": 0.0126471,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-signal",
+          "seconds": 0.150518,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-status-error",
+          "seconds": 0.011523,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-outcome-state",
+          "seconds": 0.00967757,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-normal",
+          "seconds": 0.0117238,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-master",
+          "seconds": 0.0128374,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-progress",
+          "seconds": 0.110686,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-e5",
+          "seconds": 0.0217461,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-e6",
+          "seconds": 0.11933,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-parser-normal",
+          "seconds": 0.0188187,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-parser-child",
+          "seconds": 0.0166898,
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-compatibility",
+          "seconds": 0.0454324,
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-creation-rerun",
+          "seconds": 0.0219177,
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-success-policy",
+          "seconds": 0.00404242,
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-loop",
+          "seconds": 0.00304602,
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-compile-required",
+          "seconds": 0.00318569,
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-write-failure",
+          "seconds": 0.0297038,
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-legacy-provenance",
+          "seconds": 0.00971579,
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-null-provenance",
+          "seconds": 0.0105256,
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-whitelist",
+          "seconds": 0.00706548,
+          "status": "passed"
+        },
+        {
+          "id": "replay-cache-legacy-invocation",
+          "seconds": 0.00759837,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-state",
+          "seconds": 0.017665,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-parse-read",
+          "seconds": 0.00297194,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-creation",
+          "seconds": 0.00347785,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-compile-required-loop",
+          "seconds": 0.00237757,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-support",
+          "seconds": 0.0023014,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-setup-dependency",
+          "seconds": 0.0024045,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-worker-queue",
+          "seconds": 0.0095886,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-matrix",
+          "seconds": 0.0229046,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-validation",
+          "seconds": 0.00283696,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-good",
+          "seconds": 0.00460142,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-create",
+          "seconds": 0.005192,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-layout",
+          "seconds": 0.00338529,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-entry-device",
+          "seconds": 0.00263756,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-e7",
+          "seconds": 0.232861,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-missing",
+          "seconds": 0.239191,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-unsupported",
+          "seconds": 0.24097,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-unsupported-shader",
+          "seconds": 0.239475,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-library",
+          "seconds": 0.239477,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-mixed",
+          "seconds": 0.243284,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-good",
+          "seconds": 0.241395,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-empty",
+          "seconds": 0.234118,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-missinghash",
+          "seconds": 0.0327938,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-emptyhash",
+          "seconds": 0.0290488,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-selection",
+          "seconds": 0.237615,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-hashselection",
+          "seconds": 0.243425,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-whitelist",
+          "seconds": 0.242141,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-compatibility",
+          "seconds": 0.0369715,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-validation",
+          "seconds": 0.241931,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-success-first-absent",
+          "seconds": 0.0172812,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-success-first-progress",
+          "seconds": 0.0124829,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-failure-first-absent",
+          "seconds": 0.0113517,
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-controller-failure-first-progress",
+          "seconds": 0.0136916,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-deadlines",
+          "seconds": 0.00265057,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-reset",
+          "seconds": 0.00158737,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-delivery",
+          "seconds": 0.00149799,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-unknown",
+          "seconds": 0.00151194,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-unit-protocol",
+          "seconds": 0.00142958,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-progress-1",
+          "seconds": 0.0159017,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-progress-2",
+          "seconds": 0.00533416,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-stall-1",
+          "seconds": 0.00420146,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-stall-2",
+          "seconds": 0.00402189,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-normal-1",
+          "seconds": 0.00339113,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-context-normal-2",
+          "seconds": 0.00379851,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cancel-int",
+          "seconds": 1.00406,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cancel-term",
+          "seconds": 1.00439,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-clean",
+          "seconds": 0.0056711,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-no-progress",
+          "seconds": 0.0059775,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat",
+          "seconds": 0.00318479,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-reset",
+          "seconds": 0.00309812,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-cleanup",
+          "seconds": 0.00607643,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-spontaneous",
+          "seconds": 0.00692015,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-escalation",
+          "seconds": 0.00718597,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-delivery-failure",
+          "seconds": 0.00538227,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-kill-failure",
+          "seconds": 0.00561944,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-external-kill",
+          "seconds": 0.00426881,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-multithread",
+          "seconds": 0.00546008,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-recovery",
+          "seconds": 0.00673315,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-protocol",
+          "seconds": 0.00285768,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-dispatcher-reset",
+          "seconds": 0.00265046,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-dispatcher-disabled",
+          "seconds": 0.00520535,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-ordinary-no-progress",
+          "seconds": 0.00450307,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-ordinary-delivery-failure",
+          "seconds": 0.00413073,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-create-failure",
+          "seconds": 0.00533423,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-arm-failure",
+          "seconds": 0.0053219,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-timer-register-failure",
+          "seconds": 0.00546282,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-create-failure",
+          "seconds": 0.00387011,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-arm-failure",
+          "seconds": 0.00433806,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-register-failure",
+          "seconds": 0.00370099,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-read-failure",
+          "seconds": 0.00312307,
+          "status": "passed"
+        },
+        {
+          "id": "replay-timeout-controller-heartbeat-timer-rearm-failure",
+          "seconds": 0.00400294,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-envelope",
+          "seconds": 0.00963122,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containers",
+          "seconds": 0.00588623,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-shader",
+          "seconds": 0.011996,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-link",
+          "seconds": 0.0047063,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-diagnostics",
+          "seconds": 0.00319054,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-valid",
+          "seconds": 0.00480021,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-mutations",
+          "seconds": 0.0271453,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containment",
+          "seconds": 0.0361656,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-roundtrip",
+          "seconds": 0.00511346,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-unknown",
+          "seconds": 0.00357022,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-streaming",
+          "seconds": 0.00286826,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-malformed",
+          "seconds": 0.00490609,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-negotiation",
+          "seconds": 0.00246785,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-attempts",
+          "seconds": 0.00181212,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-legacy",
+          "seconds": 0.0022214,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-mutations",
+          "seconds": 0.00818028,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-startup",
+          "seconds": 0.00325647,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-parse",
+          "seconds": 0.00437064,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-creation",
+          "seconds": 0.00379522,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-clean",
+          "seconds": 0.00870611,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-empty",
+          "seconds": 0.00423825,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-parse",
+          "seconds": 0.00857745,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-initial-parse",
+          "seconds": 0.00806669,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-creation",
+          "seconds": 0.00845452,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-progress",
+          "seconds": 0.0086854,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-pre-report-death",
+          "seconds": 0.00576294,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-missing-final",
+          "seconds": 0.00618918,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-missing-final-origin",
+          "seconds": 0.00571067,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated",
+          "seconds": 0.00600981,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-prefix",
+          "seconds": 0.00504722,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-length",
+          "seconds": 0.0061034,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-payload",
+          "seconds": 0.00556085,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-truncated-newline",
+          "seconds": 0.00590257,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-unknown",
+          "seconds": 0.00473552,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-unknown-version",
+          "seconds": 0.00598112,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-oversized",
+          "seconds": 0.00636196,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-drop-hello",
+          "seconds": 0.00586073,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-duplicate-final",
+          "seconds": 0.00644512,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-abnormal-final",
+          "seconds": 0.00568632,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-timeout",
+          "seconds": 0.00730931,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-retry",
+          "seconds": 0.00784594,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-producer-timeout",
+          "seconds": 0.00770875,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-old-header-compatibility",
+          "seconds": 1.13736,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-close",
+          "seconds": 0.0051067,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-hash-close",
+          "seconds": 0.006823,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-controller-startup-input",
+          "seconds": 0.114,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-empty",
+          "seconds": 0.00340476,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-truncated-zero",
+          "seconds": 0.00324848,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-prefix",
+          "seconds": 0.00230322,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-inputs",
+          "seconds": 0.00447772,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-errors",
+          "seconds": 0.0037946,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-filters",
+          "seconds": 0.00361682,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-metadata",
+          "seconds": 0.00673197,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "seconds": 0.00496285,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-ranges",
+          "seconds": 0.00238604,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "seconds": 0.00910787,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-hints",
+          "seconds": 0.0299046,
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-empty",
+          "seconds": 0.245417,
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-truncated-zero",
+          "seconds": 0.0609874,
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-prefix",
+          "seconds": 0.269086,
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-required",
+          "seconds": 0.0825166,
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-optional",
+          "seconds": 1.4105,
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-selection",
+          "seconds": 1.40046,
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-legacy-invocations",
+          "seconds": 1.47451,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-old-header-compatibility",
+          "seconds": 1.77212,
+          "status": "passed"
+        }
+      ],
+      "exit_code": 0,
+      "intent_id": "i20-a4-r1-full-debug",
+      "junit_summary": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-full-debug-junit-summary.json",
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-full-debug.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-full-debug.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-full-debug-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-full-debug-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-r1-full-debug",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-full-debug-receipt.json",
+        "--",
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-full-debug.xml"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "679085c45ff02af180739bb578691b31b2537720"
+      },
+      "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/release-off",
+        "--parallel",
+        "4",
+        "--target",
+        "database-discovery-test",
+        "replay-selection-test"
+      ],
+      "command_text": "/tmp/fossilize-h20/toolenv/bin/cmake --build /tmp/fossilize-h20/build/implementer-1/release-off --parallel 4 --target database-discovery-test replay-selection-test",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-a4-r1-build-release",
+      "junit_summary": null,
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-build-release.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-build-release.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-build-release-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-build-release-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-r1-build-release",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-build-release-receipt.json",
+        "--",
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/release-off",
+        "--parallel",
+        "4",
+        "--target",
+        "database-discovery-test",
+        "replay-selection-test"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "679085c45ff02af180739bb578691b31b2537720"
+      },
+      "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/release-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-release.xml"
+      ],
+      "command_text": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/release-off --output-on-failure --no-tests=error -R '^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)' --output-junit /tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-release.xml",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [
+        "database-discovery-inputs",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints"
+      ],
+      "executed": [
+        {
+          "id": "database-discovery-inputs",
+          "seconds": 0.00370483,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-filters",
+          "seconds": 0.00324644,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-metadata",
+          "seconds": 0.00565688,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "seconds": 0.00454079,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-ranges",
+          "seconds": 0.00278937,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "seconds": 0.00573888,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-hints",
+          "seconds": 0.0233535,
+          "status": "passed"
+        }
+      ],
+      "exit_code": 0,
+      "intent_id": "i20-a4-r1-focused-release",
+      "junit_summary": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-focused-release-junit-summary.json",
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-release.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-focused-release.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-release-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-focused-release-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-r1-focused-release",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-release-receipt.json",
+        "--",
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/release-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-focused-release.xml"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "679085c45ff02af180739bb578691b31b2537720"
+      },
+      "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+        "--parallel",
+        "2",
+        "--target",
+        "database-discovery-test",
+        "replay-selection-test",
+        "replay-event-test",
+        "parser-input-test",
+        "varint-test"
+      ],
+      "command_text": "/tmp/fossilize-h20/toolenv/bin/cmake --build /tmp/fossilize-h20/build/implementer-1/asan-ubsan --parallel 2 --target database-discovery-test replay-selection-test replay-event-test parser-input-test varint-test",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [],
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20-a4-r1-build-asan",
+      "junit_summary": null,
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-build-asan.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-build-asan.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-build-asan-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-build-asan-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-r1-build-asan",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-build-asan-receipt.json",
+        "--",
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+        "--parallel",
+        "2",
+        "--target",
+        "database-discovery-test",
+        "replay-selection-test",
+        "replay-event-test",
+        "parser-input-test",
+        "varint-test"
+      ]
+    },
+    {
+      "actual_source": {
+        "historical": false,
+        "source_changed_during_execution": false,
+        "source_sha": "679085c45ff02af180739bb578691b31b2537720"
+      },
+      "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+      "command": [
+        "env",
+        "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-asan.xml"
+      ],
+      "command_text": "env ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/asan-ubsan --output-on-failure --no-tests=error -R '^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)' --output-junit /tmp/fossilize-h20/output/implementer-assertions-4/r1-asan.xml",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "discovered_ids": [
+        "varint-system-test",
+        "parser-input-envelope",
+        "parser-input-containers",
+        "parser-input-shader",
+        "parser-input-link",
+        "parser-input-diagnostics",
+        "parser-input-valid",
+        "parser-input-mutations",
+        "parser-input-containment",
+        "replay-event-unit-roundtrip",
+        "replay-event-unit-unknown",
+        "replay-event-unit-streaming",
+        "replay-event-unit-malformed",
+        "replay-event-unit-negotiation",
+        "replay-event-unit-attempts",
+        "replay-event-unit-legacy",
+        "replay-event-unit-mutations",
+        "replay-event-unit-startup",
+        "database-discovery-empty",
+        "database-discovery-truncated-zero",
+        "database-discovery-prefix",
+        "database-discovery-inputs",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints"
+      ],
+      "executed": [
+        {
+          "id": "varint-system-test",
+          "seconds": 2.74446,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-envelope",
+          "seconds": 0.111974,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containers",
+          "seconds": 0.0614907,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-shader",
+          "seconds": 0.0532474,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-link",
+          "seconds": 0.037978,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-diagnostics",
+          "seconds": 0.0338948,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-valid",
+          "seconds": 0.0384584,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-mutations",
+          "seconds": 0.137329,
+          "status": "passed"
+        },
+        {
+          "id": "parser-input-containment",
+          "seconds": 0.176445,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-roundtrip",
+          "seconds": 0.0218261,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-unknown",
+          "seconds": 0.0261426,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-streaming",
+          "seconds": 0.0158128,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-malformed",
+          "seconds": 0.0241862,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-negotiation",
+          "seconds": 0.0141322,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-attempts",
+          "seconds": 0.01432,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-legacy",
+          "seconds": 0.0125505,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-mutations",
+          "seconds": 0.0371744,
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-unit-startup",
+          "seconds": 0.0201147,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-empty",
+          "seconds": 0.0304215,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-truncated-zero",
+          "seconds": 0.0303165,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-prefix",
+          "seconds": 0.0282427,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-inputs",
+          "seconds": 0.0358547,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-errors",
+          "seconds": 0.0269128,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-filters",
+          "seconds": 0.0293001,
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-metadata",
+          "seconds": 0.033509,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "seconds": 0.0478826,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-ranges",
+          "seconds": 0.0391265,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-prefix-policy",
+          "seconds": 0.06219,
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-hints",
+          "seconds": 0.142831,
+          "status": "passed"
+        }
+      ],
+      "exit_code": 0,
+      "intent_id": "i20-a4-r1-run-asan",
+      "junit_summary": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-run-asan-junit-summary.json",
+      "local_log": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-run-asan.log",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-run-asan.log",
+      "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/r1-run-asan-receipt.json",
+      "receipt_record": "runs/issue-20/issue-20-20261110/evidence/implementer-assertions-4-r1-run-asan-receipt.json",
+      "status": "passed",
+      "timed_out": false,
+      "timeout": 600,
+      "wrapper_command": [
+        "python3",
+        "-B",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+        "--repo",
+        "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "--timeout",
+        "600",
+        "--intent-id",
+        "i20-a4-r1-run-asan",
+        "--receipt",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-run-asan-receipt.json",
+        "--",
+        "env",
+        "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-assertions-4/r1-asan.xml"
+      ]
+    }
+  ],
+  "commits": [
+    {
+      "purpose": "Add the already planned exact input/set/metadata/unknown-tail/mixed-hint assertions and verification documentation.",
+      "sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71"
+    },
+    {
+      "purpose": "Correct two unsupported test oracle assumptions using source facts and observe the actual original hint-dispatch index at the private Vulkan API adapter.",
+      "sha": "679085c45ff02af180739bb578691b31b2537720"
+    }
+  ],
+  "discovered": [
+    "fossilize-system-test",
+    "varint-system-test",
+    "application-info-filter-test",
+    "object-cache-test",
+    "feature-filter-test",
+    "linux-futex-test",
+    "replay-diagnostic-test",
+    "device-diagnostic-test",
+    "capture-diagnostic-normal-graphics-reject",
+    "capture-diagnostic-normal-graphics-success",
+    "capture-diagnostic-normal-graphics-vulkan-error",
+    "capture-diagnostic-normal-compute-reject",
+    "capture-diagnostic-normal-compute-success",
+    "capture-diagnostic-normal-compute-vulkan-error",
+    "capture-diagnostic-normal-raytracing-reject",
+    "capture-diagnostic-normal-raytracing-success",
+    "capture-diagnostic-normal-raytracing-vulkan-error",
+    "capture-diagnostic-qa-graphics-reject",
+    "capture-diagnostic-qa-graphics-success",
+    "capture-diagnostic-qa-graphics-vulkan-error",
+    "capture-diagnostic-qa-compute-reject",
+    "capture-diagnostic-qa-compute-success",
+    "capture-diagnostic-qa-compute-vulkan-error",
+    "capture-diagnostic-qa-raytracing-reject",
+    "capture-diagnostic-qa-raytracing-success",
+    "capture-diagnostic-qa-raytracing-vulkan-error",
+    "capture-diagnostic-paranoid-graphics-reject",
+    "capture-diagnostic-paranoid-graphics-success",
+    "capture-diagnostic-paranoid-graphics-vulkan-error",
+    "capture-diagnostic-paranoid-compute-reject",
+    "capture-diagnostic-paranoid-compute-success",
+    "capture-diagnostic-paranoid-compute-vulkan-error",
+    "capture-diagnostic-paranoid-raytracing-reject",
+    "capture-diagnostic-paranoid-raytracing-success",
+    "capture-diagnostic-paranoid-raytracing-vulkan-error",
+    "capture-diagnostic-eager-graphics-reject",
+    "capture-diagnostic-eager-graphics-success",
+    "capture-diagnostic-eager-graphics-vulkan-error",
+    "capture-diagnostic-eager-compute-reject",
+    "capture-diagnostic-eager-compute-success",
+    "capture-diagnostic-eager-compute-vulkan-error",
+    "capture-diagnostic-eager-raytracing-reject",
+    "capture-diagnostic-eager-raytracing-success",
+    "capture-diagnostic-eager-raytracing-vulkan-error",
+    "capture-diagnostic-binary-graphics-reject",
+    "capture-diagnostic-binary-graphics-success",
+    "capture-diagnostic-binary-graphics-vulkan-error",
+    "capture-diagnostic-binary-compute-reject",
+    "capture-diagnostic-binary-compute-success",
+    "capture-diagnostic-binary-compute-vulkan-error",
+    "capture-diagnostic-binary-raytracing-reject",
+    "capture-diagnostic-binary-raytracing-success",
+    "capture-diagnostic-binary-raytracing-vulkan-error",
+    "diagnostic-compatibility-test",
+    "utility-parse-list-version",
+    "utility-parse-list-invalid-json",
+    "utility-parse-list-empty",
+    "utility-parse-list-populated",
+    "utility-parse-list-mixed",
+    "utility-parse-list-dependency-failure",
+    "utility-parse-list-empty-dependencies",
+    "utility-parse-list-legacy-invocations",
+    "utility-parse-rehash-version",
+    "utility-parse-rehash-invalid-json",
+    "utility-parse-rehash-empty",
+    "utility-parse-rehash-populated",
+    "utility-parse-rehash-mixed",
+    "utility-parse-prune-version",
+    "utility-parse-prune-invalid-json",
+    "utility-parse-prune-empty",
+    "utility-parse-prune-populated",
+    "utility-parse-prune-mixed",
+    "utility-parse-prune-rejected-application",
+    "file-helper-string-open",
+    "file-helper-string-short-write",
+    "file-helper-string-flush",
+    "file-helper-string-close",
+    "file-helper-string-first-error",
+    "file-helper-string-success",
+    "file-helper-string-filesystem",
+    "file-helper-string-dev-full",
+    "file-helper-buffer-open",
+    "file-helper-buffer-short-write",
+    "file-helper-buffer-flush",
+    "file-helper-buffer-close",
+    "file-helper-buffer-first-error",
+    "file-helper-buffer-success",
+    "file-helper-buffer-filesystem",
+    "file-helper-buffer-dev-full",
+    "file-helper-legacy-compatibility",
+    "file-helper-legacy-completion",
+    "fork-child-healthy",
+    "fork-child-healthy-recovery",
+    "fork-child-parent-death",
+    "fork-child-prctl-failure",
+    "fork-child-parent-race",
+    "fork-child-initial-first-sigmask",
+    "fork-child-initial-last-sigmask",
+    "fork-child-recovery-sigmask",
+    "fork-child-initial-first-stdout-dup2",
+    "fork-child-initial-last-stdout-dup2",
+    "fork-child-recovery-stdout-dup2",
+    "fork-child-initial-first-stdin-dup2",
+    "fork-child-initial-last-stdin-dup2",
+    "fork-child-recovery-stdin-dup2",
+    "replay-controller-clean",
+    "replay-controller-zero",
+    "replay-controller-empty-archive",
+    "replay-controller-lost",
+    "replay-controller-lost-progress",
+    "replay-controller-mixed-success-first",
+    "replay-controller-mixed-loss-first",
+    "replay-controller-recover",
+    "replay-controller-skip-graphics",
+    "replay-controller-skip-compute",
+    "replay-controller-skip-raytracing",
+    "replay-controller-skip-graphics-final",
+    "replay-controller-skip-compute-final",
+    "replay-controller-skip-raytracing-final",
+    "replay-controller-skip-graphics-progress",
+    "replay-controller-skip-graphics-final-progress",
+    "replay-controller-partial",
+    "replay-controller-loss-after-retry",
+    "replay-controller-held-sibling",
+    "replay-controller-signal",
+    "replay-controller-status-error",
+    "replay-controller-outcome-state",
+    "replay-controller-cli-normal",
+    "replay-controller-cli-master",
+    "replay-controller-cli-progress",
+    "replay-controller-cli-e5",
+    "replay-controller-cli-e6",
+    "replay-controller-cli-parser-normal",
+    "replay-controller-cli-parser-child",
+    "replay-controller-cli-compatibility",
+    "replay-cache-creation-rerun",
+    "replay-cache-success-policy",
+    "replay-cache-loop",
+    "replay-cache-compile-required",
+    "replay-cache-write-failure",
+    "replay-cache-legacy-provenance",
+    "replay-cache-null-provenance",
+    "replay-cache-whitelist",
+    "replay-cache-legacy-invocation",
+    "replay-outcome-state",
+    "replay-outcome-parse-read",
+    "replay-outcome-creation",
+    "replay-outcome-compile-required-loop",
+    "replay-outcome-support",
+    "replay-outcome-setup-dependency",
+    "replay-outcome-worker-queue",
+    "replay-outcome-matrix",
+    "replay-outcome-validation",
+    "replay-outcome-entry-good",
+    "replay-outcome-entry-create",
+    "replay-outcome-entry-layout",
+    "replay-outcome-entry-device",
+    "replay-outcome-cli-e7",
+    "replay-outcome-cli-missing",
+    "replay-outcome-cli-unsupported",
+    "replay-outcome-cli-unsupported-shader",
+    "replay-outcome-cli-library",
+    "replay-outcome-cli-mixed",
+    "replay-outcome-cli-good",
+    "replay-outcome-cli-empty",
+    "replay-outcome-cli-missinghash",
+    "replay-outcome-cli-emptyhash",
+    "replay-outcome-cli-selection",
+    "replay-outcome-cli-hashselection",
+    "replay-outcome-cli-whitelist",
+    "replay-outcome-cli-compatibility",
+    "replay-outcome-cli-validation",
+    "replay-outcome-controller-success-first-absent",
+    "replay-outcome-controller-success-first-progress",
+    "replay-outcome-controller-failure-first-absent",
+    "replay-outcome-controller-failure-first-progress",
+    "replay-timeout-unit-deadlines",
+    "replay-timeout-unit-reset",
+    "replay-timeout-unit-delivery",
+    "replay-timeout-unit-unknown",
+    "replay-timeout-unit-protocol",
+    "replay-timeout-controller-context-progress-1",
+    "replay-timeout-controller-context-progress-2",
+    "replay-timeout-controller-context-stall-1",
+    "replay-timeout-controller-context-stall-2",
+    "replay-timeout-controller-context-normal-1",
+    "replay-timeout-controller-context-normal-2",
+    "replay-timeout-controller-cancel-int",
+    "replay-timeout-controller-cancel-term",
+    "replay-timeout-controller-clean",
+    "replay-timeout-controller-no-progress",
+    "replay-timeout-controller-heartbeat",
+    "replay-timeout-controller-heartbeat-reset",
+    "replay-timeout-controller-cleanup",
+    "replay-timeout-controller-spontaneous",
+    "replay-timeout-controller-escalation",
+    "replay-timeout-controller-delivery-failure",
+    "replay-timeout-controller-kill-failure",
+    "replay-timeout-controller-external-kill",
+    "replay-timeout-controller-multithread",
+    "replay-timeout-controller-recovery",
+    "replay-timeout-controller-protocol",
+    "replay-timeout-controller-dispatcher-reset",
+    "replay-timeout-controller-dispatcher-disabled",
+    "replay-timeout-controller-ordinary-no-progress",
+    "replay-timeout-controller-ordinary-delivery-failure",
+    "replay-timeout-controller-timer-create-failure",
+    "replay-timeout-controller-timer-arm-failure",
+    "replay-timeout-controller-timer-register-failure",
+    "replay-timeout-controller-heartbeat-timer-create-failure",
+    "replay-timeout-controller-heartbeat-timer-arm-failure",
+    "replay-timeout-controller-heartbeat-timer-register-failure",
+    "replay-timeout-controller-heartbeat-timer-read-failure",
+    "replay-timeout-controller-heartbeat-timer-rearm-failure",
+    "parser-input-envelope",
+    "parser-input-containers",
+    "parser-input-shader",
+    "parser-input-link",
+    "parser-input-diagnostics",
+    "parser-input-valid",
+    "parser-input-mutations",
+    "parser-input-containment",
+    "replay-event-unit-roundtrip",
+    "replay-event-unit-unknown",
+    "replay-event-unit-streaming",
+    "replay-event-unit-malformed",
+    "replay-event-unit-negotiation",
+    "replay-event-unit-attempts",
+    "replay-event-unit-legacy",
+    "replay-event-unit-mutations",
+    "replay-event-unit-startup",
+    "replay-event-producer-parse",
+    "replay-event-producer-creation",
+    "replay-event-controller-clean",
+    "replay-event-controller-empty",
+    "replay-event-controller-parse",
+    "replay-event-controller-initial-parse",
+    "replay-event-controller-creation",
+    "replay-event-controller-progress",
+    "replay-event-controller-pre-report-death",
+    "replay-event-controller-missing-final",
+    "replay-event-controller-missing-final-origin",
+    "replay-event-controller-truncated",
+    "replay-event-controller-truncated-prefix",
+    "replay-event-controller-truncated-length",
+    "replay-event-controller-truncated-payload",
+    "replay-event-controller-truncated-newline",
+    "replay-event-controller-unknown",
+    "replay-event-controller-unknown-version",
+    "replay-event-controller-oversized",
+    "replay-event-controller-drop-hello",
+    "replay-event-controller-duplicate-final",
+    "replay-event-controller-abnormal-final",
+    "replay-event-controller-timeout",
+    "replay-event-controller-retry",
+    "replay-event-producer-timeout",
+    "replay-event-old-header-compatibility",
+    "replay-event-controller-startup-close",
+    "replay-event-controller-startup-hash-close",
+    "replay-event-controller-startup-input",
+    "database-discovery-empty",
+    "database-discovery-truncated-zero",
+    "database-discovery-prefix",
+    "database-discovery-inputs",
+    "database-discovery-errors",
+    "database-discovery-filters",
+    "database-discovery-metadata",
+    "replay-selection-filters",
+    "replay-selection-ranges",
+    "replay-selection-prefix-policy",
+    "replay-selection-hints",
+    "replay-discovery-cli-empty",
+    "replay-discovery-cli-truncated-zero",
+    "replay-discovery-cli-prefix",
+    "replay-discovery-cli-required",
+    "replay-discovery-cli-optional",
+    "replay-discovery-cli-selection",
+    "replay-discovery-legacy-invocations",
+    "database-discovery-old-header-compatibility"
+  ],
+  "executed": [
+    "fossilize-system-test",
+    "varint-system-test",
+    "application-info-filter-test",
+    "object-cache-test",
+    "feature-filter-test",
+    "linux-futex-test",
+    "replay-diagnostic-test",
+    "device-diagnostic-test",
+    "capture-diagnostic-normal-graphics-reject",
+    "capture-diagnostic-normal-graphics-success",
+    "capture-diagnostic-normal-graphics-vulkan-error",
+    "capture-diagnostic-normal-compute-reject",
+    "capture-diagnostic-normal-compute-success",
+    "capture-diagnostic-normal-compute-vulkan-error",
+    "capture-diagnostic-normal-raytracing-reject",
+    "capture-diagnostic-normal-raytracing-success",
+    "capture-diagnostic-normal-raytracing-vulkan-error",
+    "capture-diagnostic-qa-graphics-reject",
+    "capture-diagnostic-qa-graphics-success",
+    "capture-diagnostic-qa-graphics-vulkan-error",
+    "capture-diagnostic-qa-compute-reject",
+    "capture-diagnostic-qa-compute-success",
+    "capture-diagnostic-qa-compute-vulkan-error",
+    "capture-diagnostic-qa-raytracing-reject",
+    "capture-diagnostic-qa-raytracing-success",
+    "capture-diagnostic-qa-raytracing-vulkan-error",
+    "capture-diagnostic-paranoid-graphics-reject",
+    "capture-diagnostic-paranoid-graphics-success",
+    "capture-diagnostic-paranoid-graphics-vulkan-error",
+    "capture-diagnostic-paranoid-compute-reject",
+    "capture-diagnostic-paranoid-compute-success",
+    "capture-diagnostic-paranoid-compute-vulkan-error",
+    "capture-diagnostic-paranoid-raytracing-reject",
+    "capture-diagnostic-paranoid-raytracing-success",
+    "capture-diagnostic-paranoid-raytracing-vulkan-error",
+    "capture-diagnostic-eager-graphics-reject",
+    "capture-diagnostic-eager-graphics-success",
+    "capture-diagnostic-eager-graphics-vulkan-error",
+    "capture-diagnostic-eager-compute-reject",
+    "capture-diagnostic-eager-compute-success",
+    "capture-diagnostic-eager-compute-vulkan-error",
+    "capture-diagnostic-eager-raytracing-reject",
+    "capture-diagnostic-eager-raytracing-success",
+    "capture-diagnostic-eager-raytracing-vulkan-error",
+    "capture-diagnostic-binary-graphics-reject",
+    "capture-diagnostic-binary-graphics-success",
+    "capture-diagnostic-binary-graphics-vulkan-error",
+    "capture-diagnostic-binary-compute-reject",
+    "capture-diagnostic-binary-compute-success",
+    "capture-diagnostic-binary-compute-vulkan-error",
+    "capture-diagnostic-binary-raytracing-reject",
+    "capture-diagnostic-binary-raytracing-success",
+    "capture-diagnostic-binary-raytracing-vulkan-error",
+    "diagnostic-compatibility-test",
+    "utility-parse-list-version",
+    "utility-parse-list-invalid-json",
+    "utility-parse-list-empty",
+    "utility-parse-list-populated",
+    "utility-parse-list-mixed",
+    "utility-parse-list-dependency-failure",
+    "utility-parse-list-empty-dependencies",
+    "utility-parse-list-legacy-invocations",
+    "utility-parse-rehash-version",
+    "utility-parse-rehash-invalid-json",
+    "utility-parse-rehash-empty",
+    "utility-parse-rehash-populated",
+    "utility-parse-rehash-mixed",
+    "utility-parse-prune-version",
+    "utility-parse-prune-invalid-json",
+    "utility-parse-prune-empty",
+    "utility-parse-prune-populated",
+    "utility-parse-prune-mixed",
+    "utility-parse-prune-rejected-application",
+    "file-helper-string-open",
+    "file-helper-string-short-write",
+    "file-helper-string-flush",
+    "file-helper-string-close",
+    "file-helper-string-first-error",
+    "file-helper-string-success",
+    "file-helper-string-filesystem",
+    "file-helper-string-dev-full",
+    "file-helper-buffer-open",
+    "file-helper-buffer-short-write",
+    "file-helper-buffer-flush",
+    "file-helper-buffer-close",
+    "file-helper-buffer-first-error",
+    "file-helper-buffer-success",
+    "file-helper-buffer-filesystem",
+    "file-helper-buffer-dev-full",
+    "file-helper-legacy-compatibility",
+    "file-helper-legacy-completion",
+    "fork-child-healthy",
+    "fork-child-healthy-recovery",
+    "fork-child-parent-death",
+    "fork-child-prctl-failure",
+    "fork-child-parent-race",
+    "fork-child-initial-first-sigmask",
+    "fork-child-initial-last-sigmask",
+    "fork-child-recovery-sigmask",
+    "fork-child-initial-first-stdout-dup2",
+    "fork-child-initial-last-stdout-dup2",
+    "fork-child-recovery-stdout-dup2",
+    "fork-child-initial-first-stdin-dup2",
+    "fork-child-initial-last-stdin-dup2",
+    "fork-child-recovery-stdin-dup2",
+    "replay-controller-clean",
+    "replay-controller-zero",
+    "replay-controller-empty-archive",
+    "replay-controller-lost",
+    "replay-controller-lost-progress",
+    "replay-controller-mixed-success-first",
+    "replay-controller-mixed-loss-first",
+    "replay-controller-recover",
+    "replay-controller-skip-graphics",
+    "replay-controller-skip-compute",
+    "replay-controller-skip-raytracing",
+    "replay-controller-skip-graphics-final",
+    "replay-controller-skip-compute-final",
+    "replay-controller-skip-raytracing-final",
+    "replay-controller-skip-graphics-progress",
+    "replay-controller-skip-graphics-final-progress",
+    "replay-controller-partial",
+    "replay-controller-loss-after-retry",
+    "replay-controller-held-sibling",
+    "replay-controller-signal",
+    "replay-controller-status-error",
+    "replay-controller-outcome-state",
+    "replay-controller-cli-normal",
+    "replay-controller-cli-master",
+    "replay-controller-cli-progress",
+    "replay-controller-cli-e5",
+    "replay-controller-cli-e6",
+    "replay-controller-cli-parser-normal",
+    "replay-controller-cli-parser-child",
+    "replay-controller-cli-compatibility",
+    "replay-cache-creation-rerun",
+    "replay-cache-success-policy",
+    "replay-cache-loop",
+    "replay-cache-compile-required",
+    "replay-cache-write-failure",
+    "replay-cache-legacy-provenance",
+    "replay-cache-null-provenance",
+    "replay-cache-whitelist",
+    "replay-cache-legacy-invocation",
+    "replay-outcome-state",
+    "replay-outcome-parse-read",
+    "replay-outcome-creation",
+    "replay-outcome-compile-required-loop",
+    "replay-outcome-support",
+    "replay-outcome-setup-dependency",
+    "replay-outcome-worker-queue",
+    "replay-outcome-matrix",
+    "replay-outcome-validation",
+    "replay-outcome-entry-good",
+    "replay-outcome-entry-create",
+    "replay-outcome-entry-layout",
+    "replay-outcome-entry-device",
+    "replay-outcome-cli-e7",
+    "replay-outcome-cli-missing",
+    "replay-outcome-cli-unsupported",
+    "replay-outcome-cli-unsupported-shader",
+    "replay-outcome-cli-library",
+    "replay-outcome-cli-mixed",
+    "replay-outcome-cli-good",
+    "replay-outcome-cli-empty",
+    "replay-outcome-cli-missinghash",
+    "replay-outcome-cli-emptyhash",
+    "replay-outcome-cli-selection",
+    "replay-outcome-cli-hashselection",
+    "replay-outcome-cli-whitelist",
+    "replay-outcome-cli-compatibility",
+    "replay-outcome-cli-validation",
+    "replay-outcome-controller-success-first-absent",
+    "replay-outcome-controller-success-first-progress",
+    "replay-outcome-controller-failure-first-absent",
+    "replay-outcome-controller-failure-first-progress",
+    "replay-timeout-unit-deadlines",
+    "replay-timeout-unit-reset",
+    "replay-timeout-unit-delivery",
+    "replay-timeout-unit-unknown",
+    "replay-timeout-unit-protocol",
+    "replay-timeout-controller-context-progress-1",
+    "replay-timeout-controller-context-progress-2",
+    "replay-timeout-controller-context-stall-1",
+    "replay-timeout-controller-context-stall-2",
+    "replay-timeout-controller-context-normal-1",
+    "replay-timeout-controller-context-normal-2",
+    "replay-timeout-controller-cancel-int",
+    "replay-timeout-controller-cancel-term",
+    "replay-timeout-controller-clean",
+    "replay-timeout-controller-no-progress",
+    "replay-timeout-controller-heartbeat",
+    "replay-timeout-controller-heartbeat-reset",
+    "replay-timeout-controller-cleanup",
+    "replay-timeout-controller-spontaneous",
+    "replay-timeout-controller-escalation",
+    "replay-timeout-controller-delivery-failure",
+    "replay-timeout-controller-kill-failure",
+    "replay-timeout-controller-external-kill",
+    "replay-timeout-controller-multithread",
+    "replay-timeout-controller-recovery",
+    "replay-timeout-controller-protocol",
+    "replay-timeout-controller-dispatcher-reset",
+    "replay-timeout-controller-dispatcher-disabled",
+    "replay-timeout-controller-ordinary-no-progress",
+    "replay-timeout-controller-ordinary-delivery-failure",
+    "replay-timeout-controller-timer-create-failure",
+    "replay-timeout-controller-timer-arm-failure",
+    "replay-timeout-controller-timer-register-failure",
+    "replay-timeout-controller-heartbeat-timer-create-failure",
+    "replay-timeout-controller-heartbeat-timer-arm-failure",
+    "replay-timeout-controller-heartbeat-timer-register-failure",
+    "replay-timeout-controller-heartbeat-timer-read-failure",
+    "replay-timeout-controller-heartbeat-timer-rearm-failure",
+    "parser-input-envelope",
+    "parser-input-containers",
+    "parser-input-shader",
+    "parser-input-link",
+    "parser-input-diagnostics",
+    "parser-input-valid",
+    "parser-input-mutations",
+    "parser-input-containment",
+    "replay-event-unit-roundtrip",
+    "replay-event-unit-unknown",
+    "replay-event-unit-streaming",
+    "replay-event-unit-malformed",
+    "replay-event-unit-negotiation",
+    "replay-event-unit-attempts",
+    "replay-event-unit-legacy",
+    "replay-event-unit-mutations",
+    "replay-event-unit-startup",
+    "replay-event-producer-parse",
+    "replay-event-producer-creation",
+    "replay-event-controller-clean",
+    "replay-event-controller-empty",
+    "replay-event-controller-parse",
+    "replay-event-controller-initial-parse",
+    "replay-event-controller-creation",
+    "replay-event-controller-progress",
+    "replay-event-controller-pre-report-death",
+    "replay-event-controller-missing-final",
+    "replay-event-controller-missing-final-origin",
+    "replay-event-controller-truncated",
+    "replay-event-controller-truncated-prefix",
+    "replay-event-controller-truncated-length",
+    "replay-event-controller-truncated-payload",
+    "replay-event-controller-truncated-newline",
+    "replay-event-controller-unknown",
+    "replay-event-controller-unknown-version",
+    "replay-event-controller-oversized",
+    "replay-event-controller-drop-hello",
+    "replay-event-controller-duplicate-final",
+    "replay-event-controller-abnormal-final",
+    "replay-event-controller-timeout",
+    "replay-event-controller-retry",
+    "replay-event-producer-timeout",
+    "replay-event-old-header-compatibility",
+    "replay-event-controller-startup-close",
+    "replay-event-controller-startup-hash-close",
+    "replay-event-controller-startup-input",
+    "database-discovery-empty",
+    "database-discovery-truncated-zero",
+    "database-discovery-prefix",
+    "database-discovery-inputs",
+    "database-discovery-errors",
+    "database-discovery-filters",
+    "database-discovery-metadata",
+    "replay-selection-filters",
+    "replay-selection-ranges",
+    "replay-selection-prefix-policy",
+    "replay-selection-hints",
+    "replay-discovery-cli-empty",
+    "replay-discovery-cli-truncated-zero",
+    "replay-discovery-cli-prefix",
+    "replay-discovery-cli-required",
+    "replay-discovery-cli-optional",
+    "replay-discovery-cli-selection",
+    "replay-discovery-legacy-invocations",
+    "database-discovery-old-header-compatibility"
+  ],
+  "finding_response": {
+    "id": "F20-COMPOSITE-IO-REGRESSION",
+    "implementation_status": "all five requested bounded assertion changes added and exercised",
+    "independent_resolution": "Pending fresh checker; implementer does not accept work or resolve finding.",
+    "requested_changes": [
+      {
+        "implementation": "Exact complete requested input table and deduplicated known logical union for primary/no-primary/duplicates. Eight composite opened-child rows fail second payload seek or second header read (known EIO or unknown errno0), required/optional policy and adapter-disabled healthy controls. Assert Failed origin/raw/boundary/count after child discard, healthy payload readback, and named optional unknown exclusion through production selection helper.",
+        "request": 1,
+        "tests": [
+          "database-discovery-inputs"
+        ]
+      },
+      {
+        "implementation": "Independently known exact prefilter/filtered/selected/dispatch keys and unique key/policy exclusion tuples, including full range/hash complements and implicit whitelist; all three tags and original sorted/clamping controls preserved.",
+        "request": 2,
+        "tests": [
+          "database-discovery-filters",
+          "replay-selection-filters",
+          "replay-selection-ranges"
+        ]
+      },
+      {
+        "implementation": "Actual OS metadata handles preserve every input scalar including filter and exact discovered/selected/excluded keys and policies. Original six rows retained; seventh row meaningfully combines whitelist and blacklist with distinct named exclusions and blacklist_present=true. Existing payload and malformed-bound controls retained.",
+        "request": 3,
+        "tests": [
+          "database-discovery-metadata"
+        ]
+      },
+      {
+        "implementation": "Present retained hash and nonzero narrowed range remain unsuccessful against unknown required tail; all retained work hinted remains unsuccessful for all three pipeline kinds. Typed helper checks exact retained selection/exclusion/requested policy, production run checks nonzero status/no calls/no fabricated completed work and named required input/boundary uncertainty. Existing zero/quiet/progress/healthy/explicit-prefix controls retained.",
+        "request": 4,
+        "tests": [
+          "replay-selection-prefix-policy",
+          "replay-selection-hints"
+        ]
+      },
+      {
+        "implementation": "Two retained compute items, one real harvested success hint: selected201/202, excluded201 with ReplayV1Hint, dispatch202 and exactly one API creation. Private producer observer asserts actual tuple(RESOURCE_COMPUTE_PIPELINE,0x202,original index1); stable prehint hashes and worker index2 retained, successful count1/cached exclusion separate.",
+        "request": 5,
+        "tests": [
+          "replay-selection-hints"
+        ]
+      }
+    ]
+  },
+  "findings": [],
+  "input_revision": 415,
+  "input_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+  "limitations": [
+    "Native Windows was explicitly user-waived only for this issue/run and remains NOT RUN/unverified.",
+    "This implementer ran full Debug exceptions-OFF, affected Release exceptions-OFF cases and planned ASan+UBSan subset; full four-configuration matrix, repeated91-case set, baseline oracle and all five isolated mutation controls require fresh independent execution at679. Prior candidate evidence remains historical.",
+    "No GPU, real driver compilation, Steam, driver cache hit, output persistence, general prebuilt C++ binary ABI or mixed-version private-metadata claim.",
+    "Reused implementation build directories lacked compile_commands.json; exact effective compiler/feature flags were read from existing CMake caches and generated Ninja target blocks, retaining GNU13.3.0 compiler metadata.",
+    "Finding resolution and acceptance remain independent checker responsibilities."
+  ],
+  "next_action": "Coordinator observes clean result candidate679085c45ff02af180739bb578691b31b2537720, publishes this report/records unchanged and dispatches a fresh independent checker for all12 planned cases and all6 required Linux gates; do not accept or resolve based on implementer evidence.",
+  "observations": [
+    "No new shipping hook, large file fixture, chmod-dependent behavior, design replan or acceptance reduction was added.",
+    "Every added assertion uses Release-active DiagnosticChecks; registrations and279-test full CPU inventory remain unchanged.",
+    "All13 actually executed published commands have coordinator-settled exact receipts; five unused e9 commands were not executed. Canonical final settlement observed at revision448 with confirmed publication and null artifact_wait.",
+    "Input report tuple remains the supplied revision415/2b7e821 envelope; resulting source SHA is separately679085c45ff02af180739bb578691b31b2537720."
+  ],
+  "operation": "repair",
+  "plan_version": 2,
+  "records_file": "/tmp/fossilize-h20/implementer-assertions-records.json",
+  "result": "repair_implemented_ready_for_independent_checking",
+  "result_candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+  "role": "implementer",
+  "root_issue": "https://github.com/robinwassen/Fossilize/issues/20",
+  "run_id": "issue-20-20261110",
+  "summary": "Completed all five bounded planned assertion additions after a full12-case audit; current committed candidate passes Debug focused7/full279, Release focused7 and ASan+UBSan29. Initial focused test-oracle failures retained as historical evidence; no product failure established.",
+  "test_mapping": [
+    {
+      "case": "D20-empty-e9",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/database_discovery_test.cpp",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-empty",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-truncated-zero",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-prefix-read",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/database_discovery_test.cpp",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-prefix",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-input-policy",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/database_discovery_test.cpp",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-inputs",
+          "runs": [
+            {
+              "run": "i20-a4-r1-focused-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-focused-release",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-errors-unknown",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/database_discovery_test.cpp",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-errors",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-filter-scope",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/database_discovery_test.cpp and test/replay_selection_test.cpp",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-filters",
+          "runs": [
+            {
+              "run": "i20-a4-r1-focused-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-focused-release",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "runs": [
+            {
+              "run": "i20-a4-r1-focused-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-focused-release",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-range-scope",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/replay_selection_test.cpp",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "replay-selection-ranges",
+          "runs": [
+            {
+              "run": "i20-a4-r1-focused-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-focused-release",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-prefix-policy",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/replay_selection_test.cpp",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "replay-selection-prefix-policy",
+          "runs": [
+            {
+              "run": "i20-a4-r1-focused-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-focused-release",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-replay-hints",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/replay_selection_test.cpp with production ThreadedReplayer dispatch",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "replay-selection-hints",
+          "runs": [
+            {
+              "run": "i20-a4-r1-focused-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-focused-release",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-metadata-transfer",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/database_discovery_test.cpp",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-metadata",
+          "runs": [
+            {
+              "run": "i20-a4-r1-focused-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-focused-release",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            },
+            {
+              "run": "i20-a4-r1-run-asan",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-production-modes",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/replay_discovery_cli.cmake and production-including replay_selection_test.cpp",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "replay-discovery-cli-empty",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-truncated-zero",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-prefix",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-required",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-optional",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-selection",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-compatibility",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/replay_discovery_compatibility.cmake and test/database_discovery_compatibility_test.cpp",
+      "scope": "Existing registered assertions retained or strengthened; current runtime checks listed. No independent acceptance inferred.",
+      "tests": [
+        {
+          "id": "database-discovery-old-header-compatibility",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-legacy-invocations",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-event-old-header-compatibility",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "diagnostic-compatibility-test",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-controller-cli-compatibility",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "id": "replay-outcome-cli-compatibility",
+          "runs": [
+            {
+              "run": "i20-a4-r1-full-debug",
+              "source_sha": "679085c45ff02af180739bb578691b31b2537720",
+              "status": "passed"
+            }
+          ],
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-defect-sensitivity",
+      "criteria": [
+        "AC1"
+      ],
+      "location": "test/replay_discovery_cli.cmake baseline mode and isolated mutations",
+      "scope": "Actual current-candidate execution only; no gate or independent acceptance inferred. Isolated baseline/mutation controls remain for fresh independent checking.",
+      "tests": [
+        {
+          "id": "replay-discovery-original-defect",
+          "runs": [],
+          "status": "not_run_in_this_implementer"
+        },
+        {
+          "id": "database-discovery-sensitivity",
+          "runs": [],
+          "status": "not_run_in_this_implementer"
+        },
+        {
+          "id": "replay-selection-sensitivity",
+          "runs": [],
+          "status": "not_run_in_this_implementer"
+        }
+      ]
+    }
+  ],
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
+  "worker_id": "/root/implementer_assertions20"
+}
