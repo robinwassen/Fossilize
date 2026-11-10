@@ -190,6 +190,7 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "attempt_id": "text-checker-repair-1",
       "case": "M19-text-grouping",
       "criteria": [
         "AC1"
@@ -198,9 +199,27 @@
       "id": "H19-TEXT-CF2-01",
       "location": "cli/fossilize_feature_filter.cpp:4874; cli/fossilize_feature_filter.cpp:4950; cli/replay_warnings.hpp:77",
       "priority": 2,
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+        "candidate_sha": "c57dfc70b6a1f2abdbefb31aa0c90ba4a6ce3c94",
+        "evidence": [
+          "Both actual render-pass APIs, attachment/subpass flags predicates, and two varying rejected masks execute through real enqueue paths: eight Unsupported observations, zero Vulkan creates, two groups of four, supported before/after, two exact human count lines. Registered replay-warning-grouping passed in all four configurations and ASan+UBSan.",
+          "The original independently compiled actual-detector counterexample now exits0 with first=VkAttachmentDescription.flags available7, second=VkSubpassDescription.flags available143 and groups2.",
+          "An independent isolated mutation collapsing only the two predicate identifiers back to flags compiled0 and exited1 on precise M19/distinct-render-pass-predicate-context and related production grouping assertions; captured output has one cause/eight observations. No crash, compile failure or watchdog counts as sensitivity."
+        ],
+        "evidence_record": "runs/issue-19/issue19-text-warnings-20261110/evidence/text-checker-repair-1-verification.json",
+        "finding_id": "H19-TEXT-CF2-01",
+        "intents": [
+          "text-cr1-collapse-build",
+          "text-cr1-collapse-run",
+          "text-cr1-predicate-probe-build",
+          "text-cr1-predicate-probe-run",
+          "text-cr1-strict"
+        ]
+      },
       "required_change": "Give these existing predicates distinct stable identities or bounded predicate contexts, and strengthen registered replay-warning-grouping using actual same-resource attachment/subpass detectors. Preserve coalescing of varying requested values within one predicate, fixed bounds and existing decisions.",
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Preserve predicate identity for nested render-pass flags"
     }
   ],
@@ -9535,7 +9554,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 337,
+  "revision": 338,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
