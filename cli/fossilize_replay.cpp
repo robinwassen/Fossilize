@@ -657,6 +657,7 @@ struct ThreadedReplayer : StateCreatorInterface
 	ReplayItemOutcome outcome;
 	ReplayWarnings warnings;
 	bool events_finished = false;
+	std::mutex finalization_mutex;
 	std::function<bool(const char *)> event_writer;
 	std::mutex event_mutex;
 	uint64_t event_worker = 0, event_attempt = 0, emitted_events = 0, omitted_events = 0;
@@ -767,6 +768,8 @@ struct ThreadedReplayer : StateCreatorInterface
 	}
 	void finish_events(int status)
 	{
+		std::lock_guard<std::mutex> finalization(finalization_mutex);
+		tear_down_threads();
 		warnings.finish(event_worker, event_attempt, [](const char *line) { LOGW("%s\n", line); });
 		std::lock_guard<std::mutex> hold(event_mutex);
 		if (events_finished) return;
@@ -2324,6 +2327,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	~ThreadedReplayer()
 	{
+		std::lock_guard<std::mutex> finalization(finalization_mutex);
 		tear_down_threads();
 		warnings.finish(event_worker, event_attempt, [](const char *line) { LOGW("%s\n", line); });
 		flush_pipeline_cache();
