@@ -5096,7 +5096,32 @@
         "eligible_deadline": 1794315738.6909828,
         "intent_id": "i20-span3-asan-tests",
         "started": 1794314015.037712,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1794315309.7261286,
+          "command": [
+            "env",
+            "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+            "/tmp/fossilize-h20/toolenv/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+            "--output-junit",
+            "/tmp/fossilize-h20/output/implementer-span-3/asan-tests.xml"
+          ],
+          "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+          "exit_code": 0,
+          "finished": 1794315313.697884,
+          "intent_id": "i20-span3-asan-tests",
+          "started": 1794315309.7237628,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "child_command": [
@@ -6301,7 +6326,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 268,
+  "revision": 269,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
