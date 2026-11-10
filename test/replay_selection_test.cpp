@@ -10,6 +10,20 @@ extern "C" int __wrap_fseek(FILE *file, long offset, int origin)
 }
 #endif
 
+#include <set>
+#include <tuple>
+using ReplayExcludedTuple=std::tuple<ResourceTag,Hash,ReplayExclusionPolicy>;
+static void exact_replay_excluded(const std::vector<ReplaySelectionExclusion> &actual,const std::set<ReplayExcludedTuple> &expected,const std::string &id)
+{
+ std::set<ReplayExcludedTuple> found;for(auto &e:actual)found.emplace(e.key.tag,e.key.hash,e.policy);
+ checks.require(found==expected&&found.size()==actual.size(),id);
+}
+static std::vector<DiscoveryKey> selection_universe()
+{
+ return {{RESOURCE_GRAPHICS_PIPELINE,0x10},{RESOURCE_GRAPHICS_PIPELINE,0x20},{RESOURCE_GRAPHICS_PIPELINE,0x30},
+         {RESOURCE_COMPUTE_PIPELINE,0x10},{RESOURCE_COMPUTE_PIPELINE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x30},
+         {RESOURCE_RAYTRACING_PIPELINE,0x10},{RESOURCE_RAYTRACING_PIPELINE,0x20},{RESOURCE_RAYTRACING_PIPELINE,0x30}};
+}
 static void selection_input(const char *path)
 {
  std::unique_ptr<DatabaseInterface> db(create_stream_archive_database(path,DatabaseMode::OverWrite));
@@ -25,21 +39,33 @@ static void ranges()
  {
   unsigned starts[]={row.begin,row.begin,row.begin},ends[]={row.end,row.end,row.end};
   auto report=select_replay_scope(*db,starts,ends,0,false);
-  checks.require(report.scope_satisfied&&report.preparation.discovered.size()==9,"D20/ranges-complete-universe");
-  std::vector<DiscoveryKey> expected;
+  checks.require(report.scope_satisfied&&report.preparation.discovered==selection_universe()&&report.preparation.selected==selection_universe()&&report.preparation.excluded.empty(),"D20/ranges-complete-universe");
+  std::vector<DiscoveryKey> expected;std::set<ReplayExcludedTuple> excluded;
   for (unsigned i=0;i<3;i++)
   {
    auto &r=report.ranges[i];checks.require(r.requested_begin==row.begin&&r.requested_end==row.end&&r.effective_begin==row.actual_begin&&r.effective_end==row.actual_end,"D20/range-requested-effective");
    std::vector<Hash> hashes;
    for(unsigned j=row.actual_begin;j<row.actual_end;j++){hashes.push_back((j+1)*0x10);expected.push_back({replay_pipeline_tags[i],(j+1)*0x10});}
    checks.require(report.stable_hashes[i]==hashes,"D20/range-exact-stable-hashes");
+   // Complement comes from fixture identities, never from the returned selection.
+   for(unsigned j=0;j<3;j++)if(j<row.actual_begin||j>=row.actual_end)excluded.emplace(replay_pipeline_tags[i],(j+1)*0x10,ReplayExclusionPolicy::Range);
   }
   checks.require(report.selected==expected&&report.dispatch==expected&&report.excluded.size()==9-expected.size(),"D20/range-exact-selection-and-exclusions");
   for(auto &e:report.excluded)checks.require(e.policy==ReplayExclusionPolicy::Range&&std::find(expected.begin(),expected.end(),e.key)==expected.end(),"D20/range-exclusions-are-policy");
+  exact_replay_excluded(report.excluded,excluded,"D20/range-exact-excluded-complement-unique");
  }
  unsigned starts[]={0,0,0},ends[]={~0u,~0u,~0u};
  auto hit=select_replay_scope(*db,starts,ends,0x20,false),miss=select_replay_scope(*db,starts,ends,0x99,false);
  checks.require(hit.scope_satisfied&&hit.selected.size()==3&&hit.excluded.size()==6&&miss.selected.empty()&&!miss.hash_found&&!miss.scope_satisfied,"D20/hash-exact-and-missing");
+ const std::vector<DiscoveryKey> hits={{RESOURCE_GRAPHICS_PIPELINE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x20},{RESOURCE_RAYTRACING_PIPELINE,0x20}};
+ checks.require(hit.selected==hits&&hit.dispatch==hits&&hit.hash_found&&hit.requested_hash==0x20&&miss.requested_hash==0x99&&miss.dispatch.empty(),"D20/hash-exact-selected-dispatch-identity");
+ std::set<ReplayExcludedTuple> hit_excluded,miss_excluded;
+ for(auto tag:replay_pipeline_tags)for(Hash h:{0x10u,0x20u,0x30u})
+ {miss_excluded.emplace(tag,h,ReplayExclusionPolicy::HashSelection);if(h!=0x20)hit_excluded.emplace(tag,h,ReplayExclusionPolicy::HashSelection);}
+ exact_replay_excluded(hit.excluded,hit_excluded,"D20/hash-hit-exact-excluded-complement-unique");
+ exact_replay_excluded(miss.excluded,miss_excluded,"D20/hash-miss-exact-excluded-complement-unique");
+ checks.require(hit.preparation.discovered==selection_universe()&&miss.preparation.discovered==selection_universe(),"D20/hash-exact-prefilter-universe");
+ for(unsigned i=0;i<3;i++)checks.require(hit.stable_hashes[i]==std::vector<Hash>({0x20})&&hit.ranges[i].effective_begin==1&&hit.ranges[i].effective_end==2&&miss.stable_hashes[i].empty(),"D20/hash-stable-original-indices");
 }
 static void policy_compositions()
 {
@@ -89,6 +115,29 @@ static void prefix_policy()
  auto full=select_replay_scope(*db,starts,ends,0,false),prefix=select_replay_scope(*db,starts,ends,0,true);
  checks.require(!full.scope_satisfied&&full.selected.empty()&&!full.preparation.unread_total_known,"D20/zero-selection-cannot-certify-unknown");
  checks.require(prefix.scope_satisfied&&prefix.recovered_prefix_requested&&!prefix.preparation.discovery_complete&&!prefix.preparation.unread_total_known&&prefix.preparation.inputs[0].prefix_end>16,"D20/explicit-prefix-names-known-byte-scope");
+ const std::vector<DiscoveryKey> retained={{RESOURCE_COMPUTE_PIPELINE,0x201},{RESOURCE_COMPUTE_PIPELINE,0x202}};
+ // Both policies select real retained work; neither proves an unread required tail.
+ for(bool by_hash:{false,true})
+ {
+  unsigned narrowed_starts[]={0,1,0},narrowed_ends[]={~0u,2,~0u};
+  auto selected=select_replay_scope(*db,narrowed_starts,narrowed_ends,by_hash?0x202:0,false);
+  checks.require(!selected.scope_satisfied&&!selected.selected_total_known&&selected.preparation_succeeded&&selected.hash_found&&selected.requested_hash==(by_hash?0x202u:0u)&&!selected.recovered_prefix_requested&&
+   selected.selected==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x202}})&&selected.dispatch==selected.selected&&
+   selected.stable_hashes[1]==std::vector<Hash>({0x202})&&selected.ranges[1].requested_begin==1&&selected.ranges[1].requested_end==2&&selected.ranges[1].effective_begin==1&&selected.ranges[1].effective_end==2&&
+   !selected.preparation.discovery_complete&&!selected.preparation.unread_total_known,"D20/unknown-required-present-hash-nonzero-range-stays-unsatisfied");
+  exact_replay_excluded(selected.excluded,{{RESOURCE_COMPUTE_PIPELINE,0x201,by_hash?ReplayExclusionPolicy::HashSelection:ReplayExclusionPolicy::Range}},"D20/unknown-required-narrowed-exact-exclusion");
+  auto opts=Replay::options(1,nullptr);opts.start_compute_index=1;opts.end_compute_index=2;if(by_hash)opts.pipeline_hash=0x202;
+  ThreadedReplayer replay(device_options(),opts);marker_mode=true;results={VK_SUCCESS};calls=0;
+  int status=run_normal_process(replay,{"prefix.foz"},nullptr,0,-1);marker_mode=false;auto &report=replay.selection_report;
+  checks.require(status==1&&calls==0&&!replay.outcome.succeeded()&&replay.compute_pipeline_count.load()==0&&!replay.work_drained&&
+   report.preparation_succeeded&&!report.scope_satisfied&&!report.selected_total_known&&!report.recovered_prefix_requested&&report.selected.empty()&&report.dispatch.empty()&&
+   !report.preparation.discovery_complete&&!report.preparation.unread_total_known,"D20/production-unknown-required-narrowed-work-no-fabricated-completion");
+  checks.require(replay.opts.start_compute_index==1&&replay.opts.end_compute_index==2&&replay.opts.pipeline_hash==(by_hash?0x202u:0u)&&report.preparation.inputs.size()==1,"D20/production-unknown-required-requested-policy");
+  if(report.preparation.inputs.size()==1){auto &input=report.preparation.inputs[0];checks.require(input.path=="prefix.foz"&&input.index==0&&input.required&&!input.filter&&input.opened&&input.state==DiscoveryState::RecoveredPrefix&&input.reason==DiscoveryReason::TruncatedHeader&&input.boundary_known&&input.prefix_end+1==cache_bytes("prefix.foz").size()&&input.unread_offset==input.prefix_end&&!input.total_known,"D20/production-unknown-required-exact-input-boundary");}
+  std::vector<DiscoveryKey> known;for(auto key:report.preparation.discovered)if(key.tag==RESOURCE_COMPUTE_PIPELINE)known.push_back(key);
+  checks.require(known==retained,"D20/production-unknown-required-known-retained-pipelines");
+ }
+
  for (bool accept:{false,true})
  {
   auto opts=Replay::options(1,nullptr);opts.accept_recovered_prefix=accept; ThreadedReplayer r(device_options(),opts);
@@ -135,6 +184,15 @@ static void selection_filters()
  std::unique_ptr<DatabaseInterface> db(create_stream_archive_database("filter.foz",DatabaseMode::ReadOnly));db->set_input_required(0,true);checks.require(db->load_whitelist_database("white.foz")&&db->prepare(),"D20/selection-filter-prepare");
  unsigned starts[]={1,1,1},ends[]={2,2,2};auto r=select_replay_scope(*db,starts,ends,0,false);
  checks.require(r.preparation.discovered.size()==9&&r.preparation.selected.size()==6&&r.selected.size()==3&&r.excluded.size()==6,"D20/filter-before-range-exact-universe");
+ const std::vector<DiscoveryKey> filtered={{RESOURCE_GRAPHICS_PIPELINE,0x20},{RESOURCE_GRAPHICS_PIPELINE,0x30},{RESOURCE_COMPUTE_PIPELINE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x30},{RESOURCE_RAYTRACING_PIPELINE,0x20},{RESOURCE_RAYTRACING_PIPELINE,0x30}};
+ const std::vector<DiscoveryKey> selected={{RESOURCE_GRAPHICS_PIPELINE,0x30},{RESOURCE_COMPUTE_PIPELINE,0x30},{RESOURCE_RAYTRACING_PIPELINE,0x30}};
+ checks.require(r.preparation.discovered==selection_universe()&&r.preparation.selected==filtered&&r.selected==selected&&r.dispatch==selected,"D20/filter-before-range-exact-key-sets");
+ std::set<ReplayExcludedTuple> excluded;for(auto tag:replay_pipeline_tags){excluded.emplace(tag,0x10,ReplayExclusionPolicy::Whitelist);excluded.emplace(tag,0x20,ReplayExclusionPolicy::Range);}
+ exact_replay_excluded(r.excluded,excluded,"D20/filter-before-range-exact-excluded-complement-unique");
+ checks.require(r.preparation.excluded.size()==3,"D20/filter-exact-prefilter-exclusion-count");
+ std::set<std::tuple<ResourceTag,Hash,DiscoveryExclusion>> preparation_excluded;
+ for(auto &e:r.preparation.excluded)preparation_excluded.emplace(e.key.tag,e.key.hash,e.policy);
+ checks.require(preparation_excluded==std::set<std::tuple<ResourceTag,Hash,DiscoveryExclusion>>({{RESOURCE_GRAPHICS_PIPELINE,0x10,DiscoveryExclusion::Whitelist},{RESOURCE_COMPUTE_PIPELINE,0x10,DiscoveryExclusion::Whitelist},{RESOURCE_RAYTRACING_PIPELINE,0x10,DiscoveryExclusion::Whitelist}})&&preparation_excluded.size()==r.preparation.excluded.size(),"D20/filter-exact-prefilter-exclusion-tuples");
  for(unsigned i=0;i<3;i++)checks.require(r.stable_hashes[i]==std::vector<Hash>({0x30}),"D20/filter-before-range-exact-hashes");
  // Real production dispatch uses the same report and preserves excluded work as policy.
  checks.require(fixture("good","good.foz"),"D20/production-filter-fixture");seed_cache("one.foz",RESOURCE_COMPUTE_PIPELINE,0x202);
@@ -154,6 +212,37 @@ static void hints()
   int status=run_normal_process(replay,{input.c_str()},nullptr,0,-1);marker_mode=false;auto &r=replay.selection_report;
   checks.require(status==0&&calls==0&&r.selected==std::vector<DiscoveryKey>({{cache_tags[kind],cache_hash(kind)}})&&r.dispatch.empty(),"D20/hints-exact-production-suppression");
   checks.require(r.stable_hashes[kind]==std::vector<Hash>({cache_hash(kind)})&&r.ranges[kind].effective_begin==0&&r.excluded.size()==1&&r.excluded[0].policy==ReplayExclusionPolicy::ReplayV1Hint&&r.excluded[0].key==r.selected[0],"D20/hints-preserve-stable-index-and-policy");
+  {FILE *f=fopen(input.c_str(),"ab");checks.require(f!=nullptr,"D20/hinted-unknown-tail-open");if(f){fputc('x',f);fclose(f);}}
+  std::unique_ptr<DatabaseInterface> source(create_stream_archive_database(input.c_str(),DatabaseMode::ReadOnly));checks.require(source->prepare(),"D20/hinted-unknown-tail-salvage");
+  std::unordered_set<Hash> all_hints[RESOURCE_COUNT];all_hints[cache_tags[kind]].insert(cache_hash(kind));unsigned starts[]={0,0,0},ends[]={~0u,~0u,~0u};
+  auto unknown=select_replay_scope(*source,starts,ends,0,false,all_hints);
+  checks.require(!unknown.scope_satisfied&&!unknown.selected_total_known&&unknown.selected==std::vector<DiscoveryKey>({{cache_tags[kind],cache_hash(kind)}})&&unknown.dispatch.empty()&&!unknown.preparation.discovery_complete&&!unknown.preparation.unread_total_known,"D20/all-retained-hinted-unknown-required-still-unsatisfied");
+  exact_replay_excluded(unknown.excluded,{{cache_tags[kind],cache_hash(kind),ReplayExclusionPolicy::ReplayV1Hint}},"D20/all-retained-hinted-exact-policy");
+  ThreadedReplayer failed(device_options(),opts);marker_mode=true;calls=0;
+  int failed_status=run_normal_process(failed,{input.c_str()},nullptr,0,-1);marker_mode=false;auto &failed_report=failed.selection_report;
+  checks.require(failed_status==1&&calls==0&&!failed.outcome.succeeded()&&!failed.work_drained&&failed.graphics_pipeline_count.load()==0&&failed.compute_pipeline_count.load()==0&&failed.raytracing_pipeline_count.load()==0&&failed_report.preparation_succeeded&&!failed_report.scope_satisfied&&!failed_report.selected_total_known&&failed_report.selected.empty()&&failed_report.dispatch.empty()&&!failed_report.preparation.discovery_complete&&!failed_report.preparation.unread_total_known,"D20/production-all-retained-hinted-does-not-hide-required-unknown");
+  checks.require(failed_report.preparation.inputs.size()==1,"D20/production-all-hinted-one-required-input");
+  if(failed_report.preparation.inputs.size()==1){auto &i=failed_report.preparation.inputs[0];checks.require(i.path==input&&i.required&&i.opened&&!i.filter&&i.state==DiscoveryState::RecoveredPrefix&&i.reason==DiscoveryReason::TruncatedHeader&&i.boundary_known&&i.prefix_end+1==cache_bytes(input).size()&&i.unread_offset==i.prefix_end&&!i.total_known,"D20/production-all-hinted-retains-required-unknown-boundary");}
+
+ }
+ // Seed one hint through real successful creation and fragment harvesting. The
+ // next unhinted pipeline must keep index 1 after the hinted index 0 is skipped.
+ checks.require(fixture("good","mixed-hints.foz"),"D20/mixed-hints-known-fixture");
+ std::string cache="mixed-hints-cache",base=policy_base(cache);clear_cache(base);
+ {
+  auto opts=Replay::options(1,nullptr);opts.replayer_cache_path=cache;opts.pipeline_hash=0x201;ThreadedReplayer seed(device_options(),opts);marker_mode=true;results={VK_SUCCESS};calls=0;
+  int status=run_normal_process(seed,{"mixed-hints.foz"},nullptr,0,-1);marker_mode=false;
+  checks.require(status==0&&calls==1&&seed.selection_report.dispatch==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x201}}),"D20/mixed-hints-real-successful-seed");
+ }
+ checks.require(harvest_cache(base,RESOURCE_COMPUTE_PIPELINE,0x201)==1,"D20/mixed-hints-harvest-only-successful-item");
+ {
+  SharedControlBlock progress={};auto opts=Replay::options(1,&progress);opts.replayer_cache_path=cache;ThreadedReplayer replay(device_options(),opts);marker_mode=true;results={VK_SUCCESS};calls=0;
+  int status=run_normal_process(replay,{"mixed-hints.foz"},nullptr,0,-1);marker_mode=false;auto &r=replay.selection_report;
+  const std::vector<DiscoveryKey> selected={{RESOURCE_COMPUTE_PIPELINE,0x201},{RESOURCE_COMPUTE_PIPELINE,0x202}},dispatch={{RESOURCE_COMPUTE_PIPELINE,0x202}};
+  checks.require(status==0&&calls==1&&replay.outcome.succeeded()&&replay.work_drained&&r.scope_satisfied&&r.selected_total_known&&r.preparation.discovery_complete&&r.preparation.unread_total_known&&r.selected==selected&&r.dispatch==dispatch,"D20/mixed-hints-exact-successful-selected-dispatch-calls");
+  exact_replay_excluded(r.excluded,{{RESOURCE_COMPUTE_PIPELINE,0x201,ReplayExclusionPolicy::ReplayV1Hint}},"D20/mixed-hints-exact-unique-exclusion");
+  checks.require(std::string(r.hint_policy)=="replay-v1/device-mode/pipelineCacheUUID"&&r.stable_hashes[0].empty()&&r.stable_hashes[1]==std::vector<Hash>({0x201,0x202})&&r.stable_hashes[2].empty()&&r.ranges[1].effective_begin==0&&r.ranges[1].effective_end==2,"D20/mixed-hints-stable-pretreatment-order");
+  checks.require(replay.per_thread_data.size()==2&&replay.per_thread_data[1].current_compute_index==2&&replay.per_thread_data[1].current_compute_pipeline==0x202&&replay.compute_pipeline_count.load()==1&&progress.successful_compute.load()==1&&replay.graphics_pipeline_count.load()==0&&replay.raytracing_pipeline_count.load()==0,"D20/mixed-hints-actual-unhinted-creation-original-index-one");
  }
  cache_legacy_provenance();cache_null_provenance();cache_whitelist();
 }

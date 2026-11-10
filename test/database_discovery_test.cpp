@@ -1,4 +1,5 @@
 #include "fossilize_db.hpp"
+#include "../cli/replay_selection.hpp"
 #include "diagnostic_test.hpp"
 #include <algorithm>
 #include <memory>
@@ -6,6 +7,8 @@
 #include <cerrno>
 #include <limits>
 #include <atomic>
+#include <set>
+#include <tuple>
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -27,6 +30,25 @@ extern "C" dirent *__wrap_readdir(DIR *dir)
 }
 #endif
 using DB=std::unique_ptr<DatabaseInterface>;
+// Compare every scalar, including policy/filter bits, independently of serialization.
+static auto input_facts(const DiscoveryInput &i) -> decltype(std::tie(i.path,i.index,i.required,i.filter,i.opened,i.state,i.reason,i.raw_error_known,i.raw_error,i.boundary_known,i.prefix_end,i.unread_offset,i.total_known,i.retained_count))
+{ return std::tie(i.path,i.index,i.required,i.filter,i.opened,i.state,i.reason,i.raw_error_known,i.raw_error,i.boundary_known,i.prefix_end,i.unread_offset,i.total_known,i.retained_count); }
+static DiscoveryInput expected_input(const char *path,unsigned index,bool required,bool opened,DiscoveryState state,DiscoveryReason reason,bool raw_known,int64_t raw,bool boundary,uint64_t end,bool total,uint64_t count)
+{
+ DiscoveryInput i;i.path=path;i.index=index;i.required=required;i.opened=opened;i.state=state;i.reason=reason;
+ i.raw_error_known=raw_known;i.raw_error=raw;i.boundary_known=boundary;i.prefix_end=i.unread_offset=end;i.total_known=total;i.retained_count=count;return i;
+}
+static void exact_inputs(const std::vector<DiscoveryInput> &actual,const std::vector<DiscoveryInput> &expected,const std::string &id)
+{
+ c.require(actual.size()==expected.size(),id+"/count");
+ for(size_t i=0;i<actual.size()&&i<expected.size();i++)c.require(input_facts(actual[i])==input_facts(expected[i]),id+"/row-"+std::to_string(i));
+}
+using ExcludedTuple=std::tuple<ResourceTag,Hash,DiscoveryExclusion>;
+static void exact_excluded(const std::vector<DiscoveryExcludedKey> &actual,const std::set<ExcludedTuple> &expected,const std::string &id)
+{
+ std::set<ExcludedTuple> found;for(auto &e:actual)found.emplace(e.key.tag,e.key.hash,e.policy);
+ c.require(found==expected&&found.size()==actual.size(),id);
+}
 static std::vector<uint8_t> bytes(const char *path)
 {
  FILE *f=fopen(path,"rb"); c.require(f!=nullptr,"D20/file-open"); if(!f)return {};
@@ -219,17 +241,65 @@ static void inputs()
  make("base.foz",2); make("extra.foz",1);
  {DB extra(create_stream_archive_database("extra.foz",DatabaseMode::Append));c.require(extra->prepare()&&extra->write_entry(RESOURCE_SHADER_MODULE,0x20,nullptr,0,0),"D20/same-hash-different-tag");} save("invalid.foz",{1,2,3}); remove("absent.foz");
  const char *paths[]={"extra.foz","absent.foz","invalid.foz","extra.foz"};
+ const std::vector<DiscoveryKey> extras={{RESOURCE_SHADER_MODULE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x20}};
+ const std::vector<DiscoveryKey> with_base={{RESOURCE_SHADER_MODULE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x21}};
+ auto table=[&](bool primary,bool optional) {
+  std::vector<DiscoveryInput> expected;
+  if(primary)expected.push_back(expected_input("base.foz",0,true,true,DiscoveryState::Complete,DiscoveryReason::None,false,0,true,136,true,2));
+  expected.push_back(expected_input("extra.foz",1,true,true,DiscoveryState::Complete,DiscoveryReason::None,false,0,true,132,true,2));
+  expected.push_back(expected_input("absent.foz",2,!optional,false,DiscoveryState::Failed,DiscoveryReason::Open,true,ENOENT,false,0,false,0));
+  expected.push_back(expected_input("invalid.foz",3,!optional,true,DiscoveryState::Failed,DiscoveryReason::InvalidMagic,false,0,false,0,false,0));
+  expected.push_back(expected_input("extra.foz",4,!optional,true,DiscoveryState::Complete,DiscoveryReason::None,false,0,true,132,true,2));
+  return expected;
+ };
  DB defaults(create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,4));c.require(defaults->prepare(),"D20/default-legacy-tolerant-bool");auto default_report=defaults->get_preparation_report();
+ exact_inputs(default_report.inputs,table(false,false),"D20/default-complete-input-table");
  c.require(!default_report.satisfies_required_scope(),"D20/default-report-requires-requested-inputs");for(auto &input:default_report.inputs)c.require(input.required,"D20/default-report-explicit-required-policy");
+ c.require(!default_report.satisfies_required_scope()&&default_report.discovered==extras&&default_report.selected==extras&&default_report.excluded.empty(),"D20/default-exact-logical-union-required-policy");
  DB db(create_concurrent_database("base",DatabaseMode::ReadOnly,paths,4));
  db->set_input_required(0,true); db->set_input_required(1,true); db->set_input_required(2,true);
  c.require(db->prepare(),"D20/legacy-composite-tolerant"); auto r=db->get_preparation_report();
+ exact_inputs(r.inputs,table(true,false),"D20/primary-complete-input-table");
  c.require(r.inputs.size()==5&&r.discovered.size()==3&&r.selected.size()==3,"D20/input-observations-versus-logical-dedup");
  c.require(r.inputs[0].path=="base.foz"&&r.inputs[2].path=="absent.foz"&&r.inputs[2].index==2&&r.inputs[2].reason==DiscoveryReason::Open&&r.inputs[2].raw_error_known&&r.inputs[2].raw_error==ENOENT&&!r.inputs[2].opened,"D20/missing-origin-retained");
  c.require(r.inputs[3].opened&&r.inputs[3].reason==DiscoveryReason::InvalidMagic&&!r.inputs[3].raw_error_known&&!r.satisfies_required_scope(true),"D20/invalid-no-invented-errno");
+ c.require(r.discovered==with_base&&r.selected==with_base&&r.excluded.empty()&&!r.satisfies_required_scope(true)&&!r.discovery_complete&&!r.unread_total_known,"D20/input-observations-versus-exact-logical-dedup");
  db.reset(create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,4)); db->set_input_required(1,true);for(unsigned index:{2u,3u,4u})db->set_input_required(index,false);
  c.require(db->prepare(),"D20/no-primary-prepare"); r=db->get_preparation_report();
- c.require(r.inputs.size()==4&&r.inputs[0].index==1&&r.satisfies_required_scope()&&!r.discovery_complete&&!r.unread_total_known,"D20/optional-unknown-is-excluded-input");
+ exact_inputs(r.inputs,table(false,true),"D20/optional-complete-input-table");
+ c.require(r.discovered==extras&&r.selected==extras&&r.excluded.empty()&&r.satisfies_required_scope()&&!r.discovery_complete&&!r.unread_total_known,"D20/optional-unknown-is-excluded-input");
+#ifdef __linux__
+ // The first real opened child fails after one accepted entry; ConcurrentDatabase
+ // discards it. Both its observation and the healthy sibling must survive.
+ {DB writer(create_stream_archive_database("io-child.foz",DatabaseMode::OverWrite));c.require(writer->prepare(),"D20/composite-io-writer");
+  for(Hash h:{0x70u,0x71u,0x72u})c.require(writer->write_entry(RESOURCE_COMPUTE_PIPELINE,h,"data",4,0),"D20/composite-io-write");}
+ const char *io_paths[]={"io-child.foz","base.foz"};
+ for(unsigned mode=0;mode<4;mode++)for(bool required:{false,true})
+ {
+  DB composite(create_concurrent_database(nullptr,DatabaseMode::ReadOnly,io_paths,2));composite->set_input_required(1,required);
+  positive_seek_error=true;injected_read_errno=mode==2?0:EIO;
+  fail_seek=mode==0?4:0;fail_read=(mode==1||mode==2)?3:0;
+  bool prepared=composite->prepare();fail_seek=fail_read=0;positive_seek_error=false;injected_read_errno=EIO;
+  auto report=composite->get_preparation_report();bool healthy=mode==3;
+  c.require(prepared,"D20/composite-io-legacy-prepare");
+  exact_inputs(report.inputs,{
+   expected_input("io-child.foz",1,required,true,healthy?DiscoveryState::Complete:DiscoveryState::Failed,
+    healthy?DiscoveryReason::None:mode==0?DiscoveryReason::Seek:DiscoveryReason::Read,
+    !healthy&&mode!=2,healthy||mode==2?0:mode==0?ESPIPE:EIO,true,healthy?196:76,healthy,healthy?3:1),
+   expected_input("base.foz",2,true,true,DiscoveryState::Complete,DiscoveryReason::None,false,0,true,136,true,2)},"D20/composite-io-exact-input-table");
+  std::vector<DiscoveryKey> expected={{RESOURCE_COMPUTE_PIPELINE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x21}};
+  if(healthy)for(Hash h:{0x70u,0x71u,0x72u})expected.push_back({RESOURCE_COMPUTE_PIPELINE,h});
+  c.require(report.discovered==expected&&report.selected==expected&&report.excluded.empty(),"D20/composite-io-exact-live-logical-union");
+  c.require(bool(composite->get_sub_database(1))==healthy&&composite->get_sub_database(2)!=nullptr,"D20/composite-io-failed-child-actually-discarded");
+  c.require(report.discovery_complete==healthy&&report.unread_total_known==healthy&&report.satisfies_required_scope()==(healthy||!required)&&report.satisfies_required_scope(true)==(healthy||!required),"D20/composite-io-required-optional-unknown-policy");
+  unsigned starts[]={0,0,0},ends[]={~0u,~0u,~0u};auto scope=select_replay_scope(*composite,starts,ends,0,true);
+  c.require(scope.scope_satisfied==(healthy||!required)&&scope.selected_total_known==(healthy||!required)&&scope.selected==expected&&scope.dispatch==expected&&scope.excluded.empty()&&scope.preparation.unread_total_known==healthy,"D20/composite-io-exact-selected-prefix-policy");
+  exact_inputs(scope.optional_unavailable,healthy||required?std::vector<DiscoveryInput>{}:std::vector<DiscoveryInput>{report.inputs[0]},"D20/composite-io-named-optional-unknown-exclusion");
+  read_prefix(*composite,2);
+  c.require(!composite->has_entry(RESOURCE_COMPUTE_PIPELINE,0x70)||healthy,"D20/composite-io-discarded-prefix-is-not-live");
+  exact_inputs(composite->get_preparation_report().inputs,report.inputs,"D20/composite-io-observations-stable-after-readback");
+ }
+#endif
  DB append(create_concurrent_database("absent-capture",DatabaseMode::Append,paths,4));
  c.require(append->prepare(),"D20/capture-append-tolerant");
 }
@@ -255,14 +325,14 @@ static void filters()
  make("source.foz"); make("white.foz",2);
  {DB black(create_stream_archive_database("black.foz",DatabaseMode::OverWrite)); c.require(black->prepare()&&black->write_entry(RESOURCE_COMPUTE_PIPELINE,0x21,nullptr,0,0),"D20/black-fixture");}
  auto db=open("source.foz");c.require(db->load_whitelist_database("white.foz")&&db->load_blacklist_database("black.foz")&&db->prepare(),"D20/filter-load");auto r=db->get_preparation_report();
- c.require(r.discovered.size()==3&&r.selected==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x20}})&&r.excluded.size()==2,"D20/filter-preserves-prefilter-universe");
- c.require(r.excluded[0].key.hash==0x21&&r.excluded[0].policy==DiscoveryExclusion::Blacklist&&r.excluded[1].key.hash==0x22&&r.excluded[1].policy==DiscoveryExclusion::Whitelist,"D20/filter-distinct-policies");
+ c.require(r.discovered==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x21},{RESOURCE_COMPUTE_PIPELINE,0x22}})&&r.selected==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x20}})&&r.excluded.size()==2,"D20/filter-preserves-prefilter-universe");
+ exact_excluded(r.excluded,{{RESOURCE_COMPUTE_PIPELINE,0x21,DiscoveryExclusion::Blacklist},{RESOURCE_COMPUTE_PIPELINE,0x22,DiscoveryExclusion::Whitelist}},"D20/filter-distinct-exact-policies");
  c.require(r.whitelist_sensitive&&r.blacklist_present&&!(r.whitelist_tag_mask&(1u<<RESOURCE_SHADER_MODULE)),"D20/filter-effective-mask-shader-empty-whitelist");
  {DB source(create_stream_archive_database("shader.foz",DatabaseMode::OverWrite));c.require(source->prepare()&&source->write_entry(RESOURCE_SHADER_MODULE,0x99,nullptr,0,0),"D20/shader-fixture");}
  auto shader=open("shader.foz");c.require(shader->load_whitelist_database("white.foz")&&shader->prepare()&&shader->get_preparation_report().selected==std::vector<DiscoveryKey>({{RESOURCE_SHADER_MODULE,0x99}}),"D20/shader-empty-whitelist-preserves-modules");
  auto w=bytes("white.foz");w.push_back(1);save("bad-white.foz",w);db=open("source.foz");c.require(db->load_whitelist_database("bad-white.foz")&&db->prepare()&&!db->get_preparation_report().satisfies_required_scope(true),"D20/filter-truncated-required");
  const char *paths[]={"source.foz","white.foz"}; DB composite(create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,2)); composite->promote_sub_database_to_whitelist(2);
- c.require(composite->prepare(),"D20/implicit-prepare"); r=composite->get_preparation_report();c.require(r.discovered.size()==3&&r.selected.size()==2&&r.selected[0].hash==0x20&&r.selected[1].hash==0x21,"D20/implicit-whitelist-exact");
+ c.require(composite->prepare(),"D20/implicit-prepare"); r=composite->get_preparation_report();c.require(r.discovered==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x21},{RESOURCE_COMPUTE_PIPELINE,0x22}})&&r.selected==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x21}}),"D20/implicit-whitelist-exact");exact_excluded(r.excluded,{{RESOURCE_COMPUTE_PIPELINE,0x22,DiscoveryExclusion::Whitelist}},"D20/implicit-whitelist-exact-excluded");
  remove("absent-filter.foz");
  for(bool blacklist:{false,true})
  {
@@ -282,20 +352,39 @@ static void filters()
 static void metadata()
 {
  make("full.foz");auto all=bytes("full.foz");
- for(unsigned mode=0;mode<6;mode++)
+ for(unsigned mode=0;mode<7;mode++)
  {
   auto b=all;if(mode==1)b.resize(21);if(mode==2)b.resize(141);save("transfer.foz",b);
   const char *paths[]={"transfer.foz","absent.foz"}; remove("absent.foz");
   DB db(mode>=3?create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,2):create_stream_archive_database("transfer.foz",DatabaseMode::ReadOnly));
   db->set_input_required(mode>=3?1:0,true);if(mode>=3)db->set_input_required(2,mode==4);
-  if(mode==5) {make("transfer-white.foz",1);c.require(db->load_whitelist_database("transfer-white.foz"),"D20/metadata-white");}
+  if(mode==5){make("transfer-white.foz",1);c.require(db->load_whitelist_database("transfer-white.foz"),"D20/metadata-white");}
+  if(mode==6) {
+   make("transfer-white.foz",2);
+   {DB black(create_stream_archive_database("transfer-black.foz",DatabaseMode::OverWrite));c.require(black->prepare()&&black->write_entry(RESOURCE_COMPUTE_PIPELINE,0x21,nullptr,0,0),"D20/metadata-black-fixture");}
+   c.require(db->load_whitelist_database("transfer-white.foz")&&db->load_blacklist_database("transfer-black.foz"),"D20/metadata-mixed-filters");
+  }
   c.require(db->prepare(),"D20/metadata-source"); auto before=db->get_preparation_report(); char name[DatabaseInterface::OSHandleNameSize];DatabaseInterface::get_unique_os_export_name(name,sizeof(name));auto handle=db->export_metadata_to_os_handle(name);
   c.require(DatabaseInterface::metadata_handle_is_valid(handle),"D20/metadata-export");
   DB next(mode>=3?create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,2):create_stream_archive_database("transfer.foz",DatabaseMode::ReadOnly));
   c.require(next->import_metadata_from_os_handle(handle)&&next->prepare(),"D20/metadata-import");auto after=next->get_preparation_report();
   c.require(before.discovery_complete==after.discovery_complete&&before.unread_total_known==after.unread_total_known&&before.inputs.size()==after.inputs.size()&&before.discovered==after.discovered&&before.selected==after.selected&&before.satisfies_required_scope()==after.satisfies_required_scope()&&before.whitelist_tag_mask==after.whitelist_tag_mask&&before.whitelist_sensitive==after.whitelist_sensitive&&before.blacklist_present==after.blacklist_present,"D20/metadata-no-false-completeness");
-  for(size_t i=0;i<before.inputs.size()&&i<after.inputs.size();i++) { auto &a=before.inputs[i],&z=after.inputs[i];c.require(a.path==z.path&&a.index==z.index&&a.required==z.required&&a.opened==z.opened&&a.state==z.state&&a.reason==z.reason&&a.raw_error_known==z.raw_error_known&&a.raw_error==z.raw_error&&a.boundary_known==z.boundary_known&&a.prefix_end==z.prefix_end&&a.unread_offset==z.unread_offset&&a.total_known==z.total_known&&a.retained_count==z.retained_count,"D20/metadata-exact-input-facts"); }
-  if(mode==5) {c.require(after.excluded.size()==2&&after.selected.size()==1&&after.discovered.size()==3,"D20/metadata-filter-exclusions");read_prefix(*next,1);}
+  exact_inputs(after.inputs,before.inputs,"D20/metadata-exact-input-facts-including-filter");
+  std::set<ExcludedTuple> expected_excluded;
+  if(mode==5)expected_excluded={{RESOURCE_COMPUTE_PIPELINE,0x21,DiscoveryExclusion::Whitelist},{RESOURCE_COMPUTE_PIPELINE,0x22,DiscoveryExclusion::Whitelist}};
+  if(mode==6)expected_excluded={{RESOURCE_COMPUTE_PIPELINE,0x21,DiscoveryExclusion::Blacklist},{RESOURCE_COMPUTE_PIPELINE,0x22,DiscoveryExclusion::Whitelist}};
+  exact_excluded(before.excluded,expected_excluded,"D20/metadata-source-exact-exclusions-unique");
+  exact_excluded(after.excluded,expected_excluded,"D20/metadata-exact-excluded-key-policy-roundtrip");
+  std::vector<DiscoveryKey> expected_keys;for(unsigned i=0;i<(mode==1?0u:mode==2?2u:3u);i++)expected_keys.push_back({RESOURCE_COMPUTE_PIPELINE,0x20+i});
+  c.require(before.discovered==expected_keys&&after.discovered==expected_keys&&before.selected==(mode>=5?std::vector<DiscoveryKey>{{RESOURCE_COMPUTE_PIPELINE,0x20}}:expected_keys),"D20/metadata-independent-exact-key-sets");
+  if(mode==5){c.require(after.excluded.size()==2&&after.selected.size()==1&&after.discovered.size()==3,"D20/metadata-filter-exclusions");read_prefix(*next,1);}
+  else if(mode==6) {
+   const std::vector<DiscoveryKey> universe={{RESOURCE_COMPUTE_PIPELINE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x21},{RESOURCE_COMPUTE_PIPELINE,0x22}};
+   c.require(after.discovered==universe&&after.selected==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x20}})&&after.blacklist_present&&after.whitelist_sensitive,"D20/metadata-mixed-exact-universe-and-policy");
+   exact_excluded(after.excluded,{{RESOURCE_COMPUTE_PIPELINE,0x21,DiscoveryExclusion::Blacklist},{RESOURCE_COMPUTE_PIPELINE,0x22,DiscoveryExclusion::Whitelist}},"D20/metadata-mixed-exact-exclusions");
+   c.require(after.inputs.size()==4&&after.inputs[2].filter&&after.inputs[3].filter&&after.inputs[2].path=="transfer-white.foz"&&after.inputs[3].path=="transfer-black.foz","D20/metadata-two-real-named-filter-inputs");
+   read_prefix(*next,1);
+  }
   else read_prefix(*next,mode==1?0:mode==2?2:3);
   for(auto key:after.selected)c.require(next->has_entry(key.tag,key.hash),"D20/metadata-selected-membership");
  }

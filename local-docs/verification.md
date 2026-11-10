@@ -831,7 +831,7 @@ without a primary). Keys are deduplicated by tag/hash, with exclusions retained
 before filtering. No unread total is inferred from retained keys. Header/payload
 truncation names the retained byte boundary; read/seek errors and cancellation
 remain failed discovery. Linux deterministic I/O adapters are private test link
-wrappers, not shipping injection controls. The errors case retains a small real
+wrappers, not shipping injection controls. The concurrent-input case checks deterministic opened-child seek/header-read failures after discard, required/optional policy, exact full input tables and live logical unions with adapter-disabled healthy controls. The errors case retains a small real
 text archive readback and uses metadata-only logical positions to check text
 payload spans at uint32 limits, exact retained boundaries, and failed seek/tell
 uncertainty without large files or payload allocations. A key is retained only
@@ -842,7 +842,7 @@ and observes the typed report used by real dispatch. Ranges are half-open over
 sorted filtered hashes; the existing clamping policy sets end=min(requested end,
 count), begin=min(requested begin,end). Hints retain the prehint indices used by
 robust recovery and are separately excluded under the replay-v1/device-mode/UUID
-policy. Explicitly harvested fragments only hint previous successful API creation;
+policy. Exact key/policy complements reject invented or duplicate exclusions; OS metadata roundtrips compare every input scalar and mixed whitelist/blacklist exclusions. Production fixtures keep required unread tails unsuccessful with a present hash, a nonzero narrowed range or all retained work hinted, and check mixed hint dispatch against the original worker index. Explicitly harvested fragments only hint previous successful API creation;
 they prove no physical compilation, driver cache hit or persistence.
 
 `replay-discovery-cli-*` executes real null-device normal, direct slave, master and
