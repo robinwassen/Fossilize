@@ -5,7 +5,7 @@ and their status. Follow the [changelog writing guideline](local-docs/changelog-
 
 ## Unreleased
 
-- **[Observability]** Preserve device support identifiers and source dependency causes so replay explains unsupported objects and blocks dependent pipelines without attributing driver faults to unattempted work. ([#19](https://github.com/robinwassen/Fossilize/issues/19))
+- **[Observability]** Preserve device support identifiers, known state values and source dependency causes so replay explains unsupported objects and blocks dependent pipelines without attributing driver faults to unattempted work. ([#19](https://github.com/robinwassen/Fossilize/issues/19))
 
 - **[Observability]** Carry worker parse, creation and timeout reasons through bounded, strictly framed startup negotiation so controllers retain known causes and expose incomplete reports. ([#18](https://github.com/robinwassen/Fossilize/issues/18))
 

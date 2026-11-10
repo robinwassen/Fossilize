@@ -2385,7 +2385,7 @@ bool FeatureFilter::Impl::pipeline_layout_is_supported(const VkPipelineLayoutCre
 			VK_PIPELINE_LAYOUT_CREATE_NO_TASK_SHADER_BIT_KHR;
 
 	if ((info->flags & ~supported_flags) != 0)
-		return support_reject(SupportKind::Constraint, "VkDescriptorSetLayoutCreateInfo.flags", 3,
+		return support_reject(SupportKind::Constraint, "VkPipelineLayoutCreateInfo.flags", 3,
 							  uint64_t(info->flags), uint64_t(supported_flags));
 
 	if (null_device)
@@ -5834,7 +5834,8 @@ bool FeatureFilter::Impl::graphics_pipeline_is_supported(const VkGraphicsPipelin
 				break;
 			default:
 				// Unrecognized dynamic state, we almost certainly have not enabled the feature.
-				return false;
+				return support_reject(SupportKind::Constraint, "VkDynamicState", SupportDetail::Raw, 0, 0,
+									  uint64_t(dynamic_states[i]));
 			}
 		}
 	}
@@ -5846,7 +5847,8 @@ bool FeatureFilter::Impl::graphics_pipeline_is_supported(const VkGraphicsPipelin
 		case VK_SHADER_STAGE_FRAGMENT_BIT:
 			break;
 		case VK_SHADER_STAGE_COMPUTE_BIT:
-			return false;
+			return support_reject(SupportKind::Constraint, "graphicsShaderStage", SupportDetail::Raw, 0, 0,
+								  uint64_t(info->pStages[i].stage));
 		case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
 		case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
 			if (!features2.features.tessellationShader)

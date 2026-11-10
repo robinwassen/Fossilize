@@ -122,6 +122,31 @@ static void graphics_test()
 	auto g = graphics_info();
 	checks.require(f.filter.graphics_pipeline_is_supported(&g, d) && f.filter.graphics_pipeline_is_supported(&g),
 				   "M19/graphics-control");
+	VkDynamicState state = VkDynamicState(0x6ffffffd);
+	VkPipelineDynamicStateCreateInfo dynamic = {VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
+	dynamic.dynamicStateCount = 1;
+	dynamic.pDynamicStates = &state;
+	g.pDynamicState = &dynamic;
+	checks.require(!f.filter.graphics_pipeline_is_supported(&g, d) && !f.filter.graphics_pipeline_is_supported(&g),
+				   "M19/graphics-unknown-dynamic-state-bool");
+	detail(d, SupportKind::Constraint, "VkDynamicState", SupportDetail::Raw, 0, 0, uint64_t(state));
+	state = VK_DYNAMIC_STATE_VIEWPORT;
+	checks.require(f.filter.graphics_pipeline_is_supported(&g, d), "M19/graphics-dynamic-state-recovery");
+	detail(d, SupportKind::None, "");
+	g.pDynamicState = nullptr;
+	VkPipelineShaderStageCreateInfo stage = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO};
+	stage.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+	stage.pName = "main";
+	g.stageCount = 1;
+	g.pStages = &stage;
+	checks.require(!f.filter.graphics_pipeline_is_supported(&g, d) && !f.filter.graphics_pipeline_is_supported(&g),
+				   "M19/graphics-forbidden-compute-stage-bool");
+	detail(d, SupportKind::Constraint, "graphicsShaderStage", SupportDetail::Raw, 0, 0, uint64_t(stage.stage));
+	stage.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	checks.require(f.filter.graphics_pipeline_is_supported(&g, d), "M19/graphics-stage-recovery");
+	detail(d, SupportKind::None, "");
+	g.stageCount = 0;
+	g.pStages = nullptr;
 	VkPipelineRasterizationStateCreateInfo raster = {VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO};
 	raster.depthClampEnable = VK_TRUE;
 	g.pRasterizationState = &raster;
@@ -246,6 +271,14 @@ static void static_test()
 	set.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
 	checks.require(!f.filter.descriptor_set_layout_is_supported(&set, d), "M19/set-extension");
 	detail(d, SupportKind::Extension, VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME, 3, 1, 0);
+	layout.flags = VkPipelineLayoutCreateFlags(0x40000000u);
+	checks.require(!f.filter.pipeline_layout_is_supported(&layout, d) && !f.filter.pipeline_layout_is_supported(&layout),
+				   "M19/layout-unknown-flags-bool");
+	detail(d, SupportKind::Constraint, "VkPipelineLayoutCreateInfo.flags", 3, uint64_t(layout.flags),
+		   uint64_t(VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT | VK_PIPELINE_LAYOUT_CREATE_NO_TASK_SHADER_BIT_KHR));
+	layout.flags = 0;
+	checks.require(f.filter.pipeline_layout_is_supported(&layout, d), "M19/layout-flags-recovery");
+	detail(d, SupportKind::None, "");
 	layout.flags = VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT;
 	checks.require(!f.filter.pipeline_layout_is_supported(&layout, d), "M19/layout-feature");
 	detail(d, SupportKind::Feature, "graphicsPipelineLibrary", 3, 1, 0);
