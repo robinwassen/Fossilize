@@ -844,10 +844,10 @@ struct ThreadedReplayer : StateCreatorInterface
 			if (reason == ReplayFailure::Create) { e.known |= ReplayEvent::Raw; e.domain = ReplayEvent::Vulkan; e.raw = result; }
 			if (tag != RESOURCE_COUNT) { e.known |= ReplayEvent::HasTag | ReplayEvent::HasHash; e.tag = tag; e.hash = hash; }
 			if (reason == ReplayFailure::Unsupported || reason == ReplayFailure::Dependency)
-				{
-					get_per_thread_data().warning_generation++;
-					warnings.observe(reason, tag, hash, e.support, e.parent);
-				}
+			{
+				get_per_thread_data().warning_generation++;
+				warnings.observe(reason, tag, hash, e.support, e.parent);
+			}
 			emit_event(e);
 		}
 	}
@@ -1305,8 +1305,8 @@ struct ThreadedReplayer : StateCreatorInterface
 			else if (per_thread.failure_generation == previous_failure)
 				record_failure(ReplayFailure::Parse, work_item.tag, work_item.hash, VK_SUCCESS, &capture.result);
 			if (!dependencies.result.hash && per_thread.warning_generation == previous_warning)
-			LOGW("Did not replay blob (tag: %d, hash: 0x%016" PRIx64 "). See previous logs for context.\n",
-			     work_item.tag, work_item.hash);
+				LOGW("Did not replay blob (tag: %d, hash: 0x%016" PRIx64 "). See previous logs for context.\n",
+				     work_item.tag, work_item.hash);
 
 			if (opts.control_block)
 			{
@@ -4074,8 +4074,6 @@ struct ThreadedReplayer : StateCreatorInterface
 				                 if (itr != begin(*derived))
 				                 {
 					                 auto skipped_count = unsigned(itr - begin(*derived));
-					                 
-
 
 					                 if (opts.control_block)
 					                 {
@@ -4981,7 +4979,7 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 				else if (per_thread_data.failure_generation == previous_failure)
 					replayer.record_failure(ReplayFailure::Parse, tag, hash, VK_SUCCESS, &capture.result);
 				if (!dependencies.result.hash && per_thread_data.warning_generation == previous_warning)
-				LOGW("Did not replay blob (tag: %s, hash: %016" PRIx64 "). See previous logs for context.\n", tag_names[tag], hash);
+					LOGW("Did not replay blob (tag: %s, hash: %016" PRIx64 "). See previous logs for context.\n", tag_names[tag], hash);
 			}
 		}
 
