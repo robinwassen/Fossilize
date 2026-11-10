@@ -203,14 +203,14 @@ static void unsupported_sources()
 {
 	DiagnosticStderr capture;
 	{
-		graph_module_flags = 1;
+		graph_unsupported_capability = true;
 		checks.require(graph("unsupported.foz", "bounded-origins", 1100, 1), "M19/unsupported-source-FOZ");
-		graph_module_flags = 0;
+		graph_unsupported_capability = false;
 		ThreadedReplayer::Options o; o.num_threads = 4;
 		ThreadedReplayer r(device_options(),o);
 		active_replay = &r; graph_mode = "bounded-origins";
 		additional_dispatch = graph_dispatch; module_result = VK_SUCCESS; fail_parent_hash = 0;
-		pipeline_calls = module_calls = 0; edges.clear();
+		pipeline_calls = module_calls = 0; edges.clear(); non_lazy = true;
 		int status = run_normal_process(r,{"unsupported.foz"},nullptr,0,-1);
 		checks.require(status == 1 && count(r,ReplayFailure::Unsupported) == 70 &&
 		               count(r,ReplayFailure::Dependency) == 1100 && !pipeline_calls && !module_calls,
@@ -223,10 +223,10 @@ static void unsupported_sources()
 		}
 		checks.require(known > 0 && unknown > 0 && known + unknown == 1100,
 		               "M19/bounded-origin-retention-honest-known-unknown-root-causes");
-		r.finish_events(status); additional_dispatch=nullptr;
+		r.finish_events(status); additional_dispatch=nullptr; non_lazy=false;
 	}
 	auto text=capture.finish();
-	checks.contains(text,"unsupported shader-module constraint", "M19/known-root-support-context-readable");
+	checks.contains(text,"unsupported SPIR-V capability CapabilityFloat64", "M19/known-root-support-context-readable");
 	checks.contains(text,"support cause unknown", "M19/unretained-root-stays-unknown");
 	checks.require(text.size()<32768 && text.find("Did not replay blob")==std::string::npos,
 	               "M19/known-root-no-duplicate-detector-parser-output");

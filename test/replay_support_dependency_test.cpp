@@ -27,7 +27,7 @@ static Hash fail_parent_hash;
 static std::set<uint64_t> live_pipelines;
 static std::atomic<unsigned> lifetime_errors{0}, cleanup_errors{0};
 static std::string graph_mode;
-static unsigned graph_module_flags = 0;
+static bool graph_unsupported_capability = false;
 static ResourceTag static_failure_tag = RESOURCE_COUNT;
 static PFN_vkCreateSampler graph_real_sampler;
 static PFN_vkCreateDescriptorSetLayout graph_real_set;
@@ -182,12 +182,17 @@ static bool graph(const char *path, const std::string &mode, unsigned n = 4, uns
 		StateRecorder recorder;
 		recorder.init_recording_synchronized(&source);
 		VkShaderModuleCreateInfo module = {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};
-		module.flags = graph_module_flags;
-		module.pCode = valid_code;
+		uint32_t module_code[sizeof(valid_code) / sizeof(valid_code[0])];
+		memcpy(module_code, valid_code, sizeof(module_code));
+		if (graph_unsupported_capability) module_code[6] = 10; // CapabilityFloat64
+		module.pCode = module_code;
 		module.codeSize = sizeof(valid_code);
 		for (unsigned m = 0; m < (mode == "bounded-origins" ? 70u : mode == "missing-multiple-modules" ? 2u : 1u); m++)
+		{
+			module_code[2] = m; // Distinct valid SPIR-V generator metadata.
 			checks.require(recorder.record_shader_module((VkShaderModule)uintptr_t(m + 1), module, 0x101 + m),
 						   "M19/record-module");
+		}
 		VkSamplerCreateInfo sampler = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
 		checks.require(recorder.record_sampler((VkSampler)3, sampler, 0x110), "M19/record-sampler");
 		VkSampler immutable = (VkSampler)3;
@@ -332,14 +337,6 @@ static bool graph(const char *path, const std::string &mode, unsigned n = 4, uns
 		{
 			auto key = entry.first;
 			auto bytes = entry.second;
-			// Recorder normalizes shader flags to zero; a checked input mutation
-			// supplies an unsupported shader record for warning-origin fixtures.
-			if (graph_module_flags && key.first == RESOURCE_SHADER_MODULE)
-			{
-				auto at = bytes.find("\"flags\":0");
-				checks.require(at != std::string::npos, "M19/locate-normalized-shader-flags");
-				if (at != std::string::npos) bytes.replace(at, 9, "\"flags\":1");
-			}
 			if (((mode == "missing-module" || mode == "missing-multiple-modules") &&
 				 key.first == RESOURCE_SHADER_MODULE) ||
 				((mode == "missing-layout" || mode == "missing-static-layout") && key.second == 0x102) ||
