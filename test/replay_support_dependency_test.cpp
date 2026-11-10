@@ -332,6 +332,14 @@ static bool graph(const char *path, const std::string &mode, unsigned n = 4, uns
 		{
 			auto key = entry.first;
 			auto bytes = entry.second;
+			// Recorder normalizes shader flags to zero; a checked input mutation
+			// supplies an unsupported shader record for warning-origin fixtures.
+			if (graph_module_flags && key.first == RESOURCE_SHADER_MODULE)
+			{
+				auto at = bytes.find("\"flags\":0");
+				checks.require(at != std::string::npos, "M19/locate-normalized-shader-flags");
+				if (at != std::string::npos) bytes.replace(at, 9, "\"flags\":1");
+			}
 			if (((mode == "missing-module" || mode == "missing-multiple-modules") &&
 				 key.first == RESOURCE_SHADER_MODULE) ||
 				((mode == "missing-layout" || mode == "missing-static-layout") && key.second == 0x102) ||

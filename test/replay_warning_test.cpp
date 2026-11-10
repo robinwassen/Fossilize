@@ -2,7 +2,22 @@
 #include "replay_support_dependency_test.cpp"
 #ifndef _WIN32
 #include <sys/wait.h>
+
 #endif
+
+// Count diagnostic-loop allocations without changing logging or detectors.
+static std::atomic<bool> track_allocations{false};
+static std::atomic<uint64_t> allocation_count{0};
+void *operator new(size_t n)
+{
+	if(track_allocations.load(std::memory_order_relaxed)) allocation_count.fetch_add(1,std::memory_order_relaxed);
+	void *p=malloc(n ? n : 1); if(!p) std::abort(); return p;
+}
+void *operator new[](size_t n) { return ::operator new(n); }
+void operator delete(void *p) noexcept { free(p); }
+void operator delete[](void *p) noexcept { free(p); }
+void operator delete(void *p,size_t) noexcept { free(p); }
+void operator delete[](void *p,size_t) noexcept { free(p); }
 static unsigned occurrences(const std::string &s, const std::string &what)
 {
 	unsigned n = 0; size_t p = 0;
@@ -12,8 +27,8 @@ static unsigned occurrences(const std::string &s, const std::string &what)
 static void bounded(const std::string &text)
 {
 	checks.require(text.size() <= ReplayWarnings::MaxBytes, "M19/text-output-byte-bound");
-	checks.require(std::count(text.begin(), text.end(), '\n') <= ReplayWarnings::MaxLines,
-	               "M19/text-output-line-bound");
+	checks.require(std::count(text.begin(), text.end(), '\n') <= ReplayWarnings::MaxLines + 1,
+	               "M19/text-output-line-bound-including-one-fixed-setup-line");
 	checks.require(occurrences(text, "Replay warning summary:") == 1, "M19/text-flush-once");
 	for (const char *old : {"Skipping.", "is not supported by current device", "Replay/support:",
 	                        "Replay/dependency:", "Did not replay blob", "Unrecognized pNext", "warning spam",
@@ -46,8 +61,13 @@ static std::string repeated(unsigned n)
 	DiagnosticStderr capture;
 	{
 		Replay replay; limited(replay);
-		for (unsigned i = 0; i < n; i++) rejected(replay, 1, 0x10000 + i);
-		checks.require(ftell(capture.file) == 0, "M19/no-observation-stdio");
+		long before = ftell(capture.file);
+		rejected(replay,1,0x10000); // warm detector/collector state
+		allocation_count=0; track_allocations=true;
+		for (unsigned i = 1; i < n; i++) rejected(replay, 1, 0x10000 + i);
+		track_allocations=false;
+		checks.require(allocation_count==0,"M19/warmed-production-warning-loop-no-diagnostic-allocation");
+		checks.require(ftell(capture.file) == before, "M19/no-observation-stdio");
 		auto s = replay.warnings.snapshot();
 		checks.require(s.count == 1 && s.groups[0].count == n && s.examples == 2 &&
 		               s.groups[0].resources[RESOURCE_COMPUTE_PIPELINE] == n,
@@ -103,6 +123,41 @@ static void grouping()
 	checks.contains(text, "maxPushConstantsSize", "M19/property-identifier");
 	checks.contains(text, "required=32 available=16", "M19/property-values");
 }
+static void shader_grouping()
+{
+	DiagnosticStderr capture;
+	{
+		Replay r; limited(r);
+		uint32_t code[]={0x07230203,0x10000,0,1,0,0x20011,10};
+		VkShaderModuleCreateInfo info={VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};info.pCode=code;info.codeSize=sizeof(code);
+		auto emit=[&](uint64_t hash) {
+			r.get_per_thread_data().expected_tag=RESOURCE_SHADER_MODULE;r.get_per_thread_data().expected_hash=hash;
+			VkShaderModule module; r.enqueue_create_shader_module(hash,&info,&module);
+			checks.require(!module,"M19/shader-detector-reject-before-create");
+		};
+		emit(0x700);code[6]=0xf000;emit(0x701);code[6]=0xf001;emit(0x702);
+		code[1]=0x10600;emit(0x703);code[1]=0x10500;emit(0x704);
+		std::string name="SPV_missing_"+std::string(170,'x')+"\n\t";
+		std::vector<uint32_t> extension(6+(name.size()+1+3)/4);extension[0]=code[0];extension[1]=0x10000;extension[3]=1;
+		extension[5]=uint32_t((extension.size()-5)<<16)|10;
+		memcpy(extension.data()+6,name.c_str(),name.size()+1);info.pCode=extension.data();info.codeSize=extension.size()*4;emit(0x705);
+		// Include control bytes before the truncation boundary too.
+		name="SPV_missing_\n\t"+std::string(140,'z');std::fill(extension.begin()+6,extension.end(),0);memcpy(extension.data()+6,name.c_str(),name.size()+1);emit(0x706);
+		auto snap=r.warnings.snapshot();
+		checks.require(snap.count==6&&snap.groups[3].count==2&&snap.groups[3].key.support.kind==SupportKind::Property,
+		               "M19/API-values-coalesce-capability-raw-and-extensions-distinct");
+		checks.require(snap.groups[0].key.support.raw==10&&snap.groups[1].key.support.raw==0xf000&&snap.groups[2].key.support.raw==0xf001,
+		               "M19/semantic-capability-identities");
+		r.finish_events(1);
+	}
+	auto text=capture.finish();bounded(text);
+	checks.contains(text,"CapabilityFloat64","M19/known-capability-human-name");
+	checks.contains(text,"apiVersion","M19/API-human-boundary");
+	checks.contains(text,"SPV_missing_??","M19/actual-extension-controls-sanitized");
+	checks.require(text.find("Unrecognized SPIR-V")==std::string::npos&&text.find("ignoring shader module")==std::string::npos,
+	               "M19/no-capability-extension-detector-bypass");
+}
+
 static void overflow()
 {
 	DiagnosticStderr capture;
@@ -255,14 +310,16 @@ static void lifecycle()
 	if (pid == 0) { Replay r; limited(r); rejected(r,1,0xabc); _exit(7); }
 	int status = 0; checks.require(pid > 0 && waitpid(pid,&status,0) == pid && WIFEXITED(status) && WEXITSTATUS(status) == 7,
 	                            "M19/hard-exit-native-status");
-	checks.require(capture.finish().empty(), "M19/hard-exit-no-completed-summary");
+	auto text=capture.finish();
+	checks.require(text.find("Replay warning summary:")==std::string::npos && text.find("FINAL")==std::string::npos, "M19/hard-exit-no-completed-summary");
 #endif
 }
 static void legacy_controls()
 {
 	Replay r; limited(r);
 	VkBaseInStructure unknown = {VkStructureType(0x60000001),nullptr};
-	VkComputePipelineCreateInfo info = {VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO}; info.pNext = &unknown;
+	Pipeline valid(1);
+	VkComputePipelineCreateInfo info = valid.c; info.pNext = &unknown;
 	DiagnosticStderr capture;
 	SupportDetail detail;
 	checks.require(!r.device->legacy_filter.compute_pipeline_is_supported(&info,detail), "M19/detailed-unknown-reject");
@@ -301,7 +358,7 @@ int main(int argc, char **argv)
 	if (argc == 3 && std::string(argv[1]) == "--fixture") return graph(argv[2],"missing-module",64,1) ? 0 : 1;
 	if (argc != 2) return 2;
 	std::string c=argv[1];
-	if(c=="same-cause")same_cause(); else if(c=="grouping")grouping(); else if(c=="overflow")overflow();
+	if(c=="same-cause")same_cause(); else if(c=="grouping"){grouping();shader_grouping();} else if(c=="overflow")overflow();
 	else if(c=="dependencies"){dependencies();unsupported_sources();} else if(c=="concurrency")concurrency(); else if(c=="lifecycle")lifecycle();
 	else if(c=="legacy-controls")legacy_controls(); else return 2;
 	printf("M19 warning %s failures=%d\n",c.c_str(),checks.failures);

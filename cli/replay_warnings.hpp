@@ -66,6 +66,9 @@ public:
 	{
 		Key k;
 		k.support = support;
+		k.support.identifier[sizeof(k.support.identifier) - 1] = '\0';
+		for (auto &c : k.support.identifier)
+			if (c && (static_cast<unsigned char>(c) < 32 || static_cast<unsigned char>(c) > 126)) c = '?';
 		k.support.required = k.support.available = 0;
 		// Numeric sType/capability/enum identity is a cause; varying limits aren't.
 		k.support.known &= Fossilize::SupportDetail::Raw;
@@ -131,7 +134,10 @@ public:
 		if (finished) return;
 		finished = true;
 		if (!state.count && !state.overflow) return;
-		char line[740];
+		// Worst case: 32 <=896-byte prefixed causes, 8 <=300-byte
+		// examples, and two <=250-byte header/overflow lines.
+		static_assert(MaxGroups * 896 + MaxExamples * 300 + 500 < MaxBytes, "warning byte bound");
+		char line[880];
 		snprintf(line, sizeof(line), "Replay warning summary: worker=%llu attempt=%llu; counts are attempt replay observations (including repeats).", ull(worker), ull(attempt));
 		emit(line);
 		for (unsigned i = 0; i < state.count; i++)
@@ -153,7 +159,11 @@ public:
 			for (unsigned j = 0; j < state.examples; j++) if (example_groups[j] == i)
 			{
 				const auto &e = examples[j];
-				snprintf(line, sizeof(line), "Replay example %u: %s %016llx; parent=%s:%016llx; values known=%llu required=%llu available=%llu raw=%llu.", i + 1, resource(e.tag), ull(e.hash), resource(unsigned(e.parent.tag)), ull(e.parent.hash), ull(e.support.known), ull(e.support.required), ull(e.support.available), ull(e.support.raw));
+				char required[32], available[32], raw_value[32];
+				value(required, e.support.known & Fossilize::SupportDetail::Required, e.support.required);
+				value(available, e.support.known & Fossilize::SupportDetail::Available, e.support.available);
+				value(raw_value, e.support.known & Fossilize::SupportDetail::Raw, e.support.raw);
+				snprintf(line, 280, "Replay example %u: %s %016llx; parent=%s:%016llx; required=%s available=%s raw=%s.", i + 1, resource(e.tag), ull(e.hash), resource(unsigned(e.parent.tag)), ull(e.parent.hash), required, available, raw_value);
 				emit(line);
 			}
 		}
@@ -164,6 +174,8 @@ public:
 		}
 	}
 private:
+	static void value(char (&out)[32], bool known, uint64_t n)
+	{ if (known) snprintf(out, sizeof(out), "%llu", ull(n)); else snprintf(out, sizeof(out), "unknown"); }
 	static unsigned long long ull(uint64_t n) { return static_cast<unsigned long long>(n); }
 	static const char *status(uint64_t n)
 	{ return n == 1 ? "missing" : n == 2 ? "failed" : n == 3 ? "read-failed" : "unknown"; }
