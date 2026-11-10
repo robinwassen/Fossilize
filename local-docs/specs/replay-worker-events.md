@@ -104,7 +104,10 @@ extension=2, property=3, unknown sType=4, SPIR-V capability=5, malformed input=6
 constraint=7. Kind zero means no rejection. Support-known bits are required=1,
 available=2 and raw=4; unset values encode zero. A known zero is distinct from an
 unknown value. Feature and extension checks report required/available booleans;
-property checks report the original input and device limit or mask. Capability
+property checks report the recorded requirement/value as required and the device
+or replay boundary value as available. The identifier defines a maximum, minimum,
+mask or alignment relation, not always a less-than comparison. Input-only
+constraints name their relation and compare its input values. Capability
 and unknown-sType checks retain their raw numeric IDs. Identifiers name existing
 Vulkan fields, extensions, SPIR-V capabilities or constraints; they do not imply
 an extension can be enabled on the current device. Malformed shader input is

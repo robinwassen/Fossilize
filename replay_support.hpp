@@ -25,6 +25,10 @@ struct SupportDetail
 		Available = 2,
 		Raw = 4
 	};
+	// For property checks, required is the recorded requirement/value and
+	// available is the device or replay boundary value. The identifier defines
+	// a maximum, minimum, mask or alignment relation, not always <=.
+	// Input-only constraints name their relation and compare its input values.
 	uint64_t known = 0, required = 0, available = 0, raw = 0;
 	char identifier[160] = {};
 };

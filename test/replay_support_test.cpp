@@ -387,6 +387,133 @@ static void reentrant_test()
 	detail(outer, SupportKind::Property, "formatFeatures", SupportDetail::Required | SupportDetail::Raw,
 		   VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT, 0, VK_FORMAT_R32_SFLOAT);
 }
+static void property_detail_test()
+{
+	Fixture f;
+	VkPhysicalDeviceFeatures2 features = f.f;
+	VkPhysicalDeviceProperties2 properties = f.p;
+	f.features.descriptor_heap.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_HEAP_FEATURES_EXT;
+	f.features.descriptor_heap.descriptorHeap = VK_TRUE;
+	f.features.descriptor_heap.pNext = features.pNext;
+	features.pNext = &f.features.descriptor_heap;
+	f.features.fragment_shading_rate.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_FEATURES_KHR;
+	f.features.fragment_shading_rate.attachmentFragmentShadingRate = VK_TRUE;
+	f.features.fragment_shading_rate.pNext = features.pNext;
+	features.pNext = &f.features.fragment_shading_rate;
+	f.properties.descriptor_heap.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_HEAP_PROPERTIES_EXT;
+	f.properties.descriptor_heap.bufferDescriptorAlignment = 16;
+	f.properties.descriptor_heap.imageDescriptorAlignment = 32;
+	f.properties.descriptor_heap.samplerDescriptorAlignment = 8;
+	f.properties.descriptor_heap.pNext = properties.pNext;
+	properties.pNext = &f.properties.descriptor_heap;
+	f.properties.fragment_shading_rate.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_PROPERTIES_KHR;
+	f.properties.fragment_shading_rate.minFragmentShadingRateAttachmentTexelSize = {4, 4};
+	f.properties.fragment_shading_rate.maxFragmentShadingRateAttachmentTexelSize = {8, 8};
+	f.properties.fragment_shading_rate.maxFragmentShadingRateAttachmentTexelSizeAspectRatio = 2;
+	f.properties.fragment_shading_rate.pNext = properties.pNext;
+	properties.pNext = &f.properties.fragment_shading_rate;
+	const char *extensions[] = {VK_EXT_DESCRIPTOR_HEAP_EXTENSION_NAME, VK_KHR_FRAGMENT_SHADING_RATE_EXTENSION_NAME};
+	FeatureFilter filter;
+	filter.init(VK_API_VERSION_1_3, extensions, 2, &features, &properties);
+	SupportDetail d;
+	VkAttachmentReference2 reference = {VK_STRUCTURE_TYPE_ATTACHMENT_REFERENCE_2};
+	reference.attachment = VK_ATTACHMENT_UNUSED;
+	reference.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	reference.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	VkFragmentShadingRateAttachmentInfoKHR rate = {VK_STRUCTURE_TYPE_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR};
+	rate.pFragmentShadingRateAttachment = &reference;
+	VkSubpassDescription2 sub = {VK_STRUCTURE_TYPE_SUBPASS_DESCRIPTION_2};
+	sub.pNext = &rate;
+	VkRenderPassCreateInfo2 pass = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO_2};
+	pass.subpassCount = 1;
+	pass.pSubpasses = &sub;
+	struct Limit
+	{
+		uint32_t width, height, input, available;
+		const char *identifier;
+	};
+	for (auto limit : {Limit{3, 4, 3, 4, "minFragmentShadingRateAttachmentTexelSize.width"},
+					   Limit{9, 4, 9, 8, "maxFragmentShadingRateAttachmentTexelSize.width"},
+					   Limit{4, 3, 3, 4, "minFragmentShadingRateAttachmentTexelSize.height"},
+					   Limit{4, 9, 9, 8, "maxFragmentShadingRateAttachmentTexelSize.height"}})
+	{
+		rate.shadingRateAttachmentTexelSize = {limit.width, limit.height};
+		checks.require(!filter.render_pass2_is_supported(&pass, d), "M19/texel-size-rejected");
+		detail(d, SupportKind::Property, limit.identifier, 3, limit.input, limit.available);
+		rate.shadingRateAttachmentTexelSize = {4, 4};
+		checks.require(filter.render_pass2_is_supported(&pass, d), "M19/texel-size-restored-control");
+	}
+	VkDescriptorSetAndBindingMappingEXT mapping = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_AND_BINDING_MAPPING_EXT};
+	mapping.resourceMask = VK_SPIRV_RESOURCE_TYPE_UNIFORM_BUFFER_BIT_EXT;
+	mapping.source = VK_DESCRIPTOR_MAPPING_SOURCE_HEAP_WITH_CONSTANT_OFFSET_EXT;
+	mapping.sourceData.constantOffset.heapOffset = 3;
+	VkShaderDescriptorSetAndBindingMappingInfoEXT mappings = {
+		VK_STRUCTURE_TYPE_SHADER_DESCRIPTOR_SET_AND_BINDING_MAPPING_INFO_EXT};
+	mappings.mappingCount = 1;
+	mappings.pMappings = &mapping;
+	VkPipelineShaderStageCreateInfo stage = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO};
+	stage.pNext = &mappings;
+	stage.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	stage.module = (VkShaderModule)1;
+	stage.pName = "main";
+	auto graphics = graphics_info();
+	graphics.stageCount = 1;
+	graphics.pStages = &stage;
+	checks.require(!filter.graphics_pipeline_is_supported(&graphics, d), "M19/buffer-alignment-rejected");
+	detail(d, SupportKind::Property, "bufferDescriptorAlignment", 3, 3, 16);
+	mapping.sourceData.constantOffset.heapOffset = 16;
+	checks.require(filter.graphics_pipeline_is_supported(&graphics, d), "M19/buffer-alignment-restored-control");
+	mapping.resourceMask = VK_SPIRV_RESOURCE_TYPE_SAMPLED_IMAGE_BIT_EXT;
+	mapping.sourceData.constantOffset.heapOffset = 16;
+	checks.require(!filter.graphics_pipeline_is_supported(&graphics, d), "M19/image-alignment-rejected");
+	detail(d, SupportKind::Property, "imageDescriptorAlignment", 3, 16, 32);
+	mapping.sourceData.constantOffset.heapOffset = 32;
+	mapping.sourceData.constantOffset.heapArrayStride = 16;
+	checks.require(!filter.graphics_pipeline_is_supported(&graphics, d), "M19/stride-alignment-rejected");
+	detail(d, SupportKind::Property, "imageDescriptorAlignment", 3, 16, 32);
+	mapping.sourceData.constantOffset.heapArrayStride = 32;
+	checks.require(filter.graphics_pipeline_is_supported(&graphics, d), "M19/stride-alignment-restored-control");
+	mapping.resourceMask = VK_SPIRV_RESOURCE_TYPE_COMBINED_SAMPLED_IMAGE_BIT_EXT;
+	mapping.sourceData.constantOffset.samplerHeapOffset = 3;
+	checks.require(!filter.graphics_pipeline_is_supported(&graphics, d), "M19/sampler-alignment-rejected");
+	detail(d, SupportKind::Property, "samplerDescriptorAlignment", 3, 3, 8);
+	mapping.sourceData.constantOffset.samplerHeapOffset = 8;
+	checks.require(filter.graphics_pipeline_is_supported(&graphics, d), "M19/sampler-alignment-restored-control");
+}
+static void subgroup_constraint_test()
+{
+	Fixture f;
+	f.features.subgroup_size_control.subgroupSizeControl = VK_TRUE;
+	f.features.subgroup_size_control.computeFullSubgroups = VK_TRUE;
+	f.properties.subgroup_size_control.minSubgroupSize = 8;
+	f.properties.subgroup_size_control.maxSubgroupSize = 32;
+	f.properties.subgroup_size_control.requiredSubgroupSizeStages = VK_SHADER_STAGE_COMPUTE_BIT;
+	f.p.properties.limits.maxComputeWorkGroupSize[0] = 64;
+	f.p.properties.limits.maxComputeWorkGroupInvocations = 64;
+	FeatureFilter filter;
+	filter.init(VK_API_VERSION_1_3, f.extensions, 5, &f.f, &f.p);
+	uint32_t code[] = {0x07230203, 0x10000, 0, 5, 0, 0x0005000f, 5, 1, 0x6e69616d, 0, 0x00060010, 1, 17, 16, 1, 1};
+	VkShaderModuleCreateInfo module = {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};
+	module.pCode = code;
+	module.codeSize = sizeof(code);
+	auto compute = compute_info();
+	compute.stage.flags = VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT;
+	VkPipelineShaderStageRequiredSubgroupSizeCreateInfo required = {
+		VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO};
+	required.requiredSubgroupSize = 32;
+	compute.stage.pNext = &required;
+	checks.require(filter.register_shader_module_info(compute.stage.module, &module),
+				   "M19/register-full-subgroup-input");
+	SupportDetail d;
+	checks.require(!filter.compute_pipeline_is_supported(&compute, d), "M19/full-subgroup-divisibility-rejected");
+	detail(d, SupportKind::Constraint, "workgroupSizeXMultipleOfSubgroupSize", 3, 16, 32);
+	filter.unregister_shader_module_info(compute.stage.module);
+	code[13] = 32;
+	checks.require(filter.register_shader_module_info(compute.stage.module, &module) &&
+					   filter.compute_pipeline_is_supported(&compute, d),
+				   "M19/full-subgroup-restored-control");
+}
+
 static void scope_test()
 {
 	Fixture f;
@@ -445,9 +572,15 @@ int main(int argc, char **argv)
 		return 2;
 	std::string c = argv[1];
 	if (c == "compute")
+	{
 		compute_test();
+		subgroup_constraint_test();
+	}
 	else if (c == "graphics")
+	{
 		graphics_test();
+		property_detail_test();
+	}
 	else if (c == "raytracing")
 		raytracing_test();
 	else if (c == "static")

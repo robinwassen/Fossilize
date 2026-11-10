@@ -1173,6 +1173,14 @@ bool FeatureFilter::Impl::descriptor_set_and_binding_mapping_is_supported(
 			target_alignment = (std::max)(target_alignment, minimum_alignment);
 			combined_alignment = (std::max)(combined_alignment, props.descriptor_heap.samplerDescriptorAlignment);
 		}
+		const char *alignment_property = "descriptorHeapAlignment";
+		if ((binds_to_buffer || binds_to_any) && target_alignment == props.descriptor_heap.bufferDescriptorAlignment)
+			alignment_property = "bufferDescriptorAlignment";
+		else if ((binds_to_image || binds_to_any) && target_alignment == props.descriptor_heap.imageDescriptorAlignment)
+			alignment_property = "imageDescriptorAlignment";
+		else if ((binds_to_sampler || binds_to_any) &&
+				 target_alignment == props.descriptor_heap.samplerDescriptorAlignment)
+			alignment_property = "samplerDescriptorAlignment";
 		target_alignment--;
 		combined_alignment--;
 		const auto validate_alignments = [&](const auto &m)
@@ -1182,20 +1190,20 @@ bool FeatureFilter::Impl::descriptor_set_and_binding_mapping_is_supported(
 			if (!mapping_is_pure_embedded_sampler)
 			{
 				if (m.heapOffset & target_alignment)
-					return support_reject(SupportKind::Property, "heapOffsetAlignment", 3, target_alignment + 1,
-										  m.heapOffset);
+					return support_reject(SupportKind::Property, alignment_property, 3, m.heapOffset,
+										  target_alignment + 1);
 				if (m.heapArrayStride & target_alignment)
-					return support_reject(SupportKind::Property, "heapArrayStrideAlignment", 3, target_alignment + 1,
-										  m.heapArrayStride);
+					return support_reject(SupportKind::Property, alignment_property, 3, m.heapArrayStride,
+										  target_alignment + 1);
 			}
 			if (binds_to_combined_sampler)
 			{
 				if (m.samplerHeapOffset & combined_alignment)
-					return support_reject(SupportKind::Property, "samplerHeapOffsetAlignment", 3,
-										  combined_alignment + 1, m.samplerHeapOffset);
+					return support_reject(SupportKind::Property, "samplerDescriptorAlignment", 3, m.samplerHeapOffset,
+										  combined_alignment + 1);
 				if (m.samplerHeapArrayStride & combined_alignment)
-					return support_reject(SupportKind::Property, "samplerHeapArrayStrideAlignment", 3,
-										  combined_alignment + 1, m.samplerHeapArrayStride);
+					return support_reject(SupportKind::Property, "samplerDescriptorAlignment", 3,
+										  m.samplerHeapArrayStride, combined_alignment + 1);
 			}
 			return true;
 		};
@@ -1222,12 +1230,12 @@ bool FeatureFilter::Impl::descriptor_set_and_binding_mapping_is_supported(
 			// IndexArray does not have array stride since each individual descriptor has its own indirection.
 			if (!mapping_is_pure_embedded_sampler)
 				if (m.heapOffset & target_alignment)
-					return support_reject(SupportKind::Property, "heapOffsetAlignment", 3, target_alignment + 1,
-										  m.heapOffset);
+					return support_reject(SupportKind::Property, alignment_property, 3, m.heapOffset,
+										  target_alignment + 1);
 			if (binds_to_combined_sampler)
 				if (m.samplerHeapOffset & combined_alignment)
-					return support_reject(SupportKind::Property, "samplerHeapOffsetAlignment", 3,
-										  combined_alignment + 1, m.samplerHeapOffset);
+					return support_reject(SupportKind::Property, "samplerDescriptorAlignment", 3, m.samplerHeapOffset,
+										  combined_alignment + 1);
 			break;
 		}
 		case VK_DESCRIPTOR_MAPPING_SOURCE_HEAP_WITH_INDIRECT_INDEX_EXT:
@@ -1515,19 +1523,19 @@ bool FeatureFilter::Impl::pnext_chain_is_supported(const void *pNext) const
 									  3, 1, 0);
 			if (width < props.fragment_shading_rate.minFragmentShadingRateAttachmentTexelSize.width)
 				return support_reject(
-					SupportKind::Property, "width", 3, uint64_t(width),
+					SupportKind::Property, "minFragmentShadingRateAttachmentTexelSize.width", 3, uint64_t(width),
 					uint64_t(props.fragment_shading_rate.minFragmentShadingRateAttachmentTexelSize.width));
 			if (width > props.fragment_shading_rate.maxFragmentShadingRateAttachmentTexelSize.width)
 				return support_reject(
-					SupportKind::Property, "width", 3, uint64_t(width),
+					SupportKind::Property, "maxFragmentShadingRateAttachmentTexelSize.width", 3, uint64_t(width),
 					uint64_t(props.fragment_shading_rate.maxFragmentShadingRateAttachmentTexelSize.width));
 			if (height < props.fragment_shading_rate.minFragmentShadingRateAttachmentTexelSize.height)
 				return support_reject(
-					SupportKind::Property, "height", 3, uint64_t(height),
+					SupportKind::Property, "minFragmentShadingRateAttachmentTexelSize.height", 3, uint64_t(height),
 					uint64_t(props.fragment_shading_rate.minFragmentShadingRateAttachmentTexelSize.height));
 			if (height > props.fragment_shading_rate.maxFragmentShadingRateAttachmentTexelSize.height)
 				return support_reject(
-					SupportKind::Property, "height", 3, uint64_t(height),
+					SupportKind::Property, "maxFragmentShadingRateAttachmentTexelSize.height", 3, uint64_t(height),
 					uint64_t(props.fragment_shading_rate.maxFragmentShadingRateAttachmentTexelSize.height));
 			uint32_t higher = (std::max)(width, height);
 			uint32_t lower = (std::min)(width, height);
@@ -5163,8 +5171,8 @@ bool FeatureFilter::Impl::stage_limits_are_supported(const VkPipelineShaderStage
 			{
 				// Can only use full subgroups if we're guaranteed maxSubgroupSize is contained.
 				// If we're using required size, we can statically validate it.
-				return support_reject(SupportKind::Property, "requiredSubgroupSize", 3, target_subgroup_size,
-									  wg_size[0]);
+				return support_reject(SupportKind::Constraint, "workgroupSizeXMultipleOfSubgroupSize", 3, wg_size[0],
+									  target_subgroup_size);
 			}
 		}
 	}
