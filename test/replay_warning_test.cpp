@@ -131,12 +131,12 @@ static void dependencies()
 	                  "missing-static-pass", "missing-parent", "missing-library", "invalid-layout"})
 	{
 		DiagnosticStderr capture;
-		run_graph(mode, 4, std::string(mode) == "missing-module" ? 4096 : 4, std::string(mode).find("library") != std::string::npos ? 2 : 1);
+		run_graph(mode, 4, std::string(mode) == "missing-module" ? 4096 : 4, (std::string(mode).find("library") != std::string::npos || std::string(mode) == "missing-static-pass") ? 2 : 1);
 		auto text = capture.finish();
 		// The malformed origin is unrelated parser evidence; its one line is retained.
 		checks.require(text.size() < 32768 && occurrences(text, "Replay warning summary:") == 1,
 		               std::string("M19/FOZ-bounded-summary/") + mode);
-		checks.require(text.find("Did not replay blob") == std::string::npos && text.find("common cache") == std::string::npos,
+		checks.require(occurrences(text,"Did not replay blob") == (std::string(mode)=="invalid-layout" ? 1u : 0u) && text.find("common cache") == std::string::npos,
 		               "M19/FOZ-no-parser-dependency-bypass");
 	}
 	DiagnosticStderr capture;
@@ -182,15 +182,30 @@ static void concurrency()
 	DiagnosticStderr capture;
 	{
 		Replay r(4); limited(r);
+		BlobDatabase db; StateReplayer parser;
+		r.global_database = &db; r.global_replayer = &parser;
+		struct Queued
+		{
+			Pipeline pipeline;
+			VkBaseInStructure unknown;
+			Queued(unsigned n) : pipeline(1,n+1), unknown{VkStructureType(0x60000001u+n%40),nullptr}
+			{ pipeline.c.pNext = &unknown; pipeline.item.memory_context_index = n % NUM_MEMORY_CONTEXTS; }
+		};
+		std::vector<std::unique_ptr<Queued>> items;
+		for(unsigned n=0;n<8000;n++) items.emplace_back(new Queued(n));
+		r.start_worker_threads();
 		std::mutex lock; std::condition_variable cv; unsigned ready = 0; bool go = false;
-		std::vector<std::thread> threads;
-		for (unsigned t = 0; t < 4; t++) threads.emplace_back([&,t]() {
-			Global::worker_thread_index = t + 1;
+		std::vector<std::thread> producers;
+		for (unsigned t = 0; t < 4; t++) producers.emplace_back([&,t]() {
 			{ std::unique_lock<std::mutex> h(lock); ready++; cv.notify_all(); cv.wait(h,[&](){return go;}); }
-			for (unsigned n = 0; n < 2000; n++) rejected(r, 1, 10000 * t + n, n % 40 + 1);
+			for (unsigned n = t; n < items.size(); n += 4) r.enqueue_work_item(items[n]->pipeline.item);
 		});
 		{ std::unique_lock<std::mutex> h(lock); cv.wait(h,[&](){return ready == 4;}); go = true; cv.notify_all(); }
-		for (auto &t : threads) t.join();
+		for (auto &t : producers) t.join();
+		r.sync_worker_threads();
+		for(unsigned c=0;c<NUM_MEMORY_CONTEXTS;c++)
+			checks.require(r.completed_count[c] == r.queued_count[c] && r.completed_count[c] > 0,
+			               "M19/actual-production-worker-queue-context-drain");
 		Global::worker_thread_index = 0;
 		auto s = r.warnings.snapshot();
 		checks.require(s.count == 32 && s.examples == 8 && s.overflow == 1600 && count(r, ReplayFailure::Unsupported) == 8000,
@@ -214,6 +229,26 @@ static void lifecycle()
 		auto text = capture.finish();
 		checks.require(occurrences(text,"Replay warning summary:") == (scenario < 2 ? 1u : 0u), "M19/standalone-finish-destructor-empty-success");
 	}
+	{
+		DiagnosticStderr pending_capture;
+		{
+			Replay r(1); limited(r);
+			std::mutex lock; std::condition_variable cv; bool ready=false, go=false;
+			r.thread_pool.emplace_back([&]() {
+				Global::worker_thread_index=1;
+				{std::unique_lock<std::mutex> hold(lock);ready=true;cv.notify_all();cv.wait(hold,[&](){return go;});}
+				rejected(r,1,0xdef);
+			});
+			{std::unique_lock<std::mutex> hold(lock);cv.wait(hold,[&](){return ready;});}
+			std::thread finalizer([&](){r.finish_events(1);});
+			{std::lock_guard<std::mutex> hold(lock);go=true;cv.notify_all();}
+			finalizer.join();
+			checks.require(count(r,ReplayFailure::Unsupported)==1,"M19/orderly-early-failure-joins-pending-producer");
+		}
+		auto text=pending_capture.finish();bounded(text);
+		checks.contains(text,"1 compute-pipeline","M19/pending-producer-in-final-summary");
+	}
+
 #ifndef _WIN32
 	DiagnosticStderr capture;
 	pid_t pid = fork();
@@ -244,6 +279,21 @@ static void legacy_controls()
 	checks.require(!r.device->legacy_filter.shader_module_is_supported(&shader,detail) && detail.kind==SupportKind::Malformed,
 	               "M19/malformed-stays-parse");
 	checks.contains(malformed.finish(),"not aligned", "M19/unrelated-malformed-output-retained");
+	{
+		DiagnosticStderr generic;
+		Replay clean; BlobDatabase empty;
+		empty.blobs[{RESOURCE_SHADER_MODULE,0x101}]="{\"version\":6}";
+		clean.global_database=&empty; StateReplayer no_callback;std::vector<uint8_t> bytes;
+		checks.require(!clean.run_parse_work_item(no_callback,bytes,parse_item(0x101)),"M19/generic-parse-no-captured-reason-fails");
+		checks.contains(generic.finish(),"Did not replay blob","M19/generic-parse-sole-text-preserved");
+	}
+	{
+		DiagnosticStderr oom;
+		Replay clean; Pipeline p(1); results={VK_ERROR_OUT_OF_HOST_MEMORY};p.run(clean,1);
+		checks.require(count(clean,ReplayFailure::Create)==1&&!count(clean,ReplayFailure::Unsupported),"M19/OOM-remains-create");
+		checks.contains(oom.finish(),"VkResult=-1","M19/OOM-native-error-visible");
+	}
+
 }
 int main(int argc, char **argv)
 {

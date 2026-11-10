@@ -131,7 +131,7 @@ public:
 		if (finished) return;
 		finished = true;
 		if (!state.count && !state.overflow) return;
-		char line[768];
+		char line[740];
 		snprintf(line, sizeof(line), "Replay warning summary: worker=%llu attempt=%llu; counts are attempt replay observations (including repeats).", ull(worker), ull(attempt));
 		emit(line);
 		for (unsigned i = 0; i < state.count; i++)
