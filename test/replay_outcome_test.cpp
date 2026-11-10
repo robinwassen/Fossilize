@@ -54,9 +54,12 @@ static VkResult next_result()
 	return results.empty() ? VK_SUCCESS : results[std::min<size_t>(call, results.size() - 1)];
 }
 static std::vector<VkPipelineCreateFlags> observed_pipeline_flags;
+// Optional observation belongs only to this private Vulkan producer adapter.
+static void (*pipeline_call_observer)();
 static VkResult pipeline_result(VkPipeline *p, VkPipelineCreateFlags flags)
 {
 	if (marker_mode) observed_pipeline_flags.push_back(flags);
+	if (pipeline_call_observer) pipeline_call_observer();
 	auto result = next_result();
 	*p = result == VK_SUCCESS ? (VkPipeline)uintptr_t(0x1234) : VK_NULL_HANDLE;
 	return result;

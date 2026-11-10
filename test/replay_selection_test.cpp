@@ -200,6 +200,13 @@ static void selection_filters()
  int status=run_normal_process(replay,{"good.foz"},"one.foz",ExternalReplayer::WHITELIST_MASK_ALL_BIT,-1);marker_mode=false;
  checks.require(status==0&&calls==1&&replay.selection_report.selected==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x202}})&&replay.selection_report.preparation.discovered.size()>replay.selection_report.preparation.selected.size(),"D20/production-filter-exact-dispatch-and-report");
 }
+static ThreadedReplayer *mixed_hint_replay;
+static std::vector<std::tuple<ResourceTag,Hash,unsigned>> mixed_hint_calls;
+static void observe_mixed_hint_call()
+{
+ const auto &worker=mixed_hint_replay->get_per_thread_data();
+ mixed_hint_calls.emplace_back(RESOURCE_COMPUTE_PIPELINE,worker.current_compute_pipeline,worker.current_compute_index-1);
+}
 static void hints()
 {
  for(unsigned kind=0;kind<3;kind++)
@@ -237,12 +244,14 @@ static void hints()
  checks.require(harvest_cache(base,RESOURCE_COMPUTE_PIPELINE,0x201)==1,"D20/mixed-hints-harvest-only-successful-item");
  {
   SharedControlBlock progress={};auto opts=Replay::options(1,&progress);opts.replayer_cache_path=cache;ThreadedReplayer replay(device_options(),opts);marker_mode=true;results={VK_SUCCESS};calls=0;
-  int status=run_normal_process(replay,{"mixed-hints.foz"},nullptr,0,-1);marker_mode=false;auto &r=replay.selection_report;
+  mixed_hint_replay=&replay;mixed_hint_calls.clear();pipeline_call_observer=observe_mixed_hint_call;
+  int status=run_normal_process(replay,{"mixed-hints.foz"},nullptr,0,-1);pipeline_call_observer=nullptr;mixed_hint_replay=nullptr;marker_mode=false;auto &r=replay.selection_report;
   const std::vector<DiscoveryKey> selected={{RESOURCE_COMPUTE_PIPELINE,0x201},{RESOURCE_COMPUTE_PIPELINE,0x202}},dispatch={{RESOURCE_COMPUTE_PIPELINE,0x202}};
   checks.require(status==0&&calls==1&&replay.outcome.succeeded()&&replay.work_drained&&r.scope_satisfied&&r.selected_total_known&&r.preparation.discovery_complete&&r.preparation.unread_total_known&&r.selected==selected&&r.dispatch==dispatch,"D20/mixed-hints-exact-successful-selected-dispatch-calls");
   exact_replay_excluded(r.excluded,{{RESOURCE_COMPUTE_PIPELINE,0x201,ReplayExclusionPolicy::ReplayV1Hint}},"D20/mixed-hints-exact-unique-exclusion");
   checks.require(std::string(r.hint_policy)=="replay-v1/device-mode/pipelineCacheUUID"&&r.stable_hashes[0].empty()&&r.stable_hashes[1]==std::vector<Hash>({0x201,0x202})&&r.stable_hashes[2].empty()&&r.ranges[1].effective_begin==0&&r.ranges[1].effective_end==2,"D20/mixed-hints-stable-pretreatment-order");
-  checks.require(replay.per_thread_data.size()==2&&replay.per_thread_data[1].current_compute_index==2&&replay.per_thread_data[1].current_compute_pipeline==0x202&&replay.compute_pipeline_count.load()==1&&progress.successful_compute.load()==1&&replay.graphics_pipeline_count.load()==0&&replay.raytracing_pipeline_count.load()==0,"D20/mixed-hints-actual-unhinted-creation-original-index-one");
+  checks.require(mixed_hint_calls==std::vector<std::tuple<ResourceTag,Hash,unsigned>>({{RESOURCE_COMPUTE_PIPELINE,0x202,1}}),"D20/mixed-hints-exact-actual-creation-key-and-original-index");
+  checks.require(replay.per_thread_data.size()==2&&replay.per_thread_data[1].current_compute_index==2&&replay.per_thread_data[1].current_compute_pipeline==0&&replay.compute_pipeline_count.load()==1&&progress.successful_compute.load()==1&&replay.graphics_pipeline_count.load()==0&&replay.raytracing_pipeline_count.load()==0,"D20/mixed-hints-actual-unhinted-creation-original-index-one");
  }
  cache_legacy_provenance();cache_null_provenance();cache_whitelist();
 }

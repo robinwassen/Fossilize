@@ -248,7 +248,7 @@ static void inputs()
   if(primary)expected.push_back(expected_input("base.foz",0,true,true,DiscoveryState::Complete,DiscoveryReason::None,false,0,true,136,true,2));
   expected.push_back(expected_input("extra.foz",1,true,true,DiscoveryState::Complete,DiscoveryReason::None,false,0,true,132,true,2));
   expected.push_back(expected_input("absent.foz",2,!optional,false,DiscoveryState::Failed,DiscoveryReason::Open,true,ENOENT,false,0,false,0));
-  expected.push_back(expected_input("invalid.foz",3,!optional,true,DiscoveryState::Failed,DiscoveryReason::InvalidMagic,false,0,false,0,false,0));
+  expected.push_back(expected_input("invalid.foz",3,!optional,true,DiscoveryState::Failed,DiscoveryReason::InvalidMagic,false,0,true,0,false,0));
   expected.push_back(expected_input("extra.foz",4,!optional,true,DiscoveryState::Complete,DiscoveryReason::None,false,0,true,132,true,2));
   return expected;
  };
