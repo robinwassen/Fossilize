@@ -1,0 +1,11 @@
+--- /tmp/fossilize-h19/checker-4/cli/fossilize_replay.cpp
++++ /tmp/fossilize-h19/output/checker-4/sensitivity/dependency/fossilize_replay.cpp
+@@ -3476,7 +3476,7 @@
+ 		auto result = shader_modules.find_object(source);
+ 		if (!result.first)
+ 			ReplayDependency::retain_first(
+-				blocker, parent_detail(RESOURCE_SHADER_MODULE, source, ReplayDependency::Status::Missing));
++				blocker, parent_detail(RESOURCE_SHADER_MODULE, source ^ 1, ReplayDependency::Status::Missing));
+ 		const_cast<VkComputePipelineCreateInfo*>(info)->stage.module = result.first;
+ 		return blocker;
+ 	}

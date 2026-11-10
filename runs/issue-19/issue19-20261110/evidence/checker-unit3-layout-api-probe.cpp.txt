@@ -1,0 +1,33 @@
+#include <initializer_list>
+#include "volk.h"
+#include "fossilize_feature_filter.hpp"
+#include <cstdio>
+#include <cstring>
+using namespace Fossilize;
+int main(){
+ VkPhysicalDeviceFeatures2 f={VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
+ VkPhysicalDeviceProperties2 p={VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2};
+ FeatureFilter filter; if(!filter.init(VK_API_VERSION_1_0,nullptr,0,&f,&p))return 2;
+ VkAttachmentDescription attachment={}; attachment.format=VK_FORMAT_D32_SFLOAT_S8_UINT;
+ attachment.initialLayout=VK_IMAGE_LAYOUT_UNDEFINED;attachment.finalLayout=VK_IMAGE_LAYOUT_GENERAL;
+ VkRenderPassCreateInfo pass={VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};pass.attachmentCount=1;pass.pAttachments=&attachment;
+ SupportDetail d;
+ if(!filter.render_pass_is_supported(&pass,d) || !filter.render_pass_is_supported(&pass))return 3;
+ bool failed=false;
+ for(auto layout:{VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL,VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL}){
+  attachment.finalLayout=layout;
+  bool ok=filter.render_pass_is_supported(&pass,d), old=filter.render_pass_is_supported(&pass);
+  printf("layout=%u ok=%d old_bool=%d kind=%llu identifier=%s known=%llu required=%llu available=%llu raw=%llu\n",unsigned(layout),ok,old,(unsigned long long)d.kind,d.identifier,(unsigned long long)d.known,(unsigned long long)d.required,(unsigned long long)d.available,(unsigned long long)d.raw);
+  bool actionable=!strcmp(d.identifier,"VK_KHR_maintenance2") || (!strcmp(d.identifier,"apiVersion") && (d.known&3)==3 && d.required==VK_API_VERSION_1_1 && d.available==VK_API_VERSION_1_0);
+  failed|=ok||old||!actionable;
+ }
+ attachment.finalLayout=VK_IMAGE_LAYOUT_GENERAL;
+ if(!filter.render_pass_is_supported(&pass,d)||d.kind!=SupportKind::None)return 4;
+ const char *ext=VK_KHR_MAINTENANCE2_EXTENSION_NAME; FeatureFilter enabled;
+ if(!enabled.init(VK_API_VERSION_1_0,&ext,1,&f,&p))return 5;
+ attachment.finalLayout=VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL;
+ if(!enabled.render_pass_is_supported(&pass,d)||d.kind!=SupportKind::None)return 6;
+ puts("CHECKER19/image-layout-supported-before-after-and-extension-controls passed");
+ if(failed){puts("CHECKER19/known-image-layout-api-or-extension-detail assertion failed");return 1;}
+ return 0;
+}

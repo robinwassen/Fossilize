@@ -1,0 +1,308 @@
+[
+  {
+    "intent_id": "cu3-asan-config",
+    "child_command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h19/checker-4",
+      "-B",
+      "/tmp/fossilize-h19/build/checker-4/asan-ubsan",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+      "-DCMAKE_BUILD_TYPE=Debug",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+      "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+      "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-omit-frame-pointer",
+      "-DCMAKE_C_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer",
+      "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined",
+      "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=address,undefined"
+    ],
+    "cwd": "/tmp/fossilize-h19/checker-4",
+    "receipt": "/tmp/fossilize-h19/output/checker-4/cu3-asan-config-receipt.json",
+    "log": "/tmp/fossilize-h19/output/checker-4/cu3-asan-config.log",
+    "candidate_sha": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
+    "expected_exit": 0,
+    "exit_code": 0,
+    "timed_out": false,
+    "seconds": 2.2189040184020996,
+    "wait_seconds": 0.0,
+    "raw_log_sha256": "1b1933855a01070a1ce105f028cf18fed2d40d9ee33d08ff489977ada422732e",
+    "receipt_record": "runs/issue-19/issue19-20261110/evidence/checker-unit3-cu3-asan-config.json",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "log_record": "runs/issue-19/issue19-20261110/evidence/checker-unit3-cu3-asan-config.log"
+  },
+  {
+    "intent_id": "cu3-asan-build",
+    "child_command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h19/build/checker-4/asan-ubsan",
+      "--parallel",
+      "4",
+      "--target",
+      "replay-support-test",
+      "replay-support-dependency-test",
+      "replay-event-test",
+      "replay-event-producer-test",
+      "parser-input-test",
+      "varint-test"
+    ],
+    "cwd": "/tmp/fossilize-h19/checker-4",
+    "receipt": "/tmp/fossilize-h19/output/checker-4/cu3-asan-build-receipt.json",
+    "log": "/tmp/fossilize-h19/output/checker-4/cu3-asan-build.log",
+    "candidate_sha": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
+    "expected_exit": 0,
+    "exit_code": 0,
+    "timed_out": false,
+    "seconds": 86.63016366958618,
+    "wait_seconds": 0.0,
+    "raw_log_sha256": "562c21b86ea923b09d3ee7d0ff0e06b3db1536a8a994e24afe2b29db3af2bc82",
+    "receipt_record": "runs/issue-19/issue19-20261110/evidence/checker-unit3-cu3-asan-build.json",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "log_record": "runs/issue-19/issue19-20261110/evidence/checker-unit3-cu3-asan-build.log"
+  },
+  {
+    "intent_id": "cu3-asan-tests",
+    "child_command": [
+      "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h19/build/checker-4/asan-ubsan",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+    ],
+    "cwd": "/tmp/fossilize-h19/checker-4",
+    "receipt": "/tmp/fossilize-h19/output/checker-4/cu3-asan-tests-receipt.json",
+    "log": "/tmp/fossilize-h19/output/checker-4/cu3-asan-tests.log",
+    "candidate_sha": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
+    "expected_exit": 0,
+    "exit_code": 0,
+    "timed_out": false,
+    "seconds": 5.375550031661987,
+    "wait_seconds": 0.0,
+    "raw_log_sha256": "5183e758884aa95c24859238b76cd6595d651e3c715ebe4044020693ba337dcb",
+    "receipt_record": "runs/issue-19/issue19-20261110/evidence/checker-unit3-cu3-asan-tests.json",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "log_record": "runs/issue-19/issue19-20261110/evidence/checker-unit3-cu3-asan-tests.log"
+  },
+  {
+    "intent_id": "cu3-asan-proof",
+    "child_command": [
+      "/usr/bin/python3",
+      "/tmp/fossilize-h19/output/checker-4/asan-proof.py"
+    ],
+    "cwd": "/tmp/fossilize-h19/checker-4",
+    "receipt": "/tmp/fossilize-h19/output/checker-4/asan-proof-receipt.json",
+    "log": "/tmp/fossilize-h19/output/checker-4/asan-proof.log",
+    "exit_code": 0,
+    "timed_out": false,
+    "seconds": 0.16418027877807617,
+    "wait_seconds": 0.0,
+    "raw_log_sha256": "2b61f026e98f13daa288f6544362902da4430ab05cd62eee1b754871ba23165b",
+    "receipt_record": "runs/issue-19/issue19-20261110/evidence/checker-unit3-cu3-asan-proof.json",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "log_record": "runs/issue-19/issue19-20261110/evidence/checker-unit3-cu3-asan-proof.log"
+  }
+]
+{
+  "intent_id": "cu3-asan-config",
+  "child_command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+    "-S",
+    "/tmp/fossilize-h19/checker-4",
+    "-B",
+    "/tmp/fossilize-h19/build/checker-4/asan-ubsan",
+    "-G",
+    "Ninja",
+    "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+    "-DFOSSILIZE_TESTS=ON",
+    "-DFOSSILIZE_CLI=ON",
+    "-DFOSSILIZE_VULKAN_LAYER=ON",
+    "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+    "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+    "-DCMAKE_BUILD_TYPE=Debug",
+    "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+    "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+    "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-omit-frame-pointer",
+    "-DCMAKE_C_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer",
+    "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined",
+    "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=address,undefined"
+  ],
+  "cwd": "/tmp/fossilize-h19/checker-4",
+  "exit_code": 0,
+  "seconds": 2.2189040184020996,
+  "raw_log_sha256": "1b1933855a01070a1ce105f028cf18fed2d40d9ee33d08ff489977ada422732e",
+  "log": "/tmp/fossilize-h19/output/checker-4/cu3-asan-config.log"
+}
+CMake Warning (deprecated) at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+-- The CXX compiler identification is GNU 13.3.0
+-- The C compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Found Python3: /usr/bin/python3.12 (found version "3.12.3") found components: Interpreter
+-- Did not find googletest, tests will not be built. To enable tests place googletest in '<spirv-dir>/external/googletest'.
+-- SPIRV-Cross: Finding Git version for SPIRV-Cross.
+-- Found Git: /usr/bin/git (found version "2.43.0")
+-- SPIRV-Cross: Git hash: vulkan-sdk-1.4.341.0
+SPIRV-Cross:  Testing will be disabled for SPIRV-Cross. Could not find glslang or SPIRV-Tools build under external/. To enable testing, run ./checkout_glslang_spirv_tools.sh and ./build_glslang_spirv_tools.sh first.
+-- Configuring done (2.0s)
+-- Generating done (0.2s)
+-- Build files have been written to: /tmp/fossilize-h19/build/checker-4/asan-ubsan
+
+{
+  "intent_id": "cu3-asan-build",
+  "child_command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+    "--build",
+    "/tmp/fossilize-h19/build/checker-4/asan-ubsan",
+    "--parallel",
+    "4",
+    "--target",
+    "replay-support-test",
+    "replay-support-dependency-test",
+    "replay-event-test",
+    "replay-event-producer-test",
+    "parser-input-test",
+    "varint-test"
+  ],
+  "cwd": "/tmp/fossilize-h19/checker-4",
+  "exit_code": 0,
+  "seconds": 86.63016366958618,
+  "raw_log_sha256": "562c21b86ea923b09d3ee7d0ff0e06b3db1536a8a994e24afe2b29db3af2bc82",
+  "log": "/tmp/fossilize-h19/output/checker-4/cu3-asan-build.log"
+}
+[1/116] Generate language specific header for OpenCLDebugInfo100.
+[2/116] Generate language specific header for DebugInfo.
+[3/116] Generate grammar tables
+[4/116] Building CXX object CMakeFiles/fossilize.dir/replay_parse_result.cpp.o
+[5/116] Generate tables based on the SPIR-V XML registry.
+[6/116] Update build-version.inc in the SPIRV-Tools build directory (if necessary).
+[7/116] Building C object cli/CMakeFiles/volk.dir/volk/volk.c.o
+[8/116] Building CXX object CMakeFiles/fossilize.dir/varint.cpp.o
+[full raw log retained locally]
+      |             ^~~~~~~~~~
+/tmp/fossilize-h19/checker-4/test/replay_outcome_test.cpp:310:13: warning: ‘void initial_creation_test()’ defined but not used [-Wunused-function]
+  310 | static void initial_creation_test()
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/tmp/fossilize-h19/checker-4/test/replay_outcome_test.cpp:250:13: warning: ‘void creation_test(bool)’ defined but not used [-Wunused-function]
+  250 | static void creation_test(bool loops)
+      |             ^~~~~~~~~~~~~
+/tmp/fossilize-h19/checker-4/test/replay_outcome_test.cpp:166:13: warning: ‘void state_test()’ defined but not used [-Wunused-function]
+  166 | static void state_test()
+      |             ^~~~~~~~~~
+[115/116] Linking CXX executable test/replay-event-producer-test
+[116/116] Linking CXX executable test/replay-support-dependency-test
+
+{
+  "intent_id": "cu3-asan-tests",
+  "child_command": [
+    "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-h19/build/checker-4/asan-ubsan",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-R",
+    "^(replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+  ],
+  "cwd": "/tmp/fossilize-h19/checker-4",
+  "exit_code": 0,
+  "seconds": 5.375550031661987,
+  "raw_log_sha256": "5183e758884aa95c24859238b76cd6595d651e3c715ebe4044020693ba337dcb",
+  "log": "/tmp/fossilize-h19/output/checker-4/cu3-asan-tests.log"
+}
+Passed executions=31; unique IDs=31
+varint-system-test
+parser-input-envelope
+parser-input-containers
+parser-input-shader
+parser-input-link
+parser-input-diagnostics
+parser-input-valid
+parser-input-mutations
+parser-input-containment
+replay-event-unit-roundtrip
+replay-event-unit-unknown
+replay-event-unit-streaming
+replay-event-unit-malformed
+replay-event-unit-negotiation
+replay-event-unit-attempts
+replay-event-unit-legacy
+replay-event-unit-mutations
+replay-event-unit-startup
+replay-event-producer-parse
+replay-event-producer-creation
+replay-support-compute
+replay-support-graphics
+replay-support-raytracing
+replay-support-static
+replay-support-call-scope
+replay-dependency-module-fanout
+replay-dependency-parent-fanout
+replay-dependency-common-cache
+replay-dependency-static
+replay-support-categories
+replay-support-bounded
+common-cache
+28/31 Test #268: replay-dependency-common-cache ....   Passed    0.13 sec
+      Start 269: replay-dependency-static
+29/31 Test #269: replay-dependency-static ..........   Passed    0.21 sec
+      Start 270: replay-support-categories
+30/31 Test #270: replay-support-categories .........   Passed    0.13 sec
+      Start 271: replay-support-bounded
+31/31 Test #271: replay-support-bounded ............   Passed    0.40 sec
+
+100% tests passed out of 31
+
+Total Test time (real) =   5.35 sec
+
+{
+  "intent_id": "cu3-asan-proof",
+  "child_command": [
+    "/usr/bin/python3",
+    "/tmp/fossilize-h19/output/checker-4/asan-proof.py"
+  ],
+  "cwd": "/tmp/fossilize-h19/checker-4",
+  "exit_code": 0,
+  "seconds": 0.16418027877807617,
+  "raw_log_sha256": "2b61f026e98f13daa288f6544362902da4430ab05cd62eee1b754871ba23165b",
+  "log": "/tmp/fossilize-h19/output/checker-4/asan-proof.log"
+}
+Instrumented CMakeFiles/fossilize.dir/fossilize.cpp.o FLAGS=-fsanitize=undefined -fno-omit-frame-pointer -fvisibility=hidden -g -std=gnu++14 -fPIC -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fsanitize=address -pthread
+Instrumented cli/CMakeFiles/cli-utils.dir/fossilize_feature_filter.cpp.o FLAGS=-fsanitize=undefined -fno-omit-frame-pointer -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fsanitize=address
+Instrumented test/CMakeFiles/replay-support-dependency-test.dir/replay_support_dependency_test.cpp.o FLAGS=-fsanitize=undefined -fno-omit-frame-pointer -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fsanitize=address -pthread
+Instrumented test/CMakeFiles/replay-support-test.dir/replay_support_test.cpp.o FLAGS=-fsanitize=undefined -fno-omit-frame-pointer -fvisibility=hidden -g -std=gnu++14 -Wall -Wextra -Wunused-result -Wno-missing-field-initializers -Wno-empty-body -Wshadow -fsanitize=address
+Runtime replay-support-test links libasan/libubsan and references actual ASan/UBSan instrumentation
+Runtime replay-support-dependency-test links libasan/libubsan and references actual ASan/UBSan instrumentation
+Runtime replay-event-test links libasan/libubsan and references actual ASan/UBSan instrumentation
+Runtime replay-event-producer-test links libasan/libubsan and references actual ASan/UBSan instrumentation
+Runtime parser-input-test links libasan/libubsan and references actual ASan/UBSan instrumentation
+Runtime varint-test links libasan/libubsan and references actual ASan/UBSan instrumentation
+M19/ASan-UBSan-effective-compiler-runtime proof passed

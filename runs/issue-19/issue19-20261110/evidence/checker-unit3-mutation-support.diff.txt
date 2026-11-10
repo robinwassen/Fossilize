@@ -1,0 +1,12 @@
+--- /tmp/fossilize-h19/checker-4/cli/fossilize_feature_filter.cpp
++++ /tmp/fossilize-h19/output/checker-4/sensitivity/support/fossilize_feature_filter.cpp
+@@ -5937,8 +5937,7 @@
+ 
+ 	if ((flags & VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT) != 0)
+ 		if (!features.descriptor_buffer.descriptorBuffer)
+-			return support_reject(SupportKind::Feature, "descriptorBuffer", 3, 1,
+-								  uint64_t(features.descriptor_buffer.descriptorBuffer));
++			return false;
+ 
+ 	if ((flags & VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV) != 0 &&
+ 	    features.device_generated_commands_compute_nv.deviceGeneratedCompute == VK_FALSE)
