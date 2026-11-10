@@ -1,0 +1,48 @@
+{
+  "role": "checker",
+  "attempt_id": "checker-unit-4",
+  "worker_id": "/root/checker_assertions20",
+  "input_revision": 450,
+  "input_sha": "679085c45ff02af180739bb578691b31b2537720",
+  "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "plan_version": 2,
+  "operation": "work_unit",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
+  "source_contract": "changes_required: observed incorrect directory logical scope",
+  "focused": {
+    "executed": [
+      "database-discovery-inputs",
+      "database-discovery-filters",
+      "database-discovery-metadata",
+      "replay-selection-filters",
+      "replay-selection-ranges",
+      "replay-selection-prefix-policy",
+      "replay-selection-hints"
+    ],
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "command": "c20-u4-run-focused"
+  },
+  "counterexample": {
+    "id": "D20/dtype-only-regular-files",
+    "exit_code": 1,
+    "ordinary_failure": true,
+    "rows": [
+      "D20/dtype mode=native prepared=1 discovered=1 selected=1 socket_has_entry=0 exact_regular_only=1",
+      "D20/dtype mode=unknown prepared=1 discovered=2 selected=2 socket_has_entry=1 exact_regular_only=0",
+      "FAIL D20/dtype-only-regular-files"
+    ]
+  },
+  "full_gates_not_run": [
+    "G20-linux-matrix",
+    "G20-repeat",
+    "G20-sanitizers",
+    "G20-controls",
+    "G20-compatibility"
+  ],
+  "limited_runtime_reason": "Coordinator authorized only live/configure/static/focused7 and dtype counterexample. Stop immediately on confirmed source defect; no full matrix/repeat/sanitizer/control/compatibility execution.",
+  "native_windows": "User-waived for this root/run: NOT RUN/unverified, never passed.",
+  "prior_candidate_evidence": "No implementer or earlier checker build/test pass is used as current acceptance. Historical e9 oracle failures and2b verification retain their actual source attribution."
+}

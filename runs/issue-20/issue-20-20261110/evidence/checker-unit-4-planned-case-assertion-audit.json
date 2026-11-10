@@ -1,0 +1,353 @@
+{
+  "candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "plan_version": 2,
+  "attempt_id": "checker-unit-4",
+  "immutable_original": "AC1 unchanged; plan2 read directly before implementer claims",
+  "full_diff": "20 files; production/library/controllers/export/import/test registration/changelog/docs inspected",
+  "cases": [
+    {
+      "case": "D20-empty-e9",
+      "tests": [
+        "database-discovery-empty",
+        "database-discovery-truncated-zero"
+      ],
+      "assertions": [
+        {
+          "assertion": "Create and close a valid 16-byte magic-only FOZ; read it back through production StreamArchive: prepare succeeds, every resource set is empty, discovery is complete and total zero is known.",
+          "source_assessment": "present",
+          "evidence": "database_discovery_test.cpp:76-93 empty(), magic16/every-tag/knownzero",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Create E9 by cutting the first name/header and separately the first payload after valid magic; legacy prepare still salvages, no retained entries, discovery incomplete, unread item total unknown rather than zero, reason and first unread byte offset known. A zero-length OS file is not the intact-empty fixture.",
+          "source_assessment": "present",
+          "evidence": "database_discovery_test.cpp:94-113 truncated(0), both cuts5/58, exact reason/boundary/unknown flags",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-prefix-read",
+      "tests": [
+        "database-discovery-prefix"
+      ],
+      "assertions": [
+        {
+          "assertion": "Write distinct checksum-protected known payloads, retain two whole entries and cut the next name/header or payload; metadata gives exact retained tag/hash union and prefix boundary, unknown unread total, and selected full-scope result unsuccessful.",
+          "source_assessment": "present",
+          "evidence": "database_discovery_test.cpp:94-113 truncated(2), both cuts; metadata(): expected_keys exact retained20/21; same production scan producer",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Two-call read_entry yields exact intact payload bytes and hashes after prepare and after the report is queried. Preparation does not rewrite/truncate the input in ReadOnly mode. Full intact archive provides the successful control.",
+          "source_assessment": "present",
+          "evidence": "database_discovery_test.cpp:63-74 checksum producer/two-call read_prefix;94-113 twice read, unchanged bytes, full control",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-input-policy",
+      "tests": [
+        "database-discovery-inputs"
+      ],
+      "assertions": [
+        {
+          "assertion": "Real concurrent database with valid, missing and invalid/unreadable inputs retains every requested path/index/policy after failed children are discarded; opened/discovered/failed/excluded identities and reasons are exact.",
+          "source_assessment": "present",
+          "evidence": "database_discovery_test.cpp:241-316 inputs(): independently constructed exact input tables and live union",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Default legacy composite prepare and tolerant capture append behavior stay compatible; an explicit required input prevents full required-scope satisfaction, while an explicitly optional unavailable input is an exclusion of unknown item count and is never a success or failure item.",
+          "source_assessment": "present",
+          "evidence": "inputs(): defaults/primary/optional/fullrequired/prefix rejection and append compatibility",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Test both missing and unreadable/read-error paths deterministically: use a real absent file plus a private controlled file adapter for read/seek error, avoiding chmod-only permission assumptions when tests run as root. Known raw OS errors remain exact if available; format rejection has no invented errno.",
+          "source_assessment": "present",
+          "evidence": "inputs(): deterministic real concurrent seek/read/error0 child discard plus healthy sibling control; exact raw errors and boundaries",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Include primary base plus extras, no primary, duplicate paths, duplicate logical tag/hash across inputs and the same hash under different tags; input observations remain distinct while logical scope is a deduplicated tag/hash union.",
+          "source_assessment": "present",
+          "evidence": "inputs(): primary/no-primary, duplicate extra path/duplicate compute20 plus shader20; exact tuples and union",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-errors-unknown",
+      "tests": [
+        "database-discovery-errors"
+      ],
+      "assertions": [
+        {
+          "assertion": "Invalid/short magic, unsupported version, controlled failed seek/tell/header read and cancelled discovery are reason-bearing failed/incomplete states, not known empty success. All offsets/length calculations are checked with subtraction after bounds checks.",
+          "source_assessment": "present",
+          "evidence": "database_discovery_test.cpp:318-335 errors(): short/invalid/version, seek/tell/read known/unknownerrno, cancelled; text_spans(): wide checked spans incl UINT32max, offset limits",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Unknown or uninstrumented backend preparation remains explicitly unknown; default custom DatabaseInterface subclass report must not invent complete discovery. A subsequent valid independent database succeeds.",
+          "source_assessment": "present",
+          "evidence": "errors(): custom subclass unknown and independent healthy database",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-filter-scope",
+      "tests": [
+        "database-discovery-filters",
+        "replay-selection-filters"
+      ],
+      "assertions": [
+        {
+          "assertion": "Real source FOZ plus real whitelist/blacklist and implicit whitelist subdatabases yield exact prefilter logical universe, effective masks, selected set and exclusions by named policy; preserve existing shader-empty-whitelist semantics and union/precedence behavior.",
+          "source_assessment": "present",
+          "evidence": "database_discovery_test.cpp:336-364 filters(): exact prefilter/selected/excluded tuples, whitelist mask/shader semantics/implicit union; selection_filters(): exact filter-before-range complement",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Observe filter exclusions at actual production scan/priming boundary before keys are discarded; do not infer an original universe from already-filtered get_hash_list results. Required missing/truncated filter input cannot silently become a known complete selection.",
+          "source_assessment": "present",
+          "evidence": "filters(): prefilter expected identities independent of get_hash_list, missing/truncated filters keep fullscope unsuccessful",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Omitted input, whitelist rejection and blacklist rejection are distinct from read/creation failure. Policy exclusions do not increment succeeded/failed counters.",
+          "source_assessment": "present",
+          "evidence": "selection_filters(): production one selected creation; hints mixed: progress successes exactly unhinted; prefix-policy optional failed keys excluded with no success/failure",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-range-scope",
+      "tests": [
+        "replay-selection-ranges"
+      ],
+      "assertions": [
+        {
+          "assertion": "Table covers all three pipeline tags, default full interval, empty interval, exact bounds, partially and wholly out-of-bounds half-open ranges, start beyond end under the declared existing clamping policy, and explicit hash selection including missing hashes.",
+          "source_assessment": "present",
+          "evidence": "replay_selection_test.cpp:33-70 ranges(): 7 interval rows times3tags; present/missing explicit hash",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Ranges use deterministic sorted filtered hash order and report requested interval, effective interval, exact selected tag/hash and excluded logical tag/hash sets. Duplicates are one logical item; same hash under another tag is separate.",
+          "source_assessment": "present",
+          "evidence": "ranges(): independent universe/requestedeffective/stablehashes/exact selected+dispatch and exact unique complement; database inputs dedups keys/tag distinction",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Filter then range order is explicit; narrowing a range, choosing zero items or a present hash does not turn an unknown required unread tail into complete full-input discovery.",
+          "source_assessment": "present",
+          "evidence": "selection_filters(): filter-before-range exact keys; prefix_policy(): zero and presenthash/nonzero range requiredunknown; actual shipping helper/entry returns failure",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-prefix-policy",
+      "tests": [
+        "replay-selection-prefix-policy"
+      ],
+      "assertions": [
+        {
+          "assertion": "Default full scope rejects recovered/truncated required input even if every discovered selected item succeeds or filters/ranges select no items.",
+          "source_assessment": "present",
+          "evidence": "prefix_policy(): default full and zero interval, actual production narrowed work; hints(): allhinted requiredunknown still failure",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Explicit accept-recovered-prefix names each opened input and retained byte boundary, selected known tag/hash union and exclusion policy; it can satisfy only that prefix selection while original discovery and unread total remain incomplete/unknown.",
+          "source_assessment": "present",
+          "evidence": "prefix_policy(): opened required path/index/boundary and recovered scope; metadata(): exact retained union; composition24 rows",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "A missing/unreadable required input cannot be converted into an accepted recovered prefix; optional unknown inputs remain named input exclusions. No full-coverage percentage is inferred from a zero selected count.",
+          "source_assessment": "present",
+          "evidence": "prefix_policy(): requiredmissing/failedseek reject prefix; optional path/failure preserved and zero selected count does not set original unread known",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-replay-hints",
+      "tests": [
+        "replay-selection-hints"
+      ],
+      "assertions": [
+        {
+          "assertion": "Create a known dependency-complete recorder fixture with all three pipeline kinds, run successful creation, teardown/reopen and explicitly harvest replay-v1 fragments using existing merge behavior; subsequent production dispatch suppresses exactly hinted tag/hash items.",
+          "source_assessment": "present",
+          "evidence": "hints(): all3 recorder dependencycomplete producers successful creation/teardown/real fragment harvest/reopen and zero subsequent actual calls",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Report exact hint exclusions and version/device/UUID namespace policy separately from whitelist/range exclusions, retain stable prehint indices required by robust resume, and record zero actual creation calls for hinted items and expected calls for unhinted items.",
+          "source_assessment": "present",
+          "evidence": "hints(): exact hint key/policy, hint namespace, stablehash original ordering; mixed two-compute production actual call observer records precisely202,index1 and exact exclusion201",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Legacy UUID-only, unknown namespace, unavailable optional hint DB and nonmatching device mode cannot become successful work or hide unknown discovery. Hints prove neither physical Vulkan compilation nor driver cache hit or durable persistence. Existing validation whitelist behavior stays independent.",
+          "source_assessment": "present",
+          "evidence": "hints(): cache_legacy_provenance/null_provenance/whitelist; full suite replay-cache-write-failure covers absent hint output; allhinted truncated input retains uncertainty; no physical compilation/cache-hit/persistence inference",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-metadata-transfer",
+      "tests": [
+        "database-discovery-metadata"
+      ],
+      "assertions": [
+        {
+          "assertion": "Export/import the actual production OS metadata handle for intact, truncated-zero, prefix, missing optional and missing required composite inputs; reopened reports preserve paths/indexes, policy, scan state, unknown counts, prefix boundary, filtered/excluded sets and exact readable payloads.",
+          "source_assessment": "present",
+          "evidence": "metadata(): actual OS handle seven states incl intact/truncatedzero/prefix/optionalrequiredcomposites, all input scalar input_facts including filter, independent keys/exclusion tuples and payload readback",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Do not reconstruct complete discovery from imported hash-list length. Portable Windows named mapping and Linux FD mechanisms share semantic assertions; reject malformed/unsupported private metadata records with bounded size checks.",
+          "source_assessment": "present",
+          "evidence": "metadata(): four actual malformed map mutations of header/schema/count, rejection checks; fixed bounded decoder reviewed; nativeWindows execution waived, not passed",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Private metadata is same-commit only; worker reason frames and SharedControlBlock fields/layout/version retain their existing meaning.",
+          "source_assessment": "present",
+          "evidence": "source diff: only additive nonvirtual DB/report/policy and private exactcommit metadata record; worker frames/sharedblock sources unchanged",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-production-modes",
+      "tests": [
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-selection"
+      ],
+      "assertions": [
+        {
+          "assertion": "Use real null-device CLI normal, direct slave, master and progress processes, one/four threads where supported; process watchdogs, isolated working dirs and actual exit statuses are the outcome oracle. Empty intact succeeds; full-scope truncated-zero/prefix and required missing/unreadable input return nonzero.",
+          "source_assessment": "present",
+          "evidence": "replay_discovery_cli.cmake: actual4modes times1/4 threads, finite25s child+180sCTest, empty/truncatedzero/prefix/required cases statuses; private I/O fixture separately tests actual entry failure",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Explicit prefix acceptance succeeds for a valid prefix and names that scope in the structured in-process result exercised by the production fixture; default full discovery remains incomplete. Optional input policy succeeds only for remaining declared scope and retains unavailable-input exclusion.",
+          "source_assessment": "present",
+          "evidence": "CLI prefix/optional cases plus prefix_policy(): typed scope names real retained boundary/optional unavailable identity",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Actual production selection/dispatch fixture observes the report returned by the helper used by shipping paths, plus parse/create call set, not a parallel toy model. Assertions inspect typed metadata without parsing human prose.",
+          "source_assessment": "present",
+          "evidence": "replay_selection_test.cpp includes replay_outcome_test.cpp which includes production fossilize_replay.cpp; assertions use actual run_normal_process report and private Vulkan adapter callset",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Master must check discovery before zero-worker shortcuts and before metadata export; progress forwards policy through ExternalReplayer; children importing metadata cannot erase required uncertainty. Direct-child whitelist selection remains the existing unsupported invocation boundary; test the supported controller-imported filtered metadata path instead.",
+          "source_assessment": "present",
+          "evidence": "both platform master source gates before metadata export/emptyshortcut; progress helper+setter; CLI filtered master/progress and metadata roundtrip preserve uncertain states; directchild whitelist existing unsupported boundary documented",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Unsuccessful preparation cannot be erased by quiet/progress absence, all-hinted work, zero selected range or another successful input. No test-only flag/hook is installed in shipping CLI.",
+          "source_assessment": "present",
+          "evidence": "CLI progress modes and rich zeroassignment preserve failed input; production allhinted/presenthash/nonzero/zerorange and healthy sibling with requiredmissing; private hooks occur only test sources",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-compatibility",
+      "tests": [
+        "database-discovery-old-header-compatibility",
+        "replay-discovery-legacy-invocations",
+        "replay-event-old-header-compatibility",
+        "diagnostic-compatibility-test",
+        "replay-controller-cli-compatibility",
+        "replay-outcome-cli-compatibility"
+      ],
+      "assertions": [
+        {
+          "assertion": "Extract actual input headers from fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db and put them before candidate includes; compile and link unchanged recorder/database/custom subclass and ExternalReplayer Options{} callers with candidate libraries, then execute valid/empty ordinary invocations.",
+          "source_assessment": "present",
+          "evidence": "replay_discovery_compatibility.cmake: extracts six actual fd380headers first, compiles database/diagnostic/outcome callers, links candidate libraries, runs ordinary source/API paths",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "No new pure virtual method or required override is imposed on old DatabaseInterface subclasses. Preserve legacy bool prepare salvage and tolerant composite behavior for existing library/capture callers while additive report/policy APIs describe limits.",
+          "source_assessment": "present",
+          "evidence": "database_discovery_compatibility_test.cpp: old custom purevirtual set and recorder/readback; inputs(): legacy prepare salvage/tolerant append",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Preserve original healthy CLI flags, metadata same-commit contract, worker #18 records and shared progress schema. Intentionally changed replay behavior is documented: required incomplete discovery now returns nonzero unless explicit recovered-prefix policy; binary ABI for arbitrary prebuilt C++ consumers and mixed-version private metadata are not claimed.",
+          "source_assessment": "present",
+          "evidence": "CLI legacy flags+formats; source shared/control/#18 event definitions unchanged; docs explicit behavior/source compatibility limits",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "case": "D20-defect-sensitivity",
+      "tests": [
+        "replay-discovery-original-defect",
+        "database-discovery-sensitivity",
+        "replay-selection-sensitivity"
+      ],
+      "assertions": [
+        {
+          "assertion": "Build unchanged input replay executable and run candidate-generated/readback-checked E9 fixture and valid empty control using old supported flags. Baseline empty succeeds; baseline E9 false-success exit zero is recorded by a baseline-compatible checker, while candidate E9 must be nonzero. Compile/deadline/crash failures are not defect reproduction.",
+          "source_assessment": "present",
+          "evidence": "replay_discovery_cli.cmake originaldefect: baseline/candidate empty/E9 all4 modes oldflags, ordinary statuses only; fixture existing producer has readback",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "In disposable candidate copies, mutate only (a) sliced-tail completeness to complete, (b) discard missing required input identity/policy or bypass full-scope gate, (c) unknown unread total to known zero, (d) filtered/ranged/hinted exclusion accounting, and (e) imported completeness propagation. Every mutation must build and fail a named explicit D20/M20 runtime assertion, with an appropriate unaffected healthy control still passing.",
+          "source_assessment": "present",
+          "evidence": "replay_discovery_controls.py: five exact source substitutions, isolated copies/build plans, healthy0+ordinary1 exact FAIL assertion; runtime remains pending",
+          "runtime": "not run yet"
+        },
+        {
+          "assertion": "Controls cannot pass by expecting a compiler error from compiling new APIs against an old header; baseline behavior probe uses only old flags/API. Retain mutation patch, exact source/candidate, compile status, expected assertion name and execution status.",
+          "source_assessment": "present",
+          "evidence": "controls script rejects compiler/crash/timeout as sensitivity; mutations retain exact source patch/provenance; oldheader compatibility distinct from baseline behavior",
+          "runtime": "not run yet"
+        }
+      ],
+      "missing": []
+    }
+  ],
+  "runtime": "All gates still pending; no runtime claim from reading",
+  "limitations": [
+    "Native Windows is user-waived NOT RUN/unverified",
+    "Assertions are mapped across registered cases where one case supplies an explicit shared invariant (e.g. exact retained prefix keys in metadata). No count-only comparison is described as an exact set comparison."
+  ]
+}

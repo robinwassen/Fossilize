@@ -1,0 +1,35 @@
+#include "fossilize_db.hpp"
+#include <dirent.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <cstdio>
+#include <cstring>
+#include <memory>
+using namespace Fossilize;
+static bool unknown_type;
+extern "C" dirent *__real_readdir(DIR *);
+extern "C" dirent *__wrap_readdir(DIR *d) {auto *e=__real_readdir(d);if(e&&unknown_type)e->d_type=DT_UNKNOWN;return e;}
+int main()
+{
+ const char *dir="/tmp/fossilize-h20/output/checker-unit-4/dtype";
+ if(mkdir(dir,0700)!=0)return 2;
+ {std::unique_ptr<DatabaseInterface> db(create_dumb_folder_database(dir,DatabaseMode::OverWrite));if(!db->prepare()||!db->write_entry(RESOURCE_COMPUTE_PIPELINE,0x20,"{}",2,0))return 2;}
+ int fd=socket(AF_UNIX,SOCK_STREAM,0);if(fd<0)return 2;
+ sockaddr_un address={};address.sun_family=AF_UNIX;
+ snprintf(address.sun_path,sizeof(address.sun_path),"%s/%02x.%016llx.json",dir,unsigned(RESOURCE_COMPUTE_PIPELINE),0x21ull);
+ if(bind(fd,reinterpret_cast<sockaddr*>(&address),sizeof(address))!=0)return 2;
+ bool passed=true;
+ for(bool unknown:{false,true}) {
+  unknown_type=unknown;
+  std::unique_ptr<DatabaseInterface> db(create_dumb_folder_database(dir,DatabaseMode::ReadOnly));
+  bool prepared=db->prepare();auto r=db->get_preparation_report();
+  std::vector<DiscoveryKey> expected={{RESOURCE_COMPUTE_PIPELINE,0x20}};
+  bool exact=prepared&&r.discovery_complete&&r.discovered==expected&&r.selected==expected&&!db->has_entry(RESOURCE_COMPUTE_PIPELINE,0x21);
+  printf("D20/dtype mode=%s prepared=%d discovered=%zu selected=%zu socket_has_entry=%d exact_regular_only=%d\n",unknown?"unknown":"native",prepared,r.discovered.size(),r.selected.size(),db->has_entry(RESOURCE_COMPUTE_PIPELINE,0x21),exact);
+  if(!exact){printf("FAIL D20/dtype-only-regular-files\n");passed=false;}
+ }
+ unknown_type=false;unlink(address.sun_path);close(fd);
+ return passed?0:1;
+}

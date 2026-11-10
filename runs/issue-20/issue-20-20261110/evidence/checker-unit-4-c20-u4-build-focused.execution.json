@@ -1,0 +1,40 @@
+{
+  "intent_id": "c20-u4-build-focused",
+  "command": [
+    "python3",
+    "-B",
+    "/tmp/fossilize-h20/checker-unit-4/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+    "--repo",
+    "/tmp/fossilize-h20/checker-unit-4",
+    "--timeout",
+    "600",
+    "--intent-id",
+    "c20-u4-build-focused",
+    "--receipt",
+    "/tmp/fossilize-h20/output/checker-unit-4/c20-u4-build-focused.receipt.json",
+    "--",
+    "/tmp/fossilize-h20/toolenv/bin/cmake",
+    "--build",
+    "/tmp/fossilize-h20/build/checker-unit-4/debug-exceptions-off",
+    "--parallel",
+    "4",
+    "--target",
+    "database-discovery-test",
+    "replay-selection-test"
+  ],
+  "child_command": [
+    "/tmp/fossilize-h20/toolenv/bin/cmake",
+    "--build",
+    "/tmp/fossilize-h20/build/checker-unit-4/debug-exceptions-off",
+    "--parallel",
+    "4",
+    "--target",
+    "database-discovery-test",
+    "replay-selection-test"
+  ],
+  "cwd": "/tmp/fossilize-h20/checker-unit-4",
+  "exit_code": 0,
+  "elapsed": 14.79976749420166,
+  "receipt": "/tmp/fossilize-h20/output/checker-unit-4/c20-u4-build-focused.receipt.json",
+  "log": "/tmp/fossilize-h20/output/checker-unit-4/c20-u4-build-focused.log"
+}
