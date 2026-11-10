@@ -41,7 +41,10 @@ struct Capture
 	{
 		slot() = &result;
 		boundary() = is_boundary;
-		quiet_diagnostics() = quiet || previous_quiet;
+		// A public reentrant parse owns independent diagnostics. The first
+		// public boundary inherits its explicitly installed replay receiver;
+		// Impl dependency recursion stays inside that boundary.
+		quiet_diagnostics() = quiet || (!previous_boundary && previous_quiet);
 	}
 	~Capture()
 	{

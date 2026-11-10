@@ -420,6 +420,40 @@ static void legacy_controls()
 		checks.contains(oom.finish(),"VkResult=-1","M19/OOM-native-error-visible");
 	}
 
+	{
+		struct Reentrant : Replay
+		{
+			bool enqueue_create_shader_module(Hash hash, const VkShaderModuleCreateInfo *info, VkShaderModule *module) override
+			{
+				DiagnosticStderr capture;
+				StateReplayer independent;
+				BlobDatabase absent;
+				const std::string missing = "{\"version\":6,\"computePipelines\":{\"201\":{\"flags\":0,\"basePipelineHandle\":\"0\",\"basePipelineIndex\":-1,\"layout\":\"0\",\"stage\":{\"flags\":0,\"stage\":32,\"module\":\"101\",\"name\":\"main\"}}}}";
+				checks.require(!independent.parse(*this,&absent,missing.data(),missing.size()),
+							   "M19/independent-reentrant-parser-reject");
+				checks.contains(capture.finish(),"common cache", "M19/independent-reentrant-parser-keeps-legacy-diagnostic");
+				checks.require(ReplayDependency::quiet_diagnostics(),"M19/outer-replay-quiet-scope-restored-after-reentrant-parse");
+				return Replay::enqueue_create_shader_module(hash,info,module);
+			}
+		} replay;
+		BlobDatabase present; present.blobs[{RESOURCE_SHADER_MODULE,0x101}]=shader_json();replay.global_database=&present;
+		StateReplayer parser;std::vector<uint8_t> bytes;
+		checks.require(replay.run_parse_work_item(parser,bytes,parse_item(0x101))&&replay.outcome.succeeded(),
+					   "M19/handled-reentrant-parser-failure-does-not-poison-outer-replay");
+		checks.require(!ReplayDependency::quiet_diagnostics(),"M19/outer-replay-restores-original-nonquiet-caller");
+		std::string blocked=missing;
+		auto at=blocked.find("\"module\":\"101\"");
+		checks.require(at!=std::string::npos,"M19/locate-reentrant-followup-module");
+		if(at!=std::string::npos)blocked.replace(at,14,"\"module\":\"202\"");
+		present.blobs[{RESOURCE_COMPUTE_PIPELINE,0x201}]=blocked;
+		PipelineWorkItem item;item.tag=RESOURCE_COMPUTE_PIPELINE;item.hash=0x201;item.index=0;
+		DiagnosticStderr owned;
+		checks.require(!replay.run_parse_work_item(parser,bytes,item),"M19/owned-replay-dependency-after-reentrant-call");
+		checks.require(owned.finish().empty(),"M19/owned-replay-dependency-remains-quiet-after-reentrant-call");
+		DiagnosticStderr report;replay.finish_events(1);
+		checks.contains(report.finish(),"parent=shader-module:0000000000000202","M19/owned-replay-dependency-replacement-after-reentrant-call");
+	}
+
 }
 int main(int argc, char **argv)
 {
