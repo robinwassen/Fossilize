@@ -441,6 +441,10 @@
       {
         "started": 1794311495.9727085,
         "wait_seconds": 6.045242123072967
+      },
+      {
+        "started": 1794311507.9922826,
+        "wait_seconds": 6.1389009731356055
       }
     ],
     "command_timeout": 600,
@@ -3889,9 +3893,28 @@
         "intent_id": "i20i2-source-check",
         "started": 1794311503.460019,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "/tmp/fossilize-h20/toolenv/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-h20/build/implementer-1/debug-off",
+          "--output-on-failure",
+          "--no-tests=error",
+          "--output-junit",
+          "/tmp/fossilize-h20/output/implementer-2/focused.xml",
+          "-R",
+          "^(database-discovery-|replay-selection-|replay-discovery-)"
+        ],
+        "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --output-on-failure --no-tests=error --output-junit /tmp/fossilize-h20/output/implementer-2/focused.xml -R '^(database-discovery-|replay-selection-|replay-discovery-)'",
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "eligible_deadline": 1794315575.6117017,
+        "intent_id": "i20i2-focused",
+        "started": 1794311515.5681546,
+        "timeout": 600
       }
     ],
-    "deadline": 1794315569.4728007,
+    "deadline": 1794315575.6117017,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -4951,7 +4974,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 193,
+  "revision": 194,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
