@@ -8375,7 +8375,40 @@
         "log": "/tmp/fossilize-h19/output/checker-4/cu3-asan-config.log",
         "receipt": "/tmp/fossilize-h19/output/checker-4/cu3-asan-config-receipt.json",
         "started": 1794312358.6768584,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1794313649.0702987,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/tmp/fossilize-h19/checker-4",
+            "-B",
+            "/tmp/fossilize-h19/build/checker-4/asan-ubsan",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+            "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+            "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-omit-frame-pointer",
+            "-DCMAKE_C_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer",
+            "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined",
+            "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=address,undefined"
+          ],
+          "cwd": "/tmp/fossilize-h19/checker-4",
+          "exit_code": 0,
+          "finished": 1794313651.2892027,
+          "intent_id": "cu3-asan-config",
+          "started": 1794313649.0672126,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "candidate_sha": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
@@ -9450,7 +9483,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 394,
+  "revision": 395,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
