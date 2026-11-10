@@ -140,16 +140,16 @@ public:
 		if (finished) return;
 		finished = true;
 		if (!state.count && !state.overflow) return;
-		// Worst case: 32 <=896-byte prefixed causes, 8 <=300-byte
+		// Worst case: 32 <=936-byte prefixed causes, 8 <=280-byte
 		// examples, and two <=250-byte header/overflow lines.
-		static_assert(MaxGroups * 896 + MaxExamples * 300 + 500 < MaxBytes, "warning byte bound");
-		char line[880];
+		static_assert(MaxGroups * 936 + MaxExamples * 280 + 500 < MaxBytes, "warning byte bound");
+		char line[920];
 		snprintf(line, sizeof(line), "Replay warning summary: worker=%llu attempt=%llu; counts are attempt replay observations (including repeats).", ull(worker), ull(attempt));
 		emit(line);
 		for (unsigned i = 0; i < state.count; i++)
 		{
 			const auto &g = state.groups[i];
-			char resources[400] = {}; size_t offset = 0;
+			char resources[500] = {}; size_t offset = 0;
 			for (unsigned r = 0; r < g.resources.size(); r++) if (g.resources[r] && offset < sizeof(resources) - 1)
 				offset += size_t(snprintf(resources + offset, sizeof(resources) - offset, "%s%llu %s", offset ? ", " : "", ull(g.resources[r]), resource(r)));
 			char cause[256], raw[48] = {};
@@ -169,7 +169,7 @@ public:
 				value(required, e.support.known & Fossilize::SupportDetail::Required, e.support.required);
 				value(available, e.support.known & Fossilize::SupportDetail::Available, e.support.available);
 				value(raw_value, e.support.known & Fossilize::SupportDetail::Raw, e.support.raw);
-				snprintf(line, 280, "Replay example %u: %s %016llx; parent=%s:%016llx; required=%s available=%s raw=%s.", i + 1, resource(e.tag), ull(e.hash), resource(unsigned(e.parent.tag)), ull(e.parent.hash), required, available, raw_value);
+				snprintf(line, 264, "Replay example %u: %s %016llx; parent=%s:%016llx; required=%s available=%s raw=%s.", i + 1, resource(e.tag), ull(e.hash), resource(unsigned(e.parent.tag)), ull(e.parent.hash), required, available, raw_value);
 				emit(line);
 			}
 		}
