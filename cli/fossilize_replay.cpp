@@ -282,6 +282,8 @@ struct PipelineWorkItem
 	unsigned memory_context_index = 0;
 	bool parse_only = false;
 	bool dependency_blocked = false;
+	bool derivative_parent_candidate = false;
+	ReplayDependency::Detail blocker;
 	bool force_outside_range = false;
 
 	union
@@ -386,6 +388,8 @@ class PipelineResolver
 {
 public:
 	VkResult failure_result = VK_SUCCESS;
+	ReplayDependency::Detail failure_parent;
+	std::function<Hash(ResourceTag, uint64_t)> source_hash;
 	~PipelineResolver();
 	const VkGraphicsPipelineCreateInfo *resolve_graphics_pipeline(VulkanDevice *device, const VkGraphicsPipelineCreateInfo *info);
 	const VkComputePipelineCreateInfo *resolve_compute_pipeline(VulkanDevice *device, const VkComputePipelineCreateInfo *info);
@@ -438,6 +442,7 @@ void PipelineResolver::flush(VulkanDevice *device)
 
 VkResult PipelineResolver::resolve_sampler(VulkanDevice *device, VkSampler *sampler)
 {
+	const Hash hash = source_hash ? source_hash(RESOURCE_SAMPLER, (uint64_t)*sampler) : 0;
 	auto *info = reinterpret_cast<VkSamplerCreateInfo *>(*sampler);
 	if (info->sType != VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO)
 		return VK_ERROR_UNKNOWN;
@@ -451,11 +456,15 @@ VkResult PipelineResolver::resolve_sampler(VulkanDevice *device, VkSampler *samp
 		*sampler = samp;
 	}
 
+	if (vr != VK_SUCCESS && !failure_parent.hash)
+		failure_parent = {RESOURCE_SAMPLER, hash, uint64_t(ReplayFailure::Create) + 1,
+						  ReplayDependency::Status::Failed};
 	return vr;
 }
 
 VkResult PipelineResolver::resolve_render_pass(VulkanDevice *device, VkRenderPass *render_pass)
 {
+	const Hash hash = source_hash ? source_hash(RESOURCE_RENDER_PASS, (uint64_t)*render_pass) : 0;
 	auto *info = reinterpret_cast<VkBaseInStructure *>(*render_pass);
 	VkRenderPass rp = VK_NULL_HANDLE;
 	VkResult vr = VK_ERROR_UNKNOWN;
@@ -471,11 +480,15 @@ VkResult PipelineResolver::resolve_render_pass(VulkanDevice *device, VkRenderPas
 		*render_pass = rp;
 	}
 
+	if (vr != VK_SUCCESS && !failure_parent.hash)
+		failure_parent = {RESOURCE_RENDER_PASS, hash, uint64_t(ReplayFailure::Create) + 1,
+						  ReplayDependency::Status::Failed};
 	return vr;
 }
 
 VkResult PipelineResolver::resolve_descriptor_set_layout(VulkanDevice *device, VkDescriptorSetLayout *set_layout)
 {
+	const Hash hash = source_hash ? source_hash(RESOURCE_DESCRIPTOR_SET_LAYOUT, (uint64_t)*set_layout) : 0;
 	auto info = *reinterpret_cast<VkDescriptorSetLayoutCreateInfo *>(*set_layout);
 	if (info.sType != VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO)
 		return VK_ERROR_UNKNOWN;
@@ -535,11 +548,15 @@ VkResult PipelineResolver::resolve_descriptor_set_layout(VulkanDevice *device, V
 		*set_layout = layout;
 	}
 
+	if (vr != VK_SUCCESS && !failure_parent.hash)
+		failure_parent = {RESOURCE_DESCRIPTOR_SET_LAYOUT, hash, uint64_t(ReplayFailure::Create) + 1,
+						  ReplayDependency::Status::Failed};
 	return vr;
 }
 
 VkResult PipelineResolver::resolve_pipeline_layout(VulkanDevice *device, VkPipelineLayout *pipeline_layout)
 {
+	const Hash hash = source_hash ? source_hash(RESOURCE_PIPELINE_LAYOUT, (uint64_t)*pipeline_layout) : 0;
 	auto info = *reinterpret_cast<VkPipelineLayoutCreateInfo *>(*pipeline_layout);
 	if (info.sType != VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO)
 		return VK_ERROR_UNKNOWN;
@@ -570,6 +587,9 @@ VkResult PipelineResolver::resolve_pipeline_layout(VulkanDevice *device, VkPipel
 		*pipeline_layout = layout;
 	}
 
+	if (vr != VK_SUCCESS && !failure_parent.hash)
+		failure_parent = {RESOURCE_PIPELINE_LAYOUT, hash, uint64_t(ReplayFailure::Create) + 1,
+						  ReplayDependency::Status::Failed};
 	return vr;
 }
 
@@ -577,6 +597,7 @@ const VkGraphicsPipelineCreateInfo *
 PipelineResolver::resolve_graphics_pipeline(VulkanDevice *device, const VkGraphicsPipelineCreateInfo *create_info)
 {
 	failure_result = VK_SUCCESS;
+	failure_parent = {};
 	if (create_info->sType != VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO)
 		return nullptr;
 
@@ -598,6 +619,7 @@ const VkComputePipelineCreateInfo *
 PipelineResolver::resolve_compute_pipeline(VulkanDevice *device, const VkComputePipelineCreateInfo *create_info)
 {
 	failure_result = VK_SUCCESS;
+	failure_parent = {};
 	if (create_info->sType != VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO)
 		return nullptr;
 
@@ -615,6 +637,7 @@ const VkRayTracingPipelineCreateInfoKHR *
 PipelineResolver::resolve_ray_tracing_pipeline(VulkanDevice *device, const VkRayTracingPipelineCreateInfoKHR *create_info)
 {
 	failure_result = VK_SUCCESS;
+	failure_parent = {};
 	if (create_info->sType != VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR)
 		return nullptr;
 
@@ -634,6 +657,104 @@ struct ThreadedReplayer : StateCreatorInterface
 	std::function<bool(const char *)> event_writer;
 	std::mutex event_mutex;
 	uint64_t event_worker = 0, event_attempt = 0, emitted_events = 0, omitted_events = 0;
+	struct Origin
+	{
+		ResourceTag tag = RESOURCE_COUNT;
+		Hash hash = 0;
+		ReplayFailure category = ReplayFailure::Read;
+	};
+	std::mutex origin_mutex;
+	std::array<Origin, 64> origins = {};
+	unsigned origin_count = 0;
+	std::mutex source_mutex;
+	struct StaticSource
+	{
+		ResourceTag tag;
+		Hash hash;
+		bool failed = false;
+		ReplayFailure category = ReplayFailure::Create;
+	};
+	std::unordered_map<uint64_t, StaticSource> static_sources;
+	Hash static_source(ResourceTag tag, uint64_t handle)
+	{
+		std::lock_guard<std::mutex> hold(source_mutex);
+		auto i = static_sources.find(handle);
+		return i != static_sources.end() && i->second.tag == tag ? i->second.hash : 0;
+	}
+	ReplayDependency::Detail parent_detail(ResourceTag tag, Hash hash, ReplayDependency::Status fallback)
+	{
+		ReplayDependency::Detail d;
+		d.tag = tag;
+		d.hash = hash;
+		d.status = fallback;
+		std::lock_guard<std::mutex> hold(origin_mutex);
+		if (tag == RESOURCE_SHADER_MODULE)
+		{
+			auto module = enqueued_shader_modules.find((VkShaderModule)hash);
+			if (module != enqueued_shader_modules.end() && module->second != ReplayFailure::Count)
+			{
+				d.category = uint64_t(module->second) + 1;
+				if (module->second != ReplayFailure::Read)
+					d.status = ReplayDependency::Status::Failed;
+				else if (global_database && global_database->has_entry(tag, hash))
+					d.status = ReplayDependency::Status::ReadFailed;
+				return d;
+			}
+		}
+		for (unsigned i = 0; i < origin_count; i++)
+			if (origins[i].tag == tag && origins[i].hash == hash)
+			{
+				d.category = uint64_t(origins[i].category) + 1;
+				if (origins[i].category != ReplayFailure::Read)
+					d.status = ReplayDependency::Status::Failed;
+				else if (global_database && global_database->has_entry(tag, hash))
+					d.status = ReplayDependency::Status::ReadFailed;
+				break;
+			}
+		return d;
+	}
+	void record_dependency(ResourceTag tag, Hash hash, ReplayDependency::Detail parent)
+	{
+		if (parent.hash && !parent.category)
+		{
+			auto omitted = parent.omitted;
+			parent = parent_detail(ResourceTag(parent.tag), parent.hash, parent.status);
+			parent.omitted = omitted;
+		}
+#ifdef FOSSILIZE_REPLAY_TEST_DEPENDENCY
+		FOSSILIZE_REPLAY_TEST_DEPENDENCY(tag, hash, parent.tag, parent.hash, uint64_t(parent.status), parent.category,
+										 parent.omitted);
+#endif
+		ReplayEvent::Event e;
+		e.phase = ReplayEvent::Dependency;
+		e.reason = ReplayEvent::Blocked;
+		e.parent = parent;
+		LOGW("Replay/dependency: consumer=%u:%016" PRIx64 " parent=%u:%016" PRIx64
+			 " status=%u category=%u omitted=%" PRIu64 ".\n",
+			 unsigned(tag), hash, unsigned(parent.tag), parent.hash, unsigned(parent.status), unsigned(parent.category),
+			 parent.omitted);
+		record_failure(ReplayFailure::Dependency, tag, hash, VK_SUCCESS, &e);
+	}
+	void record_unsupported(ResourceTag tag, Hash hash, const SupportDetail &detail)
+	{
+		ReplayEvent::Event e;
+		e.phase = ReplayEvent::Support;
+		e.reason = ReplayEvent::Unsupported;
+		e.support = detail;
+		LOGW("Replay/support: resource=%u:%016" PRIx64 " kind=%u identifier=%s known=%u required=%" PRIu64
+			 " available=%" PRIu64 " raw=%" PRIu64 ".\n",
+			 unsigned(tag), hash, unsigned(detail.kind), detail.identifier, unsigned(detail.known), detail.required,
+			 detail.available, detail.raw);
+		if (detail.kind == SupportKind::Malformed)
+		{
+			e = {};
+			e.phase = ReplayEvent::Parse;
+			e.reason = tag == RESOURCE_SHADER_MODULE ? ReplayEvent::InvalidShader : ReplayEvent::InvalidRecord;
+			record_failure(ReplayFailure::Parse, tag, hash, VK_SUCCESS, &e);
+		}
+		else
+			record_failure(ReplayFailure::Unsupported, tag, hash, VK_SUCCESS, &e);
+	}
 	void emit_event(ReplayEvent::Event e)
 	{
 		std::lock_guard<std::mutex> hold(event_mutex);
@@ -649,17 +770,70 @@ struct ThreadedReplayer : StateCreatorInterface
 	{
 		std::lock_guard<std::mutex> hold(event_mutex);
 		if (!event_writer) return;
-		char payload[128], frame[ReplayEvent::MaxFrame];
+		char payload[256], frame[ReplayEvent::MaxFrame];
+		auto counts = outcome.snapshot();
+		snprintf(payload, sizeof(payload), "1 COUNTS 1 %llu %llu %llu %llu %llu %llu %llu",
+				 (unsigned long long)counts[0].count, (unsigned long long)counts[1].count,
+				 (unsigned long long)counts[2].count, (unsigned long long)counts[3].count,
+				 (unsigned long long)counts[4].count, (unsigned long long)counts[5].count,
+				 (unsigned long long)counts[6].count);
+		if (ReplayEvent::frame(frame, sizeof(frame), payload))
+			event_writer(frame);
 		snprintf(payload,sizeof(payload),"1 FINAL %u %llu",status == 0 ? 0u : 1u,(unsigned long long)omitted_events);
 		if (ReplayEvent::frame(frame,sizeof(frame),payload)) event_writer(frame);
 	}
 	void record_failure(ReplayFailure reason, ResourceTag tag = RESOURCE_COUNT, Hash hash = 0, VkResult result = VK_SUCCESS, const ReplayEvent::Event *origin = nullptr)
 	{
+		if (reason != ReplayFailure::Dependency && tag < RESOURCE_SHADER_MODULE && hash)
+		{
+			std::lock_guard<std::mutex> hold(source_mutex);
+			for (auto &source : static_sources)
+				if (source.second.tag == tag && source.second.hash == hash)
+				{
+					if (source.second.failed)
+						return;
+					source.second.failed = true;
+					source.second.category = reason;
+					break;
+				}
+		}
+		if (tag != RESOURCE_COUNT && hash)
+		{
+			std::lock_guard<std::mutex> hold(origin_mutex);
+			if (tag == RESOURCE_SHADER_MODULE)
+			{
+				auto module = enqueued_shader_modules.find((VkShaderModule)hash);
+				if (module != enqueued_shader_modules.end())
+					module->second = reason;
+			}
+			bool found = false;
+			for (unsigned i = 0; i < origin_count; i++)
+				if (origins[i].tag == tag && origins[i].hash == hash)
+				{
+					found = true;
+					break;
+				}
+			if (!found && origin_count < origins.size())
+				origins[origin_count++] = {tag, hash, reason};
+		}
 		get_per_thread_data().failure_generation++;
 		outcome.fail(reason, tag, hash, result);
-		if (reason == ReplayFailure::Parse || reason == ReplayFailure::Create)
+		if (reason == ReplayFailure::Parse || reason == ReplayFailure::Create || reason == ReplayFailure::Unsupported ||
+			reason == ReplayFailure::Dependency)
 		{
 			ReplayEvent::Event e = origin ? *origin : ReplayEvent::Event{};
+			if (!e.reason && reason == ReplayFailure::Unsupported)
+			{
+				e.phase = ReplayEvent::Support;
+				e.reason = ReplayEvent::Unsupported;
+				e.support.kind = SupportKind::Constraint;
+				snprintf(e.support.identifier, sizeof(e.support.identifier), "device-support");
+			}
+			if (!e.reason && reason == ReplayFailure::Dependency)
+			{
+				e.phase = ReplayEvent::Dependency;
+				e.reason = ReplayEvent::Blocked;
+			}
 			if (!e.reason) { e.phase = reason == ReplayFailure::Parse ? ReplayEvent::Parse : ReplayEvent::Create;
 				e.reason = reason == ReplayFailure::Parse ? ReplayEvent::GenericParse : ReplayEvent::CreationFailed; }
 			if (reason == ReplayFailure::Create) { e.known |= ReplayEvent::Raw; e.domain = ReplayEvent::Vulkan; e.raw = result; }
@@ -725,6 +899,9 @@ struct ThreadedReplayer : StateCreatorInterface
 		Hash hash = 0;
 		VkPipeline *pipeline = nullptr;
 		unsigned index = 0;
+		Hash source_base = 0;
+		bool derivative_parent_candidate = false;
+		ReplayDependency::Detail blocker;
 
 		static ResourceTag get_tag() { return RESOURCE_GRAPHICS_PIPELINE; }
 	};
@@ -735,6 +912,9 @@ struct ThreadedReplayer : StateCreatorInterface
 		Hash hash = 0;
 		VkPipeline *pipeline = nullptr;
 		unsigned index = 0;
+		Hash source_base = 0;
+		bool derivative_parent_candidate = false;
+		ReplayDependency::Detail blocker;
 
 		static ResourceTag get_tag() { return RESOURCE_COMPUTE_PIPELINE; }
 	};
@@ -745,6 +925,9 @@ struct ThreadedReplayer : StateCreatorInterface
 		Hash hash = 0;
 		VkPipeline *pipeline = nullptr;
 		unsigned index = 0;
+		Hash source_base = 0;
+		bool derivative_parent_candidate = false;
+		ReplayDependency::Detail blocker;
 
 		static ResourceTag get_tag() { return RESOURCE_RAYTRACING_PIPELINE; }
 	};
@@ -1092,11 +1275,23 @@ struct ThreadedReplayer : StateCreatorInterface
 		uint64_t previous_failure = per_thread.failure_generation;
 		bool parsed = true;
 		ReplayEvent::ParseCapture capture;
+		ReplayDependency::Capture dependencies;
 		if (!replayer.parse(*this, global_database, buffer.data(), buffer.size()) ||
 		    !per_thread.acknowledge_parsing_work)
 		{
 			parsed = false;
-			if (per_thread.failure_generation == previous_failure)
+			if (dependencies.result.hash)
+			{
+				auto parent = dependencies.result;
+				if (parent.status == ReplayDependency::Status::ReadFailed &&
+					per_thread.failure_generation == previous_failure)
+					record_failure(ReplayFailure::Read, ResourceTag(parent.tag), parent.hash);
+				if (capture.result.reason)
+					record_failure(ReplayFailure::Parse, ResourceTag(parent.tag), parent.hash, VK_SUCCESS,
+								   &capture.result);
+				record_dependency(work_item.tag, work_item.hash, parent);
+			}
+			else if (per_thread.failure_generation == previous_failure)
 				record_failure(ReplayFailure::Parse, work_item.tag, work_item.hash, VK_SUCCESS, &capture.result);
 			LOGW("Did not replay blob (tag: %d, hash: 0x%016" PRIx64 "). See previous logs for context.\n",
 			     work_item.tag, work_item.hash);
@@ -1330,6 +1525,8 @@ struct ThreadedReplayer : StateCreatorInterface
 	bool run_creation_work_item_setup_graphics(PipelineResolver &resolver, PipelineWorkItem &work_item)
 	{
 		resolver.failure_result = VK_SUCCESS;
+		resolver.failure_parent = {};
+		resolver.source_hash = [this](ResourceTag tag, uint64_t handle) { return static_source(tag, handle); };
 		if (device->get_feature_filter().supports_maintenance4() && work_item.create_info.graphics_create_info)
 		{
 			// If we crash during resolve, it should count as a dirty crash. Don't try to recover.
@@ -1344,6 +1541,13 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!work_item.create_info.graphics_create_info)
 		{
 			LOGE("Invalid graphics create info.\n");
+			if (resolver.failure_parent.hash)
+			{
+				auto parent = resolver.failure_parent;
+				record_failure(ReplayFailure::Create, ResourceTag(parent.tag), parent.hash, resolver.failure_result);
+				record_dependency(work_item.tag, work_item.hash, parent);
+			}
+			else
 			record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
 			             work_item.tag, work_item.hash, resolver.failure_result);
 			return false;
@@ -1358,10 +1562,13 @@ struct ThreadedReplayer : StateCreatorInterface
 			return false;
 		}
 
-		if (!device->get_feature_filter().graphics_pipeline_is_supported(work_item.create_info.graphics_create_info))
+		SupportDetail support;
+
+		if (!device->get_feature_filter().graphics_pipeline_is_supported(work_item.create_info.graphics_create_info,
+																		 support))
 		{
 			LOGW("Graphics pipeline %016" PRIx64 " is not supported by current device, skipping.\n", work_item.hash);
-			record_failure(ReplayFailure::Unsupported, work_item.tag, work_item.hash);
+			record_unsupported(work_item.tag, work_item.hash, support);
 			return false;
 		}
 
@@ -1374,6 +1581,8 @@ struct ThreadedReplayer : StateCreatorInterface
 	bool run_creation_work_item_setup_compute(PipelineResolver &resolver, PipelineWorkItem &work_item)
 	{
 		resolver.failure_result = VK_SUCCESS;
+		resolver.failure_parent = {};
+		resolver.source_hash = [this](ResourceTag tag, uint64_t handle) { return static_source(tag, handle); };
 		if (device->get_feature_filter().supports_maintenance4() && work_item.create_info.compute_create_info)
 		{
 			// If we crash during resolve, it should count as a dirty crash. Don't try to recover.
@@ -1388,6 +1597,13 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!work_item.create_info.compute_create_info)
 		{
 			LOGE("Invalid compute create info.\n");
+			if (resolver.failure_parent.hash)
+			{
+				auto parent = resolver.failure_parent;
+				record_failure(ReplayFailure::Create, ResourceTag(parent.tag), parent.hash, resolver.failure_result);
+				record_dependency(work_item.tag, work_item.hash, parent);
+			}
+			else
 			record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
 			             work_item.tag, work_item.hash, resolver.failure_result);
 			return false;
@@ -1402,10 +1618,13 @@ struct ThreadedReplayer : StateCreatorInterface
 			return false;
 		}
 
-		if (!device->get_feature_filter().compute_pipeline_is_supported(work_item.create_info.compute_create_info))
+		SupportDetail support;
+
+		if (!device->get_feature_filter().compute_pipeline_is_supported(work_item.create_info.compute_create_info,
+																		support))
 		{
 			LOGW("Compute pipeline %016" PRIx64 " is not supported by current device, skipping.\n", work_item.hash);
-			record_failure(ReplayFailure::Unsupported, work_item.tag, work_item.hash);
+			record_unsupported(work_item.tag, work_item.hash, support);
 			return false;
 		}
 
@@ -1416,6 +1635,8 @@ struct ThreadedReplayer : StateCreatorInterface
 	bool run_creation_work_item_setup_raytracing(PipelineResolver &resolver, PipelineWorkItem &work_item)
 	{
 		resolver.failure_result = VK_SUCCESS;
+		resolver.failure_parent = {};
+		resolver.source_hash = [this](ResourceTag tag, uint64_t handle) { return static_source(tag, handle); };
 		if (device->get_feature_filter().supports_maintenance4() && work_item.create_info.raytracing_create_info)
 		{
 			// If we crash during resolve, it should count as a dirty crash. Don't try to recover.
@@ -1430,6 +1651,13 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!work_item.create_info.raytracing_create_info)
 		{
 			LOGE("Invalid raytracing create info.\n");
+			if (resolver.failure_parent.hash)
+			{
+				auto parent = resolver.failure_parent;
+				record_failure(ReplayFailure::Create, ResourceTag(parent.tag), parent.hash, resolver.failure_result);
+				record_dependency(work_item.tag, work_item.hash, parent);
+			}
+			else
 			record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
 			             work_item.tag, work_item.hash, resolver.failure_result);
 			return false;
@@ -1458,10 +1686,13 @@ struct ThreadedReplayer : StateCreatorInterface
 			}
 		}
 
-		if (!device->get_feature_filter().raytracing_pipeline_is_supported(work_item.create_info.raytracing_create_info))
+		SupportDetail support;
+
+		if (!device->get_feature_filter().raytracing_pipeline_is_supported(work_item.create_info.raytracing_create_info,
+																		   support))
 		{
 			LOGW("Raytracing pipeline %016" PRIx64 " is not supported by current device, skipping.\n", work_item.hash);
-			record_failure(ReplayFailure::Unsupported, work_item.tag, work_item.hash);
+			record_unsupported(work_item.tag, work_item.hash, support);
 			return false;
 		}
 
@@ -1567,8 +1798,30 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 	}
 
+	mutable std::mutex parent_result_mutex;
+	mutable std::array<std::unordered_map<Hash, bool>, RESOURCE_COUNT> derivative_parent_results;
+	bool derivative_parent_succeeded(ResourceTag tag, Hash hash) const
+	{
+		std::lock_guard<std::mutex> hold(parent_result_mutex);
+		const auto &results = derivative_parent_results[unsigned(tag)];
+		auto i = results.find(hash);
+		return i != results.end() && i->second;
+	}
+	void derivative_parent_completed(const PipelineWorkItem &item, bool success) const
+	{
+		if (!item.derivative_parent_candidate)
+			return;
+		std::lock_guard<std::mutex> hold(parent_result_mutex);
+		auto &results = derivative_parent_results[unsigned(item.tag)];
+		auto i = results.find(item.hash);
+		if (i == results.end())
+			results.emplace(item.hash, success);
+		else if (!success)
+			i->second = false;
+	}
 	void complete_work_item(const PipelineWorkItem &work_item) const
 	{
+		derivative_parent_completed(work_item, true);
 		if (work_item_is_dependency(work_item))
 		{
 			*work_item.hash_map_entry.pipeline = *work_item.output.pipeline;
@@ -1664,6 +1917,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		else
 		{
 			get_per_thread_data().creation_succeeded = false;
+			derivative_parent_completed(work_item, false);
 			record_failure(ReplayFailure::Create, work_item.tag, work_item.hash, result);
 			if (*work_item.output.pipeline)
 				vkDestroyPipeline(device->get_device(), *work_item.output.pipeline, nullptr);
@@ -1735,6 +1989,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		else
 		{
 			get_per_thread_data().creation_succeeded = false;
+			derivative_parent_completed(work_item, false);
 			record_failure(ReplayFailure::Create, work_item.tag, work_item.hash, result);
 			if (*work_item.output.pipeline)
 				vkDestroyPipeline(device->get_device(), *work_item.output.pipeline, nullptr);
@@ -1806,6 +2061,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		else
 		{
 			get_per_thread_data().creation_succeeded = false;
+			derivative_parent_completed(work_item, false);
 			record_failure(ReplayFailure::Create, work_item.tag, work_item.hash, result);
 			if (*work_item.output.pipeline)
 				vkDestroyPipeline(device->get_device(), *work_item.output.pipeline, nullptr);
@@ -2093,6 +2349,11 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	void free_pipelines()
 	{
+		{
+			std::lock_guard<std::mutex> hold(parent_result_mutex);
+			for (auto &results : derivative_parent_results)
+				results.clear();
+		}
 		for (auto &pipeline : compute_pipelines)
 			if (pipeline.second)
 				vkDestroyPipeline(device->get_device(), pipeline.second, nullptr);
@@ -2382,15 +2643,21 @@ struct ThreadedReplayer : StateCreatorInterface
 			return false;
 		}
 
-		if (!device->get_feature_filter().sampler_is_supported(create_info))
+		SupportDetail support;
+
+		if (!device->get_feature_filter().sampler_is_supported(create_info, support))
 		{
 			LOGW("Sampler %016" PRIx64 " is not supported. Skipping.\n", index);
-			record_failure(ReplayFailure::Unsupported, RESOURCE_SAMPLER, index);
+			record_unsupported(RESOURCE_SAMPLER, index, support);
 			return false;
 		}
 
 		if (device->get_feature_filter().supports_maintenance4())
 		{
+			{
+				std::lock_guard<std::mutex> hold(source_mutex);
+				static_sources[(uint64_t)create_info] = {RESOURCE_SAMPLER, index};
+			}
 			// With maintenance4, pipelines cannot refer to pipeline layouts anymore after creation,
 			// so we can safely create and destroy pipeline layouts lazily.
 			VkResult result = device->resolve_sampler_with_ycbcr_remap(const_cast<VkSamplerCreateInfo *>(create_info));
@@ -2426,15 +2693,21 @@ struct ThreadedReplayer : StateCreatorInterface
 			return false;
 		}
 
-		if (!device->get_feature_filter().descriptor_set_layout_is_supported(create_info))
+		SupportDetail support;
+
+		if (!device->get_feature_filter().descriptor_set_layout_is_supported(create_info, support))
 		{
 			LOGW("Descriptor set layout %016" PRIx64 " is not supported. Skipping.\n", index);
-			record_failure(ReplayFailure::Unsupported, RESOURCE_DESCRIPTOR_SET_LAYOUT, index);
+			record_unsupported(RESOURCE_DESCRIPTOR_SET_LAYOUT, index, support);
 			return false;
 		}
 
 		if (device->get_feature_filter().supports_maintenance4())
 		{
+			{
+				std::lock_guard<std::mutex> hold(source_mutex);
+				static_sources[(uint64_t)create_info] = {RESOURCE_DESCRIPTOR_SET_LAYOUT, index};
+			}
 			// With maintenance4, pipelines cannot refer to pipeline layouts anymore after creation,
 			// so we can safely create and destroy pipeline layouts lazily.
 			*layout = reinterpret_cast<VkDescriptorSetLayout>(const_cast<VkDescriptorSetLayoutCreateInfo *>(create_info));
@@ -2462,15 +2735,21 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (get_per_thread_data().expected_tag != RESOURCE_PIPELINE_LAYOUT)
 			return false;
 
-		if (!device->get_feature_filter().pipeline_layout_is_supported(create_info))
+		SupportDetail support;
+
+		if (!device->get_feature_filter().pipeline_layout_is_supported(create_info, support))
 		{
 			LOGW("Pipeline layout %016" PRIx64 " is not supported. Skipping.\n", index);
-			record_failure(ReplayFailure::Unsupported, RESOURCE_PIPELINE_LAYOUT, index);
+			record_unsupported(RESOURCE_PIPELINE_LAYOUT, index, support);
 			return false;
 		}
 
 		if (device->get_feature_filter().supports_maintenance4())
 		{
+			{
+				std::lock_guard<std::mutex> hold(source_mutex);
+				static_sources[(uint64_t)create_info] = {RESOURCE_PIPELINE_LAYOUT, index};
+			}
 			// With maintenance4, pipelines cannot refer to pipeline layouts anymore after creation,
 			// so we can safely create and destroy pipeline layouts lazily.
 			*layout = reinterpret_cast<VkPipelineLayout>(const_cast<VkPipelineLayoutCreateInfo *>(create_info));
@@ -2498,15 +2777,21 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (get_per_thread_data().expected_tag != RESOURCE_RENDER_PASS)
 			return false;
 
-		if (!device->get_feature_filter().render_pass_is_supported(create_info))
+		SupportDetail support;
+
+		if (!device->get_feature_filter().render_pass_is_supported(create_info, support))
 		{
 			LOGW("Render pass %016" PRIx64 " is not supported. Skipping.\n", index);
-			record_failure(ReplayFailure::Unsupported, RESOURCE_RENDER_PASS, index);
+			record_unsupported(RESOURCE_RENDER_PASS, index, support);
 			return false;
 		}
 
 		if (device->get_feature_filter().supports_maintenance4())
 		{
+			{
+				std::lock_guard<std::mutex> hold(source_mutex);
+				static_sources[(uint64_t)create_info] = {RESOURCE_RENDER_PASS, index};
+			}
 			// With maintenance4, pipelines cannot refer to pipeline layouts anymore after creation,
 			// so we can safely create and destroy pipeline layouts lazily.
 			// Renderpass rewrite and layouts are done together. Keep complexity low by doing it like this.
@@ -2535,15 +2820,21 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (get_per_thread_data().expected_tag != RESOURCE_RENDER_PASS)
 			return false;
 
-		if (!device->get_feature_filter().render_pass2_is_supported(create_info))
+		SupportDetail support;
+
+		if (!device->get_feature_filter().render_pass2_is_supported(create_info, support))
 		{
 			LOGW("Render pass (version 2) %016" PRIx64 " is not supported. Skipping.\n", index);
-			record_failure(ReplayFailure::Unsupported, RESOURCE_RENDER_PASS, index);
+			record_unsupported(RESOURCE_RENDER_PASS, index, support);
 			return false;
 		}
 
 		if (device->get_feature_filter().supports_maintenance4())
 		{
+			{
+				std::lock_guard<std::mutex> hold(source_mutex);
+				static_sources[(uint64_t)create_info] = {RESOURCE_RENDER_PASS, index};
+			}
 			// With maintenance4, pipelines cannot refer to pipeline layouts anymore after creation,
 			// so we can safely create and destroy pipeline layouts lazily.
 			// Renderpass rewrite and layouts are done together. Keep complexity low by doing it like this.
@@ -2659,9 +2950,11 @@ struct ThreadedReplayer : StateCreatorInterface
 		}
 #endif
 
-		if (!device->get_feature_filter().shader_module_is_supported(create_info))
+		SupportDetail support;
+
+		if (!device->get_feature_filter().shader_module_is_supported(create_info, support))
 		{
-			record_failure(ReplayFailure::Unsupported, RESOURCE_SHADER_MODULE, hash);
+			record_unsupported(RESOURCE_SHADER_MODULE, hash, support);
 			LOGW("Shader module %0" PRIx64 " is not supported on this device.\n", hash);
 			*module = VK_NULL_HANDLE;
 
@@ -2757,7 +3050,10 @@ struct ThreadedReplayer : StateCreatorInterface
 	{
 		*pipeline = VK_NULL_HANDLE;
 		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_COMPUTE_PIPELINE, hash); return false; }
-		// Ignore derived pipelines, no relevant drivers use them.
+		Hash source_base = (Hash)create_info->basePipelineHandle;
+		bool derivative_parent_candidate =
+			(get_pipeline_flags(create_info) & VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT) != 0;
+		// Preserve dependency identity even though native derivative optimization is disabled.
 		auto *info = const_cast<VkComputePipelineCreateInfo *>(create_info);
 		remove_pipeline_flag(create_info, VK_PIPELINE_CREATE_DERIVATIVE_BIT | VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT);
 		info->basePipelineHandle = VK_NULL_HANDLE;
@@ -2787,16 +3083,26 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!force_outside_range && index < deferred_compute[memory_index].size())
 		{
 			deferred_compute[memory_index][index] = {
-				const_cast<VkComputePipelineCreateInfo *>(create_info), hash, pipeline, index,
+				const_cast<VkComputePipelineCreateInfo *>(create_info),
+				hash,
+				pipeline,
+				index,
+				source_base,
+				derivative_parent_candidate,
 			};
 		}
 		else
 		{
 			lock_guard<mutex> holder(hash_lock);
-			if (generates_library)
+			if (generates_library || force_outside_range)
 			{
 				auto &p = compute_parents[hash];
-				p = { const_cast<VkComputePipelineCreateInfo *>(create_info), hash, pipeline, index };
+				p = {const_cast<VkComputePipelineCreateInfo *>(create_info),
+					 hash,
+					 pipeline,
+					 index,
+					 source_base,
+					 derivative_parent_candidate};
 			}
 		}
 
@@ -2811,7 +3117,10 @@ struct ThreadedReplayer : StateCreatorInterface
 	{
 		*pipeline = VK_NULL_HANDLE;
 		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_GRAPHICS_PIPELINE, hash); return false; }
-		// Ignore derived pipelines, no relevant drivers use them.
+		Hash source_base = (Hash)create_info->basePipelineHandle;
+		bool derivative_parent_candidate =
+			(get_pipeline_flags(create_info) & VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT) != 0;
+		// Preserve dependency identity even though native derivative optimization is disabled.
 		auto *info = const_cast<VkGraphicsPipelineCreateInfo *>(create_info);
 		remove_pipeline_flag(create_info, VK_PIPELINE_CREATE_DERIVATIVE_BIT | VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT);
 		info->basePipelineHandle = VK_NULL_HANDLE;
@@ -2842,16 +3151,26 @@ struct ThreadedReplayer : StateCreatorInterface
 		{
 			assert(index < deferred_graphics[memory_index].size());
 			deferred_graphics[memory_index][index] = {
-				const_cast<VkGraphicsPipelineCreateInfo *>(create_info), hash, pipeline, index,
+				const_cast<VkGraphicsPipelineCreateInfo *>(create_info),
+				hash,
+				pipeline,
+				index,
+				source_base,
+				derivative_parent_candidate,
 			};
 		}
 		else
 		{
 			lock_guard<mutex> holder(hash_lock);
-			if (generates_library)
+			if (generates_library || force_outside_range)
 			{
 				auto &p = graphics_parents[hash];
-				p = { const_cast<VkGraphicsPipelineCreateInfo *>(create_info), hash, pipeline, index };
+				p = {const_cast<VkGraphicsPipelineCreateInfo *>(create_info),
+					 hash,
+					 pipeline,
+					 index,
+					 source_base,
+					 derivative_parent_candidate};
 			}
 		}
 
@@ -2866,7 +3185,10 @@ struct ThreadedReplayer : StateCreatorInterface
 	{
 		*pipeline = VK_NULL_HANDLE;
 		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_RAYTRACING_PIPELINE, hash); return false; }
-		// Ignore derived pipelines, no relevant drivers use them.
+		Hash source_base = (Hash)create_info->basePipelineHandle;
+		bool derivative_parent_candidate =
+			(get_pipeline_flags(create_info) & VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT) != 0;
+		// Preserve dependency identity even though native derivative optimization is disabled.
 		auto *info = const_cast<VkRayTracingPipelineCreateInfoKHR *>(create_info);
 		remove_pipeline_flag(create_info, VK_PIPELINE_CREATE_DERIVATIVE_BIT | VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT);
 		info->basePipelineHandle = VK_NULL_HANDLE;
@@ -2897,16 +3219,26 @@ struct ThreadedReplayer : StateCreatorInterface
 		{
 			assert(index < deferred_raytracing[memory_index].size());
 			deferred_raytracing[memory_index][index] = {
-				const_cast<VkRayTracingPipelineCreateInfoKHR *>(create_info), hash, pipeline, index,
+				const_cast<VkRayTracingPipelineCreateInfoKHR *>(create_info),
+				hash,
+				pipeline,
+				index,
+				source_base,
+				derivative_parent_candidate,
 			};
 		}
 		else
 		{
 			lock_guard<mutex> holder(hash_lock);
-			if (generates_library)
+			if (generates_library || force_outside_range)
 			{
 				auto &p = raytracing_parents[hash];
-				p = { const_cast<VkRayTracingPipelineCreateInfoKHR *>(create_info), hash, pipeline, index };
+				p = {const_cast<VkRayTracingPipelineCreateInfoKHR *>(create_info),
+					 hash,
+					 pipeline,
+					 index,
+					 source_base,
+					 derivative_parent_candidate};
 			}
 		}
 
@@ -2918,7 +3250,8 @@ struct ThreadedReplayer : StateCreatorInterface
 	}
 
 	bool enqueue_pipeline(Hash hash, const VkComputePipelineCreateInfo *create_info, VkPipeline *pipeline,
-	                      unsigned index, unsigned memory_context_index)
+						  unsigned index, unsigned memory_context_index, ReplayDependency::Detail blocker = {},
+						  bool derivative_parent_candidate = false)
 	{
 		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_COMPUTE_PIPELINE, hash); *pipeline = VK_NULL_HANDLE; return false; }
 		PipelineWorkItem work_item = {};
@@ -2927,6 +3260,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		work_item.output.pipeline = pipeline;
 		work_item.index = index;
 		work_item.memory_context_index = memory_context_index;
+		work_item.blocker = blocker;
+		work_item.derivative_parent_candidate = derivative_parent_candidate;
 
 		bool valid_handles = true;
 		auto *library = find_pnext<VkPipelineLibraryCreateInfoKHR>(
@@ -2948,10 +3283,10 @@ struct ThreadedReplayer : StateCreatorInterface
 		//else
 		//	LOGE("Skipping replay of graphics pipeline index %u.\n", graphics_pipeline_index);
 
-		if (!work_item.create_info.compute_create_info)
+		if (!work_item.create_info.compute_create_info || blocker.hash)
 		{
 			work_item.dependency_blocked = true;
-			record_failure(ReplayFailure::Dependency, work_item.tag, hash);
+			record_dependency(work_item.tag, hash, blocker);
 		}
 		enqueue_work_item(work_item);
 
@@ -2959,7 +3294,8 @@ struct ThreadedReplayer : StateCreatorInterface
 	}
 
 	bool enqueue_pipeline(Hash hash, const VkGraphicsPipelineCreateInfo *create_info, VkPipeline *pipeline,
-	                      unsigned index, unsigned memory_context_index)
+						  unsigned index, unsigned memory_context_index, ReplayDependency::Detail blocker = {},
+						  bool derivative_parent_candidate = false)
 	{
 		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_GRAPHICS_PIPELINE, hash); *pipeline = VK_NULL_HANDLE; return false; }
 		bool valid_handles = true;
@@ -2983,6 +3319,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		work_item.output.pipeline = pipeline;
 		work_item.index = index;
 		work_item.memory_context_index = memory_context_index;
+		work_item.blocker = blocker;
+		work_item.derivative_parent_candidate = derivative_parent_candidate;
 
 		if (valid_handles)
 		{
@@ -2994,10 +3332,10 @@ struct ThreadedReplayer : StateCreatorInterface
 		//else
 		//	LOGE("Skipping replay of graphics pipeline index %u.\n", graphics_pipeline_index);
 
-		if (!work_item.create_info.graphics_create_info)
+		if (!work_item.create_info.graphics_create_info || blocker.hash)
 		{
 			work_item.dependency_blocked = true;
-			record_failure(ReplayFailure::Dependency, work_item.tag, hash);
+			record_dependency(work_item.tag, hash, blocker);
 		}
 		enqueue_work_item(work_item);
 
@@ -3005,7 +3343,8 @@ struct ThreadedReplayer : StateCreatorInterface
 	}
 
 	bool enqueue_pipeline(Hash hash, const VkRayTracingPipelineCreateInfoKHR *create_info, VkPipeline *pipeline,
-	                      unsigned index, unsigned memory_context_index)
+						  unsigned index, unsigned memory_context_index, ReplayDependency::Detail blocker = {},
+						  bool derivative_parent_candidate = false)
 	{
 		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_RAYTRACING_PIPELINE, hash); *pipeline = VK_NULL_HANDLE; return false; }
 		bool valid_handles = true;
@@ -3026,6 +3365,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		work_item.output.pipeline = pipeline;
 		work_item.index = index;
 		work_item.memory_context_index = memory_context_index;
+		work_item.blocker = blocker;
+		work_item.derivative_parent_candidate = derivative_parent_candidate;
 
 		if (valid_handles)
 		{
@@ -3037,10 +3378,10 @@ struct ThreadedReplayer : StateCreatorInterface
 		//else
 		//	LOGE("Skipping replay of graphics pipeline index %u.\n", graphics_pipeline_index);
 
-		if (!work_item.create_info.raytracing_create_info)
+		if (!work_item.create_info.raytracing_create_info || blocker.hash)
 		{
 			work_item.dependency_blocked = true;
-			record_failure(ReplayFailure::Dependency, work_item.tag, hash);
+			record_dependency(work_item.tag, hash, blocker);
 		}
 		enqueue_work_item(work_item);
 
@@ -3049,6 +3390,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_shader_module(VkShaderModule shader_module_hash)
 	{
+		std::lock_guard<std::mutex> origin_hold(origin_mutex);
 		if (enqueued_shader_modules.count(shader_module_hash) == 0)
 		{
 			if (opts.control_block)
@@ -3060,7 +3402,7 @@ struct ThreadedReplayer : StateCreatorInterface
 			work_item.parse_only = true;
 			work_item.memory_context_index = SHADER_MODULE_MEMORY_CONTEXT;
 			enqueue_work_item(work_item);
-			enqueued_shader_modules.insert(shader_module_hash);
+			enqueued_shader_modules.emplace(shader_module_hash, ReplayFailure::Count);
 			//LOGI("Queueing up shader module: %016llx.\n", static_cast<unsigned long long>((Hash) shader_module_hash));
 			return true;
 		}
@@ -3095,28 +3437,46 @@ struct ThreadedReplayer : StateCreatorInterface
 		return ret;
 	}
 
-	void resolve_shader_modules(VkGraphicsPipelineCreateInfo *info)
+	ReplayDependency::Detail resolve_shader_modules(VkGraphicsPipelineCreateInfo *info)
 	{
+		ReplayDependency::Detail blocker;
 		for (uint32_t i = 0; i < info->stageCount; i++)
 		{
-			auto result = shader_modules.find_object((Hash) info->pStages[i].module);
+			Hash source = (Hash)info->pStages[i].module;
+			auto result = shader_modules.find_object(source);
+			if (!result.first)
+				ReplayDependency::retain_first(
+					blocker, parent_detail(RESOURCE_SHADER_MODULE, source, ReplayDependency::Status::Missing));
 			const_cast<VkPipelineShaderStageCreateInfo *>(info->pStages)[i].module = result.first;
 		}
+		return blocker;
 	}
 
-	void resolve_shader_modules(VkRayTracingPipelineCreateInfoKHR *info)
+	ReplayDependency::Detail resolve_shader_modules(VkRayTracingPipelineCreateInfoKHR *info)
 	{
+		ReplayDependency::Detail blocker;
 		for (uint32_t i = 0; i < info->stageCount; i++)
 		{
-			auto result = shader_modules.find_object((Hash) info->pStages[i].module);
+			Hash source = (Hash)info->pStages[i].module;
+			auto result = shader_modules.find_object(source);
+			if (!result.first)
+				ReplayDependency::retain_first(
+					blocker, parent_detail(RESOURCE_SHADER_MODULE, source, ReplayDependency::Status::Missing));
 			const_cast<VkPipelineShaderStageCreateInfo *>(info->pStages)[i].module = result.first;
 		}
+		return blocker;
 	}
 
-	void resolve_shader_modules(VkComputePipelineCreateInfo *info)
+	ReplayDependency::Detail resolve_shader_modules(VkComputePipelineCreateInfo *info)
 	{
-		auto result = shader_modules.find_object((Hash) info->stage.module);
+		ReplayDependency::Detail blocker;
+		Hash source = (Hash)info->stage.module;
+		auto result = shader_modules.find_object(source);
+		if (!result.first)
+			ReplayDependency::retain_first(
+				blocker, parent_detail(RESOURCE_SHADER_MODULE, source, ReplayDependency::Status::Missing));
 		const_cast<VkComputePipelineCreateInfo*>(info)->stage.module = result.first;
+		return blocker;
 	}
 
 	template <typename DerivedInfo>
@@ -3139,7 +3499,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!info.info)
 			return true;
 		auto *library = work_item_get_library_info(info);
-		return library && library->libraryCount != 0;
+		return info.source_base || (library && library->libraryCount != 0);
 	}
 
 	bool pipeline_library_info_is_satisfied(const VkPipelineLibraryCreateInfoKHR &library,
@@ -3172,15 +3532,38 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!info.info)
 			return false;
 		auto *library = work_item_get_library_info(info);
-		return !library || pipeline_library_info_is_satisfied(*library, pipelines);
+		return (!info.source_base || pipelines.count(info.source_base)) &&
+			   (!library || pipeline_library_info_is_satisfied(*library, pipelines));
 	}
 
 	template <typename DerivedInfo>
-	void resolve_pipelines(DerivedInfo &info, const unordered_map<Hash, VkPipeline> &pipelines) const
+	void resolve_pipelines(DerivedInfo &info, const unordered_map<Hash, VkPipeline> &pipelines)
 	{
+		if (info.source_base)
+		{
+			auto parent = pipelines.find(info.source_base);
+			if (parent == pipelines.end() ||
+				(!parent->second && !derivative_parent_succeeded(DerivedInfo::get_tag(), info.source_base)))
+				ReplayDependency::retain_first(info.blocker, parent_detail(DerivedInfo::get_tag(), info.source_base,
+																		   parent == pipelines.end()
+																			   ? ReplayDependency::Status::Missing
+																			   : ReplayDependency::Status::Failed));
+		}
 		auto *library = work_item_get_library_info(info);
 		if (library)
+		{
+			for (uint32_t i = 0; i < library->libraryCount; i++)
+			{
+				Hash hash = (Hash)library->pLibraries[i];
+				auto parent = pipelines.find(hash);
+				if (parent == pipelines.end() || !parent->second)
+					ReplayDependency::retain_first(info.blocker, parent_detail(DerivedInfo::get_tag(), hash,
+																			   parent == pipelines.end()
+																				   ? ReplayDependency::Status::Missing
+																				   : ReplayDependency::Status::Failed));
+			}
 			resolve_pipeline_library_info(*library, pipelines);
+		}
 	}
 
 	template <typename DerivedInfo>
@@ -3268,6 +3651,8 @@ struct ThreadedReplayer : StateCreatorInterface
 	                              unordered_map<Hash, DerivedInfo> &parents,
 	                              unordered_set<Hash> &parsed_parents)
 	{
+		if (info.source_base)
+			enqueue_parent_pipeline(info, info.source_base, pipelines, parents, parsed_parents);
 		auto *library = work_item_get_library_info(info);
 		if (library)
 			enqueue_parent_pipelines_pipeline_library(info, *library, pipelines, parents, parsed_parents);
@@ -3278,7 +3663,11 @@ struct ThreadedReplayer : StateCreatorInterface
 	                           unordered_map<Hash, uint32_t> &parents_depth,
 	                           const DerivedInfo &info, uint32_t depth)
 	{
+		if (depth > parents.size())
+			return;
 		parents_depth[info.hash] = max(parents_depth.at(info.hash), depth);
+		if (info.source_base && parents.count(info.source_base) && parents_depth.at(info.source_base) <= depth)
+			compute_parents_depth(parents, parents_depth, parents.at(info.source_base), depth + 1);
 
 		auto library = work_item_get_library_info(info);
 		if (!library)
@@ -3430,7 +3819,11 @@ struct ThreadedReplayer : StateCreatorInterface
 					                 shader_modules.prune_cache([this](Hash hash, VkShaderModule module) {
 						                 assert(enqueued_shader_modules.count((VkShaderModule) hash) != 0);
 						                 //LOGI("Removing shader module %016llx.\n", static_cast<unsigned long long>(hash));
-						                 enqueued_shader_modules.erase((VkShaderModule) hash);
+										 {
+											 std::lock_guard<std::mutex> hold(origin_mutex);
+											 if (module != VK_NULL_HANDLE)
+												 enqueued_shader_modules.erase((VkShaderModule)hash);
+										 }
 						                 if (module != VK_NULL_HANDLE)
 						                 {
 							                 device->get_feature_filter().unregister_shader_module_info(module);
@@ -3492,9 +3885,10 @@ struct ThreadedReplayer : StateCreatorInterface
 				                 {
 					                 if (item.info)
 					                 {
-						                 resolve_shader_modules(item.info);
+										 item.blocker = resolve_shader_modules(item.info);
 						                 enqueue_pipeline(item.hash, item.info, item.pipeline,
-						                                  item.index + hash_offset + start_index, memory_index);
+														  item.index + hash_offset + start_index, memory_index,
+														  item.blocker, item.derivative_parent_candidate);
 					                 }
 				                 }
 			                 }});
@@ -3571,6 +3965,8 @@ struct ThreadedReplayer : StateCreatorInterface
 					                for (const auto &parent : parents)
 					                {
 						                parents_depth[parent.first] = 0;
+										if (parent.second.source_base)
+											dependencies.insert(parent.second.source_base);
 
 						                auto library = work_item_get_library_info(parent.second);
 						                if (!library)
@@ -3607,7 +4003,8 @@ struct ThreadedReplayer : StateCreatorInterface
 
 						                if (!derived_work_item_is_satisfied(parent, pipelines))
 							                {
-								                record_failure(ReplayFailure::Dependency, DerivedInfo::get_tag(), parent.hash);
+												resolve_pipelines(parent, pipelines);
+												record_dependency(DerivedInfo::get_tag(), parent.hash, parent.blocker);
 								                continue;
 							                }
 
@@ -3618,12 +4015,12 @@ struct ThreadedReplayer : StateCreatorInterface
 							                sync_worker_memory_context(PARENT_PIPELINE_MEMORY_CONTEXT);
 						                }
 
-						                resolve_shader_modules(parent.info);
+										parent.blocker = resolve_shader_modules(parent.info);
 						                resolve_pipelines(parent, pipelines);
-						                enqueue_pipeline(parent.hash, parent.info,
-						                                 parent.pipeline,
+										enqueue_pipeline(parent.hash, parent.info, parent.pipeline,
 						                                 parent.index + hash_offset + start_index,
-						                                 PARENT_PIPELINE_MEMORY_CONTEXT);
+														 PARENT_PIPELINE_MEMORY_CONTEXT, parent.blocker,
+														 parent.derivative_parent_candidate);
 					                }
 				                }});
 			}
@@ -3634,7 +4031,12 @@ struct ThreadedReplayer : StateCreatorInterface
 				                 // If an entry exists in pipelines, we have queued up that hash earlier, but it might not be done compiling yet.
 				                 auto itr = unstable_remove_if(begin(*derived), end(*derived), [&](const DerivedInfo &info) -> bool {
 					                 bool satisfied = derived_work_item_is_satisfied(info, pipelines) || parents.count(info.hash) != 0;
-					                 if (!satisfied) record_failure(ReplayFailure::Dependency, DerivedInfo::get_tag(), info.hash);
+									 if (!satisfied)
+									 {
+										 auto blocked = info;
+										 resolve_pipelines(blocked, pipelines);
+										 record_dependency(DerivedInfo::get_tag(), info.hash, blocked.blocker);
+									 }
 					                 return satisfied;
 				                 });
 
@@ -3659,10 +4061,11 @@ struct ThreadedReplayer : StateCreatorInterface
 					                 // compiling them twice.
 					                 if (i->info && parents.count(i->hash) == 0)
 					                 {
-						                 resolve_shader_modules(i->info);
+										 i->blocker = resolve_shader_modules(i->info);
 						                 resolve_pipelines(*i, pipelines);
 						                 enqueue_pipeline(i->hash, i->info, i->pipeline,
-						                                  i->index + hash_offset + start_index, memory_index);
+														  i->index + hash_offset + start_index, memory_index,
+														  i->blocker, i->derivative_parent_candidate);
 					                 }
 				                 }
 
@@ -3742,7 +4145,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	std::unordered_set<Hash> masked_shader_modules;
 	std::unordered_map<VkShaderModule, Hash> shader_module_to_hash;
-	std::unordered_set<VkShaderModule> enqueued_shader_modules;
+	std::unordered_map<VkShaderModule, ReplayFailure> enqueued_shader_modules;
 	VkPipelineCache disk_pipeline_cache = VK_NULL_HANDLE;
 	VkValidationCacheEXT validation_cache = VK_NULL_HANDLE;
 
@@ -4567,9 +4970,12 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 			per_thread_data.active_hash = hash;
 			uint64_t previous_failure = per_thread_data.failure_generation;
 			ReplayEvent::ParseCapture capture;
+			ReplayDependency::Capture dependencies;
 			if (!state_replayer.parse(replayer, resolver.get(), state_json.data(), state_json.size()))
 			{
-				if (per_thread_data.failure_generation == previous_failure)
+				if (dependencies.result.hash)
+					replayer.record_dependency(tag, hash, dependencies.result);
+				else if (per_thread_data.failure_generation == previous_failure)
 					replayer.record_failure(ReplayFailure::Parse, tag, hash, VK_SUCCESS, &capture.result);
 				LOGW("Did not replay blob (tag: %s, hash: %016" PRIx64 "). See previous logs for context.\n", tag_names[tag], hash);
 			}

@@ -8,6 +8,7 @@
 #include <memory>
 #include <condition_variable>
 static void install_dispatch();
+static void (*additional_dispatch)() = nullptr;
 static bool fail_device, non_lazy, marker_mode, physical_adapter;
 static bool observed_null_device;
 class OutcomeDevice : public Fossilize::VulkanDevice
@@ -82,6 +83,8 @@ static void install_dispatch()
 	vkCreateRayTracingPipelinesKHR = raytracing; vkDestroyPipeline = destroy;
 	vkCreateShaderModule = shader; vkDestroyShaderModule = destroy_shader;
 	original_layout = vkCreatePipelineLayout; vkCreatePipelineLayout = layout;
+	if (additional_dispatch)
+		additional_dispatch();
 }
 // Direct initial-object creation without maintenance4 deferral uses the same
 // callbacks with a real limited feature filter and controlled Vulkan returns.

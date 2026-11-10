@@ -30,7 +30,38 @@ static void install_event_dispatch();
 class EventDevice : public Fossilize::VulkanDevice
 {
 public:
- bool init_device(const Options &o) {if(scenario=="event-empty")return false;bool ret=VulkanDevice::init_device(o);if(ret)install_event_dispatch();return ret;}
+  Fossilize::FeatureFilter support_filter;
+  Fossilize::FeatureFilter &get_feature_filter()
+  {
+	  return scenario == "event-support" ? support_filter : VulkanDevice::get_feature_filter();
+  }
+  bool init_device(const Options &o)
+  {
+	  if (scenario == "event-empty")
+		  return false;
+	  bool ret = VulkanDevice::init_device(o);
+	  if (ret)
+	  {
+		  if (scenario == "event-support")
+		  {
+			  VkPhysicalDeviceFeatures2 f = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
+			  VkPhysicalDeviceProperties2 p = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2};
+			  VkPhysicalDeviceDynamicRenderingFeatures dynamic = {
+				  VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES};
+			  VkPhysicalDeviceRayTracingPipelineFeaturesKHR ray = {
+				  VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR};
+			  VkPhysicalDeviceMaintenance4Features maintenance = {
+				  VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_FEATURES};
+			  f.pNext = &dynamic;
+			  dynamic.pNext = &ray;
+			  ray.pNext = &maintenance;
+			  dynamic.dynamicRendering = ray.rayTracingPipeline = maintenance.maintenance4 = VK_TRUE;
+			  support_filter.init(VK_API_VERSION_1_3, nullptr, 0, &f, &p);
+		  }
+		  install_event_dispatch();
+	  }
+	  return ret;
+  }
 };
 #define VulkanDevice EventDevice
 
@@ -132,7 +163,13 @@ static VKAPI_ATTR VkResult VKAPI_CALL event_compute(VkDevice d,VkPipelineCache c
 {if(scenario=="event-creation"){*p=VK_NULL_HANDLE;return VK_ERROR_DEVICE_LOST;}return event_real_compute(d,c,n,i,a,p);}
 static void install_event_dispatch(){event_real_compute=vkCreateComputePipelines;vkCreateComputePipelines=event_compute;}
 static bool event_case(){return scenario.find("event-")==0;}
-static bool event_real(){return event_case()&&(scenario=="event-clean"||scenario=="event-empty"||scenario=="event-progress"||scenario=="event-parse"||scenario=="event-initial-parse"||scenario=="event-creation");}
+static bool event_real()
+{
+	return event_case() &&
+		   (scenario == "event-clean" || scenario == "event-empty" || scenario == "event-progress" ||
+			scenario == "event-parse" || scenario == "event-initial-parse" || scenario == "event-creation" ||
+			scenario == "event-support" || scenario == "event-dependency");
+}
 static bool event_write(const char *b)
 {
 #ifdef _WIN32
@@ -393,6 +430,8 @@ static bool fixture(const char *path)
 		if (!recorder.record_graphics_pipeline((VkPipeline)(uintptr_t)(10 + i), g, nullptr, 0, 0x200 + i)) return false;
 		VkComputePipelineCreateInfo c = {VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO};
 		stage.stage = VK_SHADER_STAGE_COMPUTE_BIT; c.stage = stage; c.layout = (VkPipelineLayout)2;
+		if (scenario == "event-support")
+			c.flags = VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT;
 		if (!recorder.record_compute_pipeline((VkPipeline)(uintptr_t)(30 + i), c, nullptr, 0, 0x300 + i)) return false;
 		VkRayTracingPipelineCreateInfoKHR r = {VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR};
 		stage.stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR; r.stageCount = 1; r.pStages = &stage; r.layout = (VkPipelineLayout)2;
@@ -452,6 +491,39 @@ static void validate(int result, unsigned workers, bool zero)
 #ifndef _WIN32
   else if(startup_close())checks.require(o.native_error==EPIPE&&e.lost&&!e.hello&&!e.count&&!e.final&&o.unknown_remainder&&!o.skipped(),"M18/closed-reader-parent-survives-retains-native-error-and-unknown-origin");
 #endif
+  else if (scenario == "event-support" || scenario == "event-dependency")
+  {
+	  using namespace Fossilize::ReplayEvent;
+	  bool support = scenario == "event-support";
+	  checks.require(e.hello && e.final && e.failed && e.categories_known && o.controlled_failure && !o.failed_attempts,
+					 "M19/controller-actual-detector-native-final-attempt");
+	  checks.require(e.count == (support ? 4u : 12u) && !e.omitted && !e.lost && !e.unsupported,
+					 "M19/controller-exact-bounded-detail-count");
+	  checks.require(e.categories[unsigned(ReplayFailure::Create)] == 0 &&
+						 e.categories[unsigned(ReplayFailure::Unsupported)] == (support ? 4u : 0u) &&
+						 e.categories[unsigned(ReplayFailure::Dependency)] == (support ? 0u : 12u) &&
+						 e.categories[unsigned(ReplayFailure::Read)] == (support ? 0u : 1u),
+					 "M19/controller-origin-blocked-counts-without-driver-faults");
+	  for (unsigned i = 0; i < e.count; i++)
+	  {
+		  const auto &v = e.events[i];
+		  checks.require(v.worker == 0 && v.attempt == 1 && !(v.known & Raw),
+						 "M19/controller-worker-attempt-no-invented-Vulkan-result");
+		  if (support)
+			  checks.require(v.phase == Support && v.reason == Unsupported &&
+								 v.support.kind == Fossilize::SupportKind::Feature &&
+								 !strcmp(v.support.identifier, "descriptorBuffer") && v.support.known == 3 &&
+								 v.support.required == 1 && v.support.available == 0 &&
+								 v.tag == RESOURCE_COMPUTE_PIPELINE && v.hash >= 0x302 && v.hash < 0x306,
+							 "M19/controller-support-origin-fields-prose-disabled");
+		  else
+			  checks.require(v.phase == Dependency && v.reason == Blocked && v.parent.tag == RESOURCE_SHADER_MODULE &&
+								 v.parent.hash == 0x101 &&
+								 v.parent.status == Fossilize::ReplayDependency::Status::Missing &&
+								 v.parent.category == uint64_t(ReplayFailure::Read) + 1,
+							 "M19/controller-dependency-source-identity-prose-disabled");
+	  }
+  }
   else if(scenario=="event-parse"||scenario=="event-initial-parse"||scenario=="event-creation")
   {
    checks.require(e.hello&&e.final&&e.failed&&e.count&&o.controlled_failure&&!o.failed_attempts,"M18/controlled-failure-no-crash-inflation");
@@ -669,7 +741,27 @@ int main(int argc, char **argv)
    std::unique_ptr<DatabaseInterface> input(create_database("event-good.foz",DatabaseMode::ReadOnly));
    std::unique_ptr<DatabaseInterface> output(create_database(argv[3],DatabaseMode::OverWrite));
    checks.require(input&&output&&input->prepare()&&output->prepare(),"M18/fixture-copy-open");
-   for(unsigned t=0;t<RESOURCE_COUNT;t++){size_t n=0;input->get_hash_list_for_resource_tag(ResourceTag(t),&n,nullptr);std::vector<Hash> hashes(n);if(n)input->get_hash_list_for_resource_tag(ResourceTag(t),&n,hashes.data());for(auto h:hashes){size_t z=0;input->read_entry(ResourceTag(t),h,&z,nullptr,0);std::vector<char>b(z);input->read_entry(ResourceTag(t),h,&z,b.data(),0);bool bad=(scenario=="event-parse"&&t==RESOURCE_COMPUTE_PIPELINE&&h==0x302)||(scenario=="event-initial-parse"&&t==RESOURCE_PIPELINE_LAYOUT&&h==0x102);checks.require(output->write_entry(ResourceTag(t),h,bad?"{":b.data(),bad?1:z,0),"M18/fixture-copy-with-controlled-input");}}
+   for (unsigned t = 0; t < RESOURCE_COUNT; t++)
+   {
+	   size_t n = 0;
+	   input->get_hash_list_for_resource_tag(ResourceTag(t), &n, nullptr);
+	   std::vector<Hash> hashes(n);
+	   if (n)
+		   input->get_hash_list_for_resource_tag(ResourceTag(t), &n, hashes.data());
+	   for (auto h : hashes)
+	   {
+		   if (scenario == "event-dependency" && t == RESOURCE_SHADER_MODULE)
+			   continue;
+		   size_t z = 0;
+		   input->read_entry(ResourceTag(t), h, &z, nullptr, 0);
+		   std::vector<char> b(z);
+		   input->read_entry(ResourceTag(t), h, &z, b.data(), 0);
+		   bool bad = (scenario == "event-parse" && t == RESOURCE_COMPUTE_PIPELINE && h == 0x302) ||
+					  (scenario == "event-initial-parse" && t == RESOURCE_PIPELINE_LAYOUT && h == 0x102);
+		   checks.require(output->write_entry(ResourceTag(t), h, bad ? "{" : b.data(), bad ? 1 : z, 0),
+						  "M18/fixture-copy-with-controlled-input");
+	   }
+   }
   }
   std::unique_ptr<DatabaseInterface> db(create_database(argv[3],DatabaseMode::ReadOnly));checks.require(db&&db->prepare(),"M18/fixture-readback-open");
   if(db)for(unsigned t=0;t<RESOURCE_COUNT;t++){size_t n=0;checks.require(db->get_hash_list_for_resource_tag(ResourceTag(t),&n,nullptr),"M18/fixture-hash-discovery");std::vector<Hash> hashes(n);if(n)checks.require(db->get_hash_list_for_resource_tag(ResourceTag(t),&n,hashes.data()),"M18/fixture-hash-readback");for(auto h:hashes){size_t z=0;checks.require(db->read_entry(ResourceTag(t),h,&z,nullptr,0)&&z,"M18/fixture-payload-size");std::vector<char>b(z);checks.require(db->read_entry(ResourceTag(t),h,&z,b.data(),0),"M18/fixture-payload-readback");}}

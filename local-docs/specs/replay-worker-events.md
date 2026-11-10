@@ -6,7 +6,7 @@ API, a complete item ledger or a general mixed-version interoperability guarante
 Public declarations and SharedControlBlock version/layout remain unchanged.
 
 Every rich frame is printable ASCII `FZ18 <decimal-payload-byte-count>:<payload>\n`.
-The fixed decoder and serializer hold fewer than 512 bytes per frame (including
+The fixed decoder and serializer hold fewer than 1024 bytes per frame (including
 the line terminator); no incoming length causes allocation. Decimal integers
 are checked for overflow. LF is the only terminator; NUL, CR and non-ASCII bytes
 invalidate the record. Malformed or oversized input is discarded through LF;
@@ -84,3 +84,61 @@ exceptions OFF/ON; run bounded codec/parser/producer cases under ASan+UBSan.
 Native Windows execution was explicitly waived for this issue and remains
 unverified. Portable registration and Windows source changes are not Windows,
 GPU, driver-cache, persistence or Steam runtime evidence.
+
+## Support and dependency details (issue #19)
+
+The paired private protocol additionally accepts `1 DETAIL 1` records. The first
+number is the negotiated protocol version and the second is the detail schema
+version. The remaining decimal fields are `phase reason domain known raw tag hash
+worker attempt support-kind support-known required available support-raw parent-tag
+parent-hash parent-status parent-category parent-omitted identifier-hex`. `identifier-hex` is a
+bounded ASCII identifier encoded as lowercase hexadecimal, or `-` when absent.
+The fixed frame capacity is now 1024 bytes, including framing and LF, and the
+identifier holds at most 159 bytes. A frame remains below Linux PIPE_BUF; the
+stream decoder never allocates from an incoming length. Existing EVENT 1 payloads
+and their known bits retain their meaning. A previous decoder treats DETAIL as
+unsupported context; rich mixed-version interoperability is not promised.
+
+Support phase=4/reason=48 carries a caller-owned support value. Kinds are feature=1,
+extension=2, property=3, unknown sType=4, SPIR-V capability=5, malformed input=6 and
+constraint=7. Kind zero means no rejection. Support-known bits are required=1,
+available=2 and raw=4; unset values encode zero. A known zero is distinct from an
+unknown value. Feature and extension checks report required/available booleans;
+property checks report the original input and device limit or mask. Capability
+and unknown-sType checks retain their raw numeric IDs. Identifiers name existing
+Vulkan fields, extensions, SPIR-V capabilities or constraints; they do not imply
+an extension can be enabled on the current device. Malformed shader input is
+reported as parse failure by replay, rather than Unsupported.
+
+Dependency phase=5/reason=49 names the consumer using tag/hash and its first
+blocking parent using parent-tag/hash. Parent status is unknown=0, missing=1,
+failed=2 or read failed=3. Parent-category zero means unavailable; otherwise it is
+one plus the existing ReplayFailure category index (read, parse, create,
+unsupported, validation, setup, dependency). Parent-omitted counts additional observed blocking references after the first;
+it is independent of omitted event frames. A blocked consumer has no fabricated
+Vulkan result. Initial static parsing, shader resolution, derivative-base and
+pipeline-library scheduling retain source hashes before handle replacement.
+Lazy maintenance4 creation failures name the static parent, and its consumer is
+blocked before the pipeline create call.
+
+`1 COUNTS 1 read parse create unsupported validation setup dependency` carries
+seven independent unsigned attempt-local observation counts at orderly shutdown.
+It is sent separately from sampled detail and before the unchanged FINAL record.
+A failing count cannot be erased by FINAL success. Counts overlap by design and
+are not a reconciled logical-item ledger across worker processes or retries.
+Missing COUNTS leaves these counts unknown; missing FINAL retains uncertainty.
+The existing 16-event and four-prior-attempt retention limits still apply, with
+explicit omitted-event counts. Source resource caches hold operational failure
+status separately from these bounded diagnostic examples; the bounded 64-origin
+sample is only a fallback for parent category context, never an accounting or
+queue-completion mechanism.
+
+FeatureFilter preserves its original bool entrypoints and adds value-output
+overloads. Each call clears its receiver and owns its identifier bytes. Lexical
+thread-local receiver scopes isolate concurrent checks and restore nested calls;
+there is no shared mutable last-error or new callback sink. Parser dependency
+captures are private lexical adapters; queued work retains scalar identities, not
+pointers into a capture or allocator. Public StateCreatorInterface virtual
+signatures and shared-progress layout/version remain unchanged. Old-header
+compile/link/run checks describe the preserved source and bool behavior boundary,
+not a general prebuilt C++ ABI guarantee.

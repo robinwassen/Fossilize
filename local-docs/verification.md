@@ -815,3 +815,37 @@ bytes, valid negotiation and exact first legacy hashes. The portable
 production CLI stdin slave path and checks native exit status and HELLO/FINAL
 presence. These checks remain active in Release; an empty stdin is an explicit
 legacy control rather than an incomplete offer claim.
+
+## Support reasons and blocked dependencies (issue #19)
+
+`replay-support-{compute,graphics,raytracing,static,call-scope}` exercise the actual
+FeatureFilter detectors with synthetic non-null feature/property initialization
+and explicit Release-active assertions. Each migrated entrypoint has supported
+and rejected controls; the fixture applicability table is in
+`test/replay_support_test.cpp`. Shader capability and unknown sType IDs retain
+numeric values; known limits retain input/device values. Malformed shader inputs
+remain distinguishable from device support rejection.
+
+`replay-dependency-{module-fanout,parent-fanout,common-cache,static}` and
+`replay-support-{categories,bounded}` use recorded outer FOZ inputs and production
+parse, scheduling, resolution and creation paths with private CPU Vulkan adapters.
+They assert originating failures, exact consumer/parent identities and the absence
+of pipeline creation for blocked work. Thread-count and memory-context controls
+exercise the same ThreadedReplayer process; these are not cross-process item
+reconciliation claims. `replay-{support,dependency}-worker-details` use actual
+worker/controller pipes with prose disabled. Category counts are independent of
+bounded retained examples and have worker-attempt scope, as documented in the
+[private protocol](specs/replay-worker-events.md).
+
+Run the complete CPU inventory in Linux Debug/Release with exceptions OFF/ON,
+CLI/layer and SPIR-V validation ON, runtime-layer testing OFF. Repeat call-scope,
+fanout, worker-detail and bounded cases three times. Build codec/parser/support
+and dependency runners with ASan+UBSan and run the focused issue #19 cases along
+with inherited codec/parser/producer/varint regressions. Run
+`replay-support-old-header-compatibility` and the existing event/diagnostic/outcome
+compatibility cases. Use compiled isolated mutations to suppress an actual
+support detector's detail and erase a source parent identity; only explicit M19
+assertion failures count as sensitivity evidence. Commands and recorded results
+are harness evidence; these procedures do not themselves establish a passing run.
+Native Windows verification is explicitly user-waived and remains unverified;
+these CPU fixtures make no GPU, driver-cache, Steam or persistence claim.
