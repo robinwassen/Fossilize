@@ -852,6 +852,9 @@ scope. Single sources retain their selected built-in backend, including ZIP, tex
 and directory archives. If an optional-only prepare fails, every known key from
 that input is excluded under the optional-input policy and none is dispatched;
 the selected scope is known empty while original unread totals remain unknown.
+Required filter inputs retain their own complete/failed state and are never
+misclassified as excluded optional sources. The registered prefix-policy case
+checks all24 source-state/requiredness/filter-state/prefix-policy combinations.
 Master/composite metadata retains its existing stream-archive-only boundary. Filter/hash/range/hint exclusions never become execution successes or
 failures. These narrow policies are forwarded through ExternalReplayer's additive
 setter, both launchers and exact-commit metadata. Options and shared-progress

@@ -41,6 +41,45 @@ static void ranges()
  auto hit=select_replay_scope(*db,starts,ends,0x20,false),miss=select_replay_scope(*db,starts,ends,0x99,false);
  checks.require(hit.scope_satisfied&&hit.selected.size()==3&&hit.excluded.size()==6&&miss.selected.empty()&&!miss.hash_found&&!miss.scope_satisfied,"D20/hash-exact-and-missing");
 }
+static void policy_compositions()
+{
+ checks.require(fixture("good","composition-complete.foz"),"D20/composition-fixture");
+ auto content=cache_bytes("composition-complete.foz");
+ {FILE *f=fopen("composition-prefix.foz","wb");checks.require(f!=nullptr,"D20/composition-prefix-open");if(f){fwrite(content.data(),1,content.size(),f);fputc('x',f);fclose(f);}}
+ {FILE *f=fopen("composition-failed.foz","wb");checks.require(f!=nullptr,"D20/composition-failed-open");if(f){fputs("invalid",f);fclose(f);}}
+ remove("composition-missing-filter.foz");
+ const char *sources[]={"composition-complete.foz","composition-prefix.foz","composition-failed.foz"};
+ unsigned starts[]={0,0,0},ends[]={~0u,~0u,~0u},rows=0;
+ const std::vector<DiscoveryKey> pipelines={{RESOURCE_COMPUTE_PIPELINE,0x201},{RESOURCE_COMPUTE_PIPELINE,0x202}};
+ for(unsigned state=0;state<3;state++)for(bool required:{false,true})for(bool filter_failed:{false,true})for(bool prefix:{false,true})
+ {
+  rows++;
+  std::string row=std::to_string(state)+"/"+std::to_string(required)+"/"+std::to_string(filter_failed)+"/"+std::to_string(prefix);
+  std::unique_ptr<DatabaseInterface> db(create_database(sources[state],DatabaseMode::ReadOnly));db->set_input_required(0,required);
+  bool loaded=db->load_whitelist_database(filter_failed?"composition-missing-filter.foz":"composition-complete.foz");
+  bool prepared=db->prepare();auto report=select_replay_scope(*db,starts,ends,0,prefix,nullptr,prepared);
+  bool expected=!filter_failed&&(state==0||(state==1&&(!required||prefix))||(state==2&&!required));
+  checks.require(loaded==!filter_failed&&prepared==(state!=2),"D20/composition-origin-bools/"+row);
+  checks.require(report.scope_satisfied==expected&&report.selected_total_known==expected&&report.preparation_succeeded==prepared,"D20/composition-exact-policy/"+row);
+  checks.require(report.preparation.discovery_complete==(state==0&&!filter_failed)&&report.preparation.unread_total_known==(state==0&&!filter_failed),"D20/composition-original-uncertainty/"+row);
+  checks.require(report.preparation.inputs.size()==2,"D20/composition-exact-requested-inputs/"+row);
+  if(report.preparation.inputs.size()==2)
+  {
+   const auto &source=report.preparation.inputs[0],&filter=report.preparation.inputs[1];
+   checks.require(source.path==sources[state]&&source.required==required&&!source.filter&&source.state==(state==0?DiscoveryState::Complete:state==1?DiscoveryState::RecoveredPrefix:DiscoveryState::Failed),"D20/composition-source-facts/"+row);
+   checks.require(filter.filter&&filter.required&&filter.state==(filter_failed?DiscoveryState::Failed:DiscoveryState::Complete),"D20/composition-required-filter-facts/"+row);
+  }
+  if(expected&&state!=2)checks.require(report.selected==pipelines&&report.dispatch==pipelines,"D20/composition-exact-known-selection/"+row);
+  if(state==2)
+  {
+   checks.require(report.selected.empty()&&report.dispatch.empty()&&report.optional_inputs_excluded==!required,"D20/composition-failed-source-no-dispatch/"+row);
+   if(!required)checks.require(report.optional_unavailable.size()==1&&report.optional_unavailable[0].path==sources[state]&&!report.optional_unavailable[0].filter,"D20/composition-filter-is-not-excluded-source/"+row);
+  }
+ }
+ checks.require(rows==24,"D20/composition-all24-rows");
+ printf("Executed D20 policy composition rows=%u\n",rows);
+}
+
 static void prefix_policy()
 {
  checks.require(fixture("good","prefix.foz"),"D20/policy-recorder-fixture");
@@ -82,6 +121,7 @@ static void prefix_policy()
  }
 #endif
 
+ policy_compositions();
 }
 static void selection_filters()
 {
@@ -112,6 +152,14 @@ static void hints()
  }
  cache_legacy_provenance();cache_null_provenance();cache_whitelist();
 }
+static void healthy_selection()
+{
+ checks.require(fixture("good","healthy.foz"),"D20/healthy-fixture");
+ auto opts=Replay::options(1,nullptr);ThreadedReplayer replay(device_options(),opts);marker_mode=true;results={VK_SUCCESS};calls=0;
+ int status=run_normal_process(replay,{"healthy.foz"},nullptr,0,-1);marker_mode=false;
+ checks.require(status==0&&calls==2&&replay.selection_report.scope_satisfied&&replay.selection_report.selected.size()==2&&replay.selection_report.dispatch.size()==2&&replay.selection_report.excluded.empty(),"D20/healthy-exact-production-work");
+}
+
 int main(int argc,char **argv)
 {
  if(argc==4&&std::string(argv[1])=="--fixture")return fixture(argv[2],argv[3])?0:1;
@@ -133,6 +181,6 @@ int main(int argc,char **argv)
   return checks.failures?1:0;
  }
  if(argc!=2)return 2;std::string mode=argv[1];
- if(mode=="ranges")ranges();else if(mode=="filters")selection_filters();else if(mode=="prefix-policy")prefix_policy();else if(mode=="hints")hints();else return 2;
+ if(mode=="healthy")healthy_selection();else if(mode=="ranges")ranges();else if(mode=="filters")selection_filters();else if(mode=="prefix-policy")prefix_policy();else if(mode=="hints")hints();else return 2;
  return checks.failures?1:0;
 }

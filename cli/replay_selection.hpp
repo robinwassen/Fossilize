@@ -42,14 +42,16 @@ static const ResourceTag replay_pipeline_tags[3] = {
 
 inline bool replay_inputs_unavailable(const DatabasePreparationReport &preparation)
 {
-	if (preparation.inputs.empty())
-		return false;
+	bool has_source = false;
 	for (auto &input : preparation.inputs)
 	{
+		if (input.filter)
+			continue;
+		has_source = true;
 		if (input.required || input.state == DiscoveryState::Complete || input.state == DiscoveryState::RecoveredPrefix)
 			return false;
 	}
-	return true;
+	return has_source;
 }
 
 inline void configure_replay_inputs(DatabaseInterface &db, size_t count, const std::vector<unsigned> &optional)
@@ -90,13 +92,23 @@ inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const un
 	// an interface whose prepare() failed. Original discovery uncertainty survives.
 	if (!preparation_succeeded || replay_inputs_unavailable(report.preparation))
 	{
-		report.optional_inputs_excluded = !report.preparation.inputs.empty();
+		bool has_source = false;
+		report.optional_inputs_excluded = true;
 		for (auto &input : report.preparation.inputs)
+		{
+			if (input.filter)
+				continue;
+			has_source = true;
 			report.optional_inputs_excluded &= !input.required;
+		}
+		report.optional_inputs_excluded &= has_source;
 		report.scope_satisfied &= report.optional_inputs_excluded && report.hash_found;
 		if (report.optional_inputs_excluded)
 		{
-			report.optional_unavailable = report.preparation.inputs;
+			report.optional_unavailable.clear();
+			for (auto input : report.preparation.inputs)
+				if (!input.filter)
+					report.optional_unavailable.push_back(std::move(input));
 			for (auto key : report.preparation.discovered)
 				report.excluded.push_back({key, ReplayExclusionPolicy::OptionalInput});
 		}

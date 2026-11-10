@@ -28,7 +28,7 @@ MUTATIONS = {
     'selection-exclusions': ('cli/replay_selection.hpp',
                              'report.scope_satisfied &= report.hash_found;',
                              'report.excluded.clear();\n\treport.scope_satisfied &= report.hash_found;', 1,
-                             'replay-selection-sensitivity', 'ranges', 'prefix-policy',
+                             'replay-selection-sensitivity', 'ranges', 'healthy',
                              'D20/range-exact-selection-and-exclusions'),
     'metadata-import': ('fossilize_db.cpp',
                         'this->report = std::move(report);',
