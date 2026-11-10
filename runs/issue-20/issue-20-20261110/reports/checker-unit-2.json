@@ -1,0 +1,93 @@
+{
+  "attempt_id": "checker-unit-2",
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "candidate_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "commands": [],
+  "discovered": [],
+  "evidence": [
+    {
+      "candidate_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+      "criteria": [
+        "AC1"
+      ],
+      "kind": "static_source_review",
+      "result": "defect_confirmed",
+      "scope": "Only the stated arithmetic and its report consequences were adjudicated. Required guidance, tracked skill/roles/state, live issues 20/8/18 and plan-2 original acceptance/cases were read before implementation claims. Live #18 was read as closed/completed. No implementer/prior-checker passing report was used as independent proof."
+    }
+  ],
+  "executed": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+      "bounded_regression_strategy": "Extend the existing private Linux fseek/ftell/fread adapters in test/database_discovery_test.cpp with a bounded logical-position source: supply magic/header bytes and advertised logical length, record seeks, and advance virtual positions without creating or reading a large payload/file. Cover uint32 maximum and maximum-minus-one, an adjacent nonwrapping control, and an unrepresentable seek/position branch. Exercise production prepare/report and assert exact span/position, retained boundary/count and honest failure/unknown flags. Retain a small real text archive healthy control with payload readback and Release-active checks. No large-file fixture, huge allocation, adversarial archive generation or unbounded resource use is needed.",
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": [
+        "PayloadHeader::payload_size and uncompressed_size are uint32_t (fossilize_db.cpp:86-89). DumbFileDatabase::get_converted_header copies uncompressed_size into payload_size (2245-2250).",
+        "scan_payload_span evaluates uint64_t(header.payload_size)+2. In contrast, both expressions header.uncompressed_size+2 at 2260/2263 use the usual unsigned 32-bit arithmetic on supported LP64 Linux; conversion to fseek long or compound-assignment size_t happens after that addition. This is defined unsigned wrap, not signed undefined behavior.",
+        "For uncompressed_size=0xfffffffe the validated span is 4294967296 but movement is 0; for 0xffffffff those values are 4294967297 and 1. LP64 long/size_t and ftell can represent a containing file, so the prior len-offset check does not reject these lengths. The candidate checks no smaller supported text payload limit before this path.",
+        "prepare records the key and increments retained_count before movement, then assigns prefix_end/unread_offset from the incorrectly advanced offset. The next iteration scans payload bytes as entry metadata. Thus the new report cannot reliably name the last wholly discovered entry boundary or exact retained scope; an explicit recovered-prefix policy can consume that inaccurate scope. This is a source-level consequence, not an observed runtime reproduction.",
+        "create_database selects DumbFileDatabase for .txt (2283-2291); the issue-20 verification documentation explicitly includes single-source text archives. Original AC1 requires reporting recovered-prefix limits, while plan D20-errors-unknown requires checked offset/length calculations."
+      ],
+      "expected_repair": "Compute the payload-plus-two-newlines span once in a sufficiently wide unsigned type and use that same checked value for bounds validation, fseek and offset advancement. Check representability in the actual seek parameter/position and size_t before narrowing or adding. If a platform cannot represent the position, return reason-bearing failed/incomplete discovery with unknown remainder rather than wrapped movement, fabricated OS error or successful prefix scope. Keep retained_count/discovered keys and prefix_end consistent with the accepted prefix.",
+      "id": "F20-DUMB-SPAN-U32-WRAP",
+      "location": "fossilize_db.cpp:2253-2263; StreamArchive::prepare at 1610 and 1629-1639; fossilize_db.hpp:119-122",
+      "route": "implementation",
+      "status": "open",
+      "title": "Text archive advancement wraps before widening and invalidates the reported retained prefix"
+    }
+  ],
+  "input_revision": 241,
+  "input_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "limitations": [
+    "Entire base-to-candidate diff review, test inventory/execution and changelog acceptance remain incomplete/NOT RUN; targeted source review is not G20-source-contract acceptance.",
+    "All required runtime gates and every planned assertion case remain NOT RUN for this attempt. Existing implementation/prior-worker results are not independent acceptance.",
+    "G20-native-windows is optional under plan 2 and the exact task/run-specific user answer Proceed; waive Windows for this run. It remains NOT RUN/unverified, without a native pass or any Linux-gate waiver.",
+    "No source edits, canonical Harness/Journal mutations, production external writes, builds, tests or probes were performed. Only source/document/issue reads and this local worker report were produced."
+  ],
+  "next_action": "Dispatch a fresh bounded implementer repair for F20-DUMB-SPAN-U32-WRAP with a registered bounded logical-position regression, then obtain fresh independent review and execution of all required plan-2 gates at the repaired committed candidate; retain native Windows as NOT RUN/unverified under its run-specific waiver.",
+  "not_run": [
+    {
+      "gate": "G20-source-contract",
+      "reason": "Early static correctness rejection; complete gate execution was not attempted.",
+      "result": "NOT RUN"
+    },
+    {
+      "gate": "G20-linux-matrix",
+      "reason": "Early static correctness rejection; complete gate execution was not attempted.",
+      "result": "NOT RUN"
+    },
+    {
+      "gate": "G20-repeat",
+      "reason": "Early static correctness rejection; complete gate execution was not attempted.",
+      "result": "NOT RUN"
+    },
+    {
+      "gate": "G20-sanitizers",
+      "reason": "Early static correctness rejection; complete gate execution was not attempted.",
+      "result": "NOT RUN"
+    },
+    {
+      "gate": "G20-controls",
+      "reason": "Early static correctness rejection; complete gate execution was not attempted.",
+      "result": "NOT RUN"
+    },
+    {
+      "gate": "G20-compatibility",
+      "reason": "Early static correctness rejection; complete gate execution was not attempted.",
+      "result": "NOT RUN"
+    }
+  ],
+  "operation": "work_unit",
+  "plan_version": 2,
+  "role": "checker",
+  "root_issue": "https://github.com/robinwassen/Fossilize/issues/20",
+  "run_id": "issue-20-20261110",
+  "skipped": [],
+  "summary": "Static review confirms inconsistent payload-span arithmetic in the supported text backend; no builds, tests, probes or runtime reproduction were performed.",
+  "test_mapping": [],
+  "verdict": "changes_required",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
+  "worker_id": "/root/checker_arithmetic20"
+}

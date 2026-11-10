@@ -172,13 +172,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 2,
+      "rejection_signature": "88f36bd391ee66e007c095a06d002bb5fd3c6f2019951d2b604b08fe85370415",
+      "report": "runs/issue-20/issue-20-20261110/reports/checker-unit-2.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1794313040.8074975,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
       "worker_id": "/root/checker_arithmetic20"
     }
@@ -203,6 +205,26 @@
       "route": "planner",
       "status": "resolved",
       "title": "Reconcile user-authorized native Windows applicability before acceptance"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+      "bounded_regression_strategy": "Extend the existing private Linux fseek/ftell/fread adapters in test/database_discovery_test.cpp with a bounded logical-position source: supply magic/header bytes and advertised logical length, record seeks, and advance virtual positions without creating or reading a large payload/file. Cover uint32 maximum and maximum-minus-one, an adjacent nonwrapping control, and an unrepresentable seek/position branch. Exercise production prepare/report and assert exact span/position, retained boundary/count and honest failure/unknown flags. Retain a small real text archive healthy control with payload readback and Release-active checks. No large-file fixture, huge allocation, adversarial archive generation or unbounded resource use is needed.",
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": [
+        "PayloadHeader::payload_size and uncompressed_size are uint32_t (fossilize_db.cpp:86-89). DumbFileDatabase::get_converted_header copies uncompressed_size into payload_size (2245-2250).",
+        "scan_payload_span evaluates uint64_t(header.payload_size)+2. In contrast, both expressions header.uncompressed_size+2 at 2260/2263 use the usual unsigned 32-bit arithmetic on supported LP64 Linux; conversion to fseek long or compound-assignment size_t happens after that addition. This is defined unsigned wrap, not signed undefined behavior.",
+        "For uncompressed_size=0xfffffffe the validated span is 4294967296 but movement is 0; for 0xffffffff those values are 4294967297 and 1. LP64 long/size_t and ftell can represent a containing file, so the prior len-offset check does not reject these lengths. The candidate checks no smaller supported text payload limit before this path.",
+        "prepare records the key and increments retained_count before movement, then assigns prefix_end/unread_offset from the incorrectly advanced offset. The next iteration scans payload bytes as entry metadata. Thus the new report cannot reliably name the last wholly discovered entry boundary or exact retained scope; an explicit recovered-prefix policy can consume that inaccurate scope. This is a source-level consequence, not an observed runtime reproduction.",
+        "create_database selects DumbFileDatabase for .txt (2283-2291); the issue-20 verification documentation explicitly includes single-source text archives. Original AC1 requires reporting recovered-prefix limits, while plan D20-errors-unknown requires checked offset/length calculations."
+      ],
+      "expected_repair": "Compute the payload-plus-two-newlines span once in a sufficiently wide unsigned type and use that same checked value for bounds validation, fseek and offset advancement. Check representability in the actual seek parameter/position and size_t before narrowing or adding. If a platform cannot represent the position, return reason-bearing failed/incomplete discovery with unknown remainder rather than wrapped movement, fabricated OS error or successful prefix scope. Keep retained_count/discovered keys and prefix_end consistent with the accepted prefix.",
+      "id": "F20-DUMB-SPAN-U32-WRAP",
+      "location": "fossilize_db.cpp:2253-2263; StreamArchive::prepare at 1610 and 1629-1639; fossilize_db.hpp:119-122",
+      "route": "implementation",
+      "status": "open",
+      "title": "Text archive advancement wraps before widening and invalidates the reported retained prefix"
     }
   ],
   "issue_snapshot": {
@@ -4789,8 +4811,8 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Dispatch a fresh bounded implementer repair for F20-DUMB-SPAN-U32-WRAP with a registered bounded logical-position regression, then obtain fresh independent review and execution of all required plan-2 gates at the repaired committed candidate; retain native Windows as NOT RUN/unverified under its run-specific waiver.",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -4802,7 +4824,7 @@
     "output_directory": "/tmp/fossilize-h20/output",
     "source_worktree": "/home/robin/.herdr/worktrees/fossilize/ticket-20"
   },
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "assumptions": [
       "Issue snapshot #20 matches live body read during planning; #18 is completed in supplied dependency snapshot. Coordinator rechecks snapshots at mandated boundaries.",
@@ -5839,7 +5861,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 243,
+  "revision": 244,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
@@ -5849,7 +5871,7 @@
   },
   "run_id": "issue-20-20261110",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-20",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/20",
   "verification": [],
