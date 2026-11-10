@@ -6813,7 +6813,29 @@
         "log": "/tmp/fossilize-h19/output/repair2/h19-r2-repeat-tests.log",
         "receipt": "/tmp/fossilize-h19/output/repair2/h19-r2-repeat-tests.json",
         "started": 1794311655.0223184,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1794311980.1103969,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h19/build/debug-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "--repeat",
+            "until-fail:3",
+            "-R",
+            "^(replay-support-call-scope|replay-dependency-module-fanout|replay-dependency-parent-fanout|replay-support-worker-details|replay-dependency-worker-details|replay-support-bounded)$"
+          ],
+          "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+          "exit_code": 0,
+          "finished": 1794311980.775793,
+          "intent_id": "h19-r2-repeat-tests",
+          "started": 1794311980.1072974,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "candidate_sha": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
@@ -7677,7 +7699,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 327,
+  "revision": 328,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
