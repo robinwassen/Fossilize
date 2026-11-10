@@ -2454,7 +2454,29 @@
         "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-repeat.log",
         "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-repeat.receipt.json",
         "started": 1794327728.476812,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1794328214.6615403,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h19/build/debug-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "--repeat",
+            "until-fail:3",
+            "-R",
+            "^(replay-warning-concurrency|replay-warning-cli-worker|replay-support-call-scope|replay-dependency-module-fanout|replay-dependency-parent-fanout|replay-support-worker-details|replay-dependency-worker-details|replay-support-bounded)$"
+          ],
+          "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+          "exit_code": 0,
+          "finished": 1794328215.6272085,
+          "intent_id": "text-i6-repeat",
+          "started": 1794328214.6591375,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
@@ -3770,7 +3792,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 101,
+  "revision": 102,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
