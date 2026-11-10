@@ -1640,8 +1640,8 @@ struct StreamArchive : DatabaseInterface
 
 				if (mode == DatabaseMode::Append && offset != len)
 				{
-					if (fseek(file, begin_append_offset, SEEK_SET) < 0)
-						return false;
+					if (fseek(file, begin_append_offset, SEEK_SET) != 0)
+						return fail(DiscoveryReason::Seek, true);
 				}
 			}
 			else
@@ -2145,7 +2145,7 @@ protected:
 
 	virtual bool move_offset_through_header_size(PayloadHeader header, size_t &offset)
 	{
-		if (fseek(file, header.payload_size, SEEK_CUR) < 0)
+		if (fseek(file, header.payload_size, SEEK_CUR) != 0)
 			return false;
 
 		offset += header.payload_size;
@@ -2256,7 +2256,7 @@ protected:
 
 	bool move_offset_through_header_size(PayloadHeader header, size_t &offset) override
 	{
-		if (fseek(file, header.uncompressed_size + 2, SEEK_CUR) < 0) // + two newline symbols
+		if (fseek(file, header.uncompressed_size + 2, SEEK_CUR) != 0) // + two newline symbols
 			return false;
 
 		offset += header.uncompressed_size + 2; // + two newline symbols
