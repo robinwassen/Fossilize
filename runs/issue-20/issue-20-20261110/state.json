@@ -190,6 +190,10 @@
       {
         "started": 1794301653.6507065,
         "wait_seconds": 6.109906501835212
+      },
+      {
+        "started": 1794302237.1508057,
+        "wait_seconds": 12.067653961014003
       }
     ],
     "command_timeout": 600,
@@ -849,9 +853,35 @@
         "intent_id": "i20-full-release-off",
         "started": 1794302232.2275088,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "/tmp/fossilize-h20/toolenv/bin/cmake",
+          "-S",
+          "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+          "-B",
+          "/tmp/fossilize-h20/build/implementer-1/release-on",
+          "-G",
+          "Ninja",
+          "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+          "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+          "-DFOSSILIZE_CLI=ON",
+          "-DFOSSILIZE_TESTS=ON",
+          "-DFOSSILIZE_VULKAN_LAYER=ON",
+          "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+          "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+        ],
+        "command": "/tmp/fossilize-h20/toolenv/bin/cmake -S /home/robin/.herdr/worktrees/fossilize/ticket-20 -B /tmp/fossilize-h20/build/implementer-1/release-on -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release -DFOSSILIZE_ENABLE_EXCEPTIONS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_TESTS=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+        "eligible_deadline": 1794314726.8665328,
+        "intent_id": "i20-configure-release-on",
+        "started": 1794302250.7419977,
+        "timeout": 600
       }
     ],
-    "deadline": 1794314714.798879,
+    "deadline": 1794314726.8665328,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -1771,7 +1801,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 41,
+  "revision": 42,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
