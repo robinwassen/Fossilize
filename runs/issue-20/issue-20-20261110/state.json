@@ -257,6 +257,7 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+      "attempt_id": "checker-unit-3",
       "bounded_regression_strategy": "Extend the existing private Linux fseek/ftell/fread adapters in test/database_discovery_test.cpp with a bounded logical-position source: supply magic/header bytes and advertised logical length, record seeks, and advance virtual positions without creating or reading a large payload/file. Cover uint32 maximum and maximum-minus-one, an adjacent nonwrapping control, and an unrepresentable seek/position branch. Exercise production prepare/report and assert exact span/position, retained boundary/count and honest failure/unknown flags. Retain a small real text archive healthy control with payload readback and Release-active checks. No large-file fixture, huge allocation, adversarial archive generation or unbounded resource use is needed.",
       "criteria": [
         "AC1"
@@ -271,8 +272,13 @@
       "expected_repair": "Compute the payload-plus-two-newlines span once in a sufficiently wide unsigned type and use that same checked value for bounds validation, fseek and offset advancement. Check representability in the actual seek parameter/position and size_t before narrowing or adding. If a platform cannot represent the position, return reason-bearing failed/incomplete discovery with unknown remainder rather than wrapped movement, fabricated OS error or successful prefix scope. Keep retained_count/discovered keys and prefix_end consistent with the accepted prefix.",
       "id": "F20-DUMB-SPAN-U32-WRAP",
       "location": "fossilize_db.cpp:2253-2263; StreamArchive::prepare at 1610 and 1629-1639; fossilize_db.hpp:119-122",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+        "evidence": "Fresh active checker /root/checker_recheck20 at checker-unit-3, candidate2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5/basefd380aafe1df5a5379216d70c4fe4bfcf7f4b5db/plan2 independently inspected widened single-span validation/movement, long/size_t/absolute position guards and errno reset, and publication of keys/count/boundary only after success. Own detached compiled database-discovery-errors passed1/1 via c20-u3-run-focused with three uint32 boundaries times five metadata-only logical modes, exact wide seeks/read count, prior prefix76/one key on failed seek, unknown tell/errno observations, and tiny real139byte text payload readback. No large-file fixture. This resolves the targeted defect; all remaining mandatory unit gates still pending, not acceptance.",
+        "finding_id": "F20-DUMB-SPAN-U32-WRAP"
+      },
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Text archive advancement wraps before widening and invalidates the reported retained prefix"
     }
   ],
@@ -6525,7 +6531,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 282,
+  "revision": 283,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
