@@ -1,0 +1,354 @@
+{
+  "attempt_id": "implementer-waiver-2",
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "candidate_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "checks": {
+    "all_required_plan2_gates": "Not accepted by implementer; fresh work-unit and separate final checker execution required.",
+    "focused": "19/19 passed; existing exact-source Linux Debug exceptions OFF implementation build",
+    "source_diff_check": "passed"
+  },
+  "commands": [
+    {
+      "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+      "child_command": [
+        "git",
+        "diff",
+        "--check",
+        "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+        "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025"
+      ],
+      "command": "git diff --check fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db 0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "environment": "Linux; exact committed base-to-candidate whitespace check",
+      "executed": [],
+      "exit_code": 0,
+      "intent_id": "i20i2-source-check",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-waiver-2-source-check.log",
+      "plan_version": 2,
+      "receipt": "runs/issue-20/issue-20-20261110/evidence/implementer-waiver-2-source-check-receipt.json",
+      "result": "passed",
+      "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+      "timeout": 600
+    },
+    {
+      "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+      "child_command": [
+        "/tmp/fossilize-h20/toolenv/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h20/build/implementer-1/debug-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--output-junit",
+        "/tmp/fossilize-h20/output/implementer-2/focused.xml",
+        "-R",
+        "^(database-discovery-|replay-selection-|replay-discovery-)"
+      ],
+      "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --output-on-failure --no-tests=error --output-junit /tmp/fossilize-h20/output/implementer-2/focused.xml -R '^(database-discovery-|replay-selection-|replay-discovery-)'",
+      "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+      "environment": "Linux; existing exact-source implementation-stage Debug exceptions OFF build; no rebuild in this plan applicability renewal",
+      "executed": [
+        "database-discovery-empty",
+        "database-discovery-truncated-zero",
+        "database-discovery-prefix",
+        "database-discovery-inputs",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-metadata",
+        "replay-selection-filters",
+        "replay-selection-ranges",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints",
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-selection",
+        "replay-discovery-legacy-invocations",
+        "database-discovery-old-header-compatibility"
+      ],
+      "exit_code": 0,
+      "intent_id": "i20i2-focused",
+      "log": "runs/issue-20/issue-20-20261110/evidence/implementer-waiver-2-focused.xml.txt",
+      "plan_version": 2,
+      "receipt": "runs/issue-20/issue-20-20261110/evidence/implementer-waiver-2-focused-receipt.json",
+      "result": "passed",
+      "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+      "timeout": 600
+    }
+  ],
+  "discovered": [
+    "database-discovery-empty",
+    "database-discovery-truncated-zero",
+    "database-discovery-prefix",
+    "database-discovery-inputs",
+    "database-discovery-errors",
+    "database-discovery-filters",
+    "database-discovery-metadata",
+    "replay-selection-filters",
+    "replay-selection-ranges",
+    "replay-selection-prefix-policy",
+    "replay-selection-hints",
+    "replay-discovery-cli-empty",
+    "replay-discovery-cli-truncated-zero",
+    "replay-discovery-cli-prefix",
+    "replay-discovery-cli-required",
+    "replay-discovery-cli-optional",
+    "replay-discovery-cli-selection",
+    "replay-discovery-legacy-invocations",
+    "database-discovery-old-header-compatibility"
+  ],
+  "executed": [
+    "database-discovery-empty",
+    "database-discovery-truncated-zero",
+    "database-discovery-prefix",
+    "database-discovery-inputs",
+    "database-discovery-errors",
+    "database-discovery-filters",
+    "database-discovery-metadata",
+    "replay-selection-filters",
+    "replay-selection-ranges",
+    "replay-selection-prefix-policy",
+    "replay-selection-hints",
+    "replay-discovery-cli-empty",
+    "replay-discovery-cli-truncated-zero",
+    "replay-discovery-cli-prefix",
+    "replay-discovery-cli-required",
+    "replay-discovery-cli-optional",
+    "replay-discovery-cli-selection",
+    "replay-discovery-legacy-invocations",
+    "database-discovery-old-header-compatibility"
+  ],
+  "findings": [],
+  "input_revision": 191,
+  "input_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "limitations": [
+    "Native Windows is user-waived NOT RUN/unverified only for issue20 run issue-20-20261110, under exact user answer: Proceed; waive Windows for this run. No native Windows pass is claimed.",
+    "This attempt did not rebuild or rerun the full four-configuration matrix, repeats, sanitizer, original-defect or five mutation controls. These remain mandatory independent plan2 checker gates.",
+    "Prior implementation report and records retain exact historical source identity; plan2 does not renew old evidence. Same-source prior Debug OFF 279/279 and sanitizer 29 passes remain prior implementation evidence only. Prior acaa6155 matrix/repeats/controls remain historical and do not bind this final source.",
+    "No GPU/driver, Steam, physical compilation, cache-hit or persistence verification; no general prebuilt C++ binary ABI or mixed-version private metadata claim.",
+    "Focused execution reused implementation-stage compiled artifacts at unchanged source and is not independent checker evidence."
+  ],
+  "observations": [
+    "Renewed implementation stage after plan2 applicability reconciliation only; source remains unchanged at existing committed candidate.",
+    "Read live issue20 and shared issue8, immutable original AC1 and plan2 before prior implementation claims.",
+    "Reviewed additive database preparation/query and private selection scope APIs, input policy and prefix semantics, CTest registration and issue-linked one-sentence changelog scope.",
+    "No source/test/changelog change needed for run-specific native Windows disposition.",
+    "F20-WINDOWS-DISPOSITION-PLAN1 remains for fresh independent checker resolution; no canonical state or finding resolution written."
+  ],
+  "operation": "implement",
+  "plan_version": 2,
+  "records_file": "/tmp/fossilize-h20/implementer-waiver-records.json",
+  "result_candidate_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "role": "implementer",
+  "test_mapping": [
+    {
+      "case": "D20-empty-e9",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [],
+      "tests": [
+        {
+          "id": "database-discovery-empty",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        },
+        {
+          "id": "database-discovery-truncated-zero",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-prefix-read",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [],
+      "tests": [
+        {
+          "id": "database-discovery-prefix",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-input-policy",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [],
+      "tests": [
+        {
+          "id": "database-discovery-inputs",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-errors-unknown",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [],
+      "tests": [
+        {
+          "id": "database-discovery-errors",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-filter-scope",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [],
+      "tests": [
+        {
+          "id": "database-discovery-filters",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        },
+        {
+          "id": "replay-selection-filters",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-range-scope",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [],
+      "tests": [
+        {
+          "id": "replay-selection-ranges",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-prefix-policy",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [],
+      "tests": [
+        {
+          "id": "replay-selection-prefix-policy",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-replay-hints",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [],
+      "tests": [
+        {
+          "id": "replay-selection-hints",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-metadata-transfer",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [],
+      "tests": [
+        {
+          "id": "database-discovery-metadata",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-production-modes",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [],
+      "tests": [
+        {
+          "id": "replay-discovery-cli-empty",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-truncated-zero",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-prefix",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-required",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-optional",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-cli-selection",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-compatibility",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [
+        "replay-event-old-header-compatibility",
+        "diagnostic-compatibility-test",
+        "replay-controller-cli-compatibility",
+        "replay-outcome-cli-compatibility"
+      ],
+      "tests": [
+        {
+          "id": "database-discovery-old-header-compatibility",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        },
+        {
+          "id": "replay-discovery-legacy-invocations",
+          "run": "i20i2-focused",
+          "source_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case": "D20-defect-sensitivity",
+      "limitation": "Only matched focused tests renewed in this implementation-stage attempt; independent checker must execute every required plan2 gate.",
+      "not_run_in_this_attempt": [
+        "replay-discovery-original-defect",
+        "database-discovery-sensitivity",
+        "replay-selection-sensitivity"
+      ],
+      "tests": []
+    }
+  ],
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
+  "worker_id": "/root/implementer_waiver20"
+}
