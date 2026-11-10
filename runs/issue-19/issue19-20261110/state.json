@@ -65,13 +65,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "35353187e4a4385759268fb44f121ebf165ab71928a928e4300411496819833c",
+      "report": "runs/issue-19/issue19-20261110/reports/checker-unit-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1794308691.3323882,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/19",
       "worker_id": "/root/issue19_checker_unit1"
     }
@@ -80,7 +82,34 @@
     "stage": "pending"
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "The pipeline_layout_is_supported unknown-flags detector emits VkDescriptorSetLayoutCreateInfo.flags, naming the wrong Vulkan object. The fresh compiled probe rejected pipeline-layout flags1073741824 but returned kind7/known3/required1073741824 with identifier VkDescriptorSetLayoutCreateInfo.flags instead of VkPipelineLayoutCreateInfo.flags. Existing registered static tests do not cover this exact flags identifier. See checker-unit1-probe.log and checker-unit1-probe-source.txt records.",
+      "id": "CU19-1",
+      "location": "cli/fossilize_feature_filter.cpp:2388; test/replay_support_test.cpp static cases",
+      "priority": 2,
+      "requested_change": "Return the pipeline-layout field identifier at this detector and add an explicit registered assertion plus supported/recovery control; audit similar copied detector identifiers.",
+      "route": "implementation",
+      "status": "open"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Graphics dynamic-state default and forbidden compute-stage branches still return plain false despite knowing the offending enum. The detailed overload replaces both with generic graphics_pipeline_is_supported and known0/raw0. Fresh compiled probe observed this for dynamic enum1879048189 and compute stage32, while supported before/after controls passed. The raytracing dynamic-state path already reports VkDynamicState with raw value. This violates plan implementation1/source-review requirements to preserve existing known detector detail instead of generic fallback. See checker-unit1-probe.log and checker-unit1-probe-source.txt records.",
+      "id": "CU19-2",
+      "location": "cli/fossilize_feature_filter.cpp:5837; cli/fossilize_feature_filter.cpp:5849; cli/fossilize_feature_filter.cpp:6262",
+      "priority": 2,
+      "requested_change": "Record a specific constraint identifier and known offending enum value at each rejection detector without changing bool support policy; add Release-active registered graphics assertions for both paths and successful controls.",
+      "route": "implementation",
+      "status": "open"
+    }
+  ],
   "issue_snapshot": {
     "deliverables": [
       "https://github.com/robinwassen/Fossilize/issues/19"
@@ -291,6 +320,10 @@
       {
         "started": 1794309248.8260493,
         "wait_seconds": 5.868818958057091
+      },
+      {
+        "started": 1794309361.850218,
+        "wait_seconds": 4.892905064858496
       }
     ],
     "command_timeout": 600,
@@ -3723,7 +3756,7 @@
         }
       }
     ],
-    "deadline": 1794315414.533259,
+    "deadline": 1794315419.426164,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -3733,8 +3766,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Repair CU19-1 and CU19-2 with Release-active registered assertions covering the exact detector identifiers/raw enums and successful recovery controls; commit a new clean candidate, then dispatch a fresh independent unit checker over all original 14 cases and 9 gates. Do not carry acceptance from this rejected candidate.",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -3746,7 +3779,7 @@
     "output_directory": "/tmp/fossilize-h19/output",
     "source_worktree": "/home/robin/.codex/worktrees/1471/fossilize"
   },
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -4411,7 +4444,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 177,
+  "revision": 178,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
@@ -4421,7 +4454,7 @@
   },
   "run_id": "issue19-20261110",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-19",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/19",
   "verification": [],

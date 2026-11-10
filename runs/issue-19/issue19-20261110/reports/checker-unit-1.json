@@ -1,0 +1,333 @@
+{
+  "attempt_id": "checker-unit-1",
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "candidate_sha": "ccfe1402d70e8dd264145e68e34c86575fb1548f",
+  "commands": [
+    {
+      "child_command": [
+        "git",
+        "diff",
+        "--check",
+        "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+        "ccfe1402d70e8dd264145e68e34c86575fb1548f"
+      ],
+      "cwd": "/tmp/fossilize-h19/checker-2",
+      "exit_code": 0,
+      "intent_id": "h19-cu1-diff-check",
+      "log": "/tmp/fossilize-h19/output/checker-2/h19-cu1-diff-check.log",
+      "receipt": "/tmp/fossilize-h19/output/checker-2/h19-cu1-diff-check.json",
+      "receipt_data": {
+        "acquired": 1794308976.3719804,
+        "command": [
+          "git",
+          "diff",
+          "--check",
+          "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+          "ccfe1402d70e8dd264145e68e34c86575fb1548f"
+        ],
+        "cwd": "/tmp/fossilize-h19/checker-2",
+        "exit_code": 0,
+        "finished": 1794308976.4043136,
+        "intent_id": "h19-cu1-diff-check",
+        "started": 1794308976.3689988,
+        "timed_out": false,
+        "timeout": 600.0,
+        "wait_seconds": 0.0
+      },
+      "source_clean_after": true,
+      "source_clean_before": true,
+      "timed_out": false
+    },
+    {
+      "child_command": [
+        "/usr/bin/g++",
+        "-std=c++14",
+        "-O0",
+        "-I/tmp/fossilize-h19/checker-2",
+        "-I/tmp/fossilize-h19/checker-2/cli",
+        "-I/tmp/fossilize-h19/checker-2/cli/volk",
+        "-I/tmp/fossilize-h19/checker-2/khronos",
+        "-I/tmp/fossilize-h19/checker-2/cli/SPIRV-Headers/include/spirv/unified1",
+        "/tmp/fossilize-h19/output/checker-2/known-enum-probe.cpp",
+        "/tmp/fossilize-h19/checker-2/cli/fossilize_feature_filter.cpp",
+        "-pthread",
+        "-o",
+        "/tmp/fossilize-h19/output/checker-2/known-enum-probe"
+      ],
+      "cwd": "/tmp/fossilize-h19/checker-2",
+      "exit_code": 0,
+      "intent_id": "h19-cu1-known-enum-compile",
+      "log": "/tmp/fossilize-h19/output/checker-2/h19-cu1-known-enum-compile.log",
+      "receipt": "/tmp/fossilize-h19/output/checker-2/h19-cu1-known-enum-compile.json",
+      "receipt_data": {
+        "acquired": 1794309195.512752,
+        "command": [
+          "/usr/bin/g++",
+          "-std=c++14",
+          "-O0",
+          "-I/tmp/fossilize-h19/checker-2",
+          "-I/tmp/fossilize-h19/checker-2/cli",
+          "-I/tmp/fossilize-h19/checker-2/cli/volk",
+          "-I/tmp/fossilize-h19/checker-2/khronos",
+          "-I/tmp/fossilize-h19/checker-2/cli/SPIRV-Headers/include/spirv/unified1",
+          "/tmp/fossilize-h19/output/checker-2/known-enum-probe.cpp",
+          "/tmp/fossilize-h19/checker-2/cli/fossilize_feature_filter.cpp",
+          "-pthread",
+          "-o",
+          "/tmp/fossilize-h19/output/checker-2/known-enum-probe"
+        ],
+        "cwd": "/tmp/fossilize-h19/checker-2",
+        "exit_code": 0,
+        "finished": 1794309197.5810926,
+        "intent_id": "h19-cu1-known-enum-compile",
+        "started": 1794309195.509627,
+        "timed_out": false,
+        "timeout": 600.0,
+        "wait_seconds": 0.0
+      },
+      "source_clean_after": true,
+      "source_clean_before": true,
+      "timed_out": false
+    },
+    {
+      "child_command": [
+        "/tmp/fossilize-h19/output/checker-2/known-enum-probe"
+      ],
+      "cwd": "/tmp/fossilize-h19/checker-2",
+      "exit_code": 1,
+      "intent_id": "h19-cu1-known-enum-run",
+      "log": "/tmp/fossilize-h19/output/checker-2/h19-cu1-known-enum-run.log",
+      "receipt": "/tmp/fossilize-h19/output/checker-2/h19-cu1-known-enum-run.json",
+      "receipt_data": {
+        "acquired": 1794309205.8832996,
+        "command": [
+          "/tmp/fossilize-h19/output/checker-2/known-enum-probe"
+        ],
+        "cwd": "/tmp/fossilize-h19/checker-2",
+        "exit_code": 1,
+        "finished": 1794309205.8869026,
+        "intent_id": "h19-cu1-known-enum-run",
+        "started": 1794309205.8808343,
+        "timed_out": false,
+        "timeout": 600.0,
+        "wait_seconds": 0.0
+      },
+      "source_clean_after": true,
+      "source_clean_before": true,
+      "timed_out": false
+    }
+  ],
+  "discovered": [
+    "CHECKER19-known-graphics-dynamic-enum",
+    "CHECKER19-known-graphics-stage-enum",
+    "CHECKER19-pipeline-layout-flags-identifier",
+    "CHECKER19-supported-before-after-controls"
+  ],
+  "evidence": [
+    {
+      "attempt_id": "checker-unit-1",
+      "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+      "candidate_sha": "ccfe1402d70e8dd264145e68e34c86575fb1548f",
+      "command": [
+        "/tmp/fossilize-h19/output/checker-2/known-enum-probe"
+      ],
+      "criteria": [
+        "AC1"
+      ],
+      "cwd": "/tmp/fossilize-h19/checker-2",
+      "environment": "Linux CPU; /usr/bin/g++ C++14 O0 compiling exact candidate FeatureFilter source; 600-second child deadline; isolated probe source/binary outside repository",
+      "exit_code": 1,
+      "gate": "M19-source-review",
+      "log": "runs/issue-19/issue19-20261110/evidence/checker-unit1-probe.log",
+      "plan_version": 1,
+      "result": "failed"
+    }
+  ],
+  "executed": [
+    "CHECKER19-known-graphics-dynamic-enum",
+    "CHECKER19-known-graphics-stage-enum",
+    "CHECKER19-pipeline-layout-flags-identifier",
+    "CHECKER19-supported-before-after-controls"
+  ],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "The pipeline_layout_is_supported unknown-flags detector emits VkDescriptorSetLayoutCreateInfo.flags, naming the wrong Vulkan object. The fresh compiled probe rejected pipeline-layout flags1073741824 but returned kind7/known3/required1073741824 with identifier VkDescriptorSetLayoutCreateInfo.flags instead of VkPipelineLayoutCreateInfo.flags. Existing registered static tests do not cover this exact flags identifier. See checker-unit1-probe.log and checker-unit1-probe-source.txt records.",
+      "id": "CU19-1",
+      "location": "cli/fossilize_feature_filter.cpp:2388; test/replay_support_test.cpp static cases",
+      "priority": 2,
+      "requested_change": "Return the pipeline-layout field identifier at this detector and add an explicit registered assertion plus supported/recovery control; audit similar copied detector identifiers.",
+      "route": "implementation",
+      "status": "open"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/19",
+      "criteria": [
+        "AC1"
+      ],
+      "evidence": "Graphics dynamic-state default and forbidden compute-stage branches still return plain false despite knowing the offending enum. The detailed overload replaces both with generic graphics_pipeline_is_supported and known0/raw0. Fresh compiled probe observed this for dynamic enum1879048189 and compute stage32, while supported before/after controls passed. The raytracing dynamic-state path already reports VkDynamicState with raw value. This violates plan implementation1/source-review requirements to preserve existing known detector detail instead of generic fallback. See checker-unit1-probe.log and checker-unit1-probe-source.txt records.",
+      "id": "CU19-2",
+      "location": "cli/fossilize_feature_filter.cpp:5837; cli/fossilize_feature_filter.cpp:5849; cli/fossilize_feature_filter.cpp:6262",
+      "priority": 2,
+      "requested_change": "Record a specific constraint identifier and known offending enum value at each rejection detector without changing bool support policy; add Release-active registered graphics assertions for both paths and successful controls.",
+      "route": "implementation",
+      "status": "open"
+    }
+  ],
+  "gate_status": {
+    "M19-asan-ubsan": "not_run; stopped at confirmed acceptance failure",
+    "M19-concurrency": "not_run; stopped at confirmed acceptance failure",
+    "M19-decisive-independent": "not_run; stopped at confirmed acceptance failure",
+    "M19-linux-debug-off": "not_run; stopped at confirmed acceptance failure",
+    "M19-linux-debug-on": "not_run; stopped at confirmed acceptance failure",
+    "M19-linux-release-off": "not_run; stopped at confirmed acceptance failure",
+    "M19-linux-release-on": "not_run; stopped at confirmed acceptance failure",
+    "M19-sensitivity-controls": "not_run; stopped at confirmed acceptance failure",
+    "M19-source-review": "failed two concrete detector details; broad mandatory review/checks remain incomplete"
+  },
+  "input_revision": 165,
+  "input_sha": "ccfe1402d70e8dd264145e68e34c86575fb1548f",
+  "limitations": [
+    "Not accepted. No full registered CTest discovery/execution, matrix, ASan+UBSan, repeat stress, old-header or sensitivity gate execution in this checker attempt. Implementer evidence was inspected only as claims and is not independent execution.",
+    "Source review stopped on confirmed fatal acceptance findings before completing every remaining full-diff/semantic obligation.",
+    "Native Windows verification user-waived and remains unverified. No GPU/driver compilation, Steam, driver cache, output persistence, whole observability conformance or general C++ binary ABI claim."
+  ],
+  "new_evidence": "Fresh checker compiled actual candidate FeatureFilter source and ran an independent three-detector counterexample under published-intent 600-second verification wrappers. Compilation exited0; runtime exited1 with explicit assertion failure and successful before/after controls, confirming both root-scoped findings.",
+  "next_action": "Repair CU19-1 and CU19-2 with Release-active registered assertions covering the exact detector identifiers/raw enums and successful recovery controls; commit a new clean candidate, then dispatch a fresh independent unit checker over all original 14 cases and 9 gates. Do not carry acceptance from this rejected candidate.",
+  "operation": "work_unit",
+  "plan_version": 1,
+  "planned_case_status": {
+    "M19-bounded-detail": "not_run; all original assertions remain required for repaired candidate",
+    "M19-call-scope": "not_run; all original assertions remain required for repaired candidate",
+    "M19-common-cache": "not_run; all original assertions remain required for repaired candidate",
+    "M19-compute": "not_run; all original assertions remain required for repaired candidate",
+    "M19-graphics": "failed independent known-enum counterexample; registered full case not run",
+    "M19-module-fanout": "not_run; all original assertions remain required for repaired candidate",
+    "M19-old-callers": "not_run; all original assertions remain required for repaired candidate",
+    "M19-origin-categories": "not_run; all original assertions remain required for repaired candidate",
+    "M19-parent-fanout": "not_run; all original assertions remain required for repaired candidate",
+    "M19-raytracing": "not_run; all original assertions remain required for repaired candidate",
+    "M19-sensitivity": "not_run; all original assertions remain required for repaired candidate",
+    "M19-static": "failed independent exact-identifier counterexample; registered full case not run",
+    "M19-static-dependencies": "not_run; all original assertions remain required for repaired candidate",
+    "M19-worker-details": "not_run; all original assertions remain required for repaired candidate"
+  },
+  "records": {
+    "runs/issue-19/issue19-20261110/evidence/checker-unit1-h19-cu1-diff-check.json": "{\n  \"intent_id\": \"h19-cu1-diff-check\",\n  \"command\": [\n    \"git\",\n    \"diff\",\n    \"--check\",\n    \"fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db\",\n    \"ccfe1402d70e8dd264145e68e34c86575fb1548f\"\n  ],\n  \"cwd\": \"/tmp/fossilize-h19/checker-2\",\n  \"timeout\": 600.0,\n  \"started\": 1794308976.3689988,\n  \"acquired\": 1794308976.3719804,\n  \"wait_seconds\": 0.0,\n  \"finished\": 1794308976.4043136,\n  \"exit_code\": 0,\n  \"timed_out\": false\n}\n",
+    "runs/issue-19/issue19-20261110/evidence/checker-unit1-h19-cu1-diff-check.log": "Command completed with no stdout/stderr. Exit status is retained in its receipt.\n",
+    "runs/issue-19/issue19-20261110/evidence/checker-unit1-h19-cu1-known-enum-compile.json": "{\n  \"intent_id\": \"h19-cu1-known-enum-compile\",\n  \"command\": [\n    \"/usr/bin/g++\",\n    \"-std=c++14\",\n    \"-O0\",\n    \"-I/tmp/fossilize-h19/checker-2\",\n    \"-I/tmp/fossilize-h19/checker-2/cli\",\n    \"-I/tmp/fossilize-h19/checker-2/cli/volk\",\n    \"-I/tmp/fossilize-h19/checker-2/khronos\",\n    \"-I/tmp/fossilize-h19/checker-2/cli/SPIRV-Headers/include/spirv/unified1\",\n    \"/tmp/fossilize-h19/output/checker-2/known-enum-probe.cpp\",\n    \"/tmp/fossilize-h19/checker-2/cli/fossilize_feature_filter.cpp\",\n    \"-pthread\",\n    \"-o\",\n    \"/tmp/fossilize-h19/output/checker-2/known-enum-probe\"\n  ],\n  \"cwd\": \"/tmp/fossilize-h19/checker-2\",\n  \"timeout\": 600.0,\n  \"started\": 1794309195.509627,\n  \"acquired\": 1794309195.512752,\n  \"wait_seconds\": 0.0,\n  \"finished\": 1794309197.5810926,\n  \"exit_code\": 0,\n  \"timed_out\": false\n}\n",
+    "runs/issue-19/issue19-20261110/evidence/checker-unit1-h19-cu1-known-enum-compile.log": "Command completed with no stdout/stderr. Exit status is retained in its receipt.\n",
+    "runs/issue-19/issue19-20261110/evidence/checker-unit1-h19-cu1-known-enum-run.json": "{\n  \"intent_id\": \"h19-cu1-known-enum-run\",\n  \"command\": [\n    \"/tmp/fossilize-h19/output/checker-2/known-enum-probe\"\n  ],\n  \"cwd\": \"/tmp/fossilize-h19/checker-2\",\n  \"timeout\": 600.0,\n  \"started\": 1794309205.8808343,\n  \"acquired\": 1794309205.8832996,\n  \"wait_seconds\": 0.0,\n  \"finished\": 1794309205.8869026,\n  \"exit_code\": 1,\n  \"timed_out\": false\n}\n",
+    "runs/issue-19/issue19-20261110/evidence/checker-unit1-h19-cu1-known-enum-run.log": "dynamic ok=0 kind=7 identifier=graphics_pipeline_is_supported known=0 raw=0 expected_raw=1879048189\nstage ok=0 kind=7 identifier=graphics_pipeline_is_supported known=0 raw=0 expected_raw=32\nlayout ok=0 kind=7 identifier=VkDescriptorSetLayoutCreateInfo.flags known=3 required=1073741824\nCHECKER19/known-enum-detector-detail assertion failed; supported before/after controls passed\n",
+    "runs/issue-19/issue19-20261110/evidence/checker-unit1-probe-source.txt": "#include \"volk.h\"\n#include \"fossilize_feature_filter.hpp\"\n#include <cstdio>\n#include <cstring>\nint main() {\n Fossilize::FeatureFilter filter;\n VkPhysicalDeviceFeatures2 f={VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};\n VkPhysicalDeviceProperties2 p={VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2};\n if(!filter.init(VK_API_VERSION_1_3,nullptr,0,&f,&p)) return 2;\n VkGraphicsPipelineCreateInfo g={VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO};\n g.renderPass=(VkRenderPass)1;\n Fossilize::SupportDetail d;\n if(!filter.graphics_pipeline_is_supported(&g,d)) return 3;\n VkDynamicState state=VkDynamicState(0x6ffffffd);\n VkPipelineDynamicStateCreateInfo dynamic={VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};\n dynamic.dynamicStateCount=1; dynamic.pDynamicStates=&state;g.pDynamicState=&dynamic;\n bool ok=filter.graphics_pipeline_is_supported(&g,d);\n printf(\"dynamic ok=%d kind=%llu identifier=%s known=%llu raw=%llu expected_raw=%llu\\n\",ok,(unsigned long long)d.kind,d.identifier,(unsigned long long)d.known,(unsigned long long)d.raw,(unsigned long long)state);\n bool dynamic_correct=!ok && d.kind==Fossilize::SupportKind::Constraint && (d.known&Fossilize::SupportDetail::Raw) && d.raw==uint64_t(state);\n g.pDynamicState=nullptr;\n VkPipelineShaderStageCreateInfo stage={VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO};stage.stage=VK_SHADER_STAGE_COMPUTE_BIT;stage.pName=\"main\";\n g.stageCount=1;g.pStages=&stage;ok=filter.graphics_pipeline_is_supported(&g,d);\n printf(\"stage ok=%d kind=%llu identifier=%s known=%llu raw=%llu expected_raw=%llu\\n\",ok,(unsigned long long)d.kind,d.identifier,(unsigned long long)d.known,(unsigned long long)d.raw,(unsigned long long)stage.stage);\n bool stage_correct=!ok && d.kind==Fossilize::SupportKind::Constraint && (d.known&Fossilize::SupportDetail::Raw) && d.raw==uint64_t(stage.stage);\n g.stageCount=0;if(!filter.graphics_pipeline_is_supported(&g,d)||d.kind!=Fossilize::SupportKind::None)return 4;\n VkPipelineLayoutCreateInfo layout={VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};layout.flags=VkPipelineLayoutCreateFlags(0x40000000u);\n bool layout_ok=filter.pipeline_layout_is_supported(&layout,d);\n printf(\"layout ok=%d kind=%llu identifier=%s known=%llu required=%llu\\n\",layout_ok,(unsigned long long)d.kind,d.identifier,(unsigned long long)d.known,(unsigned long long)d.required);\n bool layout_correct=!layout_ok && !strcmp(d.identifier,\"VkPipelineLayoutCreateInfo.flags\");\n layout.flags=0;if(!filter.pipeline_layout_is_supported(&layout,d))return 5;\n if(!dynamic_correct||!stage_correct||!layout_correct){puts(\"CHECKER19/known-enum-detector-detail assertion failed; supported before/after controls passed\");return 1;}\n return 0;\n}\n",
+    "runs/issue-19/issue19-20261110/evidence/checker-unit1-probe.log": "dynamic ok=0 kind=7 identifier=graphics_pipeline_is_supported known=0 raw=0 expected_raw=1879048189\nstage ok=0 kind=7 identifier=graphics_pipeline_is_supported known=0 raw=0 expected_raw=32\nlayout ok=0 kind=7 identifier=VkDescriptorSetLayoutCreateInfo.flags known=3 required=1073741824\nCHECKER19/known-enum-detector-detail assertion failed; supported before/after controls passed\n",
+    "runs/issue-19/issue19-20261110/evidence/checker-unit1-review.txt": "Candidate ccfe1402d70e8dd264145e68e34c86575fb1548f; base fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db; plan1; checker-unit-1. Live issue19 and shared8 read before implementer claims. Required project guidance, original plan, harness role/state contracts, private worker protocol and relevant observability specs read. Independent source/fixture review found two concrete support-detail defects; compiled counterexample confirms both with normal explicit assertion failure. Changelog one-sentence Observability entry has correct issue link and practical scope, but acceptance remains rejected. All original cases/gates remain required for repaired candidate. No source edits or production GitHub mutations. Native Windows explicitly waived/unverified; no GPU/Steam/cache/ABI claim. Full matrix, sanitizer, concurrency, compatibility and mutation sensitivity gates not run because known acceptance defects reject this candidate.\n"
+  },
+  "role": "checker",
+  "skipped": [
+    {
+      "gate": "M19-linux-debug-off",
+      "reason": "Not run after confirmed candidate acceptance defects; not waived; still mandatory for repaired candidate"
+    },
+    {
+      "gate": "M19-linux-debug-on",
+      "reason": "Not run after confirmed candidate acceptance defects; not waived; still mandatory for repaired candidate"
+    },
+    {
+      "gate": "M19-linux-release-off",
+      "reason": "Not run after confirmed candidate acceptance defects; not waived; still mandatory for repaired candidate"
+    },
+    {
+      "gate": "M19-linux-release-on",
+      "reason": "Not run after confirmed candidate acceptance defects; not waived; still mandatory for repaired candidate"
+    },
+    {
+      "gate": "M19-decisive-independent",
+      "reason": "Not run after confirmed candidate acceptance defects; not waived; still mandatory for repaired candidate"
+    },
+    {
+      "gate": "M19-concurrency",
+      "reason": "Not run after confirmed candidate acceptance defects; not waived; still mandatory for repaired candidate"
+    },
+    {
+      "gate": "M19-asan-ubsan",
+      "reason": "Not run after confirmed candidate acceptance defects; not waived; still mandatory for repaired candidate"
+    },
+    {
+      "gate": "M19-sensitivity-controls",
+      "reason": "Not run after confirmed candidate acceptance defects; not waived; still mandatory for repaired candidate"
+    }
+  ],
+  "source_clean": true,
+  "test_mapping": {
+    "M19-bounded-detail": {
+      "location": "test/replay_event_test.cpp; test/replay_support_dependency_test.cpp; replay_event.hpp; cli/replay_item_outcome.hpp",
+      "tests": []
+    },
+    "M19-call-scope": {
+      "location": "test/replay_support_test.cpp; private support/dependency detail declarations",
+      "tests": []
+    },
+    "M19-common-cache": {
+      "location": "test/replay_support_dependency_test.cpp; fossilize.cpp; cli/fossilize_replay.cpp",
+      "tests": []
+    },
+    "M19-compute": {
+      "location": "test/replay_support_test.cpp; test/CMakeLists.txt; cli/fossilize_feature_filter.cpp",
+      "tests": []
+    },
+    "M19-graphics": {
+      "location": "test/replay_support_test.cpp; cli/fossilize_feature_filter.cpp",
+      "tests": [
+        "CHECKER19-known-graphics-dynamic-enum",
+        "CHECKER19-known-graphics-stage-enum",
+        "CHECKER19-supported-before-after-controls"
+      ]
+    },
+    "M19-module-fanout": {
+      "location": "test/replay_support_dependency_test.cpp; cli/fossilize_replay.cpp; fossilize.cpp",
+      "tests": []
+    },
+    "M19-old-callers": {
+      "location": "test/replay_support_old_headers.cmake; test/replay_event_old_headers.cmake; test/CMakeLists.txt",
+      "tests": []
+    },
+    "M19-origin-categories": {
+      "location": "test/replay_support_dependency_test.cpp; test/replay_event_producer_test.cpp",
+      "tests": []
+    },
+    "M19-parent-fanout": {
+      "location": "test/replay_support_dependency_test.cpp; cli/fossilize_replay.cpp",
+      "tests": []
+    },
+    "M19-raytracing": {
+      "location": "test/replay_support_test.cpp; cli/fossilize_feature_filter.cpp",
+      "tests": []
+    },
+    "M19-sensitivity": {
+      "location": "isolated verification copies outside source; committed M19 fixture assertions",
+      "tests": []
+    },
+    "M19-static": {
+      "location": "test/replay_support_test.cpp; test/feature_filter_test.cpp",
+      "tests": [
+        "CHECKER19-pipeline-layout-flags-identifier",
+        "CHECKER19-supported-before-after-controls"
+      ]
+    },
+    "M19-static-dependencies": {
+      "location": "test/replay_support_dependency_test.cpp; fossilize.cpp; cli/fossilize_replay.cpp",
+      "tests": []
+    },
+    "M19-worker-details": {
+      "location": "test/replay_controller_test.cpp; test/replay_event_test.cpp; replay_event.hpp; cli platform worker headers",
+      "tests": []
+    }
+  },
+  "verdict": "changes_required",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/19",
+  "worker_id": "/root/issue19_checker_unit1"
+}
