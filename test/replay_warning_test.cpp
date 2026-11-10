@@ -18,6 +18,16 @@ void operator delete(void *p) noexcept { free(p); }
 void operator delete[](void *p) noexcept { free(p); }
 void operator delete(void *p,size_t) noexcept { free(p); }
 void operator delete[](void *p,size_t) noexcept { free(p); }
+struct ReplayWarningTestAccess
+{
+	static void saturate(ReplayWarnings &w)
+	{
+		std::lock_guard<std::mutex> hold(w.mutex);
+		w.state.groups[0].count=UINT64_MAX;
+		for(auto &n:w.state.groups[0].resources)n=UINT64_MAX;
+		w.state.overflow=UINT64_MAX;
+	}
+};
 static unsigned occurrences(const std::string &s, const std::string &what)
 {
 	unsigned n = 0; size_t p = 0;
@@ -62,9 +72,12 @@ static std::string repeated(unsigned n)
 	{
 		Replay replay; limited(replay);
 		long before = ftell(capture.file);
-		rejected(replay,1,0x10000); // warm detector/collector state
+		Pipeline pipeline(1,0x10000); pipeline.flags(VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT);
+		PipelineResolver resolver; // Production workers reuse the resolver.
+		replay.run_creation_work_item(resolver,pipeline.item); // warm detector/collector state
 		allocation_count=0; track_allocations=true;
-		for (unsigned i = 1; i < n; i++) rejected(replay, 1, 0x10000 + i);
+		for (unsigned i = 1; i < n; i++)
+		{ pipeline.item.hash=0x10000+i; replay.run_creation_work_item(resolver,pipeline.item); }
 		track_allocations=false;
 		checks.require(allocation_count==0,"M19/warmed-production-warning-loop-no-diagnostic-allocation");
 		checks.require(ftell(capture.file) == before, "M19/no-observation-stdio");
@@ -143,8 +156,10 @@ static void shader_grouping()
 		memcpy(extension.data()+6,name.c_str(),name.size()+1);info.pCode=extension.data();info.codeSize=extension.size()*4;emit(0x705);
 		// Include control bytes before the truncation boundary too.
 		name="SPV_missing_\n\t"+std::string(140,'z');std::fill(extension.begin()+6,extension.end(),0);memcpy(extension.data()+6,name.c_str(),name.size()+1);emit(0x706);
+		name="SPV_missing_??";std::fill(extension.begin()+6,extension.end(),0);memcpy(extension.data()+6,name.c_str(),name.size()+1);emit(0x707);
+		name="SPV_missing_\\x0A\\x09";std::fill(extension.begin()+6,extension.end(),0);memcpy(extension.data()+6,name.c_str(),name.size()+1);emit(0x708);
 		auto snap=r.warnings.snapshot();
-		checks.require(snap.count==6&&snap.groups[3].count==2&&snap.groups[3].key.support.kind==SupportKind::Property,
+		checks.require(snap.count==8&&snap.groups[3].count==2&&snap.groups[3].key.support.kind==SupportKind::Property,
 		               "M19/API-values-coalesce-capability-raw-and-extensions-distinct");
 		checks.require(snap.groups[0].key.support.raw==10&&snap.groups[1].key.support.raw==0xf000&&snap.groups[2].key.support.raw==0xf001,
 		               "M19/semantic-capability-identities");
@@ -153,7 +168,10 @@ static void shader_grouping()
 	auto text=capture.finish();bounded(text);
 	checks.contains(text,"CapabilityFloat64","M19/known-capability-human-name");
 	checks.contains(text,"apiVersion","M19/API-human-boundary");
-	checks.contains(text,"SPV_missing_??","M19/actual-extension-controls-sanitized");
+	checks.contains(text,"SPV_missing_\\x0A\\x09","M19/actual-extension-controls-losslessly-escaped");
+	checks.contains(text,"SPV_missing_??","M19/literal-question-identifier-distinct");
+	checks.contains(text,"SPV_missing_\\x5Cx0A\\x5Cx09","M19/literal-escape-identifier-distinct");
+	checks.contains(text,"...[truncated]","M19/long-identifier-truncation-explicit");
 	checks.require(text.find("Unrecognized SPIR-V")==std::string::npos&&text.find("ignoring shader module")==std::string::npos,
 	               "M19/no-capability-extension-detector-bypass");
 }
@@ -180,6 +198,31 @@ static void overflow()
 	checks.contains(text, "100008 additional observations", "M19/overflow-human-count");
 	checks.contains(text, "omitted cause cardinality unknown", "M19/overflow-honest-scope");
 }
+static void saturation_rendering()
+{
+	DiagnosticStderr capture;
+	{
+		Replay r;
+		SupportDetail d;d.kind=SupportKind::Constraint;d.known=7;d.required=d.available=d.raw=UINT64_MAX;
+		memset(d.identifier,'x',159);d.identifier[159]=0;
+		r.record_unsupported(RESOURCE_DESCRIPTOR_SET_LAYOUT,1,d);
+		for(unsigned n=1;n<32;n++) {SupportDetail next;next.kind=SupportKind::UnknownSType;next.known=4;next.raw=n;strcpy(next.identifier,"sType");r.record_unsupported(RESOURCE_COMPUTE_PIPELINE,n+1,next);}
+		ReplayWarningTestAccess::saturate(r.warnings);
+		r.record_unsupported(RESOURCE_DESCRIPTOR_SET_LAYOUT,100,d);
+		SupportDetail overflow;overflow.kind=SupportKind::UnknownSType;overflow.known=4;overflow.raw=100;strcpy(overflow.identifier,"sType");
+		r.record_unsupported(RESOURCE_COMPUTE_PIPELINE,101,overflow);
+		auto state=r.warnings.snapshot();
+		checks.require(state.groups[0].count==UINT64_MAX&&state.groups[0].saturated&&state.overflow==UINT64_MAX&&state.saturated,
+		               "M19/actual-collector-counts-saturate-without-wrap");
+		r.finish_events(1);
+	}
+	auto text=capture.finish();bounded(text);
+	checks.contains(text,std::string(159,'x'),"M19/max-cause-identity-not-truncated");
+	checks.contains(text,"counts saturated (lower bounds)","M19/max-row-retains-saturation-marker");
+	checks.contains(text,"(saturated lower bound)","M19/overflow-saturation-marker");
+	checks.contains(text,"18446744073709551615 raytracing-pipeline", "M19/max-row-resource-count-retained");
+}
+
 static void dependencies()
 {
 	for (auto mode : {"missing-module", "missing-layout", "missing-static-set", "missing-static-sampler",
@@ -199,6 +242,32 @@ static void dependencies()
 	auto text = capture.finish();
 	checks.require(text.find("Replay warning summary:") == std::string::npos, "M19/good-FOZ-no-warning-report");
 }
+static void dependency_prose_controls()
+{
+    {
+        DiagnosticStderr capture;
+        recursive_read_controls();
+        auto text=capture.finish();
+        checks.contains(text,"dependency is read-failed (origin=read", "M19/actual-read-failed-origin-prose");
+        checks.contains(text,"dependency is failed (origin=parse", "M19/actual-parse-origin-prose");
+        checks.require(text.find("common cache")==std::string::npos && text.find("dependency could not be resolved")==std::string::npos,
+                       "M19/read-failed-and-parse-no-dependency-parser-bypass");
+    }
+    for(unsigned k=0;k<3;k++)
+    {
+        DiagnosticStderr capture;
+        if(k==0) run_graph("module-create",4,64,7,VK_ERROR_OUT_OF_HOST_MEMORY);
+        if(k==1) run_graph("parent",4,64,1,VK_SUCCESS,0x900);
+        if(k==2) run_graph("library",4,64,2,VK_SUCCESS,0x901);
+        auto text=capture.finish();
+        checks.contains(text,"dependency is failed (origin=create", "M19/actual-create-origin-prose");
+        checks.require(occurrences(text,"Replay warning summary:")==1 && text.find("Invalid derivative")==std::string::npos &&
+                       text.find("Invalid library")==std::string::npos && text.find("Did not replay blob")==std::string::npos,
+                       "M19/actual-parent-shader-OOM-no-legacy-bypass");
+        checks.contains(text,k==0?"VkResult=-1":"VkResult=-2", "M19/OOM-origin-remains-visible");
+    }
+}
+
 static void unsupported_sources()
 {
 	DiagnosticStderr capture;
@@ -358,8 +427,8 @@ int main(int argc, char **argv)
 	if (argc == 3 && std::string(argv[1]) == "--fixture") return graph(argv[2],"missing-module",64,1) ? 0 : 1;
 	if (argc != 2) return 2;
 	std::string c=argv[1];
-	if(c=="same-cause")same_cause(); else if(c=="grouping"){grouping();shader_grouping();} else if(c=="overflow")overflow();
-	else if(c=="dependencies"){dependencies();unsupported_sources();} else if(c=="concurrency")concurrency(); else if(c=="lifecycle")lifecycle();
+	if(c=="same-cause")same_cause(); else if(c=="grouping"){grouping();shader_grouping();} else if(c=="overflow"){overflow();saturation_rendering();}
+	else if(c=="dependencies"){dependencies();dependency_prose_controls();unsupported_sources();} else if(c=="concurrency")concurrency(); else if(c=="lifecycle")lifecycle();
 	else if(c=="legacy-controls")legacy_controls(); else return 2;
 	printf("M19 warning %s failures=%d\n",c.c_str(),checks.failures);
 	return checks.failures ? 1 : 0;

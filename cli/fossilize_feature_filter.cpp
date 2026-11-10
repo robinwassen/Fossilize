@@ -689,10 +689,7 @@ bool support_reject(SupportKind kind, const char *identifier, uint64_t known = 0
 		d.required = required;
 		d.available = available;
 		d.raw = raw;
-		std::snprintf(d.identifier, sizeof(d.identifier), "%s", identifier);
-		for (auto &c : d.identifier)
-			if (c && (static_cast<unsigned char>(c) < 32 || static_cast<unsigned char>(c) > 126))
-				c = '?';
+		copy_support_identifier(d.identifier, identifier);
 	}
 	return false;
 }

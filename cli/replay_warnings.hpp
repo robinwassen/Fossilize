@@ -17,7 +17,7 @@ public:
 		Fossilize::SupportDetail support;
 		uint64_t status = 0, category = 0;
 		unsigned context = 0;
-		bool dependency = false;
+		bool dependency = false, escaped_fallback = false;
 	};
 	struct Example
 	{
@@ -67,8 +67,13 @@ public:
 		Key k;
 		k.support = support;
 		k.support.identifier[sizeof(k.support.identifier) - 1] = '\0';
-		for (auto &c : k.support.identifier)
-			if (c && (static_cast<unsigned char>(c) < 32 || static_cast<unsigned char>(c) > 126)) c = '?';
+		for (auto c : k.support.identifier)
+			if (c && (static_cast<unsigned char>(c) < 32 || static_cast<unsigned char>(c) > 126)) k.escaped_fallback = true;
+		if (k.escaped_fallback)
+		{
+			char input[160]; memcpy(input, k.support.identifier, sizeof(input));
+			Fossilize::copy_support_identifier(k.support.identifier, input);
+		}
 		k.support.required = k.support.available = 0;
 		// Numeric sType/capability/enum identity is a cause; varying limits aren't.
 		k.support.known &= Fossilize::SupportDetail::Raw;
@@ -78,7 +83,7 @@ public:
 	}
 	static bool equal(const Key &a, const Key &b)
 	{
-		return a.dependency == b.dependency && a.status == b.status && a.category == b.category &&
+		return a.dependency == b.dependency && a.escaped_fallback == b.escaped_fallback && a.status == b.status && a.category == b.category &&
 		       a.context == b.context && a.support.kind == b.support.kind &&
 		       a.support.known == b.support.known && a.support.raw == b.support.raw &&
 		       !strcmp(a.support.identifier, b.support.identifier);
@@ -98,6 +103,7 @@ public:
 				if (origins[i].tag == parent.tag && origins[i].hash == parent.hash)
 				{
 					k.support = origins[i].key.support; k.context = origins[i].key.context;
+					k.escaped_fallback = origins[i].key.escaped_fallback;
 					example_support = origins[i].support;
 					break;
 				}
@@ -149,8 +155,8 @@ public:
 			char cause[256], raw[48] = {};
 			if (g.key.support.known & Fossilize::SupportDetail::Raw)
 				snprintf(raw, sizeof(raw), "; raw=%llu", ull(g.key.support.raw));
-			snprintf(cause, sizeof(cause), "%s%s%s %s%s", g.key.context ? resource(g.key.context - 1) : "",
-			         g.key.context ? " " : "", kind(g.key.support.kind), g.key.support.identifier, raw);
+			snprintf(cause, sizeof(cause), "%s%s%s %s%s%s", g.key.context ? resource(g.key.context - 1) : "",
+			         g.key.context ? " " : "", kind(g.key.support.kind), g.key.support.identifier, raw, g.key.escaped_fallback ? " (escaped)" : "");
 			if (g.key.dependency)
 				snprintf(line, sizeof(line), "Replay cause %u: %llu observations [%s] could not be replayed because a dependency is %s (origin=%s; %s%s)%s.", i + 1, ull(g.count), resources, status(g.key.status), category(g.key.category), g.key.support.kind == Fossilize::SupportKind::None ? "support cause unknown" : "unsupported ", g.key.support.kind == Fossilize::SupportKind::None ? "" : cause, g.saturated ? "; counts saturated (lower bounds)" : "");
 			else
@@ -183,6 +189,7 @@ private:
 	{ static const char *names[] = {"unknown", "read", "parse", "create", "unsupported", "validation", "setup", "dependency"}; return n < 8 ? names[n] : "unknown"; }
 	static const char *kind(Fossilize::SupportKind k)
 	{ static const char *names[] = {"unknown", "feature", "extension", "property/API boundary", "unknown sType", "SPIR-V capability", "malformed", "constraint"}; return uint64_t(k) < 8 ? names[unsigned(k)] : "unknown"; }
+	friend struct ReplayWarningTestAccess;
 	mutable std::mutex mutex;
 	Snapshot state;
 	std::array<Example, MaxExamples> examples = {};
