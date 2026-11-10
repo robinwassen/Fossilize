@@ -44,6 +44,7 @@
 #include <mutex>
 #include <atomic>
 #include <dirent.h>
+#include <sys/stat.h>
 
 #include "fossilize_inttypes.h"
 #include "fossilize_errors.hpp"
@@ -110,6 +111,7 @@ static_assert(sizeof(ExportedMetadataList) % 8 == 0, "Alignment of ExportedMetad
 
 // Only for sanity checking when importing blobs, not a true file format.
 static const uint64_t ExportedMetadataMagic = 0xb10bf05511153ull;
+static const uint64_t ExportedMetadataMagicReport = 0xb10200005511153ull;
 static const uint64_t ExportedMetadataMagicConcurrent = 0xb10b5f05511153ull;
 
 struct ExportedMetadataHeader
@@ -141,6 +143,15 @@ struct DatabaseInterface::Impl
 	const uint8_t *mapped_metadata = nullptr;
 	size_t mapped_metadata_size = 0;
 	bool overwrite_db_clear = false;
+	DatabasePreparationReport report;
+	std::vector<DiscoveryInput> failed_whitelist, failed_blacklist;
+	std::unordered_map<unsigned, bool> required_inputs;
+	bool report_imported = false;
+	bool input_required(unsigned index) const
+	{
+		auto itr = required_inputs.find(index);
+		return itr == required_inputs.end() || itr->second;
+	}
 
 	bool parse_imported_metadata(const void *data, size_t size);
 };
@@ -149,6 +160,82 @@ DatabaseInterface::DatabaseInterface(DatabaseMode mode)
 {
 	impl = new Impl;
 	impl->mode = mode;
+}
+
+bool DatabasePreparationReport::satisfies_required_scope(bool prefix) const
+{
+	if (inputs.empty())
+		return false;
+	for (auto &input : inputs)
+	{
+		if (input.required && input.state != DiscoveryState::Complete &&
+		    !(prefix && !input.filter && input.opened && input.state == DiscoveryState::RecoveredPrefix))
+			return false;
+	}
+	return true;
+}
+
+void DatabaseInterface::set_input_required(unsigned index, bool required)
+{
+	impl->required_inputs[index] = required;
+}
+
+DatabasePreparationReport DatabaseInterface::get_preparation_report() const
+{
+	auto report = impl->report;
+	report.inputs.insert(report.inputs.end(), impl->failed_whitelist.begin(), impl->failed_whitelist.end());
+	report.inputs.insert(report.inputs.end(), impl->failed_blacklist.begin(), impl->failed_blacklist.end());
+	if (!impl->report_imported)
+	{
+		report.whitelist_tag_mask = impl->whitelist_tag_mask;
+		report.whitelist_sensitive = impl->whitelist || !impl->sub_databases_in_whitelist.empty();
+		report.blacklist_present = bool(impl->blacklist);
+	}
+	for (auto *filter : {impl->whitelist.get(), impl->blacklist.get()})
+	{
+		if (!filter)
+			continue;
+		for (auto input : filter->get_preparation_report().inputs)
+		{
+			input.filter = true;
+			input.required = true;
+			report.inputs.push_back(std::move(input));
+		}
+	}
+	auto normalize = [](std::vector<DiscoveryKey> &keys) {
+		std::sort(keys.begin(), keys.end());
+		keys.erase(std::unique(keys.begin(), keys.end()), keys.end());
+	};
+	normalize(report.discovered);
+	normalize(report.selected);
+	std::sort(report.excluded.begin(), report.excluded.end(), [](const DiscoveryExcludedKey &a, const DiscoveryExcludedKey &b) {
+		return a.key == b.key ? a.policy < b.policy : a.key < b.key;
+	});
+	report.excluded.erase(std::unique(report.excluded.begin(), report.excluded.end(),
+	    [](const DiscoveryExcludedKey &a, const DiscoveryExcludedKey &b) {
+		    return a.key == b.key && a.policy == b.policy;
+	    }), report.excluded.end());
+	report.discovery_complete = !report.inputs.empty();
+	for (auto &input : report.inputs)
+		report.discovery_complete &= input.state == DiscoveryState::Complete;
+	report.unread_total_known = report.discovery_complete;
+	return report;
+}
+
+void DatabaseInterface::observe_discovered(ResourceTag tag, Hash hash)
+{
+	DiscoveryKey key{tag, hash};
+	impl->report.discovered.push_back(key);
+	if (test_resource_filter(tag, hash))
+		impl->report.selected.push_back(key);
+	else
+	{
+		bool whitelist_rejected = (impl->whitelist_tag_mask & (1u << tag)) &&
+		                          (impl->whitelist || !impl->sub_databases_in_whitelist.empty()) &&
+		                          !(impl->whitelist && impl->whitelist->has_entry(tag, hash)) &&
+		                          !impl->implicit_whitelisted[tag].count(hash);
+		impl->report.excluded.push_back({key, whitelist_rejected ? DiscoveryExclusion::Whitelist : DiscoveryExclusion::Blacklist});
+	}
 }
 
 void DatabaseInterface::set_overwrite_db_clear(bool value)
@@ -178,6 +265,7 @@ void DatabaseInterface::set_whitelist_tag_mask(uint32_t mask)
 
 bool DatabaseInterface::load_whitelist_database(const char *path)
 {
+	impl->failed_whitelist.clear();
 	if (impl->mode != DatabaseMode::ReadOnly)
 		return false;
 
@@ -194,6 +282,12 @@ bool DatabaseInterface::load_whitelist_database(const char *path)
 
 	if (!impl->whitelist->prepare())
 	{
+		for (auto input : impl->whitelist->get_preparation_report().inputs)
+		{
+			input.required = true;
+			input.filter = true;
+			impl->failed_whitelist.push_back(std::move(input));
+		}
 		impl->whitelist.reset();
 		return false;
 	}
@@ -209,6 +303,7 @@ bool DatabaseInterface::load_whitelist_database(const char *path)
 
 bool DatabaseInterface::load_blacklist_database(const char *path)
 {
+	impl->failed_blacklist.clear();
 	if (impl->mode != DatabaseMode::ReadOnly)
 		return false;
 
@@ -225,6 +320,12 @@ bool DatabaseInterface::load_blacklist_database(const char *path)
 
 	if (!impl->blacklist->prepare())
 	{
+		for (auto input : impl->blacklist->get_preparation_report().inputs)
+		{
+			input.required = true;
+			input.filter = true;
+			impl->failed_blacklist.push_back(std::move(input));
+		}
 		impl->blacklist.reset();
 		return false;
 	}
@@ -332,17 +433,166 @@ void DatabaseInterface::get_unique_os_export_name(char *buffer, size_t size)
 #endif
 }
 
+// Private exact-commit report record. Fixed-width scalars and bounded strings; no pointers.
+static std::vector<uint8_t> encode_report(const DatabasePreparationReport &report)
+{
+	std::vector<uint8_t> bytes;
+	auto put = [&](uint64_t value) {
+		for (unsigned i = 0; i < 8; i++)
+			bytes.push_back(uint8_t(value >> (i * 8)));
+	};
+	put(1);
+	put(report.whitelist_tag_mask);
+	put(report.whitelist_sensitive);
+	put(report.blacklist_present);
+	put(report.inputs.size());
+	for (auto &input : report.inputs)
+	{
+		put(input.path.size());
+		bytes.insert(bytes.end(), input.path.begin(), input.path.end());
+		put(input.index);
+		put(input.required);
+		put(input.filter);
+		put(input.opened);
+		put(uint32_t(input.state));
+		put(uint32_t(input.reason));
+		put(input.raw_error_known);
+		put(uint64_t(input.raw_error));
+		put(input.boundary_known);
+		put(input.prefix_end);
+		put(input.unread_offset);
+		put(input.total_known);
+		put(input.retained_count);
+	}
+	for (auto *keys : {&report.discovered, &report.selected})
+	{
+		put(keys->size());
+		for (auto &key : *keys)
+		{
+			put(key.tag);
+			put(key.hash);
+		}
+	}
+	put(report.excluded.size());
+	for (auto &entry : report.excluded)
+	{
+		put(entry.key.tag);
+		put(entry.key.hash);
+		put(uint32_t(entry.policy));
+	}
+	while (bytes.size() % 8)
+		bytes.push_back(0);
+	return bytes;
+}
+
+static bool decode_report(const uint8_t *data, size_t size, DatabasePreparationReport &report)
+{
+	size_t offset = 0;
+	bool valid = true;
+	auto get = [&]() -> uint64_t {
+		if (size - offset < 8)
+		{
+			valid = false;
+			return 0;
+		}
+		uint64_t value = 0;
+		for (unsigned i = 0; i < 8; i++)
+			value |= uint64_t(data[offset++]) << (8 * i);
+		return value;
+	};
+	auto boolean = [&]() -> bool {
+		auto value = get();
+		valid &= value <= 1;
+		return value != 0;
+	};
+	if (get() != 1)
+		return false;
+	auto mask = get();
+	if (mask > UINT32_MAX)
+		return false;
+	report.whitelist_tag_mask = uint32_t(mask);
+	report.whitelist_sensitive = boolean();
+	report.blacklist_present = boolean();
+	auto count = get();
+	if (count > size / 8)
+		return false;
+	for (uint64_t i = 0; i < count && valid; i++)
+	{
+		DiscoveryInput input;
+		auto length = get();
+		if (!valid || length > size - offset)
+			return false;
+		input.path.assign(reinterpret_cast<const char *>(data + offset), size_t(length));
+		offset += size_t(length);
+		auto index = get();
+		if (index > UINT32_MAX)
+			return false;
+		input.index = unsigned(index);
+		input.required = boolean();
+		input.filter = boolean();
+		input.opened = boolean();
+		auto state = get();
+		auto reason = get();
+		if (state > uint32_t(DiscoveryState::Failed) || reason > uint32_t(DiscoveryReason::Cancelled))
+			return false;
+		input.state = DiscoveryState(state);
+		input.reason = DiscoveryReason(reason);
+		input.raw_error_known = boolean();
+		input.raw_error = int64_t(get());
+		input.boundary_known = boolean();
+		input.prefix_end = get();
+		input.unread_offset = get();
+		input.total_known = boolean();
+		input.retained_count = get();
+		report.inputs.push_back(std::move(input));
+	}
+	for (auto *keys : {&report.discovered, &report.selected})
+	{
+		count = get();
+		if (count > size / 16)
+			return false;
+		for (uint64_t i = 0; i < count && valid; i++)
+		{
+			auto tag = get();
+			auto hash = get();
+			if (tag >= RESOURCE_COUNT)
+				return false;
+			keys->push_back({ResourceTag(tag), hash});
+		}
+	}
+	count = get();
+	if (count > size / 24)
+		return false;
+	for (uint64_t i = 0; i < count && valid; i++)
+	{
+		auto tag = get();
+		auto hash = get();
+		auto policy = get();
+		if (tag >= RESOURCE_COUNT || policy > uint32_t(DiscoveryExclusion::Blacklist))
+			return false;
+		report.excluded.push_back({{ResourceTag(tag), hash}, DiscoveryExclusion(policy)});
+	}
+	return valid && size - offset < 8;
+}
+
 intptr_t DatabaseInterface::export_metadata_to_os_handle(const char *name)
 {
 	if (impl->mode != DatabaseMode::ReadOnly)
 		return invalid_metadata_handle();
 
-	size_t size = compute_exported_metadata_size();
+	auto report_bytes = encode_report(get_preparation_report());
+	size_t payload_size = compute_exported_metadata_size();
+	if (!payload_size)
+		return invalid_metadata_handle();
+	if (report_bytes.size() > SIZE_MAX - sizeof(ExportedMetadataHeader) ||
+		payload_size > SIZE_MAX - sizeof(ExportedMetadataHeader) - report_bytes.size())
+		return invalid_metadata_handle();
+	size_t size = payload_size + sizeof(ExportedMetadataHeader) + report_bytes.size();
 	if (!size)
 		return invalid_metadata_handle();
 
 #ifdef _WIN32
-	HANDLE mapping_handle = CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, (DWORD)size, name);
+	HANDLE mapping_handle = CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, DWORD(uint64_t(size) >> 32), DWORD(size), name);
 	if (!mapping_handle)
 		return invalid_metadata_handle();
 
@@ -353,7 +603,12 @@ intptr_t DatabaseInterface::export_metadata_to_os_handle(const char *name)
 		return invalid_metadata_handle();
 	}
 
-	if (!write_exported_metadata(mapped, size))
+	auto *report_header = reinterpret_cast<ExportedMetadataHeader *>(static_cast<uint8_t *>(mapped) + payload_size);
+	*report_header = {};
+	report_header->magic = ExportedMetadataMagicReport;
+	report_header->size = sizeof(*report_header) + report_bytes.size();
+	memcpy(report_header + 1, report_bytes.data(), report_bytes.size());
+	if (!write_exported_metadata(mapped, payload_size))
 	{
 		LOGE_LEVEL("Failed to write metadata block.\n");
 		UnmapViewOfFile(mapped);
@@ -393,7 +648,12 @@ intptr_t DatabaseInterface::export_metadata_to_os_handle(const char *name)
 		return invalid_metadata_handle();
 	}
 
-	if (!write_exported_metadata(mapped, size))
+	auto *report_header = reinterpret_cast<ExportedMetadataHeader *>(static_cast<uint8_t *>(mapped) + payload_size);
+	*report_header = {};
+	report_header->magic = ExportedMetadataMagicReport;
+	report_header->size = sizeof(*report_header) + report_bytes.size();
+	memcpy(report_header + 1, report_bytes.data(), report_bytes.size());
+	if (!write_exported_metadata(mapped, payload_size))
 	{
 		LOGE_LEVEL("Failed to write metadata block.\n");
 		munmap(mapped, size);
@@ -435,12 +695,12 @@ void DatabaseInterface::set_bucket_info(const char *)
 static size_t deduce_imported_size(const void *mapped, size_t maximum_size)
 {
 	size_t total_size = 0;
-	while (total_size + sizeof(ExportedMetadataHeader) <= maximum_size)
+	while (sizeof(ExportedMetadataHeader) <= maximum_size - total_size)
 	{
 		auto *header = reinterpret_cast<const ExportedMetadataHeader *>(static_cast<const uint8_t *>(mapped) + total_size);
-		if (header->size + total_size > maximum_size)
+		if (header->size < sizeof(*header) || header->size % 8 || header->size > maximum_size - total_size)
 			break;
-		if (header->magic != ExportedMetadataMagic && header->magic != ExportedMetadataMagicConcurrent)
+		if (header->magic != ExportedMetadataMagic && header->magic != ExportedMetadataMagicConcurrent && header->magic != ExportedMetadataMagicReport)
 			break;
 		total_size += header->size;
 	}
@@ -451,6 +711,8 @@ static size_t deduce_imported_size(const void *mapped, size_t maximum_size)
 bool DatabaseInterface::Impl::parse_imported_metadata(const void *data_, size_t size_)
 {
 	std::vector<const ExportedMetadataHeader *> headers;
+	DatabasePreparationReport report;
+	bool got_report = false;
 	auto *data = static_cast<const uint8_t *>(data_);
 
 	// Imported size might be rounded up to page size, so find exact bound first.
@@ -462,6 +724,9 @@ bool DatabaseInterface::Impl::parse_imported_metadata(const void *data_, size_t 
 	auto *concurrent_header = reinterpret_cast<const ExportedMetadataHeader *>(data);
 	if (concurrent_header->magic == ExportedMetadataMagicConcurrent)
 	{
+		for (auto &list : concurrent_header->lists)
+			if (list.offset % 8 || (list.count && list.offset < sizeof(*concurrent_header)) ||
+				list.offset > concurrent_header->size || list.count > (concurrent_header->size-list.offset)/sizeof(Hash)) return false;
 		data += concurrent_header->size;
 		size -= concurrent_header->size;
 	}
@@ -474,13 +739,22 @@ bool DatabaseInterface::Impl::parse_imported_metadata(const void *data_, size_t 
 			return false;
 
 		auto *header = reinterpret_cast<const ExportedMetadataHeader *>(data);
+		if (header->magic == ExportedMetadataMagicReport)
+		{
+			if (got_report || header->size != size || !decode_report(data + sizeof(*header), size - sizeof(*header), report))
+				return false;
+			got_report = true;
+			size = 0;
+			break;
+		}
 		if (header->magic != ExportedMetadataMagic)
 			return false;
 		if (header->size > size)
 			return false;
 
 		for (auto &list : header->lists)
-			if (list.offset + list.count * sizeof(ExportedMetadataBlock) > size)
+			if (list.offset % 8 || (list.count && list.offset < sizeof(*header)) || list.offset > header->size ||
+			    list.count > (header->size - list.offset) / sizeof(ExportedMetadataBlock))
 				return false;
 
 		data += header->size;
@@ -488,6 +762,8 @@ bool DatabaseInterface::Impl::parse_imported_metadata(const void *data_, size_t 
 		headers.push_back(header);
 	}
 
+	if (!got_report)
+		return false;
 #ifdef _WIN32
 	if (mapped_metadata)
 		UnmapViewOfFile(mapped_metadata);
@@ -497,6 +773,8 @@ bool DatabaseInterface::Impl::parse_imported_metadata(const void *data_, size_t 
 #endif
 	mapped_metadata = static_cast<const uint8_t *>(data_);
 	mapped_metadata_size = size_;
+	this->report = std::move(report);
+	report_imported = true;
 	imported_metadata = std::move(headers);
 	imported_concurrent_metadata = concurrent_header;
 	return true;
@@ -590,6 +868,14 @@ struct DumbDirectoryDatabase : DatabaseInterface
 
 	bool prepare() override
 	{
+		impl->report = {};
+		DiscoveryInput input;
+		input.path = base_directory;
+		input.required = impl->input_required(0);
+		impl->report.inputs.push_back(std::move(input));
+		auto &observation = impl->report.inputs.front();
+		observation.state = DiscoveryState::Failed;
+		observation.reason = DiscoveryReason::Open;
 		if (mode == DatabaseMode::OverWrite)
 		{
 			if (!Path::mkdir(base_directory) || (impl->overwrite_db_clear && !overwrite_db_clear()))
@@ -600,14 +886,53 @@ struct DumbDirectoryDatabase : DatabaseInterface
 
 		DIR *dp = opendir(base_directory.c_str());
 		if (!dp)
-			return false;
-
-		while (auto *pEntry = readdir(dp))
 		{
+			observation.raw_error_known = true;
+			observation.raw_error = errno;
+			return false;
+		}
+		observation.opened = true;
+		for (;;)
+		{
+			errno = 0;
+			auto *pEntry = readdir(dp);
+			if (!pEntry)
+			{
+				int error = errno;
+				closedir(dp);
+				if (error)
+				{
+					observation.reason = DiscoveryReason::Read;
+					observation.raw_error_known = true;
+					observation.raw_error = error;
+					return false;
+				}
+				break;
+			}
 			if (shutdown_requested.load(std::memory_order_relaxed))
+			{
+				closedir(dp);
+				observation.reason = DiscoveryReason::Cancelled;
 				return false;
+			}
 
-			if (pEntry->d_type != DT_REG)
+			if (pEntry->d_type == DT_UNKNOWN)
+			{
+				struct stat status = {};
+				auto path = Path::join(base_directory, pEntry->d_name);
+				if (::stat(path.c_str(), &status) != 0)
+				{
+					int error = errno;
+					closedir(dp);
+					observation.reason = DiscoveryReason::Read;
+					observation.raw_error_known = true;
+					observation.raw_error = error;
+					return false;
+				}
+				if ((status.st_mode & S_IFREG) == 0)
+					continue;
+			}
+			else if (pEntry->d_type != DT_REG)
 				continue;
 
 			unsigned tag;
@@ -618,11 +943,15 @@ struct DumbDirectoryDatabase : DatabaseInterface
 			if (tag >= RESOURCE_COUNT)
 				continue;
 
+			observe_discovered(static_cast<ResourceTag>(tag), value);
+			observation.retained_count++;
 			if (test_resource_filter(static_cast<ResourceTag>(tag), value))
 				seen_blobs[tag].insert(value);
 		}
 
-		closedir(dp);
+		observation.state = DiscoveryState::Complete;
+		observation.reason = DiscoveryReason::None;
+		observation.total_known = true;
 		return true;
 	}
 
@@ -805,16 +1134,33 @@ struct ZipDatabase : DatabaseInterface
 
 	bool prepare() override
 	{
+		impl->report = {};
+		DiscoveryInput input;
+		input.path = path;
+		input.required = impl->input_required(0);
+		impl->report.inputs.push_back(std::move(input));
+		auto &observation = impl->report.inputs.front();
+		observation.state = DiscoveryState::Failed;
+		observation.reason = DiscoveryReason::Open;
 		if (mode != DatabaseMode::OverWrite && mz_zip_reader_init_file(&mz, path.c_str(), 0))
 		{
 			// We have an existing archive.
+			observation.opened = true;
+			observation.state = DiscoveryState::Complete;
+			observation.reason = DiscoveryReason::None;
+			observation.total_known = true;
 			unsigned files = mz_zip_reader_get_num_files(&mz);
 			char filename[MZ_ZIP_MAX_ARCHIVE_FILENAME_SIZE] = {};
 
 			for (unsigned i = 0; i < files; i++)
 			{
 				if (shutdown_requested.load(std::memory_order_relaxed))
+				{
+					observation.state = DiscoveryState::Failed;
+					observation.reason = DiscoveryReason::Cancelled;
+					observation.total_known = false;
 					return false;
+				}
 
 				if (mz_zip_reader_is_file_a_directory(&mz, i))
 					continue;
@@ -829,7 +1175,12 @@ struct ZipDatabase : DatabaseInterface
 
 				mz_zip_archive_file_stat s;
 				if (!mz_zip_reader_file_stat(&mz, i, &s))
+				{
+					observation.state = DiscoveryState::Failed;
+					observation.reason = DiscoveryReason::Read;
+					observation.total_known = false;
 					continue;
+				}
 
 				char tag_str[16 + 1] = {};
 				char value_str[16 + 1] = {};
@@ -841,6 +1192,8 @@ struct ZipDatabase : DatabaseInterface
 					continue;
 				uint64_t value = strtoull(value_str, nullptr, 16);
 
+				observe_discovered(static_cast<ResourceTag>(tag), value);
+				observation.retained_count++;
 				if (test_resource_filter(static_cast<ResourceTag>(tag), value))
 					seen_blobs[tag].emplace(value, Entry{i, size_t(s.m_uncomp_size)});
 			}
@@ -1084,10 +1437,31 @@ struct StreamArchive : DatabaseInterface
 
 	bool prepare() override
 	{
+		if (!impl->report_imported)
+			impl->report = {};
+		if (impl->report.inputs.empty())
+		{
+			DiscoveryInput input;
+			input.path = path;
+			input.required = impl->input_required(0);
+			impl->report.inputs.push_back(std::move(input));
+		}
+		auto &observation = impl->report.inputs.front();
+		auto fail = [&](DiscoveryReason reason, bool raw = false) {
+			observation.state = DiscoveryState::Failed;
+			observation.reason = reason;
+			observation.raw_error_known = raw;
+			if (raw)
+				observation.raw_error = errno;
+			observation.total_known = false;
+			return false;
+		};
 		if (!impl->imported_metadata.empty() && mode != DatabaseMode::ReadOnly)
 			return false;
 		if (impl->imported_metadata.size() > 1)
 			return false;
+		if (impl->report_imported && (impl->report.inputs.empty() || impl->report.inputs.front().path != path))
+			return fail(DiscoveryReason::InvalidMagic);
 
 		switch (mode)
 		{
@@ -1135,7 +1509,10 @@ struct StreamArchive : DatabaseInterface
 		}
 
 		if (!file)
-			return false;
+			return fail(DiscoveryReason::Open, true);
+		observation.opened = true;
+		if (!impl->report_imported)
+			observation.boundary_known = true;
 
 		if (!impl->imported_metadata.empty())
 		{
@@ -1166,54 +1543,76 @@ struct StreamArchive : DatabaseInterface
 #endif
 
 			// Scan through the archive and get the list of files.
-			fseek(file, 0, SEEK_END);
-			size_t len = ftell(file);
-			rewind(file);
+			if (fseek(file, 0, SEEK_END) != 0)
+				return fail(DiscoveryReason::Seek, true);
+			auto length = ftell(file);
+			if (length < 0)
+				return fail(DiscoveryReason::Tell, true);
+			size_t len = size_t(length);
+			if (fseek(file, 0, SEEK_SET) != 0)
+				return fail(DiscoveryReason::Seek, true);
+			if (shutdown_requested.load(std::memory_order_relaxed))
+				return fail(DiscoveryReason::Cancelled);
+			if (len == 0 && mode == DatabaseMode::ReadOnly)
+				return fail(DiscoveryReason::InvalidMagic);
 
 			if (len != 0 && !shutdown_requested.load(std::memory_order_relaxed))
 			{
 				uint8_t magic[MagicSize];
 				if (fread(magic, 1, MagicSize, file) != MagicSize)
-					return false;
+					return fail(ferror(file) ? DiscoveryReason::Read : DiscoveryReason::InvalidMagic, ferror(file)!=0);
 
 				if (memcmp(magic, stream_reference_magic_and_version, MagicSize - 1))
-					return false;
+					return fail(DiscoveryReason::InvalidMagic);
 				int version = magic[MagicSize - 1];
 				if (version > FOSSILIZE_FORMAT_VERSION || version < FOSSILIZE_FORMAT_MIN_COMPAT_VERSION)
-					return false;
+					return fail(DiscoveryReason::UnsupportedVersion);
 
+				observation.state = DiscoveryState::Complete;
+				observation.total_known = true;
+				observation.boundary_known = true;
+				observation.prefix_end = MagicSize;
 				size_t offset = MagicSize;
 				size_t begin_append_offset = len;
 
 				while (offset < len)
 				{
 					if (shutdown_requested.load(std::memory_order_relaxed))
-						return false;
+						return fail(DiscoveryReason::Cancelled);
 
 					begin_append_offset = offset;
+					observation.unread_offset = offset;
 
 					PayloadHeaderRaw *header_raw = nullptr;
 					char bytes_to_read[FOSSILIZE_BLOB_HASH_LENGTH + sizeof(PayloadHeaderRaw)];
 					PayloadHeader header = {};
 
 					// Corrupt entry. Our process might have been killed before we could write all data.
-					if (offset + sizeof(bytes_to_read) > len)
+					if (sizeof(bytes_to_read) > len - offset)
 					{
 						LOGW_LEVEL("Detected sliced file. Dropping entries from here.\n");
+						observation.state = DiscoveryState::RecoveredPrefix;
+						observation.reason = DiscoveryReason::TruncatedHeader;
+						observation.total_known = false;
+						observation.unread_offset = begin_append_offset;
 						break;
 					}
 
 					// NAME + HEADER in one read
 					if (fread(bytes_to_read, 1, sizeof(bytes_to_read), file) != sizeof(bytes_to_read))
-						return false;
+						return fail(DiscoveryReason::Read, true);
 					offset += sizeof(bytes_to_read);
 					header_raw = (PayloadHeaderRaw*)&bytes_to_read[FOSSILIZE_BLOB_HASH_LENGTH];
 					header = get_converted_header(*header_raw);
 
 					// Corrupt entry. Our process might have been killed before we could write all data.
-					if (offset + header.payload_size > len)
+					if (scan_payload_span(header) > len - offset)
 					{
 						LOGW_LEVEL("Detected sliced file. Dropping entries from here.\n");
+						observation.state = DiscoveryState::RecoveredPrefix;
+						observation.reason = DiscoveryReason::TruncatedPayload;
+						observation.total_known = false;
+						observation.unread_offset = begin_append_offset;
 						break;
 					}
 
@@ -1227,12 +1626,16 @@ struct StreamArchive : DatabaseInterface
 					{
 						uint64_t value = strtoull(value_str, nullptr, 16);
 						Entry entry = fill_entry(header, offset);
+						observe_discovered(static_cast<ResourceTag>(tag), value);
+						observation.retained_count++;
 						if (test_resource_filter(static_cast<ResourceTag>(tag), value))
 							seen_blobs[tag].emplace(value, entry);
 					}
 
 					if (!move_offset_through_header_size(header, offset))
-						return false;
+						return fail(DiscoveryReason::Seek, true);
+					observation.prefix_end = offset;
+                    observation.unread_offset = offset;
 				}
 
 				if (mode == DatabaseMode::Append && offset != len)
@@ -1735,6 +2138,11 @@ protected:
 		return header;
 	}
 
+	virtual uint64_t scan_payload_span(PayloadHeader header) const
+	{
+		return header.payload_size;
+	}
+
 	virtual bool move_offset_through_header_size(PayloadHeader header, size_t &offset)
 	{
 		if (fseek(file, header.payload_size, SEEK_CUR) < 0)
@@ -1841,6 +2249,11 @@ protected:
 		return header;
 	}
 
+	uint64_t scan_payload_span(PayloadHeader header) const override
+	{
+		return uint64_t(header.payload_size) + 2;
+	}
+
 	bool move_offset_through_header_size(PayloadHeader header, size_t &offset) override
 	{
 		if (fseek(file, header.uncompressed_size + 2, SEEK_CUR) < 0) // + two newline symbols
@@ -1921,8 +2334,12 @@ struct ConcurrentDatabase : DatabaseInterface
 				return;
 
 			for (auto &hash : hashes)
+			{
+				if (!impl->report_imported)
+					observe_discovered(tag, hash);
 				if (test_resource_filter(tag, hash))
 					primed_hashes[i].insert(hash);
+			}
 		}
 	}
 
@@ -1982,6 +2399,29 @@ struct ConcurrentDatabase : DatabaseInterface
 		if (!bucket_dirname.empty() && !setup_bucket())
 			return false;
 
+		if (impl->report_imported)
+		{
+			if (impl->imported_metadata.size() != extra_readonly.size() + 1)
+				return false;
+			size_t inputs = 0;
+			std::vector<bool> seen_inputs(extra_readonly.size() + 1);
+			for (auto &input : impl->report.inputs)
+			{
+				if (input.filter)
+					continue;
+				if (input.index >= seen_inputs.size() || seen_inputs[input.index])
+					return false;
+				seen_inputs[input.index] = true;
+				DatabaseInterface *iface = input.index == 0 ? readonly_interface.get() :
+					input.index <= extra_readonly.size() ? extra_readonly[input.index - 1].get() : nullptr;
+				if (!iface || static_cast<StreamArchive &>(*iface).path != input.path)
+					return false;
+				inputs++;
+			}
+			if (inputs != extra_readonly.size() + (readonly_interface ? 1 : 0))
+				return false;
+		}
+
 		// Set inherited metadata in sub-databases before we prepare them.
 		if (!impl->imported_metadata.empty())
 		{
@@ -2000,17 +2440,30 @@ struct ConcurrentDatabase : DatabaseInterface
 		{
 			// Prepare everything.
 			// It's okay if the database doesn't exist.
-			if (readonly_interface && !readonly_interface->prepare())
-				readonly_interface.reset();
-
-			for (auto &extra : extra_readonly)
-			{
-				if (extra)
+			auto prepare_input = [&](std::unique_ptr<DatabaseInterface> &input, unsigned index) {
+				if (!input)
+					return;
+				input->set_input_required(0, impl->input_required(index));
+				bool prepared = input->prepare();
+				if (!impl->report_imported)
 				{
-					static_cast<StreamArchive &>(*extra).resolve_path(base_path);
-					if (!extra->prepare())
-						extra.reset();
+					for (auto observation : input->get_preparation_report().inputs)
+					{
+						observation.index = index;
+						impl->report.inputs.push_back(std::move(observation));
+					}
 				}
+				if (!prepared)
+					input.reset();
+			};
+			prepare_input(readonly_interface, 0);
+
+			for (size_t i = 0; i < extra_readonly.size(); i++)
+			{
+				auto &extra = extra_readonly[i];
+				if (extra)
+					static_cast<StreamArchive &>(*extra).resolve_path(base_path);
+				prepare_input(extra, unsigned(i + 1));
 			}
 
 			// Promote databases to whitelist.
@@ -2121,7 +2574,7 @@ struct ConcurrentDatabase : DatabaseInterface
 
 	static bool find_entry_in_concurrent_metadata(const ExportedMetadataHeader *header, ResourceTag tag, Hash hash)
 	{
-		auto *begin_range = reinterpret_cast<const uint8_t *>(header) + header->lists[tag].offset;
+		auto *begin_range = reinterpret_cast<const Hash *>(reinterpret_cast<const uint8_t *>(header) + header->lists[tag].offset);
 		auto *end_range = begin_range + header->lists[tag].count;
 		return std::binary_search(begin_range, end_range, hash);
 	}
@@ -2335,6 +2788,7 @@ struct ConcurrentDatabase : DatabaseInterface
 
 		std::sort(primed_begin, primed);
 		primed = std::unique(primed_begin, primed);
+		primed = std::remove_if(primed_begin, primed, [&](Hash h) { return !test_resource_filter(tag,h); });
 		total_count = size_t(primed - primed_begin);
 		return true;
 	}
@@ -2432,14 +2886,14 @@ struct ConcurrentDatabase : DatabaseInterface
 };
 
 DatabaseInterface *create_concurrent_database(const char *base_path, DatabaseMode mode,
-                                              const char * const *extra_read_only_database_paths,
-                                              size_t num_extra_read_only_database_paths)
+											  const char * const *extra_read_only_database_paths,
+											  size_t num_extra_read_only_database_paths)
 {
 	return new ConcurrentDatabase(base_path, mode, extra_read_only_database_paths, num_extra_read_only_database_paths);
 }
 
 DatabaseInterface *create_concurrent_database_with_encoded_extra_paths(const char *base_path, DatabaseMode mode,
-                                                                       const char *encoded_extra_paths)
+																	   const char *encoded_extra_paths)
 {
 	if (!encoded_extra_paths)
 		return create_concurrent_database(base_path, mode, nullptr, 0);
@@ -2464,7 +2918,7 @@ void DatabaseInterface::request_shutdown()
 }
 
 bool merge_concurrent_databases_last_use(const char *append_archive, const char * const *source_paths, size_t num_source_paths,
-                                         bool skip_missing_inputs)
+										 bool skip_missing_inputs)
 {
 	std::unordered_map<Hash, uint64_t> timestamps[RESOURCE_COUNT];
 
@@ -2529,7 +2983,7 @@ bool merge_concurrent_databases_last_use(const char *append_archive, const char 
 }
 
 bool merge_concurrent_databases(const char *append_archive, const char * const *source_paths, size_t num_source_paths,
-                                bool skip_missing_inputs)
+								bool skip_missing_inputs)
 {
 	auto append_db = std::unique_ptr<DatabaseInterface>(create_stream_archive_database(append_archive, DatabaseMode::Append));
 	if (!append_db->prepare())

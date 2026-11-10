@@ -1,0 +1,106 @@
+#define FOSSILIZE_OUTCOME_NO_MAIN
+#include "replay_outcome_test.cpp"
+static void selection_input(const char *path)
+{
+ std::unique_ptr<DatabaseInterface> db(create_stream_archive_database(path,DatabaseMode::OverWrite));
+ checks.require(db->prepare(),"D20/selection-writer");
+ for (auto tag : replay_pipeline_tags) for (Hash hash : {0x30u,0x10u,0x20u})
+  checks.require(db->write_entry(tag,hash,nullptr,0,0),"D20/selection-write");
+}
+static void ranges()
+{
+ selection_input("ranges.foz");std::unique_ptr<DatabaseInterface> db(create_stream_archive_database("ranges.foz",DatabaseMode::ReadOnly));db->set_input_required(0,true);checks.require(db->prepare(),"D20/ranges-prepare");
+ struct Row {unsigned begin,end,actual_begin,actual_end;};
+ for (auto row : {Row{0,~0u,0,3},Row{0,0,0,0},Row{0,3,0,3},Row{1,2,1,2},Row{2,9,2,3},Row{8,9,3,3},Row{2,1,1,1}})
+ {
+  unsigned starts[]={row.begin,row.begin,row.begin},ends[]={row.end,row.end,row.end};
+  auto report=select_replay_scope(*db,starts,ends,0,false);
+  checks.require(report.scope_satisfied&&report.preparation.discovered.size()==9,"D20/ranges-complete-universe");
+  std::vector<DiscoveryKey> expected;
+  for (unsigned i=0;i<3;i++)
+  {
+   auto &r=report.ranges[i];checks.require(r.requested_begin==row.begin&&r.requested_end==row.end&&r.effective_begin==row.actual_begin&&r.effective_end==row.actual_end,"D20/range-requested-effective");
+   std::vector<Hash> hashes;
+   for(unsigned j=row.actual_begin;j<row.actual_end;j++){hashes.push_back((j+1)*0x10);expected.push_back({replay_pipeline_tags[i],(j+1)*0x10});}
+   checks.require(report.stable_hashes[i]==hashes,"D20/range-exact-stable-hashes");
+  }
+  checks.require(report.selected==expected&&report.dispatch==expected&&report.excluded.size()==9-expected.size(),"D20/range-exact-selection-and-exclusions");
+  for(auto &e:report.excluded)checks.require(e.policy==ReplayExclusionPolicy::Range&&std::find(expected.begin(),expected.end(),e.key)==expected.end(),"D20/range-exclusions-are-policy");
+ }
+ unsigned starts[]={0,0,0},ends[]={~0u,~0u,~0u};
+ auto hit=select_replay_scope(*db,starts,ends,0x20,false),miss=select_replay_scope(*db,starts,ends,0x99,false);
+ checks.require(hit.scope_satisfied&&hit.selected.size()==3&&hit.excluded.size()==6&&miss.selected.empty()&&!miss.hash_found&&!miss.scope_satisfied,"D20/hash-exact-and-missing");
+}
+static void prefix_policy()
+{
+ checks.require(fixture("good","prefix.foz"),"D20/policy-recorder-fixture");
+ {FILE *f=fopen("prefix.foz","ab");fputc(1,f);fclose(f);}
+ unsigned starts[]={0,0,0},ends[]={0,0,0};
+ std::unique_ptr<DatabaseInterface> db(create_stream_archive_database("prefix.foz",DatabaseMode::ReadOnly));db->set_input_required(0,true);checks.require(db->prepare(),"D20/policy-salvage");
+ auto full=select_replay_scope(*db,starts,ends,0,false),prefix=select_replay_scope(*db,starts,ends,0,true);
+ checks.require(!full.scope_satisfied&&full.selected.empty()&&!full.preparation.unread_total_known,"D20/zero-selection-cannot-certify-unknown");
+ checks.require(prefix.scope_satisfied&&prefix.recovered_prefix_requested&&!prefix.preparation.discovery_complete&&!prefix.preparation.unread_total_known&&prefix.preparation.inputs[0].prefix_end>16,"D20/explicit-prefix-names-known-byte-scope");
+ for (bool accept:{false,true})
+ {
+  auto opts=Replay::options(1,nullptr);opts.accept_recovered_prefix=accept; ThreadedReplayer r(device_options(),opts);
+  marker_mode=true;results={VK_SUCCESS};calls=0;
+  int status=run_normal_process(r,{"prefix.foz"},nullptr,0,-1);
+  checks.require(status==(accept?0:1)&&r.selection_report.scope_satisfied==accept,"D20/production-prefix-policy-status");
+  if(accept)checks.require(r.selection_report.selected.size()==2&&r.selection_report.dispatch.size()==2&&calls==2,"D20/production-prefix-exact-dispatch");
+  marker_mode=false;
+ }
+ const char *paths[]={"prefix.foz","absent.foz"};remove("absent.foz"); db.reset(create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,2));configure_replay_inputs(*db,2,{});checks.require(db->prepare(),"D20/required-missing-tolerant-library");
+ checks.require(!select_replay_scope(*db,starts,ends,0,true).scope_satisfied,"D20/prefix-cannot-accept-missing-required");
+ db.reset(create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,2));configure_replay_inputs(*db,2,{1});checks.require(db->prepare(),"D20/optional-prepare");auto optional=select_replay_scope(*db,starts,ends,0,true);
+ checks.require(optional.scope_satisfied&&optional.optional_unavailable.size()==1&&optional.optional_unavailable[0].path=="absent.foz"&&!optional.preparation.unread_total_known,"D20/optional-input-exact-policy");
+}
+static void selection_filters()
+{
+ selection_input("filter.foz");
+ {std::unique_ptr<DatabaseInterface> db(create_stream_archive_database("white.foz",DatabaseMode::OverWrite));checks.require(db->prepare(),"D20/selection-white");for(auto t:replay_pipeline_tags)for(Hash h:{0x20u,0x30u})db->write_entry(t,h,nullptr,0,0);}
+ std::unique_ptr<DatabaseInterface> db(create_stream_archive_database("filter.foz",DatabaseMode::ReadOnly));db->set_input_required(0,true);checks.require(db->load_whitelist_database("white.foz")&&db->prepare(),"D20/selection-filter-prepare");
+ unsigned starts[]={1,1,1},ends[]={2,2,2};auto r=select_replay_scope(*db,starts,ends,0,false);
+ checks.require(r.preparation.discovered.size()==9&&r.preparation.selected.size()==6&&r.selected.size()==3&&r.excluded.size()==6,"D20/filter-before-range-exact-universe");
+ for(unsigned i=0;i<3;i++)checks.require(r.stable_hashes[i]==std::vector<Hash>({0x30}),"D20/filter-before-range-exact-hashes");
+ // Real production dispatch uses the same report and preserves excluded work as policy.
+ checks.require(fixture("good","good.foz"),"D20/production-filter-fixture");seed_cache("one.foz",RESOURCE_COMPUTE_PIPELINE,0x202);
+ auto opts=Replay::options(1,nullptr);ThreadedReplayer replay(device_options(),opts);marker_mode=true;results={VK_SUCCESS};calls=0;
+ int status=run_normal_process(replay,{"good.foz"},"one.foz",ExternalReplayer::WHITELIST_MASK_ALL_BIT,-1);marker_mode=false;
+ checks.require(status==0&&calls==1&&replay.selection_report.selected==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x202}})&&replay.selection_report.preparation.discovered.size()>replay.selection_report.preparation.selected.size(),"D20/production-filter-exact-dispatch-and-report");
+}
+static void hints()
+{
+ for(unsigned kind=0;kind<3;kind++)
+ {
+  std::string input="hint-"+std::to_string(kind)+".foz",cache="hints-"+std::to_string(kind),base=policy_base(cache);clear_cache(base);cache_input(input,kind);
+  run_cache_archive(input,cache,kind,VK_SUCCESS,1);
+  checks.require(harvest_cache(base,cache_tags[kind],cache_hash(kind))==1,"D20/hint-harvest-real-fragment");
+  auto opts=Replay::options(1,nullptr);opts.replayer_cache_path=cache;
+  ThreadedReplayer replay(device_options(),opts);marker_mode=true;results={VK_SUCCESS};calls=0;
+  int status=run_normal_process(replay,{input.c_str()},nullptr,0,-1);marker_mode=false;auto &r=replay.selection_report;
+  checks.require(status==0&&calls==0&&r.selected==std::vector<DiscoveryKey>({{cache_tags[kind],cache_hash(kind)}})&&r.dispatch.empty(),"D20/hints-exact-production-suppression");
+  checks.require(r.stable_hashes[kind]==std::vector<Hash>({cache_hash(kind)})&&r.ranges[kind].effective_begin==0&&r.excluded.size()==1&&r.excluded[0].policy==ReplayExclusionPolicy::ReplayV1Hint&&r.excluded[0].key==r.selected[0],"D20/hints-preserve-stable-index-and-policy");
+ }
+ cache_legacy_provenance();cache_null_provenance();cache_whitelist();
+}
+int main(int argc,char **argv)
+{
+ if(argc==4&&std::string(argv[1])=="--fixture")return fixture(argv[2],argv[3])?0:1;
+ if(argc==4&&std::string(argv[1])=="--convert")
+ {
+  std::unique_ptr<DatabaseInterface> source(create_database(argv[2],DatabaseMode::ReadOnly));
+  {std::unique_ptr<DatabaseInterface> dest(create_database(argv[3],DatabaseMode::OverWrite));
+   checks.require(source->prepare()&&dest->prepare(),"D20/formats-open");
+   for(unsigned t=0;t<RESOURCE_COUNT;t++)
+   {size_t n=0;auto tag=ResourceTag(t);source->get_hash_list_for_resource_tag(tag,&n,nullptr);std::vector<Hash> hashes(n);source->get_hash_list_for_resource_tag(tag,&n,hashes.data());
+    for(auto hash:hashes){size_t size=0;source->read_entry(tag,hash,&size,nullptr,0);std::vector<uint8_t> b(size);checks.require(source->read_entry(tag,hash,&size,b.data(),0)&&dest->write_entry(tag,hash,b.data(),size,0),"D20/formats-exact-copy");}}
+  }
+  std::unique_ptr<DatabaseInterface> readback(create_database(argv[3],DatabaseMode::ReadOnly));readback->set_input_required(0,true);
+  checks.require(readback->prepare()&&readback->get_preparation_report().discovery_complete&&readback->get_preparation_report().satisfies_required_scope(),"D20/formats-complete-real-producer");
+  for(unsigned t=0;t<RESOURCE_COUNT;t++){size_t n=0,m=0;source->get_hash_list_for_resource_tag(ResourceTag(t),&n,nullptr);readback->get_hash_list_for_resource_tag(ResourceTag(t),&m,nullptr);checks.require(n==m,"D20/formats-readback-count");}
+  return checks.failures?1:0;
+ }
+ if(argc!=2)return 2;std::string mode=argv[1];
+ if(mode=="ranges")ranges();else if(mode=="filters")selection_filters();else if(mode=="prefix-policy")prefix_policy();else if(mode=="hints")hints();else return 2;
+ return checks.failures?1:0;
+}

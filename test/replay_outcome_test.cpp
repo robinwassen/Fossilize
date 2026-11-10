@@ -564,6 +564,8 @@ static void normal_matrix()
 #include "replay_cache_tests.hpp"
 
 #ifndef FOSSILIZE_REPLAY_OUTCOME_NO_MAIN
+
+#ifndef FOSSILIZE_OUTCOME_NO_MAIN
 int main(int argc, char **argv)
 {
 	if (argc == 3 && std::string(argv[1]) == "--whitelist")
@@ -589,5 +591,7 @@ int main(int argc, char **argv)
 	printf("Executed R14/%s; failures=%d\n",test.c_str(),checks.failures);
 	return checks.failures ? 1 : 0;
 }
+
+#endif
 
 #endif

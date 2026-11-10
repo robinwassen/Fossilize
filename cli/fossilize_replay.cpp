@@ -34,6 +34,7 @@
 #include "file.hpp"
 #include "path.hpp"
 #include "fossilize_db.hpp"
+#include "replay_selection.hpp"
 #include "fossilize_external_replayer.hpp"
 #include "fossilize_external_replayer_control_block.hpp"
 #include "fossilize_errors.hpp"
@@ -225,10 +226,10 @@ static BidirectionalItr unstable_remove_if(BidirectionalItr first, Bidirectional
 	return first;
 }
 
-static unique_ptr<DatabaseInterface> create_database(const vector<const char *> &databases)
+static unique_ptr<DatabaseInterface> create_database(const vector<const char *> &databases, bool force_composite = false)
 {
 	unique_ptr<DatabaseInterface> resolver;
-	if (databases.size() == 1)
+	if (databases.size() == 1 && !force_composite)
 	{
 		resolver.reset(create_database(databases.front(), DatabaseMode::ReadOnly));
 	}
@@ -686,6 +687,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		string pipeline_stats_path;
 		string replayer_cache_path;
 		vector<unsigned> implicit_whitelist_database_indices;
+		vector<unsigned> optional_database_indices;
+		bool accept_recovered_prefix = false;
 
 		// VALVE: Add multi-threaded pipeline creation
 		unsigned num_threads = thread::hardware_concurrency();
@@ -3724,6 +3727,7 @@ struct ThreadedReplayer : StateCreatorInterface
 	}
 
 	Options opts;
+	ReplaySelectionReport selection_report;
 
 	std::unordered_map<Hash, VkSampler> samplers;
 	std::unordered_map<Hash, VkDescriptorSetLayout> layouts;
@@ -3902,6 +3906,7 @@ static void print_help()
 	     "\t[--null-device]\n"
 	     "\t[--timeout-seconds]\n"
 	     "\t[--implicit-whitelist <index>]\n"
+         "\t[--accept-recovered-prefix] [--optional-database-index <zero-based-source-index>]\n"
 	     "\t[--replayer-cache <path>] (versioned creation hints, separate null/Vulkan namespaces)\n"
 	     "\t[--fail-on-pipeline-compile-required]\n"
 	     "\t[--skip-pipelines-on-compile-required]\n"
@@ -4078,46 +4083,38 @@ static int run_progress_process(const VulkanDevice::Options &device_opts,
 	opts.on_disk_replay_whitelist = whitelist;
 	opts.on_disk_replay_whitelist_mask = whitelist_mask;
 
-	// ExternalReplayer's existing API selects ranges rather than hashes. Resolve
-	// the requested hash before launching so progress mode preserves selection.
-	if (replayer_opts.pipeline_hash)
+	// Resolve selection through the same policy helper as normal and controller replay.
 	{
-		auto db = create_database(databases);
+		auto db = create_database(databases, !replayer_opts.optional_database_indices.empty());
+		configure_replay_inputs(*db, databases.size(), replayer_opts.optional_database_indices);
 		if (whitelist)
 		{
 			db->set_whitelist_tag_mask(whitelist_mask);
-			if (!db->load_whitelist_database(whitelist)) return EXIT_FAILURE;
+			if (!db->load_whitelist_database(whitelist))
+				return EXIT_FAILURE;
 			if (db->has_sub_databases())
-				for (unsigned index : replayer_opts.implicit_whitelist_database_indices)
+				for (auto index : replayer_opts.implicit_whitelist_database_indices)
 					db->promote_sub_database_to_whitelist(index);
 		}
-		if (!db->prepare()) return EXIT_FAILURE;
-		bool found = false;
-		unsigned *starts[] = {&opts.start_graphics_index, &opts.start_compute_index, &opts.start_raytracing_index};
-		unsigned *ends[] = {&opts.end_graphics_index, &opts.end_compute_index, &opts.end_raytracing_index};
-		ResourceTag tags[] = {RESOURCE_GRAPHICS_PIPELINE, RESOURCE_COMPUTE_PIPELINE, RESOURCE_RAYTRACING_PIPELINE};
+		if (!db->prepare())
+			return EXIT_FAILURE;
+		unsigned starts[] = {opts.start_graphics_index, opts.start_compute_index, opts.start_raytracing_index};
+		unsigned ends[] = {opts.end_graphics_index, opts.end_compute_index, opts.end_raytracing_index};
+		auto scope = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash, replayer_opts.accept_recovered_prefix);
+		if (!scope.scope_satisfied)
+			return EXIT_FAILURE;
+		unsigned *out_starts[] = {&opts.start_graphics_index, &opts.start_compute_index, &opts.start_raytracing_index};
+		unsigned *out_ends[] = {&opts.end_graphics_index, &opts.end_compute_index, &opts.end_raytracing_index};
 		for (unsigned i = 0; i < 3; i++)
 		{
-			size_t count = 0;
-			if (!db->get_hash_list_for_resource_tag(tags[i], &count, nullptr)) return EXIT_FAILURE;
-			vector<Hash> hashes(count);
-			if (!db->get_hash_list_for_resource_tag(tags[i], &count, hashes.data())) return EXIT_FAILURE;
-			auto itr = find(begin(hashes), end(hashes), replayer_opts.pipeline_hash);
-			*starts[i] = *ends[i] = 0;
-			if (itr != end(hashes))
-			{
-				found = true; *starts[i] = unsigned(itr - begin(hashes)); *ends[i] = *starts[i] + 1;
-			}
-		}
-		if (!found)
-		{
-			LOGE("Specified pipeline hash %016" PRIx64 " not found in database.\n", replayer_opts.pipeline_hash);
-			return EXIT_FAILURE;
+			*out_starts[i] = scope.stable_hashes[i].empty() ? 0 : scope.ranges[i].effective_begin;
+			*out_ends[i] = *out_starts[i] + unsigned(scope.stable_hashes[i].size());
 		}
 		opts.use_pipeline_range = true;
 	}
 
 	ExternalReplayer replayer;
+	replayer.set_database_scope_policy(replayer_opts.accept_recovered_prefix, replayer_opts.optional_database_indices.data(), replayer_opts.optional_database_indices.size());
 	if (!replayer.start(opts))
 	{
 		LOGE("Failed to start external replayer.\n");
@@ -4411,7 +4408,8 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 {
 	auto start_time = chrono::steady_clock::now();
 	auto start_create_archive = chrono::steady_clock::now();
-	auto resolver = create_database(databases);
+	auto resolver = create_database(databases, !replayer.opts.optional_database_indices.empty());
+	configure_replay_inputs(*resolver, databases.size(), replayer.opts.optional_database_indices);
 
 	if (whitelist)
 	{
@@ -4444,6 +4442,15 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 		LOGE("Failed to prepare database.\n");
 		return replayer.fail_run(ReplayFailure::Setup);
 	}
+	replayer.selection_report.preparation = resolver->get_preparation_report();
+	replayer.selection_report.recovered_prefix_requested = replayer.opts.accept_recovered_prefix;
+	replayer.selection_report.scope_satisfied =
+		replayer.selection_report.preparation.satisfies_required_scope(replayer.opts.accept_recovered_prefix);
+	if (!replayer.selection_report.scope_satisfied)
+	{
+		LOGE("Required database discovery is incomplete (full scope or explicitly accepted recovered prefix).\n");
+		return replayer.fail_run(ReplayFailure::Setup);
+	}
 	auto end_prepare = chrono::steady_clock::now();
 
 	StateReplayer state_replayer;
@@ -4468,11 +4475,6 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 		RESOURCE_RENDER_PASS, // Trivial, run in main thread
 	};
 
-	static const ResourceTag threaded_playback_order[] = {
-		RESOURCE_GRAPHICS_PIPELINE,
-		RESOURCE_COMPUTE_PIPELINE,
-		RESOURCE_RAYTRACING_PIPELINE,
-	};
 
 	static const char *tag_names[] = {
 		"AppInfo",
@@ -4604,113 +4606,37 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 	unsigned compute_start_index = 0;
 	unsigned raytracing_start_index = 0;
 
-	if (replayer.opts.pipeline_hash != 0)
+	unsigned starts[] = {replayer.opts.start_graphics_index, replayer.opts.start_compute_index, replayer.opts.start_raytracing_index};
+	unsigned ends[] = {replayer.opts.end_graphics_index, replayer.opts.end_compute_index, replayer.opts.end_raytracing_index};
+	if (replayer.replayer_cache_db)
+		for (auto tag : replay_pipeline_tags)
+			populate_blob_hash_set(replayer.cached_blobs[tag], tag, *replayer.replayer_cache_db);
+	replayer.selection_report = select_replay_scope(*resolver, starts, ends, replayer.opts.pipeline_hash,
+	                                               replayer.opts.accept_recovered_prefix, replayer.cached_blobs);
+	if (!replayer.selection_report.scope_satisfied)
+		return replayer.fail_run(ReplayFailure::Read, RESOURCE_COUNT, replayer.opts.pipeline_hash);
+	graphics_hashes = replayer.selection_report.stable_hashes[0];
+	compute_hashes = replayer.selection_report.stable_hashes[1];
+	raytracing_hashes = replayer.selection_report.stable_hashes[2];
+	graphics_start_index = replayer.selection_report.ranges[0].effective_begin;
+	compute_start_index = replayer.selection_report.ranges[1].effective_begin;
+	raytracing_start_index = replayer.selection_report.ranges[2].effective_begin;
+
+	for (unsigned i = 0; i < 3; i++)
 	{
-		for (auto &tag : threaded_playback_order)
+		uint64_t raw = 0, compressed = 0;
+		for (auto hash : replayer.selection_report.stable_hashes[i])
 		{
-			size_t state_json_size = 0;
-			if (resolver->read_entry(tag, replayer.opts.pipeline_hash, &state_json_size, nullptr, 0))
-			{
-				if (tag == RESOURCE_GRAPHICS_PIPELINE)
-					graphics_hashes.push_back(replayer.opts.pipeline_hash);
-				else if (tag == RESOURCE_COMPUTE_PIPELINE)
-					compute_hashes.push_back(replayer.opts.pipeline_hash);
-				else if (tag == RESOURCE_RAYTRACING_PIPELINE)
-					raytracing_hashes.push_back(replayer.opts.pipeline_hash);
-			}
+			size_t size = 0;
+			auto tag = replay_pipeline_tags[i];
+			if (resolver->read_entry(tag, hash, &size, nullptr, PAYLOAD_READ_RAW_FOSSILIZE_DB_BIT))
+				compressed += size;
+			if (!resolver->read_entry(tag, hash, &size, nullptr, 0))
+				return replayer.fail_run(ReplayFailure::Read, tag, hash);
+			raw += size;
 		}
-
-		if (graphics_hashes.empty() && compute_hashes.empty() && raytracing_hashes.empty())
-		{
-			LOGE("Specified pipeline hash %016" PRIx64 " not found in database.\n",
-			     replayer.opts.pipeline_hash);
-			replayer.record_failure(ReplayFailure::Read, RESOURCE_COUNT, replayer.opts.pipeline_hash);
-			return EXIT_FAILURE;
-		}
-	}
-	else
-	{
-		for (auto &tag : threaded_playback_order)
-		{
-			size_t tag_total_size = 0;
-			size_t tag_total_size_compressed = 0;
-			size_t resource_hash_count = 0;
-
-			if (!resolver->get_hash_list_for_resource_tag(tag, &resource_hash_count, nullptr))
-			{
-				LOGE("Failed to get list of resource hashes.\n");
-				return replayer.fail_run(ReplayFailure::Setup);
-			}
-
-			unsigned start_index = 0;
-			unsigned end_index = resource_hash_count;
-
-			vector<Hash> *hashes = nullptr;
-
-			if (tag == RESOURCE_GRAPHICS_PIPELINE)
-			{
-				hashes = &graphics_hashes;
-
-				end_index = min(end_index, replayer.opts.end_graphics_index);
-				start_index = max(start_index, replayer.opts.start_graphics_index);
-				start_index = min(end_index, start_index);
-				graphics_start_index = start_index;
-
-			}
-			else if (tag == RESOURCE_COMPUTE_PIPELINE)
-			{
-				hashes = &compute_hashes;
-
-				end_index = min(end_index, replayer.opts.end_compute_index);
-				start_index = max(start_index, replayer.opts.start_compute_index);
-				start_index = min(end_index, start_index);
-				compute_start_index = start_index;
-			}
-			else if (tag == RESOURCE_RAYTRACING_PIPELINE)
-			{
-				hashes = &raytracing_hashes;
-
-				end_index = min(end_index, replayer.opts.end_raytracing_index);
-				start_index = max(start_index, replayer.opts.start_raytracing_index);
-				start_index = min(end_index, start_index);
-				raytracing_start_index = start_index;
-			}
-
-			assert(hashes);
-			hashes->resize(resource_hash_count);
-
-			if (!resolver->get_hash_list_for_resource_tag(tag, &resource_hash_count, hashes->data()))
-			{
-				LOGE("Failed to get list of resource hashes.\n");
-				return replayer.fail_run(ReplayFailure::Setup);
-			}
-
-			std::move(begin(*hashes) + start_index, begin(*hashes) + end_index, begin(*hashes));
-			hashes->erase(begin(*hashes) + (end_index - start_index), end(*hashes));
-
-			if (replayer.replayer_cache_db)
-				populate_blob_hash_set(replayer.cached_blobs[tag], tag, *replayer.replayer_cache_db);
-
-			for (auto &hash : *hashes)
-			{
-				size_t state_json_size = 0;
-				if (resolver->read_entry(tag, hash, &state_json_size, nullptr, PAYLOAD_READ_RAW_FOSSILIZE_DB_BIT))
-				{
-					tag_total_size_compressed += state_json_size;
-				}
-
-				if (!resolver->read_entry(tag, hash, &state_json_size, nullptr, 0))
-				{
-					LOGE("Failed to load blob from cache.\n");
-					return replayer.fail_run(ReplayFailure::Read, tag, hash);
-				}
-				tag_total_size += state_json_size;
-			}
-
-			LOGI("Total binary size for %s: %" PRIu64 " (%" PRIu64 " compressed)\n", tag_names[tag],
-			     uint64_t(tag_total_size),
-			     uint64_t(tag_total_size_compressed));
-		}
+		LOGI("Total binary size for %s: %" PRIu64 " (%" PRIu64 " compressed)\n",
+		     tag_names[replay_pipeline_tags[i]], raw, compressed);
 	}
 
 	// Done parsing static objects, so we could reclaim some memory,
@@ -4938,6 +4864,8 @@ int main(int argc, char *argv[])
 			}
 		}
 	});
+	cbs.add("--accept-recovered-prefix", [&](CLIParser &) { replayer_opts.accept_recovered_prefix = true; });
+	cbs.add("--optional-database-index", [&](CLIParser &parser) { replayer_opts.optional_database_indices.push_back(parser.next_uint()); });
 	cbs.add("--num-threads", [&](CLIParser &parser) { replayer_opts.num_threads = parser.next_uint(); });
 	cbs.add("--loop", [&](CLIParser &parser) { replayer_opts.loop_count = parser.next_uint(); });
 	cbs.add("--pipeline-hash", [&](CLIParser &parser) {
@@ -5006,6 +4934,14 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	if (parser.is_ended_state())
 		return EXIT_SUCCESS;
+	for (auto index : replayer_opts.optional_database_indices)
+	{
+		if (index >= databases.size())
+		{
+			LOGE("Optional database index is outside source inputs.\n");
+			return EXIT_FAILURE;
+		}
+	}
 
 #ifndef _WIN32
 	// Can be handy to sideband this information in some scenarios.

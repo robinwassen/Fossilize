@@ -40,6 +40,8 @@ static std::atomic<int32_t> shm_index;
 
 struct ExternalReplayer::Impl
 {
+	bool accept_recovered_prefix = false;
+	std::vector<unsigned> optional_database_indices;
 	~Impl();
 
 	HANDLE process = nullptr;
@@ -624,6 +626,9 @@ bool ExternalReplayer::Impl::start(const ExternalReplayer::Options &options)
 		cmdline += std::to_string(options.timeout_seconds);
 	}
 
+    if (accept_recovered_prefix) cmdline += " --accept-recovered-prefix";
+    for (unsigned i=0;i<optional_database_indices.size();i++)
+        cmdline += " --optional-database-index " + std::to_string(optional_database_indices[i]);
 	for (unsigned i = 0; i < options.num_implicit_whitelist_indices; i++)
 	{
 		cmdline += " --implicit-whitelist ";

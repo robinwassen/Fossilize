@@ -102,6 +102,8 @@ static std::atomic<int32_t> shm_index;
 
 struct ExternalReplayer::Impl
 {
+	bool accept_recovered_prefix = false;
+	std::vector<unsigned> optional_database_indices;
 	~Impl();
 
 	pid_t pid = -1;
@@ -755,6 +757,14 @@ void ExternalReplayer::Impl::start_replayer_process(const ExternalReplayer::Opti
 		argv.push_back(implicit_indices[i].data());
 	}
 
+    if (accept_recovered_prefix) argv.push_back("--accept-recovered-prefix");
+    std::vector<std::array<char,16>> optional_indices(optional_database_indices.size());
+    for (unsigned i=0;i<optional_database_indices.size();i++)
+    {
+        argv.push_back("--optional-database-index");
+        snprintf(optional_indices[i].data(),optional_indices[i].size(),"%u",optional_database_indices[i]);
+        argv.push_back(optional_indices[i].data());
+    }
 	argv.push_back(nullptr);
 
 	if (options.quiet)

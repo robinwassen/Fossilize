@@ -472,6 +472,9 @@ bool ProcessProgress::start_child_process()
 		cmdline += "\"";
 	}
 
+	if (Global::base_replayer_options.accept_recovered_prefix) cmdline += " --accept-recovered-prefix";
+	for (auto index : Global::base_replayer_options.optional_database_indices)
+		cmdline += " --optional-database-index " + to_string(index);
 	cmdline += " --slave-process";
 	cmdline += " --num-threads 1";
 	if (Global::base_replayer_options.pipeline_hash)
@@ -837,10 +840,10 @@ struct ControllerChildrenCleanup
 };
 
 static int run_master_process(const VulkanDevice::Options &opts,
-                              const ThreadedReplayer::Options &replayer_opts,
-                              const vector<const char *> &databases,
-                              const char *whitelist_path, uint32_t whitelist_mask,
-                              bool quiet_slave, const char *shm_name, const char *shm_mutex_name)
+							  const ThreadedReplayer::Options &replayer_opts,
+							  const vector<const char *> &databases,
+							  const char *whitelist_path, uint32_t whitelist_mask,
+							  bool quiet_slave, const char *shm_name, const char *shm_mutex_name)
 {
 	Global::quiet_slave = quiet_slave;
 	Global::device_options = opts;
@@ -892,15 +895,13 @@ static int run_master_process(const VulkanDevice::Options &opts,
 	size_t num_compute_pipelines;
 	size_t num_raytracing_pipelines;
 
-	size_t requested_graphic_pipelines = replayer_opts.end_graphics_index - replayer_opts.start_graphics_index;
 	size_t graphics_pipeline_offset = 0;
-	size_t requested_compute_pipelines = replayer_opts.end_compute_index - replayer_opts.start_compute_index;
 	size_t compute_pipeline_offset = 0;
-	unsigned requested_raytracing_pipelines = replayer_opts.end_raytracing_index - replayer_opts.start_raytracing_index;
 	unsigned raytracing_pipeline_offset = 0;
 
 	{
-		auto db = create_database(databases);
+		auto db = create_database(databases, !replayer_opts.optional_database_indices.empty());
+		configure_replay_inputs(*db,databases.size(),replayer_opts.optional_database_indices);
 
 		if (whitelist_path)
 		{
@@ -912,10 +913,20 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			}
 		}
 
+		if (whitelist_path && db->has_sub_databases())
+			for (auto index : replayer_opts.implicit_whitelist_database_indices)
+				db->promote_sub_database_to_whitelist(index);
+
 		if (!db->prepare())
 		{
 			for (auto &path : databases)
 				LOGE("Failed to parse database %s.\n", path);
+			return EXIT_FAILURE;
+		}
+
+		if (!db->get_preparation_report().satisfies_required_scope(replayer_opts.accept_recovered_prefix))
+		{
+			LOGE("Required database discovery is incomplete.\n");
 			return EXIT_FAILURE;
 		}
 
@@ -934,44 +945,17 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			return EXIT_FAILURE;
 		}
 
-		if (!db->get_hash_list_for_resource_tag(RESOURCE_GRAPHICS_PIPELINE, &num_graphics_pipelines, nullptr))
-		{
-			for (auto &path : databases)
-				LOGE("Failed to parse database %s.\n", path);
+		unsigned starts[] = {replayer_opts.start_graphics_index, replayer_opts.start_compute_index, replayer_opts.start_raytracing_index};
+		unsigned ends[] = {replayer_opts.end_graphics_index, replayer_opts.end_compute_index, replayer_opts.end_raytracing_index};
+		auto scope = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash, replayer_opts.accept_recovered_prefix);
+		if (!scope.scope_satisfied)
 			return EXIT_FAILURE;
-		}
-
-		if (!db->get_hash_list_for_resource_tag(RESOURCE_COMPUTE_PIPELINE, &num_compute_pipelines, nullptr))
-		{
-			for (auto &path : databases)
-				LOGE("Failed to parse database %s.\n", path);
-			return EXIT_FAILURE;
-		}
-
-		if (!db->get_hash_list_for_resource_tag(RESOURCE_RAYTRACING_PIPELINE, &num_raytracing_pipelines, nullptr))
-		{
-			for (auto &path : databases)
-				LOGE("Failed to parse database %s.\n", path);
-			return EXIT_FAILURE;
-		}
-
-		if (requested_graphic_pipelines < num_graphics_pipelines)
-		{
-			num_graphics_pipelines = requested_graphic_pipelines;
-			graphics_pipeline_offset = replayer_opts.start_graphics_index;
-		}
-
-		if (requested_compute_pipelines < num_compute_pipelines)
-		{
-			num_compute_pipelines = requested_compute_pipelines;
-			compute_pipeline_offset = replayer_opts.start_compute_index;
-		}
-
-		if (requested_raytracing_pipelines < num_raytracing_pipelines)
-		{
-			num_raytracing_pipelines = requested_raytracing_pipelines;
-			raytracing_pipeline_offset = replayer_opts.start_raytracing_index;
-		}
+		num_graphics_pipelines = scope.stable_hashes[0].size();
+		graphics_pipeline_offset = scope.ranges[0].effective_begin;
+		num_compute_pipelines = scope.stable_hashes[1].size();
+		compute_pipeline_offset = scope.ranges[1].effective_begin;
+		num_raytracing_pipelines = scope.stable_hashes[2].size();
+		raytracing_pipeline_offset = scope.ranges[2].effective_begin;
 
 		if (Global::control_block)
 		{
@@ -1405,9 +1389,9 @@ static void abort_handler(int)
 }
 
 static int run_slave_process(const VulkanDevice::Options &opts,
-                             const ThreadedReplayer::Options &replayer_opts,
-                             const vector<const char *> &databases,
-                             const char *shm_name, const char *shm_mutex_name, const char *metadata_name)
+							 const ThreadedReplayer::Options &replayer_opts,
+							 const vector<const char *> &databases,
+							 const char *shm_name, const char *shm_mutex_name, const char *metadata_name)
 {
 	if (shm_name && shm_mutex_name && !open_shm(shm_name, shm_mutex_name))
 	{
@@ -1476,8 +1460,13 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 	{
 		// Preserve the controller's original no-device zero-assignment path,
 		// while making this launched worker's negotiation/finalization explicit.
-		replayer.work_drained = true;
-		code = EXIT_SUCCESS;
+		auto db=create_database(databases, !replayer_opts.optional_database_indices.empty());
+		configure_replay_inputs(*db,databases.size(),replayer_opts.optional_database_indices);
+		bool prepared=(!DatabaseInterface::metadata_handle_is_valid(reinterpret_cast<intptr_t>(Global::metadata_handle)) || db->import_metadata_from_os_handle(reinterpret_cast<intptr_t>(Global::metadata_handle))) && db->prepare();
+		replayer.selection_report.preparation=db->get_preparation_report();
+		replayer.selection_report.scope_satisfied=prepared && replayer.selection_report.preparation.satisfies_required_scope(replayer_opts.accept_recovered_prefix);
+		replayer.work_drained=replayer.selection_report.scope_satisfied;
+		code=replayer.selection_report.scope_satisfied ? EXIT_SUCCESS : replayer.fail_run(ReplayFailure::Setup);
 	}
 	else
 		code = run_normal_process(replayer, databases, nullptr, 0, reinterpret_cast<intptr_t>(Global::metadata_handle));

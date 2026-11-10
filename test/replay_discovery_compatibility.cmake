@@ -1,0 +1,56 @@
+file(MAKE_DIRECTORY "${WORK}/headers" "${WORK}/diagnostic")
+foreach(header fossilize.hpp fossilize_external_replayer.hpp fossilize_db.hpp fossilize_types.hpp fossilize_inttypes.h fossilize_application_filter.hpp)
+    execute_process(COMMAND git show "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db:${header}"
+        WORKING_DIRECTORY "${SOURCE}" OUTPUT_FILE "${WORK}/headers/${header}" RESULT_VARIABLE status TIMEOUT 15)
+    if(NOT status EQUAL 0)
+        message(FATAL_ERROR "Cannot read actual input header ${header}: ${status}")
+    endif()
+endforeach()
+foreach(kind database diagnostic outcome)
+    if(kind STREQUAL "database")
+        set(caller_source database_discovery_compatibility_test.cpp)
+    elseif(kind STREQUAL "diagnostic")
+        set(caller_source diagnostic_compatibility_test.cpp)
+    else()
+        set(caller_source replay_outcome_compatibility_test.cpp)
+    endif()
+    if(COMPILER_ID STREQUAL "MSVC")
+        if(BUILD_TYPE STREQUAL "Debug")
+            set(runtime /MDd)
+        else()
+            set(runtime /MD)
+        endif()
+        execute_process(COMMAND "${COMPILER}" /nologo /std:c++14 /EHsc ${runtime}
+            "/I${WORK}/headers" "/I${SOURCE}" "/I${SOURCE}/test" "/I${SOURCE}/khronos"
+            "/I${SOURCE}/cli" "/I${SOURCE}/cli/volk" "${SOURCE}/test/${caller_source}"
+            "${UTILS}" "${LIBRARY}" "${MINIZ}" "${VOLK}" /link "/OUT:${WORK}/${kind}-caller.exe"
+            RESULT_VARIABLE status OUTPUT_VARIABLE output ERROR_VARIABLE errors TIMEOUT 90)
+    else()
+        execute_process(COMMAND "${COMPILER}" -std=c++14 "-I${WORK}/headers" "-I${SOURCE}" "-I${SOURCE}/test"
+            "-I${SOURCE}/khronos" "-I${SOURCE}/cli" "-I${SOURCE}/cli/volk"
+            "${SOURCE}/test/${caller_source}" "${UTILS}" "${LIBRARY}" "${MINIZ}" "${VOLK}" -pthread -ldl -lrt -o "${WORK}/${kind}-caller"
+            RESULT_VARIABLE status OUTPUT_VARIABLE output ERROR_VARIABLE errors TIMEOUT 90)
+    endif()
+    if(NOT status EQUAL 0)
+        message(FATAL_ERROR "Old-header ${kind} caller compilation failed: ${status}\n${output}\n${errors}")
+    endif()
+endforeach()
+execute_process(COMMAND "${CMAKE_COMMAND}" "-DCALLER=${WORK}/diagnostic-caller" "-DREPLAY=${REPLAY}"
+    "-DWORK=${WORK}/diagnostic" -P "${SOURCE}/test/diagnostic_compatibility.cmake" RESULT_VARIABLE status TIMEOUT 75)
+if(NOT status EQUAL 0)
+    message(FATAL_ERROR "Old diagnostic caller failed: ${status}")
+endif()
+execute_process(COMMAND "${GENERATOR}" --fixture compatibility "${WORK}/mixed.foz" RESULT_VARIABLE status TIMEOUT 15)
+if(NOT status EQUAL 0)
+    message(FATAL_ERROR "Old external fixture failed: ${status}")
+endif()
+execute_process(COMMAND "${WORK}/outcome-caller" "${REPLAY}" "${WORK}/mixed.foz" RESULT_VARIABLE status TIMEOUT 90)
+if(NOT status EQUAL 0)
+    message(FATAL_ERROR "Old external caller failed: ${status}")
+endif()
+message(STATUS "D20 actual input public headers first: compiled, linked and ran both unchanged callers")
+
+execute_process(COMMAND "${WORK}/database-caller" WORKING_DIRECTORY "${WORK}" RESULT_VARIABLE status TIMEOUT 20)
+if(NOT status EQUAL 0)
+    message(FATAL_ERROR "D20 actual input custom/recorder/database caller failed: ${status}")
+endif()

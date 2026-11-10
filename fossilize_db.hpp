@@ -25,6 +25,8 @@
 #include "fossilize.hpp"
 #include <stdint.h>
 #include <stddef.h>
+#include <string>
+#include <vector>
 
 namespace Fossilize
 {
@@ -86,6 +88,59 @@ struct ExportedMetadataHeader;
 // This is an interface to interact with an external database for blob modules.
 // It is is a simple database with key + blob.
 // NOTE: The database is NOT thread-safe.
+// Discovery facts are independent of bool prepare() (which retains legacy salvage).
+// Reports are snapshot copies; serialize prepare/policy changes as for all DB operations.
+enum class DiscoveryState : uint32_t { Unknown, Complete, RecoveredPrefix, Failed };
+enum class DiscoveryReason : uint32_t
+{
+	None, Open, Seek, Tell, Read, InvalidMagic, UnsupportedVersion, TruncatedHeader,
+	TruncatedPayload, Cancelled
+};
+enum class DiscoveryExclusion : uint32_t { Whitelist, Blacklist };
+struct DiscoveryKey
+{
+	ResourceTag tag = RESOURCE_APPLICATION_INFO;
+	Hash hash = 0;
+	bool operator==(const DiscoveryKey &o) const { return tag == o.tag && hash == o.hash; }
+	bool operator<(const DiscoveryKey &o) const { return tag != o.tag ? tag < o.tag : hash < o.hash; }
+};
+struct DiscoveryInput
+{
+	std::string path;
+	unsigned index = 0;
+	bool required = true; // Reporting defaults to requested scope; bool prepare remains tolerant.
+	bool filter = false;
+	bool opened = false;
+	DiscoveryState state = DiscoveryState::Unknown;
+	DiscoveryReason reason = DiscoveryReason::None;
+	bool raw_error_known = false;
+	int64_t raw_error = 0;
+	bool boundary_known = false;
+	uint64_t prefix_end = 0; // End of the last wholly discovered entry, including magic.
+	uint64_t unread_offset = 0;
+	bool total_known = false;
+	uint64_t retained_count = 0;
+};
+struct DiscoveryExcludedKey
+{
+	DiscoveryKey key;
+	DiscoveryExclusion policy = DiscoveryExclusion::Whitelist;
+};
+struct DatabasePreparationReport
+{
+	uint32_t whitelist_tag_mask = 0;
+	bool whitelist_sensitive = false;
+	bool blacklist_present = false;
+	std::vector<DiscoveryInput> inputs;
+	std::vector<DiscoveryKey> discovered; // Deduplicated logical union before filters.
+	std::vector<DiscoveryKey> selected;
+	std::vector<DiscoveryExcludedKey> excluded;
+	bool discovery_complete = false;
+	bool unread_total_known = false; // There is deliberately no fabricated unread count.
+	bool satisfies_required_scope(bool accept_recovered_prefix = false) const;
+};
+
+
 class DatabaseInterface
 {
 public:
@@ -126,6 +181,10 @@ public:
 	// or at least one call to promote_sub_database_to_whitelist() is used
 	// (even if that sub database fails to prepare()).
 	void promote_sub_database_to_whitelist(unsigned index);
+
+	// Optional before prepare(). Indexing matches get_sub_database (0 for a single DB).
+	void set_input_required(unsigned index, bool required);
+	DatabasePreparationReport get_preparation_report() const;
 
 	// Prepares the database. It can load in the off-line archive from disk.
 	virtual bool prepare() = 0;
@@ -216,6 +275,7 @@ public:
 
 protected:
 	bool test_resource_filter(ResourceTag tag, Hash hash) const;
+	void observe_discovered(ResourceTag tag, Hash hash);
 	bool add_to_implicit_whitelist(DatabaseInterface &iface);
 
 	struct Impl;

@@ -815,3 +815,64 @@ bytes, valid negotiation and exact first legacy hashes. The portable
 production CLI stdin slave path and checks native exit status and HELLO/FINAL
 presence. These checks remain active in Release; an empty stdin is an explicit
 legacy control rather than an incomplete offer claim.
+
+
+## Database discovery and replay selection (issue #20)
+
+`database-discovery-{empty,truncated-zero,prefix,inputs,errors,filters,metadata}`
+exercise the actual stream scanner, concurrent inputs and same-commit OS metadata.
+The new nonvirtual `get_preparation_report()` returns an owned snapshot; serialize
+prepare and policy mutations as for existing database operations. Unknown/custom
+backends have unknown discovery. Legacy `bool prepare()` retains readable-prefix
+salvage and tolerant concurrent/capture behavior; it does not certify completeness.
+Reports default to required requested inputs independently of that legacy bool;
+optional inputs must be explicitly declared. Input policy uses existing subdatabase indices (primary 0, extras 1 onwards, even
+without a primary). Keys are deduplicated by tag/hash, with exclusions retained
+before filtering. No unread total is inferred from retained keys. Header/payload
+truncation names the retained byte boundary; read/seek errors and cancellation
+remain failed discovery. Linux deterministic I/O adapters are private test link
+wrappers, not shipping injection controls.
+
+`replay-selection-{filters,ranges,prefix-policy,hints}` includes production replay
+and observes the typed report used by real dispatch. Ranges are half-open over
+sorted filtered hashes; the existing clamping policy sets end=min(requested end,
+count), begin=min(requested begin,end). Hints retain the prehint indices used by
+robust recovery and are separately excluded under the replay-v1/device-mode/UUID
+policy. Explicitly harvested fragments only hint previous successful API creation;
+they prove no physical compilation, driver cache hit or persistence.
+
+`replay-discovery-cli-*` executes real null-device normal, direct slave, master and
+progress processes with one/four threads. Every explicit source is required by
+default. `--accept-recovered-prefix` accepts only the named retained prefix of an
+opened truncated source; original discovery and unread totals remain incomplete
+and unknown. It cannot accept an unreadable/missing required source or incomplete
+filter database. `--optional-database-index N` declares a zero-based source input
+optional; unavailable optional inputs retain their identity and unknown excluded
+scope. Filter/hash/range/hint exclusions never become execution successes or
+failures. These narrow policies are forwarded through ExternalReplayer's additive
+setter, both launchers and exact-commit metadata. Options and shared-progress
+layouts, worker reason frames and legacy messages remain unchanged. Direct-child
+whitelist selection retains its existing unsupported boundary; controller-imported
+filtered metadata is exercised instead. Required incomplete discovery now returns
+nonzero before empty-work shortcuts, including quiet/progress operation.
+
+Run the complete CPU CTest inventory in separate Linux Debug/Release and exceptions
+OFF/ON builds with CLI/layer/tests and SPIR-V validation ON, runtime layer OFF;
+repeat discovery/selection/CLI and existing event/timeout/fork cases three times.
+Run the planned scanner/selection/codec/parser/varint subset under ASan+UBSan.
+`database-discovery-old-header-compatibility` extracts actual input fd380aaf public
+headers before candidate includes and compiles/links/runs unchanged callers,
+including an old custom subclass. This is source/invocation compatibility evidence,
+not a general prebuilt C++ binary ABI or mixed-version private-metadata promise.
+
+The standalone `replay_discovery_cli.cmake` original-defect mode takes candidate
+GENERATOR/REPLAY and unchanged BASELINE_REPLAY: both intact-empty controls succeed,
+baseline E9 falsely succeeds and candidate E9 fails. `replay_discovery_controls.py
+--inventory` names all five exact source mutation families and assertion IDs.
+Mutate isolated candidate copies, publish separate configure/build commands, then
+use `--check-mutation` with the built runner. Each control requires an unaffected
+healthy zero exit and an ordinary exit 1 with the intended Release-active assertion;
+a compiler failure, crash or deadline is never sensitivity evidence. The harness
+records actual execution and limitations. Native Windows requires its own runner
+or explicit task-specific platform disposition; Linux checks do not establish
+Windows, GPU/driver or Steam behavior.
