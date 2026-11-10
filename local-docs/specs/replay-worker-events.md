@@ -127,8 +127,11 @@ blocked before the pipeline create call.
 `1 COUNTS 1 read parse create unsupported validation setup dependency` carries
 seven independent unsigned attempt-local observation counts at orderly shutdown.
 It is sent separately from sampled detail and before the unchanged FINAL record.
-A failing count cannot be erased by FINAL success. Counts overlap by design and
-are not a reconciled logical-item ledger across worker processes or retries.
+A failing count cannot be erased by FINAL success. Counts overlap by design. Cached static-parent failures retain one originating
+observation per source identity within the attempt; these are not counts of every
+repeated native static-create invocation. Dependent consumers are observed
+separately. These counts are not a reconciled logical-item ledger across worker
+processes or retries.
 Missing COUNTS leaves these counts unknown; missing FINAL retains uncertainty.
 The existing 16-event and four-prior-attempt retention limits still apply, with
 explicit omitted-event counts. Source resource caches hold operational failure
