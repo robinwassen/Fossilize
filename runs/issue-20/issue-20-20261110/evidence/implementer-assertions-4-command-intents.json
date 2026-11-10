@@ -1,0 +1,171 @@
+[
+  {
+    "intent_id": "i20-a4-source-check",
+    "child_command": [
+      "git",
+      "diff",
+      "--check",
+      "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+      "HEAD"
+    ],
+    "command": "git diff --check fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db HEAD",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+    "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/source-check-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-assertions-4/source-check.log"
+  },
+  {
+    "intent_id": "i20-a4-build-debug",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--parallel",
+      "4"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/cmake --build /tmp/fossilize-h20/build/implementer-1/debug-off --parallel 4",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+    "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/build-debug-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-assertions-4/build-debug.log"
+  },
+  {
+    "intent_id": "i20-a4-inventory-debug",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--show-only=json-v1"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --show-only=json-v1",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+    "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/inventory-debug-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-assertions-4/inventory-debug.log"
+  },
+  {
+    "intent_id": "i20-a4-focused-debug",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-assertions-4/focused-debug.xml"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --output-on-failure --no-tests=error -R '^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)' --output-junit /tmp/fossilize-h20/output/implementer-assertions-4/focused-debug.xml",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+    "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/focused-debug-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-assertions-4/focused-debug.log"
+  },
+  {
+    "intent_id": "i20-a4-full-debug",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-assertions-4/full-debug.xml"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --output-on-failure --no-tests=error --output-junit /tmp/fossilize-h20/output/implementer-assertions-4/full-debug.xml",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+    "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/full-debug-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-assertions-4/full-debug.log"
+  },
+  {
+    "intent_id": "i20-a4-build-release",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/implementer-1/release-off",
+      "--parallel",
+      "4",
+      "--target",
+      "database-discovery-test",
+      "replay-selection-test"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/cmake --build /tmp/fossilize-h20/build/implementer-1/release-off --parallel 4 --target database-discovery-test replay-selection-test",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+    "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/build-release-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-assertions-4/build-release.log"
+  },
+  {
+    "intent_id": "i20-a4-focused-release",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/release-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-assertions-4/focused-release.xml"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/release-off --output-on-failure --no-tests=error -R '^(database-discovery-(inputs|filters|metadata)$|replay-selection-(ranges|filters|prefix-policy|hints)$)' --output-junit /tmp/fossilize-h20/output/implementer-assertions-4/focused-release.xml",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+    "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/focused-release-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-assertions-4/focused-release.log"
+  },
+  {
+    "intent_id": "i20-a4-build-asan",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+      "--parallel",
+      "2",
+      "--target",
+      "database-discovery-test",
+      "replay-selection-test",
+      "replay-event-test",
+      "parser-input-test",
+      "varint-test"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/cmake --build /tmp/fossilize-h20/build/implementer-1/asan-ubsan --parallel 2 --target database-discovery-test replay-selection-test replay-event-test parser-input-test varint-test",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+    "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/build-asan-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-assertions-4/build-asan.log"
+  },
+  {
+    "intent_id": "i20-a4-run-asan",
+    "child_command": [
+      "env",
+      "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+      "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-assertions-4/asan.xml"
+    ],
+    "command": "env ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/asan-ubsan --output-on-failure --no-tests=error -R '^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)' --output-junit /tmp/fossilize-h20/output/implementer-assertions-4/asan.xml",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+    "receipt": "/tmp/fossilize-h20/output/implementer-assertions-4/run-asan-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-assertions-4/run-asan.log"
+  }
+]

@@ -1,0 +1,179 @@
+{
+  "input_candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+  "plan_version": 2,
+  "all_12_cases_reviewed_before_verification": true,
+  "audit": [
+    {
+      "case": "D20-empty-e9",
+      "planned_assertions": [
+        "Create and close a valid 16-byte magic-only FOZ; read it back through production StreamArchive: prepare succeeds, every resource set is empty, discovery is complete and total zero is known.",
+        "Create E9 by cutting the first name/header and separately the first payload after valid magic; legacy prepare still salvages, no retained entries, discovery incomplete, unread item total unknown rather than zero, reason and first unread byte offset known. A zero-length OS file is not the intact-empty fixture."
+      ],
+      "tests": [
+        "database-discovery-empty",
+        "database-discovery-truncated-zero"
+      ],
+      "assessment": "existing committed coverage preserved; not independently accepted",
+      "scope_review": "No source/test design change; existing assertions and healthy/negative controls preserved. Runtime evidence from prior candidates remains historical. Independent checker must renew all required gates, including all mutation controls."
+    },
+    {
+      "case": "D20-prefix-read",
+      "planned_assertions": [
+        "Write distinct checksum-protected known payloads, retain two whole entries and cut the next name/header or payload; metadata gives exact retained tag/hash union and prefix boundary, unknown unread total, and selected full-scope result unsuccessful.",
+        "Two-call read_entry yields exact intact payload bytes and hashes after prepare and after the report is queried. Preparation does not rewrite/truncate the input in ReadOnly mode. Full intact archive provides the successful control."
+      ],
+      "tests": [
+        "database-discovery-prefix"
+      ],
+      "assessment": "existing committed coverage preserved; not independently accepted",
+      "scope_review": "No source/test design change; existing assertions and healthy/negative controls preserved. Runtime evidence from prior candidates remains historical. Independent checker must renew all required gates, including all mutation controls."
+    },
+    {
+      "case": "D20-input-policy",
+      "planned_assertions": [
+        "Real concurrent database with valid, missing and invalid/unreadable inputs retains every requested path/index/policy after failed children are discarded; opened/discovered/failed/excluded identities and reasons are exact.",
+        "Default legacy composite prepare and tolerant capture append behavior stay compatible; an explicit required input prevents full required-scope satisfaction, while an explicitly optional unavailable input is an exclusion of unknown item count and is never a success or failure item.",
+        "Test both missing and unreadable/read-error paths deterministically: use a real absent file plus a private controlled file adapter for read/seek error, avoiding chmod-only permission assumptions when tests run as root. Known raw OS errors remain exact if available; format rejection has no invented errno.",
+        "Include primary base plus extras, no primary, duplicate paths, duplicate logical tag/hash across inputs and the same hash under different tags; input observations remain distinct while logical scope is a deduplicated tag/hash union."
+      ],
+      "tests": [
+        "database-discovery-inputs"
+      ],
+      "assessment": "assertion repair prepared",
+      "scope_review": "Exact primary/no-primary/duplicate input tables and unions; eight tiny composite opened-child seek/header-read/healthy required/optional rows, including zero errno and named optional selection exclusions."
+    },
+    {
+      "case": "D20-errors-unknown",
+      "planned_assertions": [
+        "Invalid/short magic, unsupported version, controlled failed seek/tell/header read and cancelled discovery are reason-bearing failed/incomplete states, not known empty success. All offsets/length calculations are checked with subtraction after bounds checks.",
+        "Unknown or uninstrumented backend preparation remains explicitly unknown; default custom DatabaseInterface subclass report must not invent complete discovery. A subsequent valid independent database succeeds."
+      ],
+      "tests": [
+        "database-discovery-errors"
+      ],
+      "assessment": "existing committed coverage preserved; not independently accepted",
+      "scope_review": "No source/test design change; existing assertions and healthy/negative controls preserved. Runtime evidence from prior candidates remains historical. Independent checker must renew all required gates, including all mutation controls."
+    },
+    {
+      "case": "D20-filter-scope",
+      "planned_assertions": [
+        "Real source FOZ plus real whitelist/blacklist and implicit whitelist subdatabases yield exact prefilter logical universe, effective masks, selected set and exclusions by named policy; preserve existing shader-empty-whitelist semantics and union/precedence behavior.",
+        "Observe filter exclusions at actual production scan/priming boundary before keys are discarded; do not infer an original universe from already-filtered get_hash_list results. Required missing/truncated filter input cannot silently become a known complete selection.",
+        "Omitted input, whitelist rejection and blacklist rejection are distinct from read/creation failure. Policy exclusions do not increment succeeded/failed counters."
+      ],
+      "tests": [
+        "database-discovery-filters",
+        "replay-selection-filters"
+      ],
+      "assessment": "assertion repair prepared",
+      "scope_review": "Exact independently known prefilter, filtered and replay-selected keys plus unique exclusion tuples for explicit mixed and implicit filters."
+    },
+    {
+      "case": "D20-range-scope",
+      "planned_assertions": [
+        "Table covers all three pipeline tags, default full interval, empty interval, exact bounds, partially and wholly out-of-bounds half-open ranges, start beyond end under the declared existing clamping policy, and explicit hash selection including missing hashes.",
+        "Ranges use deterministic sorted filtered hash order and report requested interval, effective interval, exact selected tag/hash and excluded logical tag/hash sets. Duplicates are one logical item; same hash under another tag is separate.",
+        "Filter then range order is explicit; narrowing a range, choosing zero items or a present hash does not turn an unknown required unread tail into complete full-input discovery."
+      ],
+      "tests": [
+        "replay-selection-ranges"
+      ],
+      "assessment": "assertion repair prepared",
+      "scope_review": "Independently known exact selected, dispatch, range/hash excluded complements and uniqueness; three tags and all original clamping rows. Present-hash/nonzero-range unknown tail included."
+    },
+    {
+      "case": "D20-prefix-policy",
+      "planned_assertions": [
+        "Default full scope rejects recovered/truncated required input even if every discovered selected item succeeds or filters/ranges select no items.",
+        "Explicit accept-recovered-prefix names each opened input and retained byte boundary, selected known tag/hash union and exclusion policy; it can satisfy only that prefix selection while original discovery and unread total remain incomplete/unknown.",
+        "A missing/unreadable required input cannot be converted into an accepted recovered prefix; optional unknown inputs remain named input exclusions. No full-coverage percentage is inferred from a zero selected count."
+      ],
+      "tests": [
+        "replay-selection-prefix-policy"
+      ],
+      "assessment": "assertion repair prepared",
+      "scope_review": "Existing zero-range, explicit prefix, missing/optional and 24 composition controls retained. Added unknown required tail with present retained hash and nonzero range through typed helper plus actual run_normal_process."
+    },
+    {
+      "case": "D20-replay-hints",
+      "planned_assertions": [
+        "Create a known dependency-complete recorder fixture with all three pipeline kinds, run successful creation, teardown/reopen and explicitly harvest replay-v1 fragments using existing merge behavior; subsequent production dispatch suppresses exactly hinted tag/hash items.",
+        "Report exact hint exclusions and version/device/UUID namespace policy separately from whitelist/range exclusions, retain stable prehint indices required by robust resume, and record zero actual creation calls for hinted items and expected calls for unhinted items.",
+        "Legacy UUID-only, unknown namespace, unavailable optional hint DB and nonmatching device mode cannot become successful work or hide unknown discovery. Hints prove neither physical Vulkan compilation nor driver cache hit or durable persistence. Existing validation whitelist behavior stays independent."
+      ],
+      "tests": [
+        "replay-selection-hints"
+      ],
+      "assessment": "assertion repair prepared",
+      "scope_review": "All three harvested kind fixtures retained; each adds all-retained-hinted unknown-tail failure. Added two-item successful mixed hinted/unhinted run with exact dispatch/exclusions/calls and worker original index 1."
+    },
+    {
+      "case": "D20-metadata-transfer",
+      "planned_assertions": [
+        "Export/import the actual production OS metadata handle for intact, truncated-zero, prefix, missing optional and missing required composite inputs; reopened reports preserve paths/indexes, policy, scan state, unknown counts, prefix boundary, filtered/excluded sets and exact readable payloads.",
+        "Do not reconstruct complete discovery from imported hash-list length. Portable Windows named mapping and Linux FD mechanisms share semantic assertions; reject malformed/unsupported private metadata records with bounded size checks.",
+        "Private metadata is same-commit only; worker reason frames and SharedControlBlock fields/layout/version retain their existing meaning."
+      ],
+      "tests": [
+        "database-discovery-metadata"
+      ],
+      "assessment": "assertion repair prepared",
+      "scope_review": "Every DiscoveryInput scalar including filter compared across actual OS handles. Seven original-plus-mixed rows preserve whitelist-only, missing, zero/prefix and malformed mapping controls with independent exact key/policy sets."
+    },
+    {
+      "case": "D20-production-modes",
+      "planned_assertions": [
+        "Use real null-device CLI normal, direct slave, master and progress processes, one/four threads where supported; process watchdogs, isolated working dirs and actual exit statuses are the outcome oracle. Empty intact succeeds; full-scope truncated-zero/prefix and required missing/unreadable input return nonzero.",
+        "Explicit prefix acceptance succeeds for a valid prefix and names that scope in the structured in-process result exercised by the production fixture; default full discovery remains incomplete. Optional input policy succeeds only for remaining declared scope and retains unavailable-input exclusion.",
+        "Actual production selection/dispatch fixture observes the report returned by the helper used by shipping paths, plus parse/create call set, not a parallel toy model. Assertions inspect typed metadata without parsing human prose.",
+        "Master must check discovery before zero-worker shortcuts and before metadata export; progress forwards policy through ExternalReplayer; children importing metadata cannot erase required uncertainty. Direct-child whitelist selection remains the existing unsupported invocation boundary; test the supported controller-imported filtered metadata path instead.",
+        "Unsuccessful preparation cannot be erased by quiet/progress absence, all-hinted work, zero selected range or another successful input. No test-only flag/hook is installed in shipping CLI."
+      ],
+      "tests": [
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-selection"
+      ],
+      "assessment": "assertion repair prepared",
+      "scope_review": "All registered CLI process cases unchanged. New production-including typed cases assert status1/calls0/no completed work and exact retained boundary/input policy for narrowed/hash/all-hinted unknown tails."
+    },
+    {
+      "case": "D20-compatibility",
+      "planned_assertions": [
+        "Extract actual input headers from fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db and put them before candidate includes; compile and link unchanged recorder/database/custom subclass and ExternalReplayer Options{} callers with candidate libraries, then execute valid/empty ordinary invocations.",
+        "No new pure virtual method or required override is imposed on old DatabaseInterface subclasses. Preserve legacy bool prepare salvage and tolerant composite behavior for existing library/capture callers while additive report/policy APIs describe limits.",
+        "Preserve original healthy CLI flags, metadata same-commit contract, worker #18 records and shared progress schema. Intentionally changed replay behavior is documented: required incomplete discovery now returns nonzero unless explicit recovered-prefix policy; binary ABI for arbitrary prebuilt C++ consumers and mixed-version private metadata are not claimed."
+      ],
+      "tests": [
+        "database-discovery-old-header-compatibility",
+        "replay-discovery-legacy-invocations",
+        "replay-event-old-header-compatibility",
+        "diagnostic-compatibility-test",
+        "replay-controller-cli-compatibility",
+        "replay-outcome-cli-compatibility"
+      ],
+      "assessment": "existing committed coverage preserved; not independently accepted",
+      "scope_review": "No source/test design change; existing assertions and healthy/negative controls preserved. Runtime evidence from prior candidates remains historical. Independent checker must renew all required gates, including all mutation controls."
+    },
+    {
+      "case": "D20-defect-sensitivity",
+      "planned_assertions": [
+        "Build unchanged input replay executable and run candidate-generated/readback-checked E9 fixture and valid empty control using old supported flags. Baseline empty succeeds; baseline E9 false-success exit zero is recorded by a baseline-compatible checker, while candidate E9 must be nonzero. Compile/deadline/crash failures are not defect reproduction.",
+        "In disposable candidate copies, mutate only (a) sliced-tail completeness to complete, (b) discard missing required input identity/policy or bypass full-scope gate, (c) unknown unread total to known zero, (d) filtered/ranged/hinted exclusion accounting, and (e) imported completeness propagation. Every mutation must build and fail a named explicit D20/M20 runtime assertion, with an appropriate unaffected healthy control still passing.",
+        "Controls cannot pass by expecting a compiler error from compiling new APIs against an old header; baseline behavior probe uses only old flags/API. Retain mutation patch, exact source/candidate, compile status, expected assertion name and execution status."
+      ],
+      "tests": [
+        "replay-discovery-original-defect",
+        "database-discovery-sensitivity",
+        "replay-selection-sensitivity"
+      ],
+      "assessment": "existing committed coverage preserved; not independently accepted",
+      "scope_review": "No source/test design change; existing assertions and healthy/negative controls preserved. Runtime evidence from prior candidates remains historical. Independent checker must renew all required gates, including all mutation controls."
+    }
+  ],
+  "changelog_assessment": "Existing committed #20 entry remains accurate: assertion repair changes evidence and adds no claimed shipping behavior; retained unchanged.",
+  "verification_status": "NOT RUN for this repair at audit creation"
+}

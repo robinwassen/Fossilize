@@ -1,0 +1,35 @@
+{
+  "failed_candidate_sha": "e9dc5dc44ce8f304e1ae6960299a1036385c7a71",
+  "corrected_candidate_sha": "679085c45ff02af180739bb578691b31b2537720",
+  "failed_intent": "i20-a4-focused-debug",
+  "exit_code": 8,
+  "actual_tests": 7,
+  "passed": 5,
+  "failed": [
+    "database-discovery-inputs",
+    "replay-selection-hints"
+  ],
+  "failures": [
+    "D20/default-complete-input-table/row-2",
+    "D20/primary-complete-input-table/row-3",
+    "D20/optional-complete-input-table/row-2",
+    "D20/mixed-hints-actual-unhinted-creation-original-index-one"
+  ],
+  "classification": "Test oracle assumptions corrected, no observed product failure established.",
+  "evidence": [
+    {
+      "source": "fossilize_db.cpp:1514",
+      "fact": "After successful open, boundary_known is true even if magic subsequently fails. Expected opened invalid three-byte input now has known boundary zero."
+    },
+    {
+      "source": "cli/fossilize_replay.cpp:1388",
+      "fact": "Worker current_compute_index is zero-based item index plus one; exact original item index one assertion remains current_compute_index two."
+    },
+    {
+      "source": "cli/fossilize_replay.cpp:1876",
+      "fact": "Worker current pipeline hash intentionally clears after creation. Postrun exact hash zero plus private API-call observer now verifies actual(compute,0x202,original index1) tuple."
+    }
+  ],
+  "preservation": "All five mutation markers unchanged; original whitelist-only metadata row retained plus seventh mixed whitelist/blacklist row; all prior healthy/negative controls retained.",
+  "scope": "Same final bounded implementer attempt4; no replan or acceptance change."
+}
