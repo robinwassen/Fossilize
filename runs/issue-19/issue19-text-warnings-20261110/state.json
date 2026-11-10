@@ -87,7 +87,14 @@
       "fallback_reason": null,
       "input_revision": 176,
       "input_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
-      "observations": [],
+      "observations": [
+        {
+          "attempt_id": "text-checker-final-1",
+          "liveness": "terminated",
+          "next_action": "After explicit user-authorized budget extension, dispatch a replacement fresh independent final checker at the unchanged exact accepted unit candidate.",
+          "observation": "The user-facing session was interrupted after dispatch177 and acknowledgement178. Fresh collaboration.list_agents returns only /root; the former final-checker worker no longer exists. Process inventory confirms old coordinator absent. No final-checker command requests, verification receipts or final report exist. No final verification or acceptance is inferred."
+        }
+      ],
       "operation": "final",
       "plan_version": 1,
       "requested": {
@@ -96,7 +103,7 @@
       },
       "role": "checker",
       "started": 1794329907.6159775,
-      "status": "running",
+      "status": "terminated",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/19",
       "worker_id": "/root/issue19_text_checker_final"
     }
@@ -4588,17 +4595,20 @@
       }
     ],
     "deadline": 1794338436.0075197,
-    "exhausted": false,
+    "exhausted": true,
     "extensions": [],
     "implementation_counts": {
       "https://github.com/robinwassen/Fossilize/issues/19": 1
     },
     "repairs": 3,
     "replan_count": 0,
-    "replans": 1
+    "replans": 1,
+    "resume_next_action": "After explicit user-authorized budget extension, dispatch a replacement fresh independent final checker at the unchanged exact accepted unit candidate.",
+    "resume_operation": "final",
+    "resume_status": "ready"
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "final",
+  "next_action": "request explicit user budget extension: run deadline exhausted; then After explicit user-authorized budget extension, dispatch a replacement fresh independent final checker at the unchanged exact accepted unit candidate.",
+  "operation": "budget",
   "original": [
     {
       "id": "AC1",
@@ -5612,7 +5622,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 178,
+  "revision": 179,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
@@ -5622,7 +5632,7 @@
   },
   "run_id": "issue19-text-warnings-20261110",
   "schema_version": 3,
-  "status": "running",
+  "status": "awaiting_decision",
   "task_key": "issue-19",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/19",
   "verification": [
