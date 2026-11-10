@@ -1,0 +1,1449 @@
+{
+  "artifacts": {
+    "cli_text_samples": "/tmp/fossilize-h19/build/debug-exceptions-off/test/replay-warning-cli-worker/{support,dependency}-{loud,quiet}.stderr; cli-{normal,slave,master}.stderr",
+    "root": "/tmp/fossilize-h19-text/output/implementer",
+    "sensitivity": "/tmp/fossilize-h19-text/output/implementer/sensitivity",
+    "strict_sensitivity": "/tmp/fossilize-h19-text/output/implementer/text-i6-strict-sensitivity.log"
+  },
+  "attempt_id": "text-implementer-1",
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "candidate_attestation": "/tmp/fossilize-h19-text/output/implementer/candidate-attestation.json",
+  "candidate_sha": null,
+  "commands": [
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "git",
+        "diff",
+        "--check",
+        "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+        "HEAD"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-source-diff-check",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-source-diff-check.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-source-diff-check.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/home/robin/.codex/worktrees/1471/fossilize",
+        "-B",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-debug-off-configure",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-off-configure.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-off-configure.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-debug-off-build",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-off-build.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-off-build.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-debug-off-inventory",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-off-inventory.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-off-inventory.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^replay-warning-"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-debug-off-warning-tests",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-off-warning-tests.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-off-warning-tests.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-debug-off-full",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-off-full.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-off-full.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/home/robin/.codex/worktrees/1471/fossilize",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-B",
+        "/tmp/fossilize-h19/build/debug-exceptions-on",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-debug-on-configure",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-on-configure.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-on-configure.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/debug-exceptions-on",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-debug-on-build",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-on-build.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-on-build.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-on",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-debug-on-inventory",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-on-inventory.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-on-inventory.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-debug-on-full",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-on-full.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-debug-on-full.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/home/robin/.codex/worktrees/1471/fossilize",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-B",
+        "/tmp/fossilize-h19/build/release-exceptions-off",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-release-off-configure",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-off-configure.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-off-configure.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/release-exceptions-off",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-release-off-build",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-off-build.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-off-build.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-off",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-release-off-inventory",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-off-inventory.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-off-inventory.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-release-off-full",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-off-full.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-off-full.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/home/robin/.codex/worktrees/1471/fossilize",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-B",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-release-on-configure",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-on-configure.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-on-configure.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-release-on-build",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-on-build.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-on-build.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--show-only=json-v1"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-release-on-inventory",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-on-inventory.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-on-inventory.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/release-exceptions-on",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-release-on-full",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-on-full.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-release-on-full.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "-S",
+        "/home/robin/.codex/worktrees/1471/fossilize",
+        "-G",
+        "Ninja",
+        "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+        "-DFOSSILIZE_TESTS=ON",
+        "-DFOSSILIZE_CLI=ON",
+        "-DFOSSILIZE_VULKAN_LAYER=ON",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+        "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+        "-B",
+        "/tmp/fossilize-h19/build/asan-ubsan",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+        "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+        "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer",
+        "-DCMAKE_C_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer",
+        "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined",
+        "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=address,undefined"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-asan-configure",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-asan-configure.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-asan-configure.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h19/build/asan-ubsan",
+        "--parallel",
+        "4",
+        "--target",
+        "replay-support-test",
+        "replay-support-dependency-test",
+        "replay-event-test",
+        "replay-event-producer-test",
+        "parser-input-test",
+        "varint-test",
+        "replay-warning-test"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-asan-build",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-asan-build.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-asan-build.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/asan-ubsan",
+        "--output-on-failure",
+        "--no-tests=error",
+        "-R",
+        "^(replay-warning-(same-cause|grouping|overflow|dependencies|concurrency|lifecycle|legacy-controls)$|replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-asan-tests",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-asan-tests.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-asan-tests.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+        "--test-dir",
+        "/tmp/fossilize-h19/build/debug-exceptions-off",
+        "--output-on-failure",
+        "--no-tests=error",
+        "--repeat",
+        "until-fail:3",
+        "-R",
+        "^(replay-warning-concurrency|replay-warning-cli-worker|replay-support-call-scope|replay-dependency-module-fanout|replay-dependency-parent-fanout|replay-support-worker-details|replay-dependency-worker-details|replay-support-bounded)$"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-repeat",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-repeat.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-repeat.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-I/home/robin/.codex/worktrees/1471/fossilize",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/rapidjson/include",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/khronos",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/miniz",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli/volk",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli/SPIRV-Tools/include",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli/SPIRV-Headers/include/spirv/unified1",
+        "/tmp/fossilize-h19-text/output/implementer/sensitivity/support/fossilize_feature_filter.cpp",
+        "/home/robin/.codex/worktrees/1471/fossilize/test/replay_support_test.cpp",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libcli-utils.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libvolk.a",
+        "-pthread",
+        "-ldl",
+        "-o",
+        "/tmp/fossilize-h19-text/output/implementer/sensitivity/support/mutant"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-sensitivity-support-build",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-support-build.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-support-build.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL",
+        "-I/home/robin/.codex/worktrees/1471/fossilize",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/rapidjson/include",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/khronos",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/miniz",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli/volk",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli/SPIRV-Tools/include",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli/SPIRV-Headers/include/spirv/unified1",
+        "/tmp/fossilize-h19-text/output/implementer/sensitivity/dependency/replay_support_dependency_test.cpp",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libfossilize.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libcli-utils.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/SPIRV-Tools/source/libSPIRV-Tools.a",
+        "-pthread",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libminiz.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libvolk.a",
+        "-ldl",
+        "-lrt",
+        "-o",
+        "/tmp/fossilize-h19-text/output/implementer/sensitivity/dependency/mutant"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-sensitivity-dependency-build",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-dependency-build.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-dependency-build.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-g",
+        "-fno-exceptions",
+        "-DFOSSILIZE_REPLAYER_SPIRV_VAL",
+        "-I/home/robin/.codex/worktrees/1471/fossilize",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/rapidjson/include",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/khronos",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/miniz",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli/volk",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli/SPIRV-Tools/include",
+        "-I/home/robin/.codex/worktrees/1471/fossilize/cli/SPIRV-Headers/include/spirv/unified1",
+        "/tmp/fossilize-h19-text/output/implementer/sensitivity/text/replay_warning_test.cpp",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libfossilize.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libcli-utils.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/SPIRV-Tools/source/libSPIRV-Tools.a",
+        "-pthread",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/libminiz.a",
+        "/tmp/fossilize-h19/build/debug-exceptions-off/cli/libvolk.a",
+        "-ldl",
+        "-lrt",
+        "-o",
+        "/tmp/fossilize-h19-text/output/implementer/sensitivity/text/mutant"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-sensitivity-text-build",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-text-build.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-text-build.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 1,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/usr/bin/env",
+        "--chdir=/tmp/fossilize-h19-text/output/implementer/sensitivity/support/run",
+        "/tmp/fossilize-h19-text/output/implementer/sensitivity/support/mutant",
+        "compute"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 1,
+      "intent_id": "text-i6-sensitivity-support-run",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-support-run.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-support-run.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 1,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/usr/bin/env",
+        "--chdir=/tmp/fossilize-h19-text/output/implementer/sensitivity/dependency/run",
+        "/tmp/fossilize-h19-text/output/implementer/sensitivity/dependency/mutant",
+        "module-fanout"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 1,
+      "intent_id": "text-i6-sensitivity-dependency-run",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-dependency-run.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-dependency-run.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 1,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "/usr/bin/env",
+        "--chdir=/tmp/fossilize-h19-text/output/implementer/sensitivity/text/run",
+        "/tmp/fossilize-h19-text/output/implementer/sensitivity/text/mutant",
+        "same-cause"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 1,
+      "intent_id": "text-i6-sensitivity-text-run",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-text-run.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-sensitivity-text-run.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-h19-text/strict_sensitivity.py"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-strict-sensitivity",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-strict-sensitivity.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-strict-sensitivity.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    },
+    {
+      "actual_exit": 0,
+      "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+      "child_command": [
+        "python3",
+        "/tmp/fossilize-h19-text/verify_candidate.py"
+      ],
+      "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+      "expected_exit": 0,
+      "intent_id": "text-i6-candidate-attestation",
+      "log": "/tmp/fossilize-h19-text/output/implementer/text-i6-candidate-attestation.log",
+      "measured_wait_seconds": 0.0,
+      "receipt": "/tmp/fossilize-h19-text/output/implementer/text-i6-candidate-attestation.receipt.json",
+      "timed_out": false,
+      "timeout_seconds": 600.0
+    }
+  ],
+  "compatibility": "No public virtual/layout/support policy/structured schema or outcome-count change; bool and non-replay diagnostics preserved. Detailed identifiers now escape controls/backslashes and mark truncation.",
+  "compiler": {
+    "id": "GNU",
+    "path": "/usr/bin/c++",
+    "version": "13.3.0"
+  },
+  "controls": [
+    {
+      "commands": [
+        "text-i6-sensitivity-support-build",
+        "text-i6-sensitivity-support-run"
+      ],
+      "expected_assertion": "FAIL M19/exact-identifier/descriptorBuffer",
+      "kind": "lost support detail",
+      "source_diff": "/tmp/fossilize-h19-text/output/implementer/sensitivity/support/mutation.diff",
+      "status": "compiled exit0; oracle exit1 with exact intended assertion; candidate control exit0; strict aggregate verifier exit0"
+    },
+    {
+      "commands": [
+        "text-i6-sensitivity-dependency-build",
+        "text-i6-sensitivity-dependency-run"
+      ],
+      "expected_assertion": "FAIL M19/original-parent-tag-and-hash-before-remapping/invalid-module/lazy",
+      "kind": "lost source parent identity",
+      "source_diff": "/tmp/fossilize-h19-text/output/implementer/sensitivity/dependency/mutation.diff",
+      "status": "compiled exit0; oracle exit1 with exact intended assertion; candidate control exit0; strict aggregate verifier exit0"
+    },
+    {
+      "commands": [
+        "text-i6-sensitivity-text-build",
+        "text-i6-sensitivity-text-run"
+      ],
+      "expected_assertion": "FAIL M19/text-output-byte-bound",
+      "kind": "restored unbounded production warning",
+      "source_diff": "/tmp/fossilize-h19-text/output/implementer/sensitivity/text/mutation.diff",
+      "status": "compiled exit0; oracle exit1 with exact intended assertion; candidate control exit0; strict aggregate verifier exit0"
+    }
+  ],
+  "discovered_ids": [
+    "application-info-filter-test",
+    "capture-diagnostic-binary-compute-reject",
+    "capture-diagnostic-binary-compute-success",
+    "capture-diagnostic-binary-compute-vulkan-error",
+    "capture-diagnostic-binary-graphics-reject",
+    "capture-diagnostic-binary-graphics-success",
+    "capture-diagnostic-binary-graphics-vulkan-error",
+    "capture-diagnostic-binary-raytracing-reject",
+    "capture-diagnostic-binary-raytracing-success",
+    "capture-diagnostic-binary-raytracing-vulkan-error",
+    "capture-diagnostic-eager-compute-reject",
+    "capture-diagnostic-eager-compute-success",
+    "capture-diagnostic-eager-compute-vulkan-error",
+    "capture-diagnostic-eager-graphics-reject",
+    "capture-diagnostic-eager-graphics-success",
+    "capture-diagnostic-eager-graphics-vulkan-error",
+    "capture-diagnostic-eager-raytracing-reject",
+    "capture-diagnostic-eager-raytracing-success",
+    "capture-diagnostic-eager-raytracing-vulkan-error",
+    "capture-diagnostic-normal-compute-reject",
+    "capture-diagnostic-normal-compute-success",
+    "capture-diagnostic-normal-compute-vulkan-error",
+    "capture-diagnostic-normal-graphics-reject",
+    "capture-diagnostic-normal-graphics-success",
+    "capture-diagnostic-normal-graphics-vulkan-error",
+    "capture-diagnostic-normal-raytracing-reject",
+    "capture-diagnostic-normal-raytracing-success",
+    "capture-diagnostic-normal-raytracing-vulkan-error",
+    "capture-diagnostic-paranoid-compute-reject",
+    "capture-diagnostic-paranoid-compute-success",
+    "capture-diagnostic-paranoid-compute-vulkan-error",
+    "capture-diagnostic-paranoid-graphics-reject",
+    "capture-diagnostic-paranoid-graphics-success",
+    "capture-diagnostic-paranoid-graphics-vulkan-error",
+    "capture-diagnostic-paranoid-raytracing-reject",
+    "capture-diagnostic-paranoid-raytracing-success",
+    "capture-diagnostic-paranoid-raytracing-vulkan-error",
+    "capture-diagnostic-qa-compute-reject",
+    "capture-diagnostic-qa-compute-success",
+    "capture-diagnostic-qa-compute-vulkan-error",
+    "capture-diagnostic-qa-graphics-reject",
+    "capture-diagnostic-qa-graphics-success",
+    "capture-diagnostic-qa-graphics-vulkan-error",
+    "capture-diagnostic-qa-raytracing-reject",
+    "capture-diagnostic-qa-raytracing-success",
+    "capture-diagnostic-qa-raytracing-vulkan-error",
+    "device-diagnostic-test",
+    "diagnostic-compatibility-test",
+    "feature-filter-test",
+    "file-helper-buffer-close",
+    "file-helper-buffer-dev-full",
+    "file-helper-buffer-filesystem",
+    "file-helper-buffer-first-error",
+    "file-helper-buffer-flush",
+    "file-helper-buffer-open",
+    "file-helper-buffer-short-write",
+    "file-helper-buffer-success",
+    "file-helper-legacy-compatibility",
+    "file-helper-legacy-completion",
+    "file-helper-string-close",
+    "file-helper-string-dev-full",
+    "file-helper-string-filesystem",
+    "file-helper-string-first-error",
+    "file-helper-string-flush",
+    "file-helper-string-open",
+    "file-helper-string-short-write",
+    "file-helper-string-success",
+    "fork-child-healthy",
+    "fork-child-healthy-recovery",
+    "fork-child-initial-first-sigmask",
+    "fork-child-initial-first-stdin-dup2",
+    "fork-child-initial-first-stdout-dup2",
+    "fork-child-initial-last-sigmask",
+    "fork-child-initial-last-stdin-dup2",
+    "fork-child-initial-last-stdout-dup2",
+    "fork-child-parent-death",
+    "fork-child-parent-race",
+    "fork-child-prctl-failure",
+    "fork-child-recovery-sigmask",
+    "fork-child-recovery-stdin-dup2",
+    "fork-child-recovery-stdout-dup2",
+    "fossilize-system-test",
+    "linux-futex-test",
+    "object-cache-test",
+    "parser-input-containers",
+    "parser-input-containment",
+    "parser-input-diagnostics",
+    "parser-input-envelope",
+    "parser-input-link",
+    "parser-input-mutations",
+    "parser-input-shader",
+    "parser-input-valid",
+    "replay-cache-compile-required",
+    "replay-cache-creation-rerun",
+    "replay-cache-legacy-invocation",
+    "replay-cache-legacy-provenance",
+    "replay-cache-loop",
+    "replay-cache-null-provenance",
+    "replay-cache-success-policy",
+    "replay-cache-whitelist",
+    "replay-cache-write-failure",
+    "replay-controller-clean",
+    "replay-controller-cli-compatibility",
+    "replay-controller-cli-e5",
+    "replay-controller-cli-e6",
+    "replay-controller-cli-master",
+    "replay-controller-cli-normal",
+    "replay-controller-cli-parser-child",
+    "replay-controller-cli-parser-normal",
+    "replay-controller-cli-progress",
+    "replay-controller-empty-archive",
+    "replay-controller-held-sibling",
+    "replay-controller-loss-after-retry",
+    "replay-controller-lost",
+    "replay-controller-lost-progress",
+    "replay-controller-mixed-loss-first",
+    "replay-controller-mixed-success-first",
+    "replay-controller-outcome-state",
+    "replay-controller-partial",
+    "replay-controller-recover",
+    "replay-controller-signal",
+    "replay-controller-skip-compute",
+    "replay-controller-skip-compute-final",
+    "replay-controller-skip-graphics",
+    "replay-controller-skip-graphics-final",
+    "replay-controller-skip-graphics-final-progress",
+    "replay-controller-skip-graphics-progress",
+    "replay-controller-skip-raytracing",
+    "replay-controller-skip-raytracing-final",
+    "replay-controller-status-error",
+    "replay-controller-zero",
+    "replay-dependency-common-cache",
+    "replay-dependency-module-fanout",
+    "replay-dependency-parent-fanout",
+    "replay-dependency-static",
+    "replay-dependency-worker-details",
+    "replay-diagnostic-test",
+    "replay-event-controller-abnormal-final",
+    "replay-event-controller-clean",
+    "replay-event-controller-creation",
+    "replay-event-controller-drop-hello",
+    "replay-event-controller-duplicate-final",
+    "replay-event-controller-empty",
+    "replay-event-controller-initial-parse",
+    "replay-event-controller-missing-final",
+    "replay-event-controller-missing-final-origin",
+    "replay-event-controller-oversized",
+    "replay-event-controller-parse",
+    "replay-event-controller-pre-report-death",
+    "replay-event-controller-progress",
+    "replay-event-controller-retry",
+    "replay-event-controller-startup-close",
+    "replay-event-controller-startup-hash-close",
+    "replay-event-controller-startup-input",
+    "replay-event-controller-timeout",
+    "replay-event-controller-truncated",
+    "replay-event-controller-truncated-length",
+    "replay-event-controller-truncated-newline",
+    "replay-event-controller-truncated-payload",
+    "replay-event-controller-truncated-prefix",
+    "replay-event-controller-unknown",
+    "replay-event-controller-unknown-version",
+    "replay-event-old-header-compatibility",
+    "replay-event-producer-creation",
+    "replay-event-producer-parse",
+    "replay-event-producer-timeout",
+    "replay-event-unit-attempts",
+    "replay-event-unit-legacy",
+    "replay-event-unit-malformed",
+    "replay-event-unit-mutations",
+    "replay-event-unit-negotiation",
+    "replay-event-unit-roundtrip",
+    "replay-event-unit-startup",
+    "replay-event-unit-streaming",
+    "replay-event-unit-unknown",
+    "replay-outcome-cli-compatibility",
+    "replay-outcome-cli-e7",
+    "replay-outcome-cli-empty",
+    "replay-outcome-cli-emptyhash",
+    "replay-outcome-cli-good",
+    "replay-outcome-cli-hashselection",
+    "replay-outcome-cli-library",
+    "replay-outcome-cli-missing",
+    "replay-outcome-cli-missinghash",
+    "replay-outcome-cli-mixed",
+    "replay-outcome-cli-selection",
+    "replay-outcome-cli-unsupported",
+    "replay-outcome-cli-unsupported-shader",
+    "replay-outcome-cli-validation",
+    "replay-outcome-cli-whitelist",
+    "replay-outcome-compile-required-loop",
+    "replay-outcome-controller-failure-first-absent",
+    "replay-outcome-controller-failure-first-progress",
+    "replay-outcome-controller-success-first-absent",
+    "replay-outcome-controller-success-first-progress",
+    "replay-outcome-creation",
+    "replay-outcome-entry-create",
+    "replay-outcome-entry-device",
+    "replay-outcome-entry-good",
+    "replay-outcome-entry-layout",
+    "replay-outcome-matrix",
+    "replay-outcome-parse-read",
+    "replay-outcome-setup-dependency",
+    "replay-outcome-state",
+    "replay-outcome-support",
+    "replay-outcome-validation",
+    "replay-outcome-worker-queue",
+    "replay-support-bounded",
+    "replay-support-call-scope",
+    "replay-support-categories",
+    "replay-support-compute",
+    "replay-support-graphics",
+    "replay-support-old-header-compatibility",
+    "replay-support-raytracing",
+    "replay-support-static",
+    "replay-support-worker-details",
+    "replay-timeout-controller-cancel-int",
+    "replay-timeout-controller-cancel-term",
+    "replay-timeout-controller-clean",
+    "replay-timeout-controller-cleanup",
+    "replay-timeout-controller-context-normal-1",
+    "replay-timeout-controller-context-normal-2",
+    "replay-timeout-controller-context-progress-1",
+    "replay-timeout-controller-context-progress-2",
+    "replay-timeout-controller-context-stall-1",
+    "replay-timeout-controller-context-stall-2",
+    "replay-timeout-controller-delivery-failure",
+    "replay-timeout-controller-dispatcher-disabled",
+    "replay-timeout-controller-dispatcher-reset",
+    "replay-timeout-controller-escalation",
+    "replay-timeout-controller-external-kill",
+    "replay-timeout-controller-heartbeat",
+    "replay-timeout-controller-heartbeat-reset",
+    "replay-timeout-controller-heartbeat-timer-arm-failure",
+    "replay-timeout-controller-heartbeat-timer-create-failure",
+    "replay-timeout-controller-heartbeat-timer-read-failure",
+    "replay-timeout-controller-heartbeat-timer-rearm-failure",
+    "replay-timeout-controller-heartbeat-timer-register-failure",
+    "replay-timeout-controller-kill-failure",
+    "replay-timeout-controller-multithread",
+    "replay-timeout-controller-no-progress",
+    "replay-timeout-controller-ordinary-delivery-failure",
+    "replay-timeout-controller-ordinary-no-progress",
+    "replay-timeout-controller-protocol",
+    "replay-timeout-controller-recovery",
+    "replay-timeout-controller-spontaneous",
+    "replay-timeout-controller-timer-arm-failure",
+    "replay-timeout-controller-timer-create-failure",
+    "replay-timeout-controller-timer-register-failure",
+    "replay-timeout-unit-deadlines",
+    "replay-timeout-unit-delivery",
+    "replay-timeout-unit-protocol",
+    "replay-timeout-unit-reset",
+    "replay-timeout-unit-unknown",
+    "replay-warning-cli-worker",
+    "replay-warning-concurrency",
+    "replay-warning-dependencies",
+    "replay-warning-grouping",
+    "replay-warning-legacy-controls",
+    "replay-warning-lifecycle",
+    "replay-warning-overflow",
+    "replay-warning-same-cause",
+    "utility-parse-list-dependency-failure",
+    "utility-parse-list-empty",
+    "utility-parse-list-empty-dependencies",
+    "utility-parse-list-invalid-json",
+    "utility-parse-list-legacy-invocations",
+    "utility-parse-list-mixed",
+    "utility-parse-list-populated",
+    "utility-parse-list-version",
+    "utility-parse-prune-empty",
+    "utility-parse-prune-invalid-json",
+    "utility-parse-prune-mixed",
+    "utility-parse-prune-populated",
+    "utility-parse-prune-rejected-application",
+    "utility-parse-prune-version",
+    "utility-parse-rehash-empty",
+    "utility-parse-rehash-invalid-json",
+    "utility-parse-rehash-mixed",
+    "utility-parse-rehash-populated",
+    "utility-parse-rehash-version",
+    "varint-system-test"
+  ],
+  "executed_ids": {
+    "asan_ubsan": [
+      "varint-system-test",
+      "parser-input-envelope",
+      "parser-input-containers",
+      "parser-input-shader",
+      "parser-input-link",
+      "parser-input-diagnostics",
+      "parser-input-valid",
+      "parser-input-mutations",
+      "parser-input-containment",
+      "replay-event-unit-roundtrip",
+      "replay-event-unit-unknown",
+      "replay-event-unit-streaming",
+      "replay-event-unit-malformed",
+      "replay-event-unit-negotiation",
+      "replay-event-unit-attempts",
+      "replay-event-unit-legacy",
+      "replay-event-unit-mutations",
+      "replay-event-unit-startup",
+      "replay-event-producer-parse",
+      "replay-event-producer-creation",
+      "replay-support-compute",
+      "replay-support-graphics",
+      "replay-support-raytracing",
+      "replay-support-static",
+      "replay-support-call-scope",
+      "replay-dependency-module-fanout",
+      "replay-dependency-parent-fanout",
+      "replay-dependency-common-cache",
+      "replay-dependency-static",
+      "replay-support-categories",
+      "replay-support-bounded",
+      "replay-warning-same-cause",
+      "replay-warning-grouping",
+      "replay-warning-overflow",
+      "replay-warning-dependencies",
+      "replay-warning-concurrency",
+      "replay-warning-lifecycle",
+      "replay-warning-legacy-controls"
+    ],
+    "each_of_four_full_configurations": "same 282 IDs as discovered_ids (exact sets checked by candidate attestation)",
+    "repeat_runs": {
+      "replay-dependency-module-fanout": 3,
+      "replay-dependency-parent-fanout": 3,
+      "replay-dependency-worker-details": 3,
+      "replay-support-bounded": 3,
+      "replay-support-call-scope": 3,
+      "replay-support-worker-details": 3,
+      "replay-warning-cli-worker": 3,
+      "replay-warning-concurrency": 3
+    }
+  },
+  "gate_results": {
+    "M19-asan-ubsan": {
+      "evidence": [
+        "text-i6-asan-configure",
+        "text-i6-asan-build",
+        "text-i6-asan-tests",
+        "text-i6-candidate-attestation"
+      ],
+      "instrumentation": "ASan+UBSan active for changed producer/parser/filter/aggregation code; no sanitizer diagnostics",
+      "selected_tests": 38,
+      "status": "passed"
+    },
+    "M19-concurrency": {
+      "evidence": [
+        "text-i6-repeat"
+      ],
+      "runs_each": 3,
+      "selected_tests": 8,
+      "status": "passed"
+    },
+    "M19-decisive-independent": {
+      "evidence": [
+        "text-i6-debug-off-full",
+        "text-i6-release-on-full"
+      ],
+      "implementer": "All decisive IDs executed in every full configuration; independent checker must execute its own gates."
+    },
+    "M19-linux-debug-off": {
+      "evidence": [
+        "text-i6-debug-off-configure",
+        "text-i6-debug-off-build",
+        "text-i6-debug-off-inventory",
+        "text-i6-debug-off-full"
+      ],
+      "status": "passed",
+      "tests": 282
+    },
+    "M19-linux-debug-on": {
+      "evidence": [
+        "text-i6-debug-on-configure",
+        "text-i6-debug-on-build",
+        "text-i6-debug-on-inventory",
+        "text-i6-debug-on-full"
+      ],
+      "status": "passed",
+      "tests": 282
+    },
+    "M19-linux-release-off": {
+      "evidence": [
+        "text-i6-release-off-configure",
+        "text-i6-release-off-build",
+        "text-i6-release-off-inventory",
+        "text-i6-release-off-full"
+      ],
+      "status": "passed",
+      "tests": 282
+    },
+    "M19-linux-release-on": {
+      "evidence": [
+        "text-i6-release-on-configure",
+        "text-i6-release-on-build",
+        "text-i6-release-on-inventory",
+        "text-i6-release-on-full"
+      ],
+      "status": "passed",
+      "tests": 282
+    },
+    "M19-sensitivity-controls": {
+      "build_exits": [
+        0,
+        0,
+        0
+      ],
+      "builds": 3,
+      "evidence": [
+        "text-i6-strict-sensitivity"
+      ],
+      "oracle_exits": [
+        1,
+        1,
+        1
+      ],
+      "status": "passed (defects detected by normal explicit assertion exits)"
+    },
+    "M19-source-review": {
+      "evidence": [
+        "text-i6-source-diff-check"
+      ],
+      "implementer": "Read current #19/#8, required guidance, original architecture/fixtures and delta; inventoried targeted bypasses, bounded grouping, finalization lock order, reentrant parser ownership, docs and changelog. Whole fd380..HEAD diff whitespace check passed; fresh independent review pending."
+    },
+    "M19-text-production": {
+      "evidence": [
+        "text-i6-debug-off-warning-tests",
+        "text-i6-debug-off-full",
+        "text-i6-release-on-full",
+        "text-i6-asan-tests",
+        "text-i6-repeat"
+      ],
+      "registered_warning_ids": 8,
+      "status": "passed"
+    }
+  },
+  "historical_nonfinal_checks": "Earlier i2/i3 failed suites and i4/i5 passing Debug suites remain in their original receipts/logs; no old-head pass counted for e5abfe8b. Unexecuted old intents stayed unused. All final30 command receipts are included above.",
+  "implementation": "Bounded ordinary support/dependency text through authoritative record_failure; 32 semantic groups, two examples/group and eight globally, exact per-resource attempt counts, saturation/overflow, bounded root context, scoped replay diagnostic replacement, producer drain and idempotent standalone/worker reporting.",
+  "implementation_notes": [
+    "Retained all14 original planned cases and8 registered real-prose runtime cases plus compiled text bypass control (23 planned cases total).",
+    "Groups use support kind/identifier/raw semantic identity and generic resource context, excluding hashes and varying requested/available values. Dependency grouping preserves status/category and bounded known support roots.",
+    "Finalization serializes competing finish calls and joins ordinary producers before reporting, including standalone no-event-writer failure and destructor paths. Signal/hard-exit paths do not finalize.",
+    "Private parser quiet capture respects independent public reentrant boundaries; actual callback regression verifies legacy nested diagnostics and restoration of owned replay suppression/replacement.",
+    "No global logging disable in warning runners; ordinary bool and non-replay parser output preserved, malformed/OOM/native failures remain distinct."
+  ],
+  "input_revision": 5,
+  "input_sha": "f49ad7ad99fbe33d858e5e0168fe56a3ef3ac8e4",
+  "limitations": [
+    "Native Windows explicitly user-waived and unverified.",
+    "CPU/Vulkan adapters only; no GPU, driver cache, persistence or Steam claim.",
+    "Warnings count attempt observations including repeats, not globally unique items; bounded64 source contexts leave later root support causes unknown.",
+    "Only ordinary shutdown flushes; hard exit/crash reports remain incomplete. Unrelated parser/validation/OOM/driver text is outside report cap."
+  ],
+  "matrix": {
+    "debug-exceptions-off": {
+      "discovered": 282,
+      "executed": 282,
+      "warnings": [
+        "replay-warning-cli-worker",
+        "replay-warning-concurrency",
+        "replay-warning-dependencies",
+        "replay-warning-grouping",
+        "replay-warning-legacy-controls",
+        "replay-warning-lifecycle",
+        "replay-warning-overflow",
+        "replay-warning-same-cause"
+      ]
+    },
+    "debug-exceptions-on": {
+      "discovered": 282,
+      "executed": 282,
+      "warnings": [
+        "replay-warning-cli-worker",
+        "replay-warning-concurrency",
+        "replay-warning-dependencies",
+        "replay-warning-grouping",
+        "replay-warning-legacy-controls",
+        "replay-warning-lifecycle",
+        "replay-warning-overflow",
+        "replay-warning-same-cause"
+      ]
+    },
+    "release-exceptions-off": {
+      "discovered": 282,
+      "executed": 282,
+      "warnings": [
+        "replay-warning-cli-worker",
+        "replay-warning-concurrency",
+        "replay-warning-dependencies",
+        "replay-warning-grouping",
+        "replay-warning-legacy-controls",
+        "replay-warning-lifecycle",
+        "replay-warning-overflow",
+        "replay-warning-same-cause"
+      ]
+    },
+    "release-exceptions-on": {
+      "discovered": 282,
+      "executed": 282,
+      "warnings": [
+        "replay-warning-cli-worker",
+        "replay-warning-concurrency",
+        "replay-warning-dependencies",
+        "replay-warning-grouping",
+        "replay-warning-legacy-controls",
+        "replay-warning-lifecycle",
+        "replay-warning-overflow",
+        "replay-warning-same-cause"
+      ]
+    }
+  },
+  "operation": "implement",
+  "original_assertion_adjustments": [
+    "Two original common-cache/static dependency prose assertions now require replacement parent=pipeline-layout:0000000000000102 examples while preserving no-common-cache advice and every category/graph/identity/zero-create check.",
+    "Original graph fixtures retain existing default behavior; optional Float64 capability fixture uses distinct valid generator metadata for warning-source tests."
+  ],
+  "plan_version": 1,
+  "prior_failures": [
+    {
+      "batch": "text-i2",
+      "candidate": "a4e78f5b830fc1db810b837171ee4bc3c50695be",
+      "command": "text-i2-debug-off-warning-tests",
+      "diagnosis": "Fixture setup chatter, reserved shader flags normalized by recorder, malformed legacy setup and preserved slave protocol stdout; corrected without suppressing targeted logs or dropping graph assertions.",
+      "exit_code": 8,
+      "failed_cases": 7
+    },
+    {
+      "batch": "text-i3",
+      "candidate": "2381ffb15e4bbd259872d843085afeea4d88da11",
+      "command": "text-i3-debug-off-warning-tests",
+      "diagnosis": "Fixture constructed an operational ScratchAllocator/Resolver on every failure; fixed to reuse production worker-style resolver while retaining strong allocation assertion.",
+      "exit_code": 8,
+      "failed_cases": 1
+    }
+  ],
+  "result_candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
+  "role": "implementer",
+  "skipped": [],
+  "source_changes": "Source/tests/docs/changelog delta committed through final e5abfe8b. Root owns all canonical artifacts/GitHub/PR operations; no source push, PR mutation, merge, harness state write or nested delegation performed.",
+  "test_mapping": [
+    {
+      "case_id": "M19-compute",
+      "ctest_ids": [
+        "replay-support-compute"
+      ]
+    },
+    {
+      "case_id": "M19-graphics",
+      "ctest_ids": [
+        "replay-support-graphics"
+      ]
+    },
+    {
+      "case_id": "M19-raytracing",
+      "ctest_ids": [
+        "replay-support-raytracing"
+      ]
+    },
+    {
+      "case_id": "M19-static",
+      "ctest_ids": [
+        "replay-support-static"
+      ]
+    },
+    {
+      "case_id": "M19-origin-categories",
+      "ctest_ids": [
+        "replay-support-categories"
+      ]
+    },
+    {
+      "case_id": "M19-module-fanout",
+      "ctest_ids": [
+        "replay-dependency-module-fanout"
+      ]
+    },
+    {
+      "case_id": "M19-parent-fanout",
+      "ctest_ids": [
+        "replay-dependency-parent-fanout"
+      ]
+    },
+    {
+      "case_id": "M19-common-cache",
+      "ctest_ids": [
+        "replay-dependency-common-cache"
+      ]
+    },
+    {
+      "case_id": "M19-static-dependencies",
+      "ctest_ids": [
+        "replay-dependency-static"
+      ]
+    },
+    {
+      "case_id": "M19-call-scope",
+      "ctest_ids": [
+        "replay-support-call-scope"
+      ]
+    },
+    {
+      "case_id": "M19-worker-details",
+      "ctest_ids": [
+        "replay-support-worker-details",
+        "replay-dependency-worker-details"
+      ]
+    },
+    {
+      "case_id": "M19-bounded-detail",
+      "ctest_ids": [
+        "replay-support-bounded"
+      ]
+    },
+    {
+      "case_id": "M19-old-callers",
+      "ctest_ids": [
+        "replay-support-old-header-compatibility",
+        "replay-event-old-header-compatibility"
+      ]
+    },
+    {
+      "case_id": "M19-sensitivity",
+      "compiled_controls": [
+        "text-i6-sensitivity-support-build",
+        "text-i6-sensitivity-support-run",
+        "text-i6-sensitivity-dependency-build",
+        "text-i6-sensitivity-dependency-run"
+      ],
+      "ctest_ids": [
+        "replay-support-compute",
+        "replay-dependency-module-fanout"
+      ]
+    },
+    {
+      "case_id": "M19-text-same-cause",
+      "ctest_ids": [
+        "replay-warning-same-cause"
+      ]
+    },
+    {
+      "case_id": "M19-text-grouping",
+      "ctest_ids": [
+        "replay-warning-grouping"
+      ]
+    },
+    {
+      "case_id": "M19-text-overflow",
+      "ctest_ids": [
+        "replay-warning-overflow"
+      ]
+    },
+    {
+      "case_id": "M19-text-dependencies",
+      "ctest_ids": [
+        "replay-warning-dependencies"
+      ]
+    },
+    {
+      "case_id": "M19-text-concurrency",
+      "ctest_ids": [
+        "replay-warning-concurrency"
+      ]
+    },
+    {
+      "case_id": "M19-text-lifecycle",
+      "ctest_ids": [
+        "replay-warning-lifecycle"
+      ]
+    },
+    {
+      "case_id": "M19-text-cli-worker",
+      "ctest_ids": [
+        "replay-warning-cli-worker"
+      ]
+    },
+    {
+      "case_id": "M19-text-legacy-controls",
+      "ctest_ids": [
+        "replay-warning-legacy-controls"
+      ]
+    },
+    {
+      "case_id": "M19-text-sensitivity",
+      "compiled_controls": [
+        "text-i6-sensitivity-text-build",
+        "text-i6-sensitivity-text-run"
+      ],
+      "ctest_ids": [
+        "replay-warning-same-cause"
+      ]
+    }
+  ],
+  "unavailable": [
+    "Native Windows user-waived and unverified; no mandatory Linux gate unavailable."
+  ],
+  "verification_performed": [
+    "Four complete nonempty Linux CPU inventories:282/282 passed each; no skipped current tests.",
+    "All8 normal-prose tests passed in Debug/Release, exceptions OFF/ON; focused Debug warning union also8/8.",
+    "ASan+UBSan38/38; selected concurrency/lifetime/worker/fanout cases8 IDs ran3 times each.",
+    "Three isolated compiled mutations built0 and failed their intended explicit assertions with normal exit1; unchanged registered controls passed; strict verifier passed0.",
+    "Candidate attestation checked exact source HEAD/cleanliness, all four source cache/options, full discovered/executed ID equality and effective sanitizer flags."
+  ],
+  "verification_status": "Implementer verification complete at clean exact candidate; independent checker acceptance pending.",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/19",
+  "worker_id": "/root/issue19_text_implementer"
+}
