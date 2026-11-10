@@ -3731,7 +3731,29 @@
         "log": "/tmp/fossilize-h19-text/output/checker-2/text-c2-repeat.log",
         "receipt": "/tmp/fossilize-h19-text/output/checker-2/text-c2-repeat.receipt.json",
         "started": 1794328716.0018375,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1794329394.7112424,
+          "command": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h19/build/debug-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "--repeat",
+            "until-fail:3",
+            "-R",
+            "^(replay-warning-concurrency|replay-warning-cli-worker|replay-support-call-scope|replay-dependency-module-fanout|replay-dependency-parent-fanout|replay-support-worker-details|replay-dependency-worker-details|replay-support-bounded)$"
+          ],
+          "cwd": "/tmp/fossilize-h19-text/checker-2",
+          "exit_code": 0,
+          "finished": 1794329395.676797,
+          "intent_id": "text-c2-repeat",
+          "started": 1794329394.7085013,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "candidate_sha": "e5abfe8b67660d7e7c96a9f7fc64b34ababe0d8d",
@@ -5256,7 +5278,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 159,
+  "revision": 160,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
