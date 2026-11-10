@@ -30,20 +30,24 @@ inline void retain_first(Detail &first, const Detail &next)
 }
 Detail *&slot();
 bool &boundary();
+bool &quiet_diagnostics();
 struct Capture
 {
 	Detail result;
 	Detail *previous;
 	bool previous_boundary;
-	explicit Capture(bool is_boundary = false) : previous(slot()), previous_boundary(boundary())
+	bool previous_quiet;
+	explicit Capture(bool is_boundary = false, bool quiet = false) : previous(slot()), previous_boundary(boundary()), previous_quiet(quiet_diagnostics())
 	{
 		slot() = &result;
 		boundary() = is_boundary;
+		quiet_diagnostics() = quiet || previous_quiet;
 	}
 	~Capture()
 	{
 		slot() = previous;
 		boundary() = previous_boundary;
+		quiet_diagnostics() = previous_quiet;
 	}
 };
 inline void detected(uint64_t tag, uint64_t hash, Status status)

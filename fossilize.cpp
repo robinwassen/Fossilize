@@ -90,6 +90,11 @@ Detail *&slot()
 	static thread_local Detail *value = nullptr;
 	return value;
 }
+bool &quiet_diagnostics()
+{
+	static thread_local bool value = false;
+	return value;
+}
 bool &boundary()
 {
 	static thread_local bool value = false;

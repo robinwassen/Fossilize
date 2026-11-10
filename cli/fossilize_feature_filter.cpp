@@ -1890,7 +1890,7 @@ bool FeatureFilter::Impl::pnext_chain_is_supported(const void *pNext) const
 			break;
 		}
 		default:
-			LOGE("Unrecognized pNext sType: %u. Treating as unsupported.\n", unsigned(base->sType));
+			if (!support_receiver) LOGE("Unrecognized pNext sType: %u. Treating as unsupported.\n", unsigned(base->sType));
 			return support_reject(SupportKind::UnknownSType, "sType", SupportDetail::Raw, 0, 0, uint64_t(base->sType));
 		}
 		pNext = base->pNext;
@@ -3878,7 +3878,7 @@ bool FeatureFilter::Impl::validate_module_capability(spv::Capability cap) const
 							  SupportDetail::Required | SupportDetail::Available | SupportDetail::Raw, 1, 0,
 							  uint64_t(cap));
 	default:
-		LOGE("Unrecognized SPIR-V capability %u, treating as unsupported.\n", unsigned(cap));
+		if (!support_receiver) LOGE("Unrecognized SPIR-V capability %u, treating as unsupported.\n", unsigned(cap));
 		return (false) || support_reject(SupportKind::Capability, capability_identifier(cap), SupportDetail::Raw, 0, 0,
 										 uint64_t(cap));
 	}
@@ -4164,14 +4164,14 @@ bool FeatureFilter::Impl::validate_module_capabilities(const uint32_t *data, siz
 	unsigned version = data[1];
 	if (version > 0x10600)
 	{
-		LOGE("SPIR-V version above 1.6 not recognized.\n");
+		if (!support_receiver) LOGE("SPIR-V version above 1.6 not recognized.\n");
 		return support_reject(SupportKind::Property, "spirvVersion", 3, version, 0x10600);
 	}
 	else if (version == 0x10600)
 	{
 		if (api_version < VK_API_VERSION_1_3)
 		{
-			LOGE("SPIR-V 1.6 is only supported in Vulkan 1.3 and up.\n");
+			if (!support_receiver) LOGE("SPIR-V 1.6 is only supported in Vulkan 1.3 and up.\n");
 			return support_reject(SupportKind::Property, "apiVersion", 3, VK_API_VERSION_1_3, api_version);
 		}
 	}
@@ -4179,7 +4179,7 @@ bool FeatureFilter::Impl::validate_module_capabilities(const uint32_t *data, siz
 	{
 		if (api_version < VK_API_VERSION_1_2)
 		{
-			LOGE("SPIR-V 1.5 is only supported in Vulkan 1.2 and up.\n");
+			if (!support_receiver) LOGE("SPIR-V 1.5 is only supported in Vulkan 1.2 and up.\n");
 			return support_reject(SupportKind::Property, "apiVersion", 3, VK_API_VERSION_1_2, api_version);
 		}
 	}
@@ -4187,7 +4187,7 @@ bool FeatureFilter::Impl::validate_module_capabilities(const uint32_t *data, siz
 	{
 		if (api_version < VK_API_VERSION_1_2 && enabled_extensions.count(VK_KHR_SPIRV_1_4_EXTENSION_NAME) == 0)
 		{
-			LOGE("Need VK_KHR_spirv_1_4 or Vulkan 1.2 for SPIR-V 1.4.\n");
+			if (!support_receiver) LOGE("Need VK_KHR_spirv_1_4 or Vulkan 1.2 for SPIR-V 1.4.\n");
 			return support_reject(SupportKind::Extension, VK_KHR_SPIRV_1_4_EXTENSION_NAME, 3, 1, 0);
 		}
 	}
@@ -4195,7 +4195,7 @@ bool FeatureFilter::Impl::validate_module_capabilities(const uint32_t *data, siz
 	{
 		if (api_version < VK_API_VERSION_1_1)
 		{
-			LOGE("Need Vulkan 1.1 for SPIR-V 1.3.\n");
+			if (!support_receiver) LOGE("Need Vulkan 1.1 for SPIR-V 1.3.\n");
 			return support_reject(SupportKind::Property, "apiVersion", 3, VK_API_VERSION_1_1, api_version);
 		}
 	}
@@ -4203,7 +4203,7 @@ bool FeatureFilter::Impl::validate_module_capabilities(const uint32_t *data, siz
 	{
 		if (api_version < VK_API_VERSION_1_1)
 		{
-			LOGE("Need Vulkan 1.1 for SPIR-V 1.1 or 1.2.\n");
+			if (!support_receiver) LOGE("Need Vulkan 1.1 for SPIR-V 1.1 or 1.2.\n");
 			return support_reject(SupportKind::Property, "apiVersion", 3, VK_API_VERSION_1_1, api_version);
 		}
 	}
@@ -4231,7 +4231,7 @@ bool FeatureFilter::Impl::validate_module_capabilities(const uint32_t *data, siz
 			}
 			if (!validate_module_capability(static_cast<spv::Capability>(data[offset + 1])))
 			{
-				LOGE("Capability %u is not supported on this device, ignoring shader module.\n", data[offset + 1]);
+				if (!support_receiver) LOGE("Capability %u is not supported on this device, ignoring shader module.\n", data[offset + 1]);
 				return false;
 			}
 		}
@@ -4245,7 +4245,7 @@ bool FeatureFilter::Impl::validate_module_capabilities(const uint32_t *data, siz
 			auto name = extract_string(&data[offset + 1], num_words - (offset + 1));
 			if (!validate_spirv_extension(name))
 			{
-				LOGE("SPIR-V extension %s is not supported on this device, ignoring shader module.\n",
+				if (!support_receiver) LOGE("SPIR-V extension %s is not supported on this device, ignoring shader module.\n",
 				     name.c_str());
 				return false;
 			}

@@ -849,3 +849,17 @@ assertion failures count as sensitivity evidence. Commands and recorded results
 are harness evidence; these procedures do not themselves establish a passing run.
 Native Windows verification is explicitly user-waived and remains unverified;
 these CPU fixtures make no GPU, driver-cache, Steam or persistence claim.
+
+Issue #19 ordinary warning tests register `replay-warning-{same-cause,grouping,
+overflow,dependencies,concurrency,lifecycle,legacy-controls,cli-worker}` with
+Release-active checks and normal CLI/core logging. They capture actual stderr
+from production setup, parser, recorded FOZ graphs and OS worker/controller
+paths; the existing prose-disabled pipe fixtures remain separate protocol tests.
+The fixed diagnostic collector retains 32 causes, two examples per cause subject
+to eight globally and 64 source contexts, with at most 42 report lines/32768 bytes.
+Tests distinguish exact attempt observations, overflow observations, saturated
+lower bounds and unknown unretained causes from unique item accounting. Run the
+complete four Linux CPU configurations, focused ASan+UBSan cases and repeated
+concurrency; compile isolated lost-support-detail, lost-parent-identity and restored
+per-object-warning mutations and require their precise assertion failures.
+Native Windows remains user-waived and unverified for this issue.

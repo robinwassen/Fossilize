@@ -150,3 +150,32 @@ compile/link/run checks describe the preserved source and bool behavior boundary
 not a general prebuilt C++ ABI guarantee.
 
 Dependency prose recommends a common cache only when an input resolver confirms that the referenced resource is absent. A missing handle-map entry alone is unresolved; a known null handle is failed. Present unreadable inputs retain read-failed status, and known originating parse/create failures remain attached to the parent.
+
+## Ordinary support/dependency text
+
+Ordinary replay retains at most 32 semantic warning causes per worker attempt,
+with two examples per cause subject to eight examples globally. Repeated hashes
+and differing requested limits coalesce by predicate; enum/capability/sType IDs
+and generic constraint resource contexts remain distinct. Each retained cause
+has fixed per-resource counters; an overflow counter counts additional replay
+observations, not distinct omitted causes. Counters saturate explicitly at
+`UINT64_MAX`, reporting lower bounds rather than wrapping. These are attempt
+observations (including repeats), independent of structured category counts and
+bounded event retention, never a global unique-item ledger.
+
+Collection uses fixed arrays and a mutex, without per-observation diagnostic
+allocation or output. Up to 64 source support contexts can explain blocked
+consumers; context not retained remains explicitly unknown. Source and parent
+hashes and known required/available values appear only in bounded examples.
+After producers drain, finalization emits one report of at most 42 warning lines
+and 32768 bytes: one header, 32 causes, eight examples and one overflow line.
+Finalization and destruction share an idempotent guard, including standalone
+replay without an event writer. Empty and success-only attempts emit no report.
+Quiet workers retain stderr suppression. Hard exit/crash handlers do not flush
+or certify completion; reporting is best effort on ordinary shutdown.
+
+Private replay dependency captures suppress only replaced missing/invalid-parent
+parser diagnostics. Detailed FeatureFilter calls suppress unsupported detector
+prose in favor of the report; bool-only callers preserve legacy diagnostics.
+Unrelated parse, validation, OOM and driver errors retain ordinary reporting;
+the bound applies to the support/dependency report, not all stderr.

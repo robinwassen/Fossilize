@@ -39,6 +39,7 @@
 #include "fossilize_errors.hpp"
 #include "util/object_cache.hpp"
 #include "replay_item_outcome.hpp"
+#include "replay_warnings.hpp"
 #include "replay_timeout.hpp"
 #include "replay_event.hpp"
 #include <functional>
@@ -654,6 +655,8 @@ PipelineResolver::resolve_ray_tracing_pipeline(VulkanDevice *device, const VkRay
 struct ThreadedReplayer : StateCreatorInterface
 {
 	ReplayItemOutcome outcome;
+	ReplayWarnings warnings;
+	bool events_finished = false;
 	std::function<bool(const char *)> event_writer;
 	std::mutex event_mutex;
 	uint64_t event_worker = 0, event_attempt = 0, emitted_events = 0, omitted_events = 0;
@@ -731,10 +734,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		e.phase = ReplayEvent::Dependency;
 		e.reason = ReplayEvent::Blocked;
 		e.parent = parent;
-		LOGW("Replay/dependency: consumer=%u:%016" PRIx64 " parent=%u:%016" PRIx64
-			 " status=%u category=%u omitted=%" PRIu64 ".\n",
-			 unsigned(tag), hash, unsigned(parent.tag), parent.hash, unsigned(parent.status), unsigned(parent.category),
-			 parent.omitted);
+
 		record_failure(ReplayFailure::Dependency, tag, hash, VK_SUCCESS, &e);
 	}
 	void record_unsupported(ResourceTag tag, Hash hash, const SupportDetail &detail)
@@ -743,10 +743,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		e.phase = ReplayEvent::Support;
 		e.reason = ReplayEvent::Unsupported;
 		e.support = detail;
-		LOGW("Replay/support: resource=%u:%016" PRIx64 " kind=%u identifier=%s known=%u required=%" PRIu64
-			 " available=%" PRIu64 " raw=%" PRIu64 ".\n",
-			 unsigned(tag), hash, unsigned(detail.kind), detail.identifier, unsigned(detail.known), detail.required,
-			 detail.available, detail.raw);
+
 		if (detail.kind == SupportKind::Malformed)
 		{
 			e = {};
@@ -770,7 +767,10 @@ struct ThreadedReplayer : StateCreatorInterface
 	}
 	void finish_events(int status)
 	{
+		warnings.finish(event_worker, event_attempt, [](const char *line) { LOGW("%s\n", line); });
 		std::lock_guard<std::mutex> hold(event_mutex);
+		if (events_finished) return;
+		events_finished = true;
 		if (!event_writer) return;
 		char payload[256], frame[ReplayEvent::MaxFrame];
 		auto counts = outcome.snapshot();
@@ -840,6 +840,11 @@ struct ThreadedReplayer : StateCreatorInterface
 				e.reason = reason == ReplayFailure::Parse ? ReplayEvent::GenericParse : ReplayEvent::CreationFailed; }
 			if (reason == ReplayFailure::Create) { e.known |= ReplayEvent::Raw; e.domain = ReplayEvent::Vulkan; e.raw = result; }
 			if (tag != RESOURCE_COUNT) { e.known |= ReplayEvent::HasTag | ReplayEvent::HasHash; e.tag = tag; e.hash = hash; }
+			if (reason == ReplayFailure::Unsupported || reason == ReplayFailure::Dependency)
+				{
+					get_per_thread_data().warning_generation++;
+					warnings.observe(reason, tag, hash, e.support, e.parent);
+				}
 			emit_event(e);
 		}
 	}
@@ -952,7 +957,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		bool force_outside_range = false;
 		bool triggered_validation_error = false;
 		bool creation_succeeded = true;
-		uint64_t failure_generation = 0;
+		uint64_t failure_generation = 0, warning_generation = 0;
 		ResourceTag active_tag = RESOURCE_COUNT;
 		Hash active_hash = 0;
 
@@ -1275,9 +1280,10 @@ struct ThreadedReplayer : StateCreatorInterface
 		per_thread.acknowledge_parsing_work = false;
 
 		uint64_t previous_failure = per_thread.failure_generation;
+		uint64_t previous_warning = per_thread.warning_generation;
 		bool parsed = true;
 		ReplayEvent::ParseCapture capture;
-		ReplayDependency::Capture dependencies;
+		ReplayDependency::Capture dependencies(false, true);
 		if (!replayer.parse(*this, global_database, buffer.data(), buffer.size()) ||
 		    !per_thread.acknowledge_parsing_work)
 		{
@@ -1295,6 +1301,7 @@ struct ThreadedReplayer : StateCreatorInterface
 			}
 			else if (per_thread.failure_generation == previous_failure)
 				record_failure(ReplayFailure::Parse, work_item.tag, work_item.hash, VK_SUCCESS, &capture.result);
+			if (!dependencies.result.hash && per_thread.warning_generation == previous_warning)
 			LOGW("Did not replay blob (tag: %d, hash: 0x%016" PRIx64 "). See previous logs for context.\n",
 			     work_item.tag, work_item.hash);
 
@@ -1542,7 +1549,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (!work_item.create_info.graphics_create_info)
 		{
-			LOGE("Invalid graphics create info.\n");
+			if (!resolver.failure_parent.hash) LOGE("Invalid graphics create info.\n");
 			if (resolver.failure_parent.hash)
 			{
 				auto parent = resolver.failure_parent;
@@ -1559,7 +1566,6 @@ struct ThreadedReplayer : StateCreatorInterface
 		    work_item.create_info.graphics_create_info->basePipelineHandle == VK_NULL_HANDLE)
 		{
 			// This pipeline failed for some reason, don't try to compile this one either.
-			LOGE("Invalid derivative pipeline!\n");
 			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			return false;
 		}
@@ -1569,7 +1575,6 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!device->get_feature_filter().graphics_pipeline_is_supported(work_item.create_info.graphics_create_info,
 																		 support))
 		{
-			LOGW("Graphics pipeline %016" PRIx64 " is not supported by current device, skipping.\n", work_item.hash);
 			record_unsupported(work_item.tag, work_item.hash, support);
 			return false;
 		}
@@ -1598,7 +1603,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (!work_item.create_info.compute_create_info)
 		{
-			LOGE("Invalid compute create info.\n");
+			if (!resolver.failure_parent.hash) LOGE("Invalid compute create info.\n");
 			if (resolver.failure_parent.hash)
 			{
 				auto parent = resolver.failure_parent;
@@ -1615,7 +1620,6 @@ struct ThreadedReplayer : StateCreatorInterface
 		    work_item.create_info.compute_create_info->basePipelineHandle == VK_NULL_HANDLE)
 		{
 			// This pipeline failed for some reason, don't try to compile this one either.
-			LOGE("Invalid derivative pipeline!\n");
 			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			return false;
 		}
@@ -1625,7 +1629,6 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!device->get_feature_filter().compute_pipeline_is_supported(work_item.create_info.compute_create_info,
 																		support))
 		{
-			LOGW("Compute pipeline %016" PRIx64 " is not supported by current device, skipping.\n", work_item.hash);
 			record_unsupported(work_item.tag, work_item.hash, support);
 			return false;
 		}
@@ -1652,7 +1655,7 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (!work_item.create_info.raytracing_create_info)
 		{
-			LOGE("Invalid raytracing create info.\n");
+			if (!resolver.failure_parent.hash) LOGE("Invalid raytracing create info.\n");
 			if (resolver.failure_parent.hash)
 			{
 				auto parent = resolver.failure_parent;
@@ -1669,7 +1672,6 @@ struct ThreadedReplayer : StateCreatorInterface
 		    work_item.create_info.raytracing_create_info->basePipelineHandle == VK_NULL_HANDLE)
 		{
 			// This pipeline failed for some reason, don't try to compile this one either.
-			LOGE("Invalid derivative pipeline!\n");
 			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			return false;
 		}
@@ -1681,7 +1683,6 @@ struct ThreadedReplayer : StateCreatorInterface
 			{
 				if (pLibraryInfo->pLibraries[i] == VK_NULL_HANDLE)
 				{
-					LOGE("Invalid library!\n");
 					record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 					return false;
 				}
@@ -1693,7 +1694,6 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!device->get_feature_filter().raytracing_pipeline_is_supported(work_item.create_info.raytracing_create_info,
 																		   support))
 		{
-			LOGW("Raytracing pipeline %016" PRIx64 " is not supported by current device, skipping.\n", work_item.hash);
 			record_unsupported(work_item.tag, work_item.hash, support);
 			return false;
 		}
@@ -2325,6 +2325,7 @@ struct ThreadedReplayer : StateCreatorInterface
 	~ThreadedReplayer()
 	{
 		tear_down_threads();
+		warnings.finish(event_worker, event_attempt, [](const char *line) { LOGW("%s\n", line); });
 		flush_pipeline_cache();
 		flush_validation_cache();
 
@@ -2649,7 +2650,6 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (!device->get_feature_filter().sampler_is_supported(create_info, support))
 		{
-			LOGW("Sampler %016" PRIx64 " is not supported. Skipping.\n", index);
 			record_unsupported(RESOURCE_SAMPLER, index, support);
 			return false;
 		}
@@ -2699,7 +2699,6 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (!device->get_feature_filter().descriptor_set_layout_is_supported(create_info, support))
 		{
-			LOGW("Descriptor set layout %016" PRIx64 " is not supported. Skipping.\n", index);
 			record_unsupported(RESOURCE_DESCRIPTOR_SET_LAYOUT, index, support);
 			return false;
 		}
@@ -2741,7 +2740,6 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (!device->get_feature_filter().pipeline_layout_is_supported(create_info, support))
 		{
-			LOGW("Pipeline layout %016" PRIx64 " is not supported. Skipping.\n", index);
 			record_unsupported(RESOURCE_PIPELINE_LAYOUT, index, support);
 			return false;
 		}
@@ -2783,7 +2781,6 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (!device->get_feature_filter().render_pass_is_supported(create_info, support))
 		{
-			LOGW("Render pass %016" PRIx64 " is not supported. Skipping.\n", index);
 			record_unsupported(RESOURCE_RENDER_PASS, index, support);
 			return false;
 		}
@@ -2826,7 +2823,6 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		if (!device->get_feature_filter().render_pass2_is_supported(create_info, support))
 		{
-			LOGW("Render pass (version 2) %016" PRIx64 " is not supported. Skipping.\n", index);
 			record_unsupported(RESOURCE_RENDER_PASS, index, support);
 			return false;
 		}
@@ -2957,7 +2953,6 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!device->get_feature_filter().shader_module_is_supported(create_info, support))
 		{
 			record_unsupported(RESOURCE_SHADER_MODULE, hash, support);
-			LOGW("Shader module %0" PRIx64 " is not supported on this device.\n", hash);
 			*module = VK_NULL_HANDLE;
 
 			lock_guard<mutex> lock(internal_enqueue_mutex);
@@ -4071,11 +4066,12 @@ struct ThreadedReplayer : StateCreatorInterface
 					                 }
 				                 }
 
-				                 // It might be possible that we couldn't resolve some dependencies, log this.
+				                 // Preserve progress bookkeeping for blocked derived work.
 				                 if (itr != begin(*derived))
 				                 {
 					                 auto skipped_count = unsigned(itr - begin(*derived));
-					                 LOGW("%u pipelines were not compiled because parent pipelines do not exist.\n", skipped_count);
+					                 
+
 
 					                 if (opts.control_block)
 					                 {
@@ -4971,14 +4967,16 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 			per_thread_data.active_tag = tag;
 			per_thread_data.active_hash = hash;
 			uint64_t previous_failure = per_thread_data.failure_generation;
+			uint64_t previous_warning = per_thread_data.warning_generation;
 			ReplayEvent::ParseCapture capture;
-			ReplayDependency::Capture dependencies;
+			ReplayDependency::Capture dependencies(false, true);
 			if (!state_replayer.parse(replayer, resolver.get(), state_json.data(), state_json.size()))
 			{
 				if (dependencies.result.hash)
 					replayer.record_dependency(tag, hash, dependencies.result);
 				else if (per_thread_data.failure_generation == previous_failure)
 					replayer.record_failure(ReplayFailure::Parse, tag, hash, VK_SUCCESS, &capture.result);
+				if (!dependencies.result.hash && per_thread_data.warning_generation == previous_warning)
 				LOGW("Did not replay blob (tag: %s, hash: %016" PRIx64 "). See previous logs for context.\n", tag_names[tag], hash);
 			}
 		}

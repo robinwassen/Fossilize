@@ -28,6 +28,7 @@
 #include <atomic>
 #include <string.h>
 #include "fossilize_inttypes.h"
+#include "replay_dependency.hpp"
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1800)
 #define FOSSILIZE_NOEXCEPT
@@ -141,6 +142,7 @@ static inline void log_error_pnext_chain(std::string what, const void *pNext)
 static inline void log_missing_resource(const char *type, Hash hash, bool read_failed = false,
 										bool known_missing = false)
 {
+	if (ReplayDependency::quiet_diagnostics()) return;
 	if (read_failed)
 	{
 		LOGW_LEVEL("Referenced %s %016" PRIx64 ", but reading the existing input failed.\n", type, hash);
@@ -162,6 +164,7 @@ static inline void log_missing_resource(const char *type, Hash hash, bool read_f
 
 static inline void log_invalid_resource(const char *type, Hash hash)
 {
+	if (ReplayDependency::quiet_diagnostics()) return;
 	LOGW_LEVEL("Referenced %s %016" PRIx64
 			           ", but its dependency did not produce a usable handle; see its originating failure when available.\n",
 	           type, hash);

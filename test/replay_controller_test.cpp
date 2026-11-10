@@ -4,12 +4,14 @@
 #include "volk.h"
 #include "device.hpp"
 #include "../cli/logging.hpp"
+#ifndef FOSSILIZE_REPLAY_TEST_REAL_PROSE
 #undef LOGI
 #undef LOGW
 #undef LOGE
 #define LOGI(...) discard_prose(__VA_ARGS__)
 #define LOGW(...) discard_prose(__VA_ARGS__)
 #define LOGE(...) discard_prose(__VA_ARGS__)
+#endif
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -93,7 +95,9 @@ static ssize_t event_native_write(int, const void *, size_t);
 #endif
 #define FOSSILIZE_REPLAY_TEST_WORKER test_worker
 #define FOSSILIZE_REPLAY_TEST_OBSERVE observe
+#ifndef FOSSILIZE_REPLAY_TEST_REAL_PROSE
 #define FOSSILIZE_REPLAY_TEST_PROSE_OFF
+#endif
 #define main fossilize_replay_original_main
 #include "../cli/fossilize_replay.cpp"
 #undef main
@@ -221,7 +225,13 @@ template <typename Options> static int test_worker(unsigned index, unsigned atte
 	out.flush();
 	if (orderly() || event_real())
 	{
-		Fossilize::set_thread_log_level(Fossilize::LOG_NONE);
+		Fossilize::set_thread_log_level(
+#ifdef FOSSILIZE_REPLAY_TEST_REAL_PROSE
+			Fossilize::LOG_WARNING
+#else
+			Fossilize::LOG_NONE
+#endif
+		);
 		// The fixed archive and actual production slave perform all parsing,
 		// creation, outcome accumulation, queue draining and terminal writing.
 		int result;
@@ -822,10 +832,14 @@ int main(int argc, char **argv)
 #endif
 	}
 	int result;
+	bool quiet = true;
+#ifdef FOSSILIZE_REPLAY_TEST_REAL_PROSE
+	quiet = argc > 4 && std::string(argv[4]) == "quiet";
+#endif
 #ifdef _WIN32
-	result = run_master_process(device_opts, opts, databases, nullptr, 0, true, nullptr, nullptr);
+	result = run_master_process(device_opts, opts, databases, nullptr, 0, quiet, nullptr, nullptr);
 #else
-	result = run_master_process(device_opts, opts, databases, nullptr, 0, true, -1, -1);
+	result = run_master_process(device_opts, opts, databases, nullptr, 0, quiet, -1, -1);
 #endif
 	validate(result, opts.num_threads, scenario == "zero");
 	if (scenario == "lost-progress" || scenario == "held-sibling")

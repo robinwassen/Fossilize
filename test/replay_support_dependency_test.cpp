@@ -27,6 +27,7 @@ static Hash fail_parent_hash;
 static std::set<uint64_t> live_pipelines;
 static std::atomic<unsigned> lifetime_errors{0}, cleanup_errors{0};
 static std::string graph_mode;
+static unsigned graph_module_flags = 0;
 static ResourceTag static_failure_tag = RESOURCE_COUNT;
 static PFN_vkCreateSampler graph_real_sampler;
 static PFN_vkCreateDescriptorSetLayout graph_real_set;
@@ -181,6 +182,7 @@ static bool graph(const char *path, const std::string &mode, unsigned n = 4, uns
 		StateRecorder recorder;
 		recorder.init_recording_synchronized(&source);
 		VkShaderModuleCreateInfo module = {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};
+		module.flags = graph_module_flags;
 		module.pCode = valid_code;
 		module.codeSize = sizeof(valid_code);
 		for (unsigned m = 0; m < (mode == "bounded-origins" ? 70u : mode == "missing-multiple-modules" ? 2u : 1u); m++)
@@ -669,7 +671,7 @@ static void common_cache()
 		run_graph("invalid-layout", 2, 4, 7);
 		set_thread_log_level(LOG_NONE);
 		auto text = capture.finish();
-		checks.contains(text, "Pipeline layout 0000000000000102, but its dependency could not be resolved.",
+		checks.contains(text, "parent=pipeline-layout:0000000000000102",
 						"M19/present-malformed-layout-prose-and-source-hash");
 		checks.require(text.find("common cache") == std::string::npos &&
 						   text.find("does not exist") == std::string::npos,
@@ -690,7 +692,7 @@ static void static_dependencies()
 		run_graph("static-layout-create", 4, 4, 1, VK_SUCCESS, 0, true, true);
 		set_thread_log_level(LOG_NONE);
 		auto text = capture.finish();
-		checks.contains(text, "Pipeline layout 0000000000000102, but its dependency did not produce a usable handle",
+		checks.contains(text, "parent=pipeline-layout:0000000000000102",
 						"M19/known-failed-layout-prose-and-source-hash");
 		checks.require(text.find("common cache") == std::string::npos &&
 						   text.find("does not exist") == std::string::npos,
@@ -831,6 +833,7 @@ static void detail_codec()
 				   "M19/truncated-detail-EOF-never-completion");
 }
 
+#ifndef FOSSILIZE_REPLAY_WARNING_NO_MAIN
 int main(int argc, char **argv)
 {
 	if (argc != 2)
@@ -857,3 +860,5 @@ int main(int argc, char **argv)
 	printf("M19 dependency %s failures=%d\n", c.c_str(), checks.failures);
 	return checks.failures ? 1 : 0;
 }
+
+#endif
