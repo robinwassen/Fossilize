@@ -65,13 +65,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "86cd05a377bad5017ba032d896dc67209718dc464b3e18bcbe5b6ddfe6176875",
+      "report": "runs/issue-20/issue-20-20261110/reports/checker-platform-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1794311002.2797365,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
       "worker_id": "/root/checker_platform20"
     }
@@ -80,7 +82,18 @@
     "stage": "pending"
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+      "evidence": "Plan1 retains G20-native-windows kind=both, with expected native platform automated evidence passing and explicit policy requiring an explicit user platform disposition AND plan reconciliation before acceptance. The report contract requires each required gate evidence entry to say result=passed and exit_code=0. The durable user record explicitly answers \"Proceed; waive Windows for this run\" and says Windows is NOT RUN/unverified. This supplies task-specific authority to change applicability, but no updated plan exists in the reviewed input. Acceptance under plan1 would still require misleading native-pass evidence or silently omit a mandatory gate.",
+      "id": "F20-WINDOWS-DISPOSITION-PLAN1",
+      "location": "Plan version 1 gates[6] G20-native-windows; .agents/skills/implement-change-harness/references/state.md:114-151; runs/issue-20/issue-20-20261110/evidence/user-native-windows-disposition.json",
+      "requested_change": "Dispatch a fresh planner to reconcile ONLY native Windows applicability for this run using the durable user authorization. Preserve immutable original AC1 verbatim and every applicable Linux gate/case. Represent native Windows as user-waived NOT RUN/unverified, never passed, and make the revised required gate set honest for both unit and final acceptance. Renew independent checking under the new plan version.",
+      "route": "planner",
+      "status": "open",
+      "title": "Reconcile user-authorized native Windows applicability before acceptance"
+    }
+  ],
   "issue_snapshot": {
     "deliverables": [
       "https://github.com/robinwassen/Fossilize/issues/20"
@@ -367,6 +380,10 @@
       {
         "started": 1794311064.8124177,
         "wait_seconds": 1.055756056914106
+      },
+      {
+        "started": 1794311184.4723823,
+        "wait_seconds": 18.562656830996275
       }
     ],
     "command_timeout": 600,
@@ -3802,7 +3819,7 @@
         }
       }
     ],
-    "deadline": 1794315544.0149584,
+    "deadline": 1794315562.5776153,
     "exhausted": false,
     "extensions": [],
     "implementation_counts": {
@@ -3812,8 +3829,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Fresh planner reconciliation of ONLY user-authorized Windows applicability, preserving original AC1 and all applicable Linux gates, followed by fresh independent checking of candidate/base against the revised plan.",
+  "operation": "replan",
   "original": [
     {
       "id": "AC1",
@@ -3825,7 +3842,7 @@
     "output_directory": "/tmp/fossilize-h20/output",
     "source_worktree": "/home/robin/.herdr/worktrees/fossilize/ticket-20"
   },
-  "phase": "checking",
+  "phase": "planning",
   "plan": {
     "assumptions": [
       "Issue snapshot #20 matches live body read during planning; #18 is completed in supplied dependency snapshot. Coordinator rechecks snapshots at mandated boundaries.",
@@ -4722,7 +4739,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 187,
+  "revision": 188,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
@@ -4732,7 +4749,7 @@
   },
   "run_id": "issue-20-20261110",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-20",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/20",
   "verification": [],

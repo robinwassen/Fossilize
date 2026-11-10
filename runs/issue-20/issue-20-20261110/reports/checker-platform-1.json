@@ -1,0 +1,50 @@
+{
+  "attempt_id": "checker-platform-1",
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "candidate_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "criterion_evidence": [
+    {
+      "criterion": "AC1",
+      "evidence": "Live issue20 body/title/identity read with explicit --repo robinwassen/Fossilize matches immutable original expectations: discovery completeness, empty versus truncated-zero, readable prefix, required input failures, exact selection/exclusion policy, and unknown unread totals. Live parent issue8 requires native Linux/Windows process evidence; the task-specific user waiver is recorded separately. No source behavior acceptance is attempted in this applicability preflight.",
+      "status": "not_verified"
+    }
+  ],
+  "discovered": [],
+  "evidence": [],
+  "executed": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+      "evidence": "Plan1 retains G20-native-windows kind=both, with expected native platform automated evidence passing and explicit policy requiring an explicit user platform disposition AND plan reconciliation before acceptance. The report contract requires each required gate evidence entry to say result=passed and exit_code=0. The durable user record explicitly answers \"Proceed; waive Windows for this run\" and says Windows is NOT RUN/unverified. This supplies task-specific authority to change applicability, but no updated plan exists in the reviewed input. Acceptance under plan1 would still require misleading native-pass evidence or silently omit a mandatory gate.",
+      "id": "F20-WINDOWS-DISPOSITION-PLAN1",
+      "location": "Plan version 1 gates[6] G20-native-windows; .agents/skills/implement-change-harness/references/state.md:114-151; runs/issue-20/issue-20-20261110/evidence/user-native-windows-disposition.json",
+      "requested_change": "Dispatch a fresh planner to reconcile ONLY native Windows applicability for this run using the durable user authorization. Preserve immutable original AC1 verbatim and every applicable Linux gate/case. Represent native Windows as user-waived NOT RUN/unverified, never passed, and make the revised required gate set honest for both unit and final acceptance. Renew independent checking under the new plan version.",
+      "route": "planner",
+      "status": "open",
+      "title": "Reconcile user-authorized native Windows applicability before acceptance"
+    }
+  ],
+  "input_revision": 185,
+  "input_sha": "0b1efd8b0a9908ef5fbf0e0881fe79943b1d7025",
+  "next_action": "Fresh planner reconciliation of ONLY user-authorized Windows applicability, preserving original AC1 and all applicable Linux gates, followed by fresh independent checking of candidate/base against the revised plan.",
+  "not_run": {
+    "all_runtime_gates": "Not run during this preflight; unresolved plan prerequisite assessed before costly checks.",
+    "entire_base_to_candidate_review": "Deferred pending plan reconciliation; no source/changelog approval supplied.",
+    "native_windows": "User-waived for this run; unverified. Requires plan reconciliation before acceptance."
+  },
+  "observations": [
+    "Read required project guidance, full verification guide, changelog guideline, tracked harness skill and role/state contracts, and relevant observability/worker/harness specifications before implementer claims.",
+    "Read live issue20 and shared parent issue8 through gh with explicit --repo robinwassen/Fossilize. Read immutable original AC1 and plan1 in the input snapshot at state revision185.",
+    "Independently read the durable user-native-windows-disposition.json from refs/heads/harness-artifacts and compared the local disposition record. The waiver is specific to this run; no previous issue waiver was inherited.",
+    "No implementer report, test result, or historical passing result was used as independent current verification.",
+    "This is a plan-applicability preflight rejection only. Entire base-to-candidate source/test/changelog review has NOT RUN and remains required before later acceptance. No builds, tests, runtime probes, gate executions, production writes, or canonical helper mutations were performed. No Windows pass is claimed."
+  ],
+  "operation": "work_unit",
+  "plan_version": 1,
+  "role": "checker",
+  "skipped": [],
+  "test_mapping": {},
+  "verdict": "changes_required",
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
+  "worker_id": "/root/checker_platform20"
+}
