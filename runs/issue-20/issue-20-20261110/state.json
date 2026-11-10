@@ -9529,6 +9529,28 @@
         "intent_id": "c20-u4-asan-inventory",
         "started": 1794345971.0962224,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "env",
+          "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+          "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+          "/tmp/fossilize-h20/toolenv/bin/ctest",
+          "--test-dir",
+          "/tmp/fossilize-h20/build/checker-unit-4/asan-ubsan",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+          "--output-junit",
+          "/tmp/fossilize-h20/output/checker-unit-4/asan.xml.txt"
+        ],
+        "command": "env ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/checker-unit-4/asan-ubsan --output-on-failure --no-tests=error -R '^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)' --output-junit /tmp/fossilize-h20/output/checker-unit-4/asan.xml.txt",
+        "cwd": "/tmp/fossilize-h20/checker-unit-4",
+        "eligible_deadline": 1795176455.7034802,
+        "intent_id": "c20-u4-asan-run",
+        "started": 1794345976.8499012,
+        "timeout": 600
       }
     ],
     "deadline": 1795176455.7034802,
@@ -10597,7 +10619,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 498,
+  "revision": 499,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
