@@ -1,0 +1,113 @@
+{
+  "audit_complete": true,
+  "candidate_sha": "2b7e821475c9f1291b4d0e5b43a3c3e81ad42be5",
+  "base_sha": "fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db",
+  "plan_version": 2,
+  "attempt_id": "checker-unit-3",
+  "finding_id": "F20-COMPOSITE-IO-REGRESSION",
+  "criterion": "AC1",
+  "case_audit": [
+    {
+      "case": "D20-empty-e9",
+      "assessment": "present",
+      "present_assertions_and_locations": "database_discovery_test.cpp empty()/truncated(0); exact16-byte magic, all-tag empty sets, header/payload cuts, origin/boundary and unknown-total assertions.",
+      "missing_or_incomplete": ""
+    },
+    {
+      "case": "D20-prefix-read",
+      "assessment": "present",
+      "present_assertions_and_locations": "truncated(2)/read_prefix(); known checksummed payloads, exact retained boundary/hash/readback, repeated report/read operations, ReadOnly byte preservation and intact control.",
+      "missing_or_incomplete": ""
+    },
+    {
+      "case": "D20-input-policy",
+      "assessment": "missing_planned_assertions",
+      "present_assertions_and_locations": "inputs() preserves missing/invalid observations, default/optional policies, primary/no-primary and duplicate fixtures; single-backend I/O assertions exist separately.",
+      "missing_or_incomplete": "Add real composite opened-child deterministic I/O failure propagation with required/optional and healthy control; exact complete input table and deduplicated known union."
+    },
+    {
+      "case": "D20-errors-unknown",
+      "assessment": "present",
+      "present_assertions_and_locations": "errors()/text_spans(); invalid/short magic, unsupported version, seek/tell/read failures incl unknown raw zero, cancellation, custom unknown and independent valid control; checked arithmetic source and own bounded span execution.",
+      "missing_or_incomplete": ""
+    },
+    {
+      "case": "D20-filter-scope",
+      "assessment": "partial_exact_universe_assertion",
+      "present_assertions_and_locations": "filters()/selection_filters(); exact selected/excluded known policies, implicit whitelist, shader-empty semantics, missing/truncated required filters and production calls.",
+      "missing_or_incomplete": "Compare reported discovered prefilter union itself to the exact expected keys, alongside existing exact selected/excluded checks."
+    },
+    {
+      "case": "D20-range-scope",
+      "assessment": "missing_planned_assertions",
+      "present_assertions_and_locations": "ranges() covers3tags and declared bound/clamping/hash tables; selection_filters() demonstrates filter-before-range.",
+      "missing_or_incomplete": "Exact excluded complement tuple/uniqueness checks (including hash cases); explicit unknown required tail plus present hash and nonzero narrowed range."
+    },
+    {
+      "case": "D20-prefix-policy",
+      "assessment": "present_with_shared_missing_scope_combinations",
+      "present_assertions_and_locations": "prefix_policy()/policy_compositions() plus CLI cover default vs explicit prefix, boundaries/uncertainty, zero ranges, missing required, optional identities and24compositions; partial prepare single backend guarded.",
+      "missing_or_incomplete": "Shared input/production additions above complete the composite I/O and nonzero/hash/hint guard combinations without changing prefix policy."
+    },
+    {
+      "case": "D20-replay-hints",
+      "assessment": "missing_planned_assertions",
+      "present_assertions_and_locations": "hints()/existing cache regressions cover3kinds, real fragment harvest, zero hinted calls, named hints, stable single-item indices and namespace/validation independence.",
+      "missing_or_incomplete": "Mixed hinted/unhinted exact dispatch/exclusions/calls/prehint-index control; unknown required tail with all retained work hinted remains unsuccessful."
+    },
+    {
+      "case": "D20-metadata-transfer",
+      "assessment": "missing_planned_assertions",
+      "present_assertions_and_locations": "metadata() uses real OS handles for intact/truncated/prefix/missing required/optional/filter cases, payload readback and malformed bounds, preserving many fields.",
+      "missing_or_incomplete": "Compare input.filter and all input fields plus exact excluded key+policy tuples; meaningful mixed whitelist/blacklist policy roundtrip."
+    },
+    {
+      "case": "D20-production-modes",
+      "assessment": "missing_planned_combination_assertions",
+      "present_assertions_and_locations": "replay_discovery_cli.cmake uses real normal/slave/master/progress,1/4threads, statuses/watchdogs, policy forwarding, zero assignments, healthy/missing/invalid inputs and typed production selection fixtures.",
+      "missing_or_incomplete": "Explicit unknown required tail with present hash/nonzero narrow range/all-hinted work in typed production selection; preserve existing zero/quiet/progress/healthy-sibling controls."
+    },
+    {
+      "case": "D20-compatibility",
+      "assessment": "present",
+      "present_assertions_and_locations": "Actual fd380 old headers precede candidate includes; unchanged custom/recorder/DB/ExternalReplayer callers compile/link/run; legacy built-in formats and CLI flags execute; schema/source review bounds preserved claims.",
+      "missing_or_incomplete": ""
+    },
+    {
+      "case": "D20-defect-sensitivity",
+      "assessment": "execution_incomplete_not_missing_design",
+      "present_assertions_and_locations": "Committed controls define5exact mutation families with healthy/intended assertion checks. Own unchanged baseline4mode oracle and2compiled families passed.",
+      "missing_or_incomplete": "Remaining unread-total/selection-exclusions/metadata-import families NOT RUN after confirmed test finding; renew all required controls after repair."
+    }
+  ],
+  "finding": {
+    "id": "F20-COMPOSITE-IO-REGRESSION",
+    "status": "open",
+    "route": "implementation",
+    "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+    "criteria": [
+      "AC1"
+    ],
+    "title": "Complete the already planned composite I/O, exact scope and metadata assertions",
+    "location": "Plan2 D20-input-policy/filter-scope/range-scope/replay-hints/metadata-transfer/production-modes; test/database_discovery_test.cpp:217-300; test/replay_selection_test.cpp:18-39,108-157; cli/fossilize_replay.cpp:229-239",
+    "evidence": [
+      "Plan2 explicitly requires deterministic opened-child I/O failures through a real concurrent database, exact logical input/selection/exclusion identities, preservation of all input/filter metadata and excluded sets across OS-handle transfer, and unsuccessful discovery surviving narrowed/present-hash/all-hinted work. These are unchanged planned assertions, not new design scope.",
+      "Composite I/O: database-discovery-inputs (database_discovery_test.cpp217-235) exercises healthy, missing and three-byte format-invalid children but never enables an I/O adapter. The only fail_seek/fail_tell/fail_read sites in errors()243 use open(\"valid.foz\"), which constructs one StreamArchive. The seek4 case in replay_selection_test.cpp118 calls run_normal_process with one source, and production factory229-239 explicitly selects the single backend for size1. Thus no registered case asserts reason/raw error/requiredness/boundary propagation after a real composite discards an opened child with read/seek failure. Existing fossilize-system-test composites have no such I/O adapters or new report assertions.",
+      "Exact sets: inputs() asserts discovered/selected counts but not the complete expected deduplicated tag/hash union and requested input table. filters() checks exact selected/excluded identities but only the discovered count, leaving the reported prefilter discovered union itself unchecked. ranges()18-39 checks selected vectors, excluded count, Range policy and nonmembership in selected, but never compares the complete excluded complement tuples or uniqueness; invented unselected keys/duplicate exclusions can satisfy those checks. Hash-selection controls similarly check only counts. Plan2 requires exact reported logical sets.",
+      "Metadata: metadata() compares discovered/selected vectors and many input fields across actual OS export/import, but omits input.filter from the per-input comparison. Its filtered row checks only after.excluded.size()==2, not excluded key/policy tuple equality. The row has only a whitelist, so true blacklist metadata and a mixed named-policy excluded set are not exercised. Plan2 requires preservation of filtered/excluded sets and input policy/scalars, not just counts.",
+      "Unknown-scope combinations: valid range/hash tables and valid hint fixtures do not assert that an unknown required unread tail remains unsuccessful when a present hash or nonzero narrowed range selects retained work, or when all retained work is already hinted. Existing zero-range rejection, progress/quiet mode, healthy-sibling plus required missing/invalid input, successful namespace controls and all three pipeline kinds are present and must be preserved. A mixed hinted/unhinted fixture with exact dispatch/exclusion and call expectations is also absent; single hinted-item fixtures check only zero calls and zero-based stable index.",
+      "Independent runtime evidence actually passed: four complete279-test CPU configurations,91 selected tests repeated3times each,29 ASan+UBSan tests with effective instrumentation,6 compatibility tests, the four-mode unchanged-baseline E9 oracle, and sliced-tail/required-input compiled mutation families (healthy0/intended ordinary1). Those passes do not establish assertions absent from the committed tests. The remaining3 mutation families were deliberately not run after this finding. No product/runtime failure was reproduced."
+    ],
+    "requested_change": [
+      "Extend the registered input integration case with tiny real concurrent inputs and the existing private adapters: fail an opened child during seek or header read, cover required and optional policy, and assert exact path/index/opened/Failed/reason/raw-known/raw-value/boundary/count observations after the child is discarded. Required scope must remain unsuccessful even under recovered-prefix acceptance; optional unknown input must remain a named exclusion, healthy inputs readable, selected scope exact, and original unread totals unknown. Add an adapter-disabled healthy control. Assert the complete expected input table and deduplicated known tag/hash union for the existing primary/no-primary/duplicate cases.",
+      "Replace count-only scope checks with independently expected exact tuple/set comparisons for the reported prefilter universe and selected/excluded scope. In range/hash tables compare the whole excluded complement including policy and uniqueness, so invented keys or duplicates fail. Preserve the existing sorted/filter-before-range, three-tag, same-hash/different-tag, clamping and successful controls.",
+      "In the actual OS metadata round-trip, compare every input field including filter and every discovered/selected/excluded key+policy tuple. Use a small mixed whitelist/blacklist fixture (reusing the existing filter fixtures is sufficient) so filter bits, blacklist-present=true and distinct named exclusion policies are meaningfully exercised. Keep malformed-record bounds, exact payload readback, missing optional/required and truncated-zero/prefix cases.",
+      "Add the already planned unknown-scope policy combinations to the production-including selection fixture: required recovered/truncated input with a present retained hash, a narrowed nonzero range, and all retained work hinted must remain unsuccessful by default with incomplete/unknown original scope and no fabricated completed work. Retain the existing zero-range, progress/quiet and healthy-sibling failure controls and explicit-prefix successful control; assert the known requested policy/identity in the typed report where represented.",
+      "Add one small mixed hinted/unhinted successful control with exact selected/dispatch/exclusion tuples, expected actual creation calls and unchanged prehint indices, alongside the existing three-kind/namespace controls. No large files, physical GPU, new shipping hooks or design replan is needed. Keep checks active in Release. If these planned regressions expose an implementation fault, fix it within the existing issue scope and report the actual failure separately."
+    ],
+    "acceptance_effect": "The planned case assertions and source/test contract remain incomplete until these bounded registered regressions exist and run. Preserve every original criterion, unaffected test/control and all6 required Linux gates; renew independent checking at the new exact committed candidate."
+  },
+  "runtime_failure_observed": false,
+  "source_review_reference": "runs/issue-20/issue-20-20261110/evidence/source-review.json",
+  "supersedes": "Preliminary no-finding impression and narrower composite-only draft; no prior evidence pass is converted to a failure or acceptance."
+}

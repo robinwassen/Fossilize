@@ -1,0 +1,12 @@
+{
+  "intent_id": "c20-u3-release-exceptions-off-compiler-config",
+  "child_command": [
+    "python3",
+    "-B",
+    "-c",
+    "import json,pathlib,subprocess; p=pathlib.Path('/tmp/fossilize-h20/build/checker-unit-3/release-exceptions-off'); print(subprocess.run(['c++','--version'],capture_output=True,text=True).stdout); print((p/'CMakeCache.txt').read_text()); print(json.dumps(json.loads((p/'compile_commands.json').read_text())[:5],indent=2))"
+  ],
+  "command": "python3 -B -c 'import json,pathlib,subprocess; p=pathlib.Path('\"'\"'/tmp/fossilize-h20/build/checker-unit-3/release-exceptions-off'\"'\"'); print(subprocess.run(['\"'\"'c++'\"'\"','\"'\"'--version'\"'\"'],capture_output=True,text=True).stdout); print((p/'\"'\"'CMakeCache.txt'\"'\"').read_text()); print(json.dumps(json.loads((p/'\"'\"'compile_commands.json'\"'\"').read_text())[:5],indent=2))'",
+  "cwd": "/tmp/fossilize-h20/checker-unit-3",
+  "timeout": 600
+}
