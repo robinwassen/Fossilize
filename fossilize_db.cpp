@@ -1878,7 +1878,7 @@ struct StreamArchive : DatabaseInterface
 			if (fwrite(&raw, 1, sizeof(raw), file) != sizeof(raw))
 				return false;
 
-			if (fwrite(blob, 1, size, file) != size)
+			if (size != 0 && fwrite(blob, 1, size, file) != size)
 				return false;
 		}
 
