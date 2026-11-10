@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/issue-19/issue19-text-warnings-20261110/reports/text-planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1794324182.863016,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/19",
       "worker_id": "/root/issue19_text_planner"
     }
@@ -163,8 +164,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -176,8 +177,743 @@
     "output_directory": "/tmp/fossilize-h19-text/output",
     "source_worktree": "/home/robin/.codex/worktrees/1471/fossilize"
   },
-  "phase": "planning",
-  "plan": null,
+  "phase": "implementing",
+  "plan": {
+    "cases": [
+      {
+        "assertions": [
+          "Register replay-support-compute with explicit Release-active checks. Synthetic non-null feature initialization; a supported control returns true and clears a reused result.",
+          "Exercise actual descriptorBuffer/subgroup feature rejection, a real extension-bearing pNext rejection, maxComputeWorkGroupSize or maxComputeWorkGroupInvocations rejection using registered module entry-point information, and unknown pNext sType. Assert exact support kind, stable feature/extension/property identifier, known observed/required values and raw unknown sType. Reject before driver creation.",
+          "Keep previous bool compute_pipeline_is_supported caller results identical; distinguish missing/invalid module metadata from a known feature limit rather than inventing device support facts."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-compute",
+        "location": "test/replay_support_test.cpp; test/CMakeLists.txt; cli/fossilize_feature_filter.cpp"
+      },
+      {
+        "assertions": [
+          "Register replay-support-graphics. Supported graphics control and independently selected real feature (for example depthClamp), extension, existing property-limit (for example multiview/mesh output/subgroup limits), and unknown nested pNext rejection.",
+          "Assert exact originating identifier and observed/required fields where the detector has values; nested predicate failure must preserve the specific reason rather than overwrite it with a generic graphics rejection. Unrelated disabled features must not steal attribution."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-graphics",
+        "location": "test/replay_support_test.cpp; cli/fossilize_feature_filter.cpp"
+      },
+      {
+        "assertions": [
+          "Register replay-support-raytracing. Supported control; rayTracingPipeline feature, VK_KHR_pipeline_library extension, maxRayRecursionDepth and maxRayHitAttributeSize boundaries, and unknown stage/group/library pNext cases.",
+          "Assert correct identifier, required input versus available property values, known bits, and identical old bool support decisions. Boundary equality succeeds and one-over-limit rejects."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-raytracing",
+        "location": "test/replay_support_test.cpp; cli/fossilize_feature_filter.cpp"
+      },
+      {
+        "assertions": [
+          "Register replay-support-static. Cover sampler, descriptor-set layout, pipeline layout, shader module, render pass and render pass2 entrypoints with supported controls and applicable feature/extension/unknown-sType rejections.",
+          "Static-family property tests exercise actual maxPushConstantsSize/maxBoundDescriptorSets and available render-pass limits; sampler has no independent property-limit predicate and must not gain fabricated policy just to fill a test matrix. Document precise applicability in the fixture table.",
+          "Check exact SPIR-V capability/extension identifiers and unknown capability values for shader support rejection; malformed SPIR-V and creation OOM remain distinguishable from unsupported. Feature/extension/property/unknown-sType coverage spans every migrated family and each static entrypoint has actual supported/rejected coverage."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-static",
+        "location": "test/replay_support_test.cpp; test/feature_filter_test.cpp"
+      },
+      {
+        "assertions": [
+          "Register replay-support-categories using actual parser/filter/Vulkan producer paths: invalid JSON/module parse, SPIR-V validation rejection, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, known support rejection and missing dependency.",
+          "Assert returned outcome/category, exact signed Vulkan result where available, zero unsupported counts for parse/OOM/dependency failures, zero creation counts for unsupported/blocked work, and a valid succeeding control after every failure. Do not promise allocator-exhaustion containment beyond controlled existing producers."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-origin-categories",
+        "location": "test/replay_support_dependency_test.cpp; test/replay_event_producer_test.cpp"
+      },
+      {
+        "assertions": [
+          "Register replay-dependency-module-fanout. A dependency-complete recorded/checked FOZ graph has one invalid or controlled-failed shader module referenced by N distinct pipelines, with N at least 4, across compute/graphics/raytracing consumers as applicable.",
+          "Drive actual production parse/resolve/enqueue/creation paths rather than manually setting dependency_blocked. Assert exactly one originating module failure per worker attempt, N distinct blocked consumer identities, every edge names the actual parent tag/hash and its known failure category, and zero Vulkan pipeline creation calls for blocked consumers.",
+          "Cover invalid module and a controlled shader-creation failure separately; positive graph creates every expected pipeline. Repeat with one and multiple workers within the ThreadedReplayer process and more than one pipeline memory context. No global cross-process logical-item reconciliation claim is introduced."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-module-fanout",
+        "location": "test/replay_support_dependency_test.cpp; cli/fossilize_replay.cpp; fossilize.cpp"
+      },
+      {
+        "assertions": [
+          "Register replay-dependency-parent-fanout. One real failed derivative base or pipeline library has N consumers; exercise compute/graphics derivative paths and graphics/raytracing library paths supported by production infrastructure.",
+          "Assert one originating parent creation failure, N linked blocked consumers and zero creation calls for those consumers. Include missing and nested library identities; original hash/tag must survive native handle resolution and sorted dependency scheduling.",
+          "A valid parent/consumer control succeeds. Multiple missing parents may retain one bounded first blocker with explicit omitted detail; never fabricate an arbitrary parent or count unattempted consumers as compiler faults."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-parent-fanout",
+        "location": "test/replay_support_dependency_test.cpp; cli/fossilize_replay.cpp"
+      },
+      {
+        "assertions": [
+          "Register replay-dependency-common-cache. Generate/check actual outer FOZ inputs with a consumer reference omitted from the common-cache/input dependency set: shader, layout/static dependency and base/library parent variants where represented.",
+          "Assert missing dependency reason plus exact consumer and missing parent tag/hash, no driver-failure raw result or compiler-fault attribution, zero consumer creation calls, unsuccessful aggregate outcome, and successful equivalent graph with common-cache entries restored.",
+          "Input read failure, absent resource and malformed present parent remain distinguishable facts; absence is not called device unsupported. Preserve the original parent failure when recursive parse is involved."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-common-cache",
+        "location": "test/replay_support_dependency_test.cpp; fossilize.cpp; cli/fossilize_replay.cpp"
+      },
+      {
+        "assertions": [
+          "Register replay-dependency-static. Drive sampler/descriptor-layout/pipeline-layout/render-pass dependency substitution paths with real recorded hashes. A failed or missing static parent names the correct edge rather than becoming a new generic consumer Parse/Create failure.",
+          "Retain source identities before remapping handles, including static resolve through maintenance4 PipelineResolver. Known originating vkCreate failure stays attached to the static parent; blocked pipeline has no creation call. Successful lazy and ordinary static resolution controls retain expected handles and cleanup."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-static-dependencies",
+        "location": "test/replay_support_dependency_test.cpp; fossilize.cpp; cli/fossilize_replay.cpp"
+      },
+      {
+        "assertions": [
+          "Register replay-support-call-scope. Per-call detail receivers have value lifetime independent of create-info/pNext storage. Reuse clears stale values; nested calls preserve the first specific origin and independent reentrant calls keep separate receivers.",
+          "Barrier-controlled concurrent checks on the same initialized FeatureFilter produce their own exact reasons with no cross-thread leakage. If a callback sink is chosen, explicitly test its documented threading, lifetime/reentrancy and bounded error behavior; a value-output-only design avoids a new callback boundary.",
+          "Dependency capture context cannot outlive the parser callback or allocator/memory context; retain only scalar/value identities in queued work and worker frames."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-call-scope",
+        "location": "test/replay_support_test.cpp; private support/dependency detail declarations"
+      },
+      {
+        "assertions": [
+          "Register replay-support-worker-details and replay-dependency-worker-details using actual detector-to-production-worker/controller pipe paths, extending existing #18 fixtures rather than hand-constructed controller summaries.",
+          "With prose disabled, assert support identifier/kind/known values and dependency consumer/parent tag/hash/category, exact worker/attempt, unsuccessful native/final outcome, and positive completion control. Human diagnostics present the same observed facts; no guessed upgrade/extension advice.",
+          "Explicitly document/version private detail transport. Preserve existing parse/create/timeout event semantics, HELLO/FINAL uncertainty, legacy lines and absent negotiation; unknown or malformed new details cannot certify supported/successful work."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-worker-details",
+        "location": "test/replay_controller_test.cpp; test/replay_event_test.cpp; replay_event.hpp; cli platform worker headers"
+      },
+      {
+        "assertions": [
+          "Register replay-support-bounded. More failures/blocked consumers than retained detail capacity preserve exact known category/origin/blocked counts independently of sampled examples; retained frames/examples stay within documented fixed bounds and omitted detail counts are visible.",
+          "Codec roundtrip includes maximum values, unknown identifiers, malformed/oversized/truncated detail, stream fragmentation and subsequent valid frame recovery. Store scalar IDs/value fields or bounded strings; never shader payload, unbounded resource graphs or pointers into temporary state.",
+          "Do not reinterpret existing ReplayItemOutcome observation counts as a complete global item ledger. Report any count whose scope is only a worker attempt explicitly."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-bounded-detail",
+        "location": "test/replay_event_test.cpp; test/replay_support_dependency_test.cpp; replay_event.hpp; cli/replay_item_outcome.hpp"
+      },
+      {
+        "assertions": [
+          "Register replay-support-old-header-compatibility. Compile a retained bool FeatureFilter caller against the actual input header at fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db, then link/run candidate cli-utils and supported/rejected controls.",
+          "Run unchanged public library/ExternalReplayer callers and ordinary CLI invocations through replay-event-old-header-compatibility and existing diagnostic/outcome compatibility fixtures. Preserve StateCreatorInterface signatures, public shared-progress layout/version, old reason meanings and bool results unless an intentional change is documented and tested.",
+          "Declare source/protocol/behavior boundaries; make no general prebuilt C++ binary ABI or mixed-version rich-worker guarantee."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-old-callers",
+        "location": "test/replay_support_old_headers.cmake; test/replay_event_old_headers.cmake; test/CMakeLists.txt"
+      },
+      {
+        "assertions": [
+          "Keep compiled sensitivity controls in disposable source copies: suppress the actual originating support detail at its detector; independently erase/replace the parent identity or bypass actual blocked-consumer guard. The corresponding M19 explicit assertion must fail while candidate and supported controls pass.",
+          "Retain mutation diff, exact commands, exit status and M19 assertion text. Build failure, timeout, ASan runtime failure or crash is not defect-detection evidence. A baseline-compatible original-defect fixture may replace a mutation only if it compiles and its precise changed-behavior assertion fails."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-sensitivity",
+        "location": "isolated verification copies outside source; committed M19 fixture assertions"
+      },
+      {
+        "assertions": [
+          "Drive 100000 real production support setup rejections with distinct pipeline hashes and normal detector logging, not direct formatter-only calls. Assert unsuccessful outcome, exact 100000 group/resource observations, correct identifier, at most 2 examples for this group, required/available and representative source identity, zero pipeline creation calls, and no one-line-per-pipeline legacy output.",
+          "Capture actual stderr bytes to an isolated file with ordinary logging enabled; assert the complete stderr size/line bound for this pure failure fixture (fixed setup chatter plus at most 42 warning lines/32768 report bytes), not merely a subset of Replay/support prefixes. Compare a smaller same-cause run to prove output does not scale with N. Candidate supported controls are successful with no warning report.",
+          "Test bounded diagnostic state separately: compile-time/fixed-array capacity, unchanged retained storage/allocation count after warming the aggregate, no diagnostic allocation per observation and no targeted stdio emission inside the 100000-observation loop. Operational FOZ caches are excluded from the diagnostic-memory claim."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-text-same-cause",
+        "location": "test/replay_warning_test.cpp; test/replay_warning_worker_test.cpp; test/CMakeLists.txt",
+        "registered_tests": [
+          "replay-warning-same-cause"
+        ]
+      },
+      {
+        "assertions": [
+          "Use actual feature, extension, property, API and enum detectors across compute/graphics/raytracing/static/shader callbacks. Different required limits on the same predicate coalesce; examples preserve observed/required values. Known distinct semantic enum IDs remain distinct; equal generic identifiers with different predicate/resource meaning remain distinct.",
+          "Assert exact expected per-group and per-resource counts and causal human text. Mixed pipeline/static output cannot call all observations pipelines. Repeated observation of one hash is explicitly attempt replay observations rather than unique items. At most 2 examples/group and 8 globally, each with relevant resource hash and known values."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-text-grouping",
+        "location": "test/replay_warning_test.cpp; test/replay_warning_worker_test.cpp; test/CMakeLists.txt",
+        "registered_tests": [
+          "replay-warning-grouping"
+        ]
+      },
+      {
+        "assertions": [
+          "Feed more than 32 distinct actual unknown-sType/capability/enum causes, including more than 100000 observations of unretained causes and repeats of already retained causes after full capacity. Assert exactly 32 retained groups, global example cap 8, exact per-retained-group totals, exact overflow observation total and sum equal all eligible observations.",
+          "Overflow prose must not claim distinct omitted-cause cardinality or assign unseen causes to a retained identifier. Different unknown raw IDs are distinct until overflow. Assert at most 42 report lines/32768 bytes, fixed memory, and no per-observation detector/legacy warning even for overflow."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-text-overflow",
+        "location": "test/replay_warning_test.cpp; test/replay_warning_worker_test.cpp; test/CMakeLists.txt",
+        "registered_tests": [
+          "replay-warning-overflow"
+        ]
+      },
+      {
+        "assertions": [
+          "Replay real recorded FOZ graphs through production parse/scheduling/resolution with shader/static/derivative/library blockers and common-cache missing/read-failed variants. Include large fanout (at least 4096 blocked consumers), distinct missing parent hashes sharing a cause, and known unsupported shader/static origins propagated to consumer summaries when retained.",
+          "Assert exact originating and blocked observation totals, consumer/parent identities in examples, useful known support cause in retained-root summaries, distinct missing/failed/read-failed/unknown and parse/OOM/create origins, no consumer creation, and honest unknown cause after bounded source-context exhaustion.",
+          "Capture actual entire stderr with core log levels enabled; assert no targeted log_missing_resource/log_invalid_resource/common-cache repeated advice, Did-not-replay-blob, generic skip, derived-parent batch or resolver/fallback dependency messages bypass the cap. Cover worker parse and initial static preload paths and supported graph controls."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-text-dependencies",
+        "location": "test/replay_warning_test.cpp; test/replay_warning_worker_test.cpp; test/CMakeLists.txt",
+        "registered_tests": [
+          "replay-warning-dependencies"
+        ]
+      },
+      {
+        "assertions": [
+          "Use barriers and the actual production worker queue with multiple threads/memory contexts, several retained causes and overflow. No sleeps or random Vulkan faults. Assert exact serial-reference group/resource/overflow counts and at most 8 examples despite simultaneous failures.",
+          "Concurrently finish only after a drain barrier, then invoke ordinary finalization twice and destroy the replay object. Assert exactly one report, no lost increments, no duplicate summary and no stdio per observation. Repeat three times."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-text-concurrency",
+        "location": "test/replay_warning_test.cpp; test/replay_warning_worker_test.cpp; test/CMakeLists.txt",
+        "registered_tests": [
+          "replay-warning-concurrency"
+        ]
+      },
+      {
+        "assertions": [
+          "Call actual normal replay/entry cleanup with no event_writer on ordinary failure, successful/empty controls and an early orderly failure after warnings were already accumulated. Assert one useful report on each eligible failure, zero on success-only, correct outcome unchanged and no duplicate flush through finish/destructor paths.",
+          "Controlled hard process exit after an acknowledged observation produces no completed summary/FINAL claim; the supervising fixture must assert native exit and missing completion rather than hang or accept a crash as normal finalization. Signal handlers must not acquire new aggregation locks."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-text-lifecycle",
+        "location": "test/replay_warning_test.cpp; test/replay_warning_worker_test.cpp; test/CMakeLists.txt",
+        "registered_tests": [
+          "replay-warning-lifecycle"
+        ]
+      },
+      {
+        "assertions": [
+          "Exercise shipped fossilize-replay normal/slave/master paths with checked dependency FOZ inputs where possible; use a privately compiled actual worker/controller runner with normal prose enabled for hardware-independent support injection. Assert captured real stderr, useful bounded cause summaries, unchanged failure status and per-attempt count labels.",
+          "Quiet-worker production pipes retain zero worker warning stderr, exact COUNTS/DETAIL/FINAL and native outcome versus nonquiet runs. Separate controller-owned setup chatter from worker text explicitly. Cover negotiated and absent-event-writer worker paths; do not infer cross-worker unique totals. Never define PROSE_OFF/discard_prose or suppress core log levels in these tests."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-text-cli-worker",
+        "location": "test/replay_warning_test.cpp; test/replay_warning_worker_test.cpp; test/CMakeLists.txt",
+        "registered_tests": [
+          "replay-warning-cli-worker"
+        ]
+      },
+      {
+        "assertions": [
+          "Under detailed replay capture, unknown sType/capability, SPIR-V extension/version/API failures produce bounded replacement reporting without duplicate FeatureFilter LOGE. Legacy bool/no-detail FeatureFilter invocations retain the old diagnostic and same bool decisions.",
+          "Without replay suppression capture, direct StateReplayer missing/invalid references retain legacy diagnostics and justified common-cache advice. Recorder remap diagnostics remain unchanged. Actual malformed SPIR-V/JSON, injected OOM and driver VkResult errors remain visible with their proper categories and are not counted in an unsupported group; succeeding controls remain clean."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-text-legacy-controls",
+        "location": "test/replay_warning_test.cpp; test/replay_warning_worker_test.cpp; test/CMakeLists.txt",
+        "registered_tests": [
+          "replay-warning-legacy-controls"
+        ]
+      },
+      {
+        "assertions": [
+          "In an isolated candidate source copy, restore an actual per-object production warning at record_unsupported or one FeatureFilter unsupported bypass. Compile the normal real-prose runner, run its unchanged same-cause assertion, and require explicit M19 output-bound/duplicate-warning assertion failure with ordinary exit 1.",
+          "Unmutated same-cause and positive controls pass. Retain minimal mutation diff, compiled target identity, exact argv/status and assertion label. Build failure, timeout, crash or sanitizer startup failure is not detection. This adds to the two preserved original support-detail/parent-identity controls."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "M19-text-sensitivity",
+        "location": "test/replay_warning_test.cpp; test/replay_warning_worker_test.cpp; test/CMakeLists.txt",
+        "registered_tests": [
+          "replay-warning-same-cause"
+        ]
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "expected": "Independent criterion-level review; one short accurate changelog entry with issue link; exact case-to-executed-CTest-ID mapping, no omitted planned assertions, no unbounded retained graph/event state or source compatibility break.",
+        "id": "M19-source-review",
+        "kind": "both",
+        "method": "Read whole base-to-candidate diff, fixture assertions/CTest registration, current issue #19/#8, changelog guideline and support/dependency path inventory. Verify no known predicate is replaced with vague detail, count scope is honest and all original requirements remain covered. Inspect every inventoried text bypass and lock/finalization ordering; verify fixed capacities, grouping semantics, exact observation totals, no whole-program log disable and complete real-stderr assertions. Original fd380-to-candidate review remains required, with special f49ad7ad-to-candidate focus.",
+        "prerequisites": [
+          "Exact committed candidate; fresh role worktree; live issue #19/#8 input unchanged; all commands prepublished with exact argv/cwd/intention and separately run under verification_lock.py --repo WORKTREE --timeout 600 --intent-id ID --receipt PATH -- COMMAND."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "expected": "Configure/build and complete nonempty CPU CTest inventory pass, including all new M19 IDs and inherited feature/parser/event/outcome/timeout/fork/diagnostic tests. CLI/layer/SPIR-V validation targets built, optional real runtime layer test disabled. No native Windows claim. Includes every registered replay-warning-* case; report executed IDs/count, no skipped current tests and current candidate identity.",
+        "id": "M19-linux-debug-off",
+        "kind": "work_unit",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/home/robin/.codex/worktrees/1471/fossilize",
+              "-B",
+              "/tmp/fossilize-h19/build/debug-exceptions-off",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-h19/build/debug-exceptions-off",
+              "--parallel",
+              "4"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-h19/build/debug-exceptions-off",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-h19/build/debug-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--parallel",
+              "4"
+            ]
+          ],
+          "execution": "Each invocation separately intent-published/wrapped with 600-second child timeout. If a full build cannot fit, build explicit target groups in separate bounded commands without omitting any CTest executable. Do not exclude tests solely to force a pass. Record actual target options and use actual candidate layer/runtime-layer option names. Existing candidate-source-bound root build directories may be incrementally rebuilt at the new committed head. Checker must verify CMAKE_HOME_DIRECTORY, clean exact source HEAD, compiler/options and effective changed compile/link commands, then independently execute the complete current nonempty inventory in each configuration. Historical 274-test count is not the new inventory."
+        },
+        "prerequisites": [
+          "Required submodules populated in execution worktree; compatible GCC/Clang and provided CMake/CTest/Ninja; isolated build/output paths; candidate registered tests use Release-active explicit assertions."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "expected": "Configure/build and complete nonempty CPU CTest inventory pass, including all new M19 IDs and inherited feature/parser/event/outcome/timeout/fork/diagnostic tests. CLI/layer/SPIR-V validation targets built, optional real runtime layer test disabled. No native Windows claim. Includes every registered replay-warning-* case; report executed IDs/count, no skipped current tests and current candidate identity.",
+        "id": "M19-linux-debug-on",
+        "kind": "work_unit",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/home/robin/.codex/worktrees/1471/fossilize",
+              "-B",
+              "/tmp/fossilize-h19/build/debug-exceptions-on",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-h19/build/debug-exceptions-on",
+              "--parallel",
+              "4"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-h19/build/debug-exceptions-on",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-h19/build/debug-exceptions-on",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--parallel",
+              "4"
+            ]
+          ],
+          "execution": "Each invocation separately intent-published/wrapped with 600-second child timeout. If a full build cannot fit, build explicit target groups in separate bounded commands without omitting any CTest executable. Do not exclude tests solely to force a pass. Record actual target options and use actual candidate layer/runtime-layer option names. Existing candidate-source-bound root build directories may be incrementally rebuilt at the new committed head. Checker must verify CMAKE_HOME_DIRECTORY, clean exact source HEAD, compiler/options and effective changed compile/link commands, then independently execute the complete current nonempty inventory in each configuration. Historical 274-test count is not the new inventory."
+        },
+        "prerequisites": [
+          "Required submodules populated in execution worktree; compatible GCC/Clang and provided CMake/CTest/Ninja; isolated build/output paths; candidate registered tests use Release-active explicit assertions."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "expected": "Configure/build and complete nonempty CPU CTest inventory pass, including all new M19 IDs and inherited feature/parser/event/outcome/timeout/fork/diagnostic tests. CLI/layer/SPIR-V validation targets built, optional real runtime layer test disabled. No native Windows claim. Includes every registered replay-warning-* case; report executed IDs/count, no skipped current tests and current candidate identity.",
+        "id": "M19-linux-release-off",
+        "kind": "work_unit",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/home/robin/.codex/worktrees/1471/fossilize",
+              "-B",
+              "/tmp/fossilize-h19/build/release-exceptions-off",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-h19/build/release-exceptions-off",
+              "--parallel",
+              "4"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-h19/build/release-exceptions-off",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-h19/build/release-exceptions-off",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--parallel",
+              "4"
+            ]
+          ],
+          "execution": "Each invocation separately intent-published/wrapped with 600-second child timeout. If a full build cannot fit, build explicit target groups in separate bounded commands without omitting any CTest executable. Do not exclude tests solely to force a pass. Record actual target options and use actual candidate layer/runtime-layer option names. Existing candidate-source-bound root build directories may be incrementally rebuilt at the new committed head. Checker must verify CMAKE_HOME_DIRECTORY, clean exact source HEAD, compiler/options and effective changed compile/link commands, then independently execute the complete current nonempty inventory in each configuration. Historical 274-test count is not the new inventory."
+        },
+        "prerequisites": [
+          "Required submodules populated in execution worktree; compatible GCC/Clang and provided CMake/CTest/Ninja; isolated build/output paths; candidate registered tests use Release-active explicit assertions."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "expected": "Configure/build and complete nonempty CPU CTest inventory pass, including all new M19 IDs and inherited feature/parser/event/outcome/timeout/fork/diagnostic tests. CLI/layer/SPIR-V validation targets built, optional real runtime layer test disabled. No native Windows claim. Includes every registered replay-warning-* case; report executed IDs/count, no skipped current tests and current candidate identity.",
+        "id": "M19-linux-release-on",
+        "kind": "work_unit",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "-S",
+              "/home/robin/.codex/worktrees/1471/fossilize",
+              "-B",
+              "/tmp/fossilize-h19/build/release-exceptions-on",
+              "-G",
+              "Ninja",
+              "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+              "-DFOSSILIZE_TESTS=ON",
+              "-DFOSSILIZE_CLI=ON",
+              "-DFOSSILIZE_VULKAN_LAYER=ON",
+              "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+              "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+              "--build",
+              "/tmp/fossilize-h19/build/release-exceptions-on",
+              "--parallel",
+              "4"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-h19/build/release-exceptions-on",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "/tmp/fossilize-h19/build/release-exceptions-on",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--parallel",
+              "4"
+            ]
+          ],
+          "execution": "Each invocation separately intent-published/wrapped with 600-second child timeout. If a full build cannot fit, build explicit target groups in separate bounded commands without omitting any CTest executable. Do not exclude tests solely to force a pass. Record actual target options and use actual candidate layer/runtime-layer option names. Existing candidate-source-bound root build directories may be incrementally rebuilt at the new committed head. Checker must verify CMAKE_HOME_DIRECTORY, clean exact source HEAD, compiler/options and effective changed compile/link commands, then independently execute the complete current nonempty inventory in each configuration. Historical 274-test count is not the new inventory."
+        },
+        "prerequisites": [
+          "Required submodules populated in execution worktree; compatible GCC/Clang and provided CMake/CTest/Ninja; isolated build/output paths; candidate registered tests use Release-active explicit assertions."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "expected": "All registered M19 cases execute nonzero assertion-bearing IDs; inherited reason, lifetime, outcome and controller behavior remains correct. Whole four-configuration matrix is required once at unit stage and inspected at final; final reruns decisive tests at unchanged exact candidate. No acceptance from discovery alone. Every new real-prose warning case must be included in both Debug exceptions OFF and Release exceptions ON for unit and fresh final checking.",
+        "id": "M19-decisive-independent",
+        "kind": "both",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "BUILD",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "BUILD",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--parallel",
+              "4",
+              "-R",
+              "^(replay-warning-|replay-support-|replay-dependency-|feature-filter-test$|replay-event-|replay-outcome-|parser-input-|replay-timeout-|fork-child-)"
+            ]
+          ],
+          "execution": "Unit checker reruns new decisive tests and relevant inherited producer/codec/parser/controller/compatibility regressions at the exact candidate in Linux Debug exceptions OFF and Release exceptions ON; final fresh checker independently reruns the same in both configurations. Build/validate these candidate-bound directories first; a passing implementer log is not independent execution."
+        },
+        "prerequisites": [
+          "Exact committed candidate; fresh role worktree; live issue #19/#8 input unchanged; all commands prepublished with exact argv/cwd/intention and separately run under verification_lock.py --repo WORKTREE --timeout 600 --intent-id ID --receipt PATH -- COMMAND."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "expected": "Three passing executions of every selected concurrent/callback-lifetime, fanout, bounded-detail and actual pipe detail test; exact originating/blocked counts and identities survive parallel scheduling.",
+        "id": "M19-concurrency",
+        "kind": "both",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "BUILD",
+              "--output-on-failure",
+              "--no-tests=error",
+              "--repeat",
+              "until-fail:3",
+              "-R",
+              "^(replay-warning-concurrency|replay-warning-cli-worker|replay-support-call-scope|replay-dependency-module-fanout|replay-dependency-parent-fanout|replay-support-worker-details|replay-dependency-worker-details|replay-support-bounded)$"
+            ]
+          ],
+          "execution": "Use controlled barriers and deterministic producer adapters; each test has an independent finite CTest watchdog and isolated working directory."
+        },
+        "prerequisites": [
+          "Exact committed candidate; fresh role worktree; live issue #19/#8 input unchanged; all commands prepublished with exact argv/cwd/intention and separately run under verification_lock.py --repo WORKTREE --timeout 600 --intent-id ID --receipt PATH -- COMMAND."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "expected": "Nonempty focused ASan+UBSan tests pass without sanitizer diagnostics, including support per-call lifetime, raw dependency capture, bounded codec and parser controls; distinguish unavailable runtime from passing tests.",
+        "id": "M19-asan-ubsan",
+        "kind": "work_unit",
+        "method": {
+          "build": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "--build",
+            "/tmp/fossilize-h19/build/asan-ubsan",
+            "--parallel",
+            "4",
+            "--target",
+            "replay-support-test",
+            "replay-support-dependency-test",
+            "replay-event-test",
+            "replay-event-producer-test",
+            "parser-input-test",
+            "varint-test",
+            "replay-warning-test"
+          ],
+          "configure": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/cmake",
+            "-S",
+            "/home/robin/.codex/worktrees/1471/fossilize",
+            "-B",
+            "/tmp/fossilize-h19/build/asan-ubsan",
+            "-G",
+            "Ninja",
+            "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-10/tools/bin/ninja",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=ON",
+            "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+            "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+            "-DCMAKE_BUILD_TYPE=Debug",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+            "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+            "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer",
+            "-DCMAKE_C_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer",
+            "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined",
+            "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=address,undefined"
+          ],
+          "execution": "Resolve proposed new runner target names to actual committed registration; build only the sanitizer runners needed by the regex. Compiler and sanitizer runtime must actually be active. Unit checker independently reruns this focused sanitizer gate; final inspects unchanged candidate-bound evidence unless source changes. New runner names may reuse existing actual targets, but all selected warning IDs must execute with changed aggregation/parser/filter code instrumented; verify effective sanitizer flags. Real process/quiet-worker checks remain decisive unsanitized gates, not a reason to omit direct lifecycle/concurrency tests.",
+          "test": [
+            "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h19/build/asan-ubsan",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(replay-warning-(same-cause|grouping|overflow|dependencies|concurrency|lifecycle|legacy-controls)$|replay-support-(compute|graphics|raytracing|static|categories|call-scope|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-event-unit-|replay-event-producer-(parse|creation)$|parser-input-|varint-system-test$)"
+          ]
+        },
+        "prerequisites": [
+          "Exact committed candidate; fresh role worktree; live issue #19/#8 input unchanged; all commands prepublished with exact argv/cwd/intention and separately run under verification_lock.py --repo WORKTREE --timeout 600 --intent-id ID --receipt PATH -- COMMAND."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "expected": "Each mutation compiles and fails its precise M19 assertion with normal test failure, while unmutated and supported controls pass. Retain exact mutation diff and result; no crash/compile/watchdog failure counted as sensitivity. New text negative control produces an explicit bounded-output/duplicate-warning assertion failure, not a compiler or runtime accident.",
+        "id": "M19-sensitivity-controls",
+        "kind": "work_unit",
+        "method": "In isolated copies outside source, compile candidate tests against two minimal source mutations from M19-sensitivity (lost actual support detail; lost parent identity/bypassed block). Each compile/run command is separately intent-published/wrapped at 600 seconds. Run matching unmutated/success controls. Checker reproduces or independently constructs equivalent compiled controls. Additionally compile and execute M19-text-sensitivity, restoring a real production unbounded log bypass; require unchanged committed explicit warning assertion exit 1. Candidate control passes. All three original+new controls required at amended head.",
+        "prerequisites": [
+          "Exact committed candidate; fresh role worktree; live issue #19/#8 input unchanged; all commands prepublished with exact argv/cwd/intention and separately run under verification_lock.py --repo WORKTREE --timeout 600 --intent-id ID --receipt PATH -- COMMAND."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/home/robin/.codex/worktrees/1471/fossilize",
+        "expected": "All eight warning tests pass with explicit Release-active assertions and actual stdout/stderr/status artifacts. Retained report <=32 cause lines +8 example lines +1 overflow +1 header and <=32768 bytes; exact cause/resource/overflow attempt counts, representative values/identities, quiet and standalone behavior and duplicate suppression. Concise mapping to each new case; no universal bound claimed for unrelated parse/driver output.",
+        "id": "M19-text-production",
+        "kind": "both",
+        "method": {
+          "commands": [
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "BUILD",
+              "--show-only=json-v1"
+            ],
+            [
+              "/tmp/fossilize-10/tools/cmake/data/bin/ctest",
+              "--test-dir",
+              "BUILD",
+              "--output-on-failure",
+              "--no-tests=error",
+              "-R",
+              "^replay-warning-"
+            ]
+          ],
+          "execution": "Execute in Debug exceptions OFF and Release exceptions ON at unit and fresh final stage. May be satisfied by independently executed M19-decisive-independent command containing this exact nonempty ID union; do not rerun redundantly merely for a second label. CTest assertions inspect actual stderr, bytes/lines/counts/identity and success controls; discovery alone is insufficient."
+        },
+        "prerequisites": [
+          "All eight replay-warning runtime cases committed and registered, normal prose/core logging enabled, isolated output directories and finite watchdogs; exact candidate-bound directories independently validated. Every invocation has root-published command-intent and one verification_lock.py --repo SOURCE --timeout 600 --intent-id ID --receipt PATH -- exact argv; no nested wrappers."
+        ]
+      }
+    ],
+    "implementation": [
+      "Add structured support detail with stable kind/reason identifiers, feature/extension/property names, raw unknown sType/capability and explicit known required/available values. Preserve existing bool methods through additive overloads or explicit per-call context; no shared mutable last-error. Migrate detailed existing rejection sites, including common pNext/SPIR-V/subgroup helpers, while preserving first specific reason. Generic fallback is honest only when the detector truly lacks detail, not a substitute for known predicates.",
+      "Pilot compute internally, then carry the same contract through graphics/raytracing and static objects before this one unit completes. Unit fixture applicability table names existing checks for every entrypoint; do not add invented limits or omit existing supported controls. Keep malformed input and native OOM outside Unsupported.",
+      "Capture typed source dependency identities before StateReplayer and ThreadedReplayer replace hash handles with native handles. Use a scoped private capture/reference adapter or explicit internal context without changing public StateCreatorInterface virtual signatures. Recursive parse preserves originating parent reason; queued work owns scalar consumer/parent identities. Missing static/common-cache references become blocked dependency facts rather than fresh consumer compiler/parse faults.",
+      "Unify blocked consumer recording across shader resolution, static/lazy maintenance4 resolver, derivative base and pipeline-library ordering. Record one originating failure for one cached failed dependency within a worker attempt and one blocked observation per affected logical consumer. Preserve parent failure category when known; mark missing/unknown distinctly. Never call the consumer Vulkan create branch when blocked.",
+      "Extend bounded private worker support/dependency detail and controller retention using the existing #18 architecture, documenting exact version/unknown-field rules and count scope. Human messages derive from the same facts. Keep aggregate category counts independent from bounded examples/omission and retain legacy protocol, native termination and FINAL semantics. Update local-docs/specs/replay-worker-events.md and verification.md for delivered boundaries.",
+      "Add registered Release-active M19 runners/fixtures, exact test mapping and sensitivity controls; update CHANGELOG.md in the same candidate with one factual Observability sentence and full issue #19 link. No production task/state mutations by implementer/checker.",
+      "Introduce private fixed-capacity attempt-local warning aggregation: at most 32 cause groups, at most 2 representative examples per group subject to 8 globally, one final line per retained cause and one overflow line. Fixed per-resource-type uint64 counters allow honest mixed resources; no unbounded sets, strings or per-hash diagnostic ledger. Targeted warning report is at most 42 lines and 32768 bytes including header/examples/overflow, independent of input size. Retain examples until final flush, with zero per-observation stdio after capture. Exact counts are supported through uint64 range; overflow must be explicit saturation, never wrap or false exactness.",
+      "Key support groups by semantic support kind plus stable predicate/identifier and raw ID when it identifies a capability/sType/enum constraint. Include resource/predicate context for generic identifiers such as flags; do not merge unrelated constraint relations. Exclude object/parent hashes and varying required/available values from keys; keep those in bounded examples. Distinguish feature, extension, property/API, known/unknown enum identity and malformed parse category. Use readable resource names and causal prose, e.g. X compute-pipeline replay observations could not be replayed because Y is not supported.",
+      "Key dependency groups separately by missing/failed/read-failed/unknown status and known originating category; preserve originating unsupported predicate when bounded retained source context knows it, so blocked consumers can name the support boundary. Unknown root context stays unknown. Never infer root cause after the bounded origin sample is exhausted. Consumer and parent source identities stay in examples. Parent status/category and unsupported origins remain distinct, while the same cause across varying parent hashes coalesces. Overflow counts affected observations, not distinct unseen causes or unique logical items; retained-group counters continue exact after capacity is full.",
+      "Integrate collection with already-authoritative failure recording so cached static-origin deduplication and existing per-thread failure-generation guards retain their meanings. Warnings count the corresponding attempt observations, including documented repeats; do not claim a cross-process unique pipeline ledger. Preserve existing event/category counts, bounded structured examples, producer loss, worker/attempt identities and FINAL semantics.",
+      "Replace all targeted bypass text: record_unsupported and record_dependency; generic compute/graphics/raytracing and sampler/descriptor-layout/pipeline-layout/render-pass/render-pass2/shader skips; worker parse and static preload Did-not-replay-blob for captured support/dependency failures; resolver invalid-create-info for known dependency paths; derivative/library dependency fallbacks; derived-parent batch missing warning; missing-common-cache advice. Parser log_missing_resource/log_invalid_resource in fossilize_errors.hpp must be silent only under a private replay capture that will replace that diagnostic. Preserve ordinary non-replay parser output, recorder remap LOGW_LEVEL and unrelated parse/driver/OOM diagnostics.",
+      "FeatureFilter detailed replay calls replace unsupported legacy LOGE at unknown sType, unknown/unsupported capability, unsupported extension and SPIR-V/API-version boundaries. Preserve bool/no-detail logging and decisions; malformed SPIR-V LOGE remains parse evidence. Prefer scoped existing detail receiver/capture ownership to a global verbosity change. If parser capture needs a quiet-diagnostics bit, default false and enable only in replay paths with replacement reporting; ordinary capture users retain legacy output.",
+      "Flush once after ordinary producer threads drain on standalone completion, orderly failure and worker finalization even without event_writer. Coordinate finish_events and destructor/entry cleanup with one idempotent finalization guard; empty/success-only runs emit no warning report. Quiet workers retain existing stderr suppression and unchanged rich pipe counters. Do not print an apparently complete report from signal/crash handlers or after hard _exit; earlier observations remain incomplete. Avoid locking-order inversions with outcome, event, source and origin mutexes.",
+      "Add Release-active registered actual-stderr tests with normal CLI LOGW/LOGE and core logging enabled. Existing prose-disabled controller fixtures cannot prove this requirement; use a dedicated runner or explicitly separate real-prose mode. Adapt only Vulkan/device producers privately, not text formatting/log functions or support/dependency decision branches. Update the same factual issue #19 changelog sentence and private protocol/verification documentation for warning limits, count scope, root-cause retention and lifecycle."
+    ],
+    "non_goals": [
+      "No full public run-result API, global cross-worker item reconciliation or whole-standard observability claim; those remain later backlog scope.",
+      "No new Vulkan support policy merely to create diagnostic cases; preserve support decisions and justified advice.",
+      "No GPU/driver compilation, cache warming/durability, Steam scheduling/presentation or hardware performance claim.",
+      "Native Windows verification is explicitly user-waived, remains unverified, and is not a required gate in this run. Preserve portable source and registration.",
+      "No harness-package changes or full Python harness-suite gate unless implementation changes that package.",
+      "No merge and no second PR; update https://github.com/robinwassen/Fossilize/pull/75 only.",
+      "No global log disable, universal stderr bound for unrelated parser/driver errors, support-policy change, public ABI/layout change, new event negotiation or reinterpretation of structured outcome counts."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000010`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n10. **FOS-000010 \u2014 Explain unsupported features and blocked dependencies.** **M, staged by resource type; depends on `FOS-000009`; \u00a71\u2013\u00a72.** Feature filter predicates return bool, often at detailed feature/property checks; [setup:1270](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1270) reduces this to \u201cnot supported.\u201d Return feature/extension/property identifiers and relevant limits when known. Pilot compute, then graphics/ray-tracing/static objects. Link missing/failed parents or modules to blocked consumers rather than counting consumers as independent compiler faults. **Check:** one unsupported feature; one invalid module referenced by many pipelines; missing common-cache input; unknown pNext sType. Preserve existing support advice only where justified. Do not make \u201cunsupported\u201d a catch-all for parse, OOM or missing dependency failures.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Feature-filter unit tests per migrated resource type:** Known feature, extension, property-limit and unknown-sType rejections return the correct identifier and available observed/required values; supported controls succeed. Parse errors and OOM remain separate categories.\n   - **Dependency-graph tests:** One failed shader/module or parent referenced by N pipelines yields one originating failure and N correctly linked blocked consumers, with zero creation calls for those unattempted consumers. Missing-common-cache cases identify a missing dependency without claiming the driver failed.\n\n<!-- fossilize-migration-v1:FOS-000010 -->\n"
+      }
+    ],
+    "scope": "One unsplit issue #19 amendment updating existing PR #75: retain all fourteen original support/dependency cases and full CPU regression obligations, and replace repetitive ordinary unsupported/blocked-dependency text with bounded examples and meaningful cause summaries. Current live issue #19 including Text warning volume follow-up and shared issue #8 govern; existing terminal evidence is historical, not acceptance for the amended candidate.",
+    "version": 1,
+    "work_units": []
+  },
   "provenance": [
     {
       "prior_issue_snapshot": {
@@ -302,6 +1038,130 @@
         "root": "https://github.com/robinwassen/Fossilize/issues/19"
       },
       "reconciliation": "User explicitly requested bounded cause-grouped text warning summaries as an amendment to existing PR75 after prior run terminal438; added new section without altering original issue text. Preserve original acceptance and prior completed run history, renew all approvals for new candidate."
+    },
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/19"
+        ],
+        "digest": "7cca95aedfcacb001beea343eb2952772f257aebc12db888a7ffcd474637248c",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/10": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n",
+            "children": [],
+            "id": 6079794262,
+            "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
+            "number": 10,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000001 \u2014 Preserve precise context in existing diagnostics",
+            "url": "https://github.com/robinwassen/Fossilize/issues/10"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/13": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n",
+            "children": [],
+            "id": 6079809809,
+            "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
+            "number": 13,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000004 \u2014 Retain unrecoverable child loss in the controller",
+            "url": "https://github.com/robinwassen/Fossilize/issues/13"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/14": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/10",
+              "https://github.com/robinwassen/Fossilize/issues/13"
+            ],
+            "body": "Legacy identity: `FOS-000005`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n5. **FOS-000005 \u2014 Separate replay-thread work completion from item success.** **M; depends on `FOS-000001` and `FOS-000004` for complete propagation; \u00a72\u2013\u00a73.** [worker:1800](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1800) discards the parse return and increments `completed_count` after processing; creation helpers return void. [normal replay:4553](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L4553) returns success after the queue finishes (E7). Introduce a thread-safe outcome accumulator independent of optional shared memory. First cover parse/read and Vulkan creation failures, then setup/validation/support/dependency exits. Propagate the result through normal replay, child and controller. **Check:** E7, missing entry, injected Vulkan failure, and mixed success/failure. Keep queue progress as queue progress. Unsupported required work must be unsuccessful under the declared policy, even when it is not a crash.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Replay unit and CLI integration tests:** E7, missing input entries, injected creation errors, unsupported required work, validation failures and dependency-blocked work produce the expected distinct outcomes and nonzero aggregate exits. A fully successful workload returns zero.\n   - **Thread/mode matrix:** The same fixed mixed workload has the same final logical outcome in normal, child/controller and progress modes, with shared progress absent/present and one/multiple threads. Queue completion still reaches its expected count even when processing fails; it is never the success oracle.\n\n<!-- fossilize-migration-v1:FOS-000005 -->\n",
+            "children": [],
+            "id": 6079814916,
+            "node_id": "I_kwDOVZpjbc8AAAABamKdBA",
+            "number": 14,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000005 \u2014 Separate replay-thread work completion from item success",
+            "url": "https://github.com/robinwassen/Fossilize/issues/14"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/16": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/13"
+            ],
+            "body": "Legacy identity: `FOS-000007`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n7. **FOS-000007 \u2014 Record timeout origin before invoking crash recovery.** **S\u2013M; depends on `FOS-000004`; \u00a74\u2013\u00a75.** [no-progress wait:965](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L965) invokes the timeout handler before its diagnostic. [Linux:1589](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1589) sends SIGABRT; [Windows:1203](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1203) writes `CRASH`. Store/send a distinct trigger from the healthy dispatcher before termination. Distinguish configured work-no-progress timeout, controller heartbeat timeout, and post-crash cleanup timeout. Include actual monotonic elapsed time and configured threshold. **Check:** deterministic no-progress injection, spontaneous fault, heartbeat loss, failed signal delivery and escalation. An externally observed SIGKILL alone does not prove a controller timeout or OOM. Multiple threads imply unknown individual attribution unless independently established.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Fake-clock and termination-adapter unit tests:** Each configured no-progress, heartbeat and cleanup deadline records its own trigger, threshold and monotonic elapsed time before requesting termination. Progress resets only the applicable deadline; a spontaneous fault has no invented timeout trigger.\n   - **Controller integration tests:** Injected SIGABRT/Windows recovery, failed termination delivery and escalation preserve trigger, mechanism and final effect separately. An unexplained external SIGKILL remains unattributed; multi-thread cases without item evidence retain unknown attribution. Use synchronization barriers, not timing races, to order events.\n\n<!-- fossilize-migration-v1:FOS-000007 -->\n",
+            "children": [],
+            "id": 6079824724,
+            "node_id": "I_kwDOVZpjbc8AAAABamLDVA",
+            "number": 16,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000007 \u2014 Record timeout origin before invoking crash recovery",
+            "url": "https://github.com/robinwassen/Fossilize/issues/16"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/17": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/10",
+              "https://github.com/robinwassen/Fossilize/issues/14"
+            ],
+            "body": "Legacy identity: `FOS-000008`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n8. **FOS-000008 \u2014 Reject malformed resource envelopes as controlled input errors.** **S for envelope guard, M for nested validation; depends on `FOS-000001` and `FOS-000005`; \u00a71\u2013\u00a72.** [parse:6368](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize.cpp#L6368) indexes `doc[\"version\"].GetInt()` without checking object/member/type (E5). Start with the envelope, reporting invalid shape versus incompatible version; audit nested field reads in subsequent bounded patches. Preserve numeric parse error/offset and resource identity without dumping shader contents. **Check:** `{}`, `[]`, null, missing/string version, malformed nested records; none may assert, terminate the embedding host or be blamed on the driver. Test release and debug builds. This is an outcome/containment prerequisite, not merely prettier logging; no claim of a complete parser-security audit is made here.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Parser table tests in debug and release builds:** Null, arrays, {}, missing/wrong-type version, invalid JSON and malformed nested fixtures for every migrated parser return controlled reason-bearing errors without assertions, signals or host termination. Incompatible numeric versions have a different reason from malformed shape.\n   - **Containment and input-mutation tests:** A subprocess sentinel continues after each rejected input; valid fixtures still parse identically. A fixed-seed mutation corpus is run automatically with a bounded runtime, and newly found failures become deterministic fixtures. Diagnostics expose available error offsets/identity but no shader payload.\n\n<!-- fossilize-migration-v1:FOS-000008 -->\n",
+            "children": [],
+            "id": 6079829518,
+            "node_id": "I_kwDOVZpjbc8AAAABamLWDg",
+            "number": 17,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000008 \u2014 Reject malformed resource envelopes as controlled input errors",
+            "url": "https://github.com/robinwassen/Fossilize/issues/17"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/18": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/14",
+              "https://github.com/robinwassen/Fossilize/issues/16",
+              "https://github.com/robinwassen/Fossilize/issues/17"
+            ],
+            "body": "Legacy identity: `FOS-000009`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n9. **FOS-000009 \u2014 Carry reason data from the place that detects it.** **M; depends on `FOS-000005`, `FOS-000007`, `FOS-000008`; \u00a71, \u00a74\u2013\u00a75.** Add a small stable internal result/event representation: phase, reason ID, known raw error, tag/hash or range, worker and attempt, plus unknown-context flags. Start with parse, creation and timeout paths. Extend child messages on both platforms with explicit framing/version negotiation and bounded parsing; never require the controller to infer categories from human logs. **Check:** split/truncated messages, unknown version/reason, missing final message, worker exit before first report. Unknown information stays unknown. This is where downstream controllers acquire causes; a parent-only summary cannot recover details a worker never sends.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Result serialization and streaming-parser unit tests:** Each migrated producer preserves reason, phase, raw error and applicable identity through a round trip. Feed every split position, multiple records per read, truncated/oversized records and unknown versions/reasons; parsing stays bounded and never converts absent context into known values.\n   - **Worker/controller integration tests:** With worker prose disabled, injected parse, creation and timeout failures remain distinguishable at the controller. Death before the first report and loss of the final report yield explicit uncertainty rather than fabricated resource identity or success.\n\n<!-- fossilize-migration-v1:FOS-000009 -->\n",
+            "children": [],
+            "id": 6079834852,
+            "node_id": "I_kwDOVZpjbc8AAAABamLq5A",
+            "number": 18,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000009 \u2014 Carry reason data from the place that detects it",
+            "url": "https://github.com/robinwassen/Fossilize/issues/18"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/19": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/18"
+            ],
+            "body": "Legacy identity: `FOS-000010`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n10. **FOS-000010 \u2014 Explain unsupported features and blocked dependencies.** **M, staged by resource type; depends on `FOS-000009`; \u00a71\u2013\u00a72.** Feature filter predicates return bool, often at detailed feature/property checks; [setup:1270](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1270) reduces this to \u201cnot supported.\u201d Return feature/extension/property identifiers and relevant limits when known. Pilot compute, then graphics/ray-tracing/static objects. Link missing/failed parents or modules to blocked consumers rather than counting consumers as independent compiler faults. **Check:** one unsupported feature; one invalid module referenced by many pipelines; missing common-cache input; unknown pNext sType. Preserve existing support advice only where justified. Do not make \u201cunsupported\u201d a catch-all for parse, OOM or missing dependency failures.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Feature-filter unit tests per migrated resource type:** Known feature, extension, property-limit and unknown-sType rejections return the correct identifier and available observed/required values; supported controls succeed. Parse errors and OOM remain separate categories.\n   - **Dependency-graph tests:** One failed shader/module or parent referenced by N pipelines yields one originating failure and N correctly linked blocked consumers, with zero creation calls for those unattempted consumers. Missing-common-cache cases identify a missing dependency without claiming the driver failed.\n\n<!-- fossilize-migration-v1:FOS-000010 -->\n\n## Text warning volume \u2014 PR #75 follow-up\n\nAt the user's request, cap ordinary unsupported-object and blocked-dependency text warnings, show a few representative examples, and summarize affected replay work by the relevant cause: for example, \u201cX pipelines could not be replayed because Y is not supported.\u201d Preserve all original acceptance criteria above.\n\n- Group by meaningful feature, extension, property/API boundary or unknown identifier, rather than individual pipeline hashes or every varying requested limit; retain relevant values and source identities in bounded examples. Keep unsupported, missing/failed dependencies, parse errors, OOM and driver failures distinct.\n- Bound retained cause groups, example output and memory even for many distinct causes, with honest overflow counts. Totals remain correct after the example cap and under concurrent replay. State the summary's worker/attempt scope; do not imply cross-worker unique-item accounting.\n- Replace duplicate legacy warnings for these same support/dependency failures, including detector/parser paths, so they cannot bypass the cap. Preserve unrelated error reporting, existing bool/non-replay callers, quiet-worker behavior, support policy and structured-event/outcome counts.\n- Produce the summary once on ordinary completion/failure, including standalone replay without a structured-event writer. Success-only runs must not gain warning noise; hard process death must not be presented as a completed summary.\n- Add Release-active automated checks of actual production text output: large repeated fanout, multiple meaningful causes and values, distinct-cause overflow, concurrency, representative identities, standalone/worker/quiet paths, duplicate-warning suppression and successful controls. Preserve the original full regression obligations. Native Windows verification remains user-waived and unverified.\n\n<!-- pr75-text-warning-cap-20261110 -->\n",
+            "children": [],
+            "id": 6079839416,
+            "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
+            "number": 19,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "FOS-000010 \u2014 Explain unsupported features and blocked dependencies",
+            "url": "https://github.com/robinwassen/Fossilize/issues/19"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/19"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
     }
   ],
   "publishing": {
@@ -319,7 +1179,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 4,
+  "revision": 5,
   "root_issue": {
     "id": 6079839416,
     "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
@@ -329,9 +1189,17 @@
   },
   "run_id": "issue19-text-warnings-20261110",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-19",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/19",
   "verification": [],
-  "work_units": []
+  "work_units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/19",
+      "key": "https://github.com/robinwassen/Fossilize/issues/19",
+      "status": "ready"
+    }
+  ]
 }
