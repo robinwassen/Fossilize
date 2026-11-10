@@ -137,6 +137,21 @@ static void filters()
  auto w=bytes("white.foz");w.push_back(1);save("bad-white.foz",w);db=open("source.foz");c.require(db->load_whitelist_database("bad-white.foz")&&db->prepare()&&!db->get_preparation_report().satisfies_required_scope(true),"D20/filter-truncated-required");
  const char *paths[]={"source.foz","white.foz"}; DB composite(create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,2)); composite->promote_sub_database_to_whitelist(2);
  c.require(composite->prepare(),"D20/implicit-prepare"); r=composite->get_preparation_report();c.require(r.discovered.size()==3&&r.selected.size()==2&&r.selected[0].hash==0x20&&r.selected[1].hash==0x21,"D20/implicit-whitelist-exact");
+ remove("absent-filter.foz");
+ for(bool blacklist:{false,true})
+ {
+  auto source=open("source.foz");
+  bool loaded=blacklist?source->load_blacklist_database("absent-filter.foz"):source->load_whitelist_database("absent-filter.foz");
+  c.require(!loaded&&source->prepare(),"D20/failed-filter-bool-and-source-salvage");
+  auto report=source->get_preparation_report();
+  c.require(report.inputs.size()==2&&!report.discovery_complete&&!report.unread_total_known&&!report.satisfies_required_scope()&&!report.satisfies_required_scope(true),"D20/failed-filter-retains-incomplete-requested-scope");
+  if(report.inputs.size()==2)
+  {
+   auto &input=report.inputs[1];
+   c.require(input.path=="absent-filter.foz"&&input.filter&&input.required&&!input.opened&&input.state==DiscoveryState::Failed&&input.reason==DiscoveryReason::Open&&input.raw_error_known&&input.raw_error==ENOENT,"D20/failed-filter-exact-origin-after-reset");
+  }
+ }
+
 }
 static void metadata()
 {
