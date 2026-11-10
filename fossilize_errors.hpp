@@ -138,11 +138,17 @@ static inline void log_error_pnext_chain(std::string what, const void *pNext)
 	LOGW_LEVEL("%s\n", what.c_str());
 }
 
-static inline void log_missing_resource(const char *type, Hash hash, bool read_failed = false)
+static inline void log_missing_resource(const char *type, Hash hash, bool read_failed = false,
+										bool known_missing = false)
 {
 	if (read_failed)
 	{
 		LOGW_LEVEL("Referenced %s %016" PRIx64 ", but reading the existing input failed.\n", type, hash);
+		return;
+	}
+	if (!known_missing)
+	{
+		LOGW_LEVEL("Referenced %s %016" PRIx64 ", but its dependency could not be resolved.\n", type, hash);
 		return;
 	}
 	LOGW_LEVEL("Referenced %s %016" PRIx64

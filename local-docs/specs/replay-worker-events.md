@@ -148,3 +148,5 @@ pointers into a capture or allocator. Public StateCreatorInterface virtual
 signatures and shared-progress layout/version remain unchanged. Old-header
 compile/link/run checks describe the preserved source and bool behavior boundary,
 not a general prebuilt C++ ABI guarantee.
+
+Dependency prose recommends a common cache only when an input resolver confirms that the referenced resource is absent. A missing handle-map entry alone is unresolved; a known null handle is failed. Present unreadable inputs retain read-failed status, and known originating parse/create failures remain attached to the parent.

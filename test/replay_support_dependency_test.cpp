@@ -663,6 +663,19 @@ static void recursive_read_controls()
 
 static void common_cache()
 {
+	{
+		DiagnosticStderr capture;
+		set_thread_log_level(LOG_WARNING);
+		run_graph("invalid-layout", 2, 4, 7);
+		set_thread_log_level(LOG_NONE);
+		auto text = capture.finish();
+		checks.contains(text, "Pipeline layout 0000000000000102, but its dependency could not be resolved.",
+						"M19/present-malformed-layout-prose-and-source-hash");
+		checks.require(text.find("common cache") == std::string::npos &&
+						   text.find("does not exist") == std::string::npos,
+					   "M19/present-malformed-layout-no-missing-input-advice");
+	}
+	run_graph("good", 2, 4, 7);
 	recursive_read_controls();
 	run_graph("missing-multiple-modules", 4, 4, 2);
 	for (auto mode : {"missing-module", "missing-layout", "invalid-layout"})
@@ -671,6 +684,19 @@ static void common_cache()
 }
 static void static_dependencies()
 {
+	{
+		DiagnosticStderr capture;
+		set_thread_log_level(LOG_WARNING);
+		run_graph("static-layout-create", 4, 4, 1, VK_SUCCESS, 0, true, true);
+		set_thread_log_level(LOG_NONE);
+		auto text = capture.finish();
+		checks.contains(text, "Pipeline layout 0000000000000102, but its dependency did not produce a usable handle",
+						"M19/known-failed-layout-prose-and-source-hash");
+		checks.require(text.find("common cache") == std::string::npos &&
+						   text.find("does not exist") == std::string::npos,
+					   "M19/known-failed-layout-no-missing-input-advice");
+	}
+	run_graph("good-static", 2, 4, 1, VK_SUCCESS, 0, false, true);
 	for (auto mode : {"missing-static-layout", "missing-static-set", "missing-static-sampler"})
 		run_graph(mode, 2, 4, 1);
 	run_graph("missing-static-pass", 2, 4, 2);

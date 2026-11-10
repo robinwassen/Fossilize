@@ -687,6 +687,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		d.tag = tag;
 		d.hash = hash;
 		d.status = fallback;
+		if (d.status == ReplayDependency::Status::Unknown && global_database && !global_database->has_entry(tag, hash))
+			d.status = ReplayDependency::Status::Missing;
 		std::lock_guard<std::mutex> hold(origin_mutex);
 		if (tag == RESOURCE_SHADER_MODULE)
 		{

@@ -3139,9 +3139,11 @@ bool StateReplayer::Impl::parse_immutable_samplers(StateCreatorInterface &iface,
 					ReplayDependency::detected(RESOURCE_SAMPLER, sampler_hash,
 											   resolver && resolver->has_entry(RESOURCE_SAMPLER, sampler_hash)
 												   ? ReplayDependency::Status::ReadFailed
-												   : ReplayDependency::Status::Missing);
+											   : resolver ? ReplayDependency::Status::Missing
+														  : ReplayDependency::Status::Unknown);
 					log_missing_resource("Immutable sampler", sampler_hash,
-										 resolver && resolver->has_entry(RESOURCE_SAMPLER, sampler_hash));
+										 resolver && resolver->has_entry(RESOURCE_SAMPLER, sampler_hash),
+										 resolver && !resolver->has_entry(RESOURCE_SAMPLER, sampler_hash));
 					return false;
 				}
 
@@ -3154,9 +3156,11 @@ bool StateReplayer::Impl::parse_immutable_samplers(StateCreatorInterface &iface,
 					ReplayDependency::detected(RESOURCE_SAMPLER, sampler_hash,
 											   resolver && resolver->has_entry(RESOURCE_SAMPLER, sampler_hash)
 												   ? ReplayDependency::Status::ReadFailed
-												   : ReplayDependency::Status::Missing);
+											   : resolver ? ReplayDependency::Status::Missing
+														  : ReplayDependency::Status::Unknown);
 					log_missing_resource("Immutable sampler", sampler_hash,
-										 resolver && resolver->has_entry(RESOURCE_SAMPLER, sampler_hash));
+										 resolver && resolver->has_entry(RESOURCE_SAMPLER, sampler_hash),
+										 resolver && !resolver->has_entry(RESOURCE_SAMPLER, sampler_hash));
 					return false;
 				}
 
@@ -3174,12 +3178,8 @@ bool StateReplayer::Impl::parse_immutable_samplers(StateCreatorInterface &iface,
 
 			if (sampler_itr == replayed_samplers.end())
 			{
-				ReplayDependency::detected(RESOURCE_SAMPLER, sampler_hash,
-										   resolver && resolver->has_entry(RESOURCE_SAMPLER, sampler_hash)
-											   ? ReplayDependency::Status::ReadFailed
-											   : ReplayDependency::Status::Missing);
-				log_missing_resource("Immutable sampler", sampler_hash,
-									 resolver && resolver->has_entry(RESOURCE_SAMPLER, sampler_hash));
+				ReplayDependency::detected(RESOURCE_SAMPLER, sampler_hash, ReplayDependency::Status::Unknown);
+				log_missing_resource("Immutable sampler", sampler_hash);
 				return false;
 			}
 			else if (sampler_itr->second == VK_NULL_HANDLE)
@@ -3268,7 +3268,7 @@ bool StateReplayer::Impl::parse_set_layouts(const Value &layouts, const VkDescri
 			auto set_itr = replayed_descriptor_set_layouts.find(index);
 			if (set_itr == end(replayed_descriptor_set_layouts))
 			{
-				ReplayDependency::detected(RESOURCE_DESCRIPTOR_SET_LAYOUT, index, ReplayDependency::Status::Missing);
+				ReplayDependency::detected(RESOURCE_DESCRIPTOR_SET_LAYOUT, index, ReplayDependency::Status::Unknown);
 				log_missing_resource("Descriptor set layout", index);
 				return false;
 			}
@@ -4002,9 +4002,11 @@ bool StateReplayer::Impl::parse_compute_pipeline(StateCreatorInterface &iface, D
 				ReplayDependency::detected(RESOURCE_SHADER_MODULE, module,
 										   resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module)
 											   ? ReplayDependency::Status::ReadFailed
-											   : ReplayDependency::Status::Missing);
+										   : resolver ? ReplayDependency::Status::Missing
+													  : ReplayDependency::Status::Unknown);
 				log_missing_resource("Shader module", module,
-									 resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module));
+									 resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module),
+									 resolver && !resolver->has_entry(RESOURCE_SHADER_MODULE, module));
 				return false;
 			}
 
@@ -4016,9 +4018,11 @@ bool StateReplayer::Impl::parse_compute_pipeline(StateCreatorInterface &iface, D
 				ReplayDependency::detected(RESOURCE_SHADER_MODULE, module,
 										   resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module)
 											   ? ReplayDependency::Status::ReadFailed
-											   : ReplayDependency::Status::Missing);
+										   : resolver ? ReplayDependency::Status::Missing
+													  : ReplayDependency::Status::Unknown);
 				log_missing_resource("Shader module", module,
-									 resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module));
+									 resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module),
+									 resolver && !resolver->has_entry(RESOURCE_SHADER_MODULE, module));
 				return false;
 			}
 
@@ -4032,12 +4036,8 @@ bool StateReplayer::Impl::parse_compute_pipeline(StateCreatorInterface &iface, D
 			module_iter = replayed_shader_modules.find(module);
 			if (module_iter == replayed_shader_modules.end())
 			{
-				ReplayDependency::detected(RESOURCE_SHADER_MODULE, module,
-										   resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module)
-											   ? ReplayDependency::Status::ReadFailed
-											   : ReplayDependency::Status::Missing);
-				log_missing_resource("Shader module", module,
-									 resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module));
+				ReplayDependency::detected(RESOURCE_SHADER_MODULE, module, ReplayDependency::Status::Unknown);
+				log_missing_resource("Shader module", module);
 				return false;
 			}
 		}
@@ -4458,9 +4458,11 @@ bool StateReplayer::Impl::parse_stages(StateCreatorInterface &iface, DatabaseInt
 					ReplayDependency::detected(RESOURCE_SHADER_MODULE, module,
 											   resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module)
 												   ? ReplayDependency::Status::ReadFailed
-												   : ReplayDependency::Status::Missing);
+											   : resolver ? ReplayDependency::Status::Missing
+														  : ReplayDependency::Status::Unknown);
 					log_missing_resource("Shader module", module,
-										 resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module));
+										 resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module),
+										 resolver && !resolver->has_entry(RESOURCE_SHADER_MODULE, module));
 					return false;
 				}
 
@@ -4472,9 +4474,11 @@ bool StateReplayer::Impl::parse_stages(StateCreatorInterface &iface, DatabaseInt
 					ReplayDependency::detected(RESOURCE_SHADER_MODULE, module,
 											   resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module)
 												   ? ReplayDependency::Status::ReadFailed
-												   : ReplayDependency::Status::Missing);
+											   : resolver ? ReplayDependency::Status::Missing
+														  : ReplayDependency::Status::Unknown);
 					log_missing_resource("Shader module", module,
-										 resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module));
+										 resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module),
+										 resolver && !resolver->has_entry(RESOURCE_SHADER_MODULE, module));
 					return false;
 				}
 
@@ -4488,12 +4492,8 @@ bool StateReplayer::Impl::parse_stages(StateCreatorInterface &iface, DatabaseInt
 				module_iter = replayed_shader_modules.find(module);
 				if (module_iter == replayed_shader_modules.end())
 				{
-					ReplayDependency::detected(RESOURCE_SHADER_MODULE, module,
-											   resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module)
-												   ? ReplayDependency::Status::ReadFailed
-												   : ReplayDependency::Status::Missing);
-					log_missing_resource("Shader module", module,
-										 resolver && resolver->has_entry(RESOURCE_SHADER_MODULE, module));
+					ReplayDependency::detected(RESOURCE_SHADER_MODULE, module, ReplayDependency::Status::Unknown);
+					log_missing_resource("Shader module", module);
 					return false;
 				}
 			}
@@ -4516,10 +4516,16 @@ bool StateReplayer::Impl::parse_pipeline_layout_handle(const Value &state, VkPip
 	if (layout > 0)
 	{
 		auto layout_itr = replayed_pipeline_layouts.find(layout);
-		if (layout_itr == end(replayed_pipeline_layouts) || layout_itr->second == VK_NULL_HANDLE)
+		if (layout_itr == end(replayed_pipeline_layouts))
 		{
-			ReplayDependency::detected(RESOURCE_PIPELINE_LAYOUT, layout, ReplayDependency::Status::Missing);
+			ReplayDependency::detected(RESOURCE_PIPELINE_LAYOUT, layout, ReplayDependency::Status::Unknown);
 			log_missing_resource("Pipeline layout", layout);
+			return false;
+		}
+		else if (layout_itr->second == VK_NULL_HANDLE)
+		{
+			ReplayDependency::detected(RESOURCE_PIPELINE_LAYOUT, layout, ReplayDependency::Status::Failed);
+			log_invalid_resource("Pipeline layout", layout);
 			return false;
 		}
 		else
@@ -4590,8 +4596,10 @@ bool StateReplayer::Impl::parse_derived_pipeline_handle(StateCreatorInterface &i
 				ReplayDependency::detected(tag, pipeline,
 										   resolver && resolver->has_entry(tag, pipeline)
 											   ? ReplayDependency::Status::ReadFailed
-											   : ReplayDependency::Status::Missing);
-				log_missing_resource("Base pipeline", pipeline, resolver && resolver->has_entry(tag, pipeline));
+										   : resolver ? ReplayDependency::Status::Missing
+													  : ReplayDependency::Status::Unknown);
+				log_missing_resource("Base pipeline", pipeline, resolver && resolver->has_entry(tag, pipeline),
+									 resolver && !resolver->has_entry(tag, pipeline));
 				return false;
 			}
 
@@ -4603,8 +4611,10 @@ bool StateReplayer::Impl::parse_derived_pipeline_handle(StateCreatorInterface &i
 				ReplayDependency::detected(tag, pipeline,
 										   resolver && resolver->has_entry(tag, pipeline)
 											   ? ReplayDependency::Status::ReadFailed
-											   : ReplayDependency::Status::Missing);
-				log_missing_resource("Base pipeline", pipeline, resolver && resolver->has_entry(tag, pipeline));
+										   : resolver ? ReplayDependency::Status::Missing
+													  : ReplayDependency::Status::Unknown);
+				log_missing_resource("Base pipeline", pipeline, resolver && resolver->has_entry(tag, pipeline),
+									 resolver && !resolver->has_entry(tag, pipeline));
 				return false;
 			}
 
@@ -4618,11 +4628,8 @@ bool StateReplayer::Impl::parse_derived_pipeline_handle(StateCreatorInterface &i
 			pipeline_iter = replayed_pipelines->find(pipeline);
 			if (pipeline_iter == replayed_pipelines->end())
 			{
-				ReplayDependency::detected(tag, pipeline,
-										   resolver && resolver->has_entry(tag, pipeline)
-											   ? ReplayDependency::Status::ReadFailed
-											   : ReplayDependency::Status::Missing);
-				log_missing_resource("Base pipeline", pipeline, resolver && resolver->has_entry(tag, pipeline));
+				ReplayDependency::detected(tag, pipeline, ReplayDependency::Status::Unknown);
+				log_missing_resource("Base pipeline", pipeline);
 				return false;
 			}
 			else if (pipeline_iter->second == VK_NULL_HANDLE)
@@ -4735,7 +4742,7 @@ bool StateReplayer::Impl::parse_graphics_pipeline(StateCreatorInterface &iface, 
 		auto rp_itr = replayed_render_passes.find(render_pass);
 		if (rp_itr == end(replayed_render_passes))
 		{
-			ReplayDependency::detected(RESOURCE_RENDER_PASS, render_pass, ReplayDependency::Status::Missing);
+			ReplayDependency::detected(RESOURCE_RENDER_PASS, render_pass, ReplayDependency::Status::Unknown);
 			log_missing_resource("Render pass", render_pass);
 			return false;
 		}
