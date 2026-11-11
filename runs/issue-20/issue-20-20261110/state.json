@@ -485,6 +485,7 @@
     {
       "acceptance_effect": "Current candidate cannot be accepted. All full mandatory runtime gates remain unverified; focused7 passing does not establish whole-unit acceptance.",
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+      "attempt_id": "checker-unit-5",
       "criteria": [
         "AC1"
       ],
@@ -500,13 +501,67 @@
       ],
       "id": "F20-DIRECTORY-DTYPE-REGULAR",
       "location": "fossilize_db.cpp:920-955, especially933; test/database_discovery_test.cpp:84-92",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+        "artifact_records": [
+          "runs/issue-20/issue-20-20261110/evidence/checker-unit-5-directory-finding-recheck.json",
+          "runs/issue-20/issue-20-20261110/evidence/checker-unit-5-c20-u5-run-focused.log",
+          "runs/issue-20/issue-20-20261110/evidence/checker-unit-5-c20-u5-directory-repeat.log"
+        ],
+        "attempt_id": "checker-unit-5",
+        "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+        "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+        "evidence": [
+          "POSIX fallback now uses ::lstat and exact (status.st_mode & S_IFMT) != S_IFREG exclusion; it does not follow local symlinks. Windows unknown fallback explicitly skips FILE_ATTRIBUTE_REPARSE_POINT before stat; Windows remains source-only/unverified.",
+          "Registered database-discovery-empty now creates a real two-byte compute20 regular file, a local Unix socket compute21, valid symlink compute22 and dangling symlink compute23; checks native then forced DT_UNKNOWN on the identical directory.",
+          "Both rows assert exact regular-only discovered/selected key vectors, empty exclusion set, complete/known retained_count1, has_entry(false) for every nonregular key, positive regular membership and two-call exact {} payload readback. Explicit DiagnosticChecks survive Release.",
+          "Fixture unlinks stale socket/links before bind and after closing, preserving same-workdir repeatability; readdir forcing remains private Linux link wrapper, no shipping injection control.",
+          "Own independently compiled focused11/11 and same-workdir directory3/3 passed at exact6de/baseb86/plan2; all receipts settled confirmed."
+        ],
+        "finding_id": "F20-DIRECTORY-DTYPE-REGULAR",
+        "limits": [
+          "Native Windows waived NOT RUN/unverified; source predicate inspection not runtime evidence.",
+          "No large file, network connection, GPU or cache claim.",
+          "Prior checker/implementer runtime not counted as independent execution."
+        ],
+        "plan_version": 2,
+        "resolution_assessment": "Targeted defect concretely rechecked and resolved at6de by this fresh active checker; root alone records canonical resolution. Full remaining mandatory gates pending; this is not unit acceptance.",
+        "runtime_evidence": {
+          "fresh_build": [
+            "c20-u5-configure-focused",
+            "c20-u5-debug-exceptions-off-static",
+            "c20-u5-build-focused"
+          ],
+          "fresh_focused": {
+            "exit_code": 0,
+            "intent_id": "c20-u5-run-focused",
+            "log": "/tmp/fossilize-h20/output/checker-unit-5/c20-u5-run-focused.log",
+            "passed": 11,
+            "skipped": 0
+          },
+          "same_workdir_repeat": {
+            "exit_code": 0,
+            "intent_id": "c20-u5-directory-repeat",
+            "iterations": 3,
+            "log": "/tmp/fossilize-h20/output/checker-unit-5/c20-u5-directory-repeat.log",
+            "test": "database-discovery-empty"
+          }
+        },
+        "source_evidence": [
+          "POSIX fallback now uses ::lstat and exact (status.st_mode & S_IFMT) != S_IFREG exclusion; it does not follow local symlinks. Windows unknown fallback explicitly skips FILE_ATTRIBUTE_REPARSE_POINT before stat; Windows remains source-only/unverified.",
+          "Registered database-discovery-empty now creates a real two-byte compute20 regular file, a local Unix socket compute21, valid symlink compute22 and dangling symlink compute23; checks native then forced DT_UNKNOWN on the identical directory.",
+          "Both rows assert exact regular-only discovered/selected key vectors, empty exclusion set, complete/known retained_count1, has_entry(false) for every nonregular key, positive regular membership and two-call exact {} payload readback. Explicit DiagnosticChecks survive Release.",
+          "Fixture unlinks stale socket/links before bind and after closing, preserving same-workdir repeatability; readdir forcing remains private Linux link wrapper, no shipping injection control."
+        ],
+        "worker_id": "/root/checker_directory20"
+      },
       "requested_change": [
         "Use a platform-appropriate exact regular-file type predicate (S_ISREG or (st_mode & S_IFMT) == S_IFREG) and classify the directory entry itself without following symlinks in the new DT_UNKNOWN fallback (e.g. lstat on POSIX with suitable platform handling). Preserve native DT_REG-only entry semantics: sockets and symlink entries remain excluded consistently when d_type is unavailable; a regular symlink target must not turn the link into a selected resource.",
         "Extend the existing bounded private directory adapter regression: one regular resource entry, a local Unix socket and local symlinks with resource-looking filenames (one targeting the regular file and one dangling), comparing native d_type and DT_UNKNOWN rows. Assert exact regular-only discovered/selected sets, retained count/completeness and has_entry(nonregular)==false; retain the positive DT_UNKNOWN regular-file/readback control and Release-active checks. The symlink controls ensure a mask-only socket fix does not leave fallback/native classification inconsistent. No large file, network connection or shipping hook is needed.",
         "Commit the minimal source/regression repair and renew independent checking at the exact new candidate, preserving all12 planned cases/36 assertions, all6 mandatory gates, baseline/five compiled sensitivity controls and the native Windows NOT RUN limitation. Further implementation requires the coordinator to honor exhausted repair limits and explicit user authorization."
       ],
       "route": "implementation",
-      "status": "open",
+      "status": "resolved",
       "title": "Unknown directory entry types can publish nonregular entries as regular resource scope"
     }
   ],
@@ -13708,7 +13763,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 664,
+  "revision": 665,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
