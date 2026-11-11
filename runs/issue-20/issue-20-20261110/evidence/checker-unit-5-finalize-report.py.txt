@@ -1,0 +1,85 @@
+import json,pathlib,xml.etree.ElementTree as ET,hashlib,sys
+out=pathlib.Path('/tmp/fossilize-h20/output/checker-unit-5');src=pathlib.Path('/tmp/fossilize-h20/checker-unit-5')
+candidate='6de877d4a30b61cc0349c6257e8645ea0ff3f1c8';base='b86a23ea323ee86db19d4dace82afd904e75bae7';issue='https://github.com/robinwassen/Fossilize/issues/20'
+prefix='runs/issue-20/issue-20-20261110/evidence/checker-unit-5-'
+tuple_={'role':'checker','attempt_id':'checker-unit-5','worker_id':'/root/checker_directory20','input_revision':573,'input_sha':candidate,'candidate_sha':candidate,'base_sha':base,'plan_version':2,'operation':'work_unit','work_unit':issue}
+state=json.load(open('/tmp/fossilize-h20/result.json'));st=state['state'];assert state['artifact_publication']['status']=='confirmed' and state['artifact_wait'] is None
+assert all(st['attempts'][-1][k]==v for k,v in tuple_.items()) and st['attempts'][-1]['status']=='running'
+assert all(f['status']=='resolved' for f in st['findings'])
+# Fresh report-boundary task read, independent of the initial live observation.
+sys.path.insert(0,str(src/'.agents/skills/implement-change-harness/scripts'))
+from github_issues import GitHub
+g=GitHub(repository='robinwassen/Fossilize',timeout=45)
+original_snapshot=json.load(open('/tmp/fossilize-h20/checker-unit-5-input.json'))['state']['issue_snapshot']
+final_live=g.unchanged(original_snapshot)
+final_shared=g.issue(8)
+prior_shared=json.load(open('/tmp/fossilize-h20/output/checker-unit-3/live-material-issues-after-pause.json'))['shared_issue8']['observation']
+for key in ('id','node_id','title','body','state','state_reason'):
+ assert final_shared[key]==prior_shared[key], 'Report-boundary shared issue8 material drift: '+key
+assert g.ready(final_live)
+(out/'live-issues-final.json').write_text(json.dumps({'live':final_live,'shared8':final_shared,'boundary':'after all independent runtime gates, immediately before report'},indent=2)+'\n')
+rows={r['intent_id']:r for p in out.glob('batch-*.json') for r in json.load(open(p)) if r['intent_id']!='c20-u5-final-audit'};assert len(rows)==81
+commands=[]
+for id,r in rows.items():
+ e=json.load(open(out/(id+'.execution.json')));receipt=json.load(open(out/(id+'.receipt.json')))
+ assert e['exit_code']==0 and receipt['exit_code']==0 and not receipt['timed_out']
+ assert receipt==next(c for c in st['limits']['commands'] if c['intent_id']==id)['wait_receipt']
+ assert receipt['command']==r['child_command'] and receipt['cwd']==str(src) and receipt['timeout']==600
+ commands.append({**e,'receipt_data':receipt,'artifact_log':prefix+id+'.log'})
+def junit(file):
+ root=ET.parse(out/file).getroot();cases=list(root.iter('testcase'));assert cases
+ assert not list(root.iter('failure')) and not list(root.iter('error')) and not list(root.iter('skipped'))
+ names=[c.attrib['name'] for c in cases];assert len(names)==len(set(names));return names
+configs=['debug-exceptions-off','debug-exceptions-on','release-exceptions-off','release-exceptions-on'];matrix=[]
+for config in configs:
+ inv=json.load(open(out/('c20-u5-'+config+'-discover.log')));discovered=[t['name'] for t in inv['tests']];executed=junit(config+'-results.xml.txt');assert set(discovered)==set(executed) and len(discovered)==len(set(discovered))
+ matrix.append({'configuration':config,'discovered':discovered,'executed':executed,'count':len(executed),'passed':len(executed),'skipped':[],'command':'c20-u5-'+config+'-ctest'})
+assert all(set(m['executed'])==set(matrix[0]['executed']) for m in matrix)
+focused=junit('focused.xml.txt');assert len(focused)==11
+assert junit('directory-repeat.xml.txt')==['database-discovery-empty']
+repeat=junit('repeat.xml.txt');assert len(repeat)==91
+incoming_repeat=junit('incoming-repeat.xml.txt');assert len(incoming_repeat)==7
+compatibility=junit('compatibility.xml.txt');assert len(compatibility)==6
+san=junit('asan.xml.txt');assert len(san)==29
+san_inv=json.load(open(out/'c20-u5-asan-inventory.log'));assert {t['name'] for t in san_inv['tests']}==set(san)
+incoming_san=junit('incoming-asan.xml.txt');assert len(incoming_san)==20
+incoming_inv=json.load(open(out/'c20-u5-incoming-asan-inventory.log'));assert {t['name'] for t in incoming_inv['tests']}==set(incoming_san)
+for suffix,ids in [('repeat',repeat),('incoming-repeat',incoming_repeat),('directory-repeat',['database-discovery-empty'])]:
+ log=(out/('c20-u5-'+suffix+'.log')).read_text()
+ for id in ids:assert log.count(': '+id+' ')==3,(suffix,id,'repeat must actually report3 rows')
+mutations=[]
+for name in ['sliced-tail','required-input','unread-total','selection-exclusions','metadata-import']:
+ result=json.load(open(out/('mutation-'+name+'.json')));assert result['passed'] and result['runs'][0]['exit_code']==0 and result['runs'][1]['exit_code']==1 and ('FAIL '+result['expected_assertion']) in result['runs'][1]['stdout'];mutations.append(result)
+assert 'D20/original-defect: compiled baseline false-success and healthy controls observed; candidate rejects unknown scope' in (out/'c20-u5-original-defect.log').read_text()
+manifest=json.load(open(out/'controls-inventory.json'));control_ids=manifest['registered_ids'];assert len(control_ids)==3
+executed=sorted(set(matrix[0]['executed'])|set(control_ids));discovered=executed[:]
+input_state=json.load(open('/tmp/fossilize-h20/checker-unit-5-input.json'))['state'];mapping={}
+for case in input_state['plan']['cases']:
+ assert set(case['tests'])<=set(executed)
+ mapping[case['id']]={'location':case['location'],'tests':case['tests'],'source_assertions':'All planned assertions independently reviewed before claims/runtime; all present','assertion_audit':prefix+'planned-case-assertion-audit.json','execution':['Each registered ID executed in all four complete Linux matrices' if case['id']!='D20-defect-sensitivity' else 'Unchanged fd380 baseline real4CLI modes plus all5 isolated compiled mutations; exact healthy0 and intendedordinary1 checked'],'control_records':[prefix+'mutation-'+m['mutation']+'.json' for m in mutations] if case['id']=='D20-defect-sensitivity' else []}
+summary={**tuple_,'matrix':matrix,'focused':focused,'directory_repeat':{'ids':['database-discovery-empty'],'iterations':3},'repeat':{'ids':repeat,'iterations':3},'incoming_repeat':{'ids':incoming_repeat,'iterations':3},'sanitizers':{'ids':san,'effective_flags':'address+undefined independently asserted for relevant6plus translation units','runtime':'ASAN_OPTIONS=detect_leaks=1:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1'},'incoming_sanitizers':{'ids':incoming_san,'effective_flags':'address+undefined independently asserted for incoming4 translation units'},'compatibility':compatibility,'controls':{'original_baseline':'fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db','baseline_modes':['normal','slave-process','master-process','progress'],'baseline_empty':0,'baseline_e9':0,'candidate_empty':0,'candidate_e9':'ordinary nonzero','mutations':[{'name':m['mutation'],'id':m['id'],'healthy':0,'mutated':1,'assertion':m['expected_assertion']} for m in mutations]},'native_windows':'user-waived NOT RUN/unverified','findings':'No new finding; targeted directory finding concretely rechecked by own fresh11andrepeat3, resolved only by root during active attempt','limits':['No GPU/Steam/cache hit/cache persistence/physical compilation/general C++ ABI/mixed-version private metadata claim.','Unit checker only; separate fresh final checking and publication remain required.']}
+(out/'gate-summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+evidence=[]
+for gate in ['G20-source-contract','G20-linux-matrix','G20-repeat','G20-sanitizers','G20-controls','G20-compatibility']:
+ evidence.append({'gate':gate,'result':'passed','exit_code':0,'command':[c['child_command'] for c in commands if {'G20-source-contract':('source-contract','live-issues'),'G20-linux-matrix':tuple(configs),'G20-repeat':('repeat',),'G20-sanitizers':('asan-',),'G20-controls':('mutation','baseline','original-defect','controls-inventory'),'G20-compatibility':('compatibility',)}[gate] and any(x in c['intent_id'] for x in {'G20-source-contract':('source-contract','live-issues'),'G20-linux-matrix':tuple(configs),'G20-repeat':('repeat',),'G20-sanitizers':('asan-',),'G20-controls':('mutation','baseline','original-defect','controls-inventory'),'G20-compatibility':('compatibility',)}[gate])],'cwd':str(src),'environment':['Linux; exact own detached6de/baseb86; immutable baselinefd380','Debug/Release x exceptionsOFF/ON, CLI/layer/tests/SPIRVvalidationON, runtimeGPUlayerOFF','Every child separately published/wrapped/deadlined600; ordinaryjobs<=4/sanjobs<=2; receiptsettledexactly before nextchild'],'log':prefix+'gate-summary.json','criteria':['AC1'],'candidate_sha':candidate,'base_sha':base,'plan_version':2,'attempt_id':'checker-unit-5'})
+report={**tuple_,'root_issue':issue,'run_id':'issue-20-20261110','verdict':'accepted','summary':'Independent source review and all six mandatory Linux gates passed at candidate 6de877d4, base b86a23ea and plan 2. All 12 cases and 36 assertions remain covered. The directory repair passed fresh focused tests and three same-directory repetitions. All 301 CPU tests passed in each of four configurations; the original 91 repeat cases, 29 sanitizer cases, six compatibility cases, unchanged baseline and all five compiled mutation controls passed. Incoming issue #19 integration was repeated and sanitized separately.','findings':[],'evidence':evidence,'commands':commands,'discovered':discovered,'executed':executed,'test_mapping':mapping,'skipped':[],'incomplete':[],'observations':[{'finding_id':'F20-DIRECTORY-DTYPE-REGULAR','recheck':prefix+'directory-finding-recheck.json'},{'live_inputs_initial':prefix+'live-issues.json','live_inputs_final':prefix+'live-issues-final.json','observation':'Exact full root/prerequisite snapshot and shared8material identity/title/body/state/reason; no ordinarycomment/epicchildprogress treated as criteria.'},{'changelog':prefix+'source-review.json','observation':'Independent exact-candidate factual one-sentence fullissue20link scope and incoming19preservation review passed.'}],'limitations':['Native Windows explicitly user-waived for this root/run: NOT RUN/unverified; no Windows pass inferred.','Original baseline and old-header control revision fd380 differs from advanced current target baseb86 and remains unchanged as required by immutable plan.','No GPU, Steam, driver cache hit, cache persistence, physical compilation, general C++ binary ABI or mixed-version private metadata claim.','No candidate/source edits, canonical state writes or external mutations by this checker.','Unit acceptance only; separate fresh final checker and all publication gates remain.'],'records_file':'/tmp/fossilize-h20/checker-unit-5-records.json','next_action':'Root submit this unit acceptance with unchanged exact evidence; then manage readiness and dispatch separate fresh final checker at unchanged candidate/base/plan/current issue inputs.'}
+records={}
+files=['planned-case-assertion-audit.json','source-review.json','directory-finding-recheck.json','gate-summary.json','live-issues.json','live-issues-final.json','focused.xml.txt','directory-repeat.xml.txt','repeat.xml.txt','incoming-repeat.xml.txt','compatibility.xml.txt','asan.xml.txt','incoming-asan.xml.txt','controls-inventory.json','mutation-source-provenance.json']
+files += [config+'-results.xml.txt' for config in configs]
+files += ['mutation-'+m['mutation']+'.json' for m in mutations]+['patch-'+m['mutation']+'.json' for m in mutations]
+files += [id+suffix for id in rows for suffix in ['.log','.receipt.json','.execution.json']]
+for name in files:
+ text=(out/name).read_text();assert '\0' not in text
+ routine_build=name.endswith('.log') and any(token in name for token in ('-static.log','-opt.log','-build.log','-fixtures.log','-replay-layer.log','-build-focused.log'))
+ if routine_build and len(text.encode())>240000:
+  text='Routine full build log retained locally at '+str(out/name)+'; bounded publication tail follows.\n'+text[-220000:]
+ if len(text.encode())>=1024*1024:
+  # Preserve complete structured/JUnit/audit data with a lossless UTF-8 index.
+  parts=[]
+  for n,start in enumerate(range(0,len(text),200000)):
+   part=prefix+name+'.part'+str(n)+'.txt';records[part]=text[start:start+200000];parts.append(part)
+  records[prefix+name]=json.dumps({'format':'lossless UTF-8 text parts','parts':parts,'sha256':hashlib.sha256(text.encode()).hexdigest(),'original_bytes':len(text.encode())})+'\n'
+ else:records[prefix+name]=text
+pathlib.Path('/tmp/fossilize-h20/checker-unit-5-report.json').write_text(json.dumps(report,indent=2)+'\n')
+pathlib.Path('/tmp/fossilize-h20/checker-unit-5-records.json').write_text(json.dumps(records,indent=2)+'\n')
+print(json.dumps({'verdict':report['verdict'],'inventory':len(matrix[0]['executed']),'commands':len(commands),'records':len(records),'bytes':sum(len(v.encode()) for v in records.values())}))

@@ -1,0 +1,303 @@
+{
+  "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+  "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+  "plan_version": 2,
+  "original_preserved": true,
+  "cases": 12,
+  "assertions": 36,
+  "present": 36,
+  "missing": [],
+  "assertion_map": [
+    {
+      "case": "D20-empty-e9",
+      "assertion": 1,
+      "requirement": "Create and close a valid 16-byte magic-only FOZ; read it back through production StreamArchive: prepare succeeds, every resource set is empty, discovery is complete and total zero is known.",
+      "source_status": "present",
+      "source_evidence": "database_discovery_test.cpp empty: valid16bytes, alltags, knownzero",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-empty-e9",
+      "assertion": 2,
+      "requirement": "Create E9 by cutting the first name/header and separately the first payload after valid magic; legacy prepare still salvages, no retained entries, discovery incomplete, unread item total unknown rather than zero, reason and first unread byte offset known. A zero-length OS file is not the intact-empty fixture.",
+      "source_status": "present",
+      "source_evidence": "truncated(0) cuts name/header5 and payload58; reason boundary unknown",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-prefix-read",
+      "assertion": 1,
+      "requirement": "Write distinct checksum-protected known payloads, retain two whole entries and cut the next name/header or payload; metadata gives exact retained tag/hash union and prefix boundary, unknown unread total, and selected full-scope result unsuccessful.",
+      "source_status": "present",
+      "source_evidence": "truncated(2) union/count/boundary + fullscope false",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-prefix-read",
+      "assertion": 2,
+      "requirement": "Two-call read_entry yields exact intact payload bytes and hashes after prepare and after the report is queried. Preparation does not rewrite/truncate the input in ReadOnly mode. Full intact archive provides the successful control.",
+      "source_status": "present",
+      "source_evidence": "read_prefix twice, checksum4bytes, readonly byte equality, intact3",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-input-policy",
+      "assertion": 1,
+      "requirement": "Real concurrent database with valid, missing and invalid/unreadable inputs retains every requested path/index/policy after failed children are discarded; opened/discovered/failed/excluded identities and reasons are exact.",
+      "source_status": "present",
+      "source_evidence": "inputs exact_inputs tuple every scalar and distinct paths,index,policy",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-input-policy",
+      "assertion": 2,
+      "requirement": "Default legacy composite prepare and tolerant capture append behavior stay compatible; an explicit required input prevents full required-scope satisfaction, while an explicitly optional unavailable input is an exclusion of unknown item count and is never a success or failure item.",
+      "source_status": "present",
+      "source_evidence": "legacy composite/capture append prepare; required/optional exact",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-input-policy",
+      "assertion": 3,
+      "requirement": "Test both missing and unreadable/read-error paths deterministically: use a real absent file plus a private controlled file adapter for read/seek error, avoiding chmod-only permission assumptions when tests run as root. Known raw OS errors remain exact if available; format rejection has no invented errno.",
+      "source_status": "present",
+      "source_evidence": "Linux controlled positive fseek/header fread including errno absent + healthy",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-input-policy",
+      "assertion": 4,
+      "requirement": "Include primary base plus extras, no primary, duplicate paths, duplicate logical tag/hash across inputs and the same hash under different tags; input observations remain distinct while logical scope is a deduplicated tag/hash union.",
+      "source_status": "present",
+      "source_evidence": "primary/no-primary duplicatepaths duplicatekeys and samehash differenttag",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-errors-unknown",
+      "assertion": 1,
+      "requirement": "Invalid/short magic, unsupported version, controlled failed seek/tell/header read and cancelled discovery are reason-bearing failed/incomplete states, not known empty success. All offsets/length calculations are checked with subtraction after bounds checks.",
+      "source_status": "present",
+      "source_evidence": "invalid3 + failseek/tell/read + cancellation + checked span logical boundary controls",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-errors-unknown",
+      "assertion": 2,
+      "requirement": "Unknown or uninstrumented backend preparation remains explicitly unknown; default custom DatabaseInterface subclass report must not invent complete discovery. A subsequent valid independent database succeeds.",
+      "source_status": "present",
+      "source_evidence": "Custom default unknown and independent valid",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-filter-scope",
+      "assertion": 1,
+      "requirement": "Real source FOZ plus real whitelist/blacklist and implicit whitelist subdatabases yield exact prefilter logical universe, effective masks, selected set and exclusions by named policy; preserve existing shader-empty-whitelist semantics and union/precedence behavior.",
+      "source_status": "present",
+      "source_evidence": "filters exact sets/policies/mask + shader-empty + implicit whitelist",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-filter-scope",
+      "assertion": 2,
+      "requirement": "Observe filter exclusions at actual production scan/priming boundary before keys are discarded; do not infer an original universe from already-filtered get_hash_list results. Required missing/truncated filter input cannot silently become a known complete selection.",
+      "source_status": "present",
+      "source_evidence": "production observe_discovered before test_resource_filter; failed/truncated filters",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-filter-scope",
+      "assertion": 3,
+      "requirement": "Omitted input, whitelist rejection and blacklist rejection are distinct from read/creation failure. Policy exclusions do not increment succeeded/failed counters.",
+      "source_status": "present",
+      "source_evidence": "distinct exclusion tuples and production only one selected create",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-range-scope",
+      "assertion": 1,
+      "requirement": "Table covers all three pipeline tags, default full interval, empty interval, exact bounds, partially and wholly out-of-bounds half-open ranges, start beyond end under the declared existing clamping policy, and explicit hash selection including missing hashes.",
+      "source_status": "present",
+      "source_evidence": "ranges seven rows x three tags plus hit/miss",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-range-scope",
+      "assertion": 2,
+      "requirement": "Ranges use deterministic sorted filtered hash order and report requested interval, effective interval, exact selected tag/hash and excluded logical tag/hash sets. Duplicates are one logical item; same hash under another tag is separate.",
+      "source_status": "present",
+      "source_evidence": "exact stable selected dispatch and independently enumerated complement uniqueness",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-range-scope",
+      "assertion": 3,
+      "requirement": "Filter then range order is explicit; narrowing a range, choosing zero items or a present hash does not turn an unknown required unread tail into complete full-input discovery.",
+      "source_status": "present",
+      "source_evidence": "selection_filters filter-before-range; prefix_policy nonzero/hash requiredunknown",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-prefix-policy",
+      "assertion": 1,
+      "requirement": "Default full scope rejects recovered/truncated required input even if every discovered selected item succeeds or filters/ranges select no items.",
+      "source_status": "present",
+      "source_evidence": "prefix_policy default no success at zero/nonzero/hash/allhinted",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-prefix-policy",
+      "assertion": 2,
+      "requirement": "Explicit accept-recovered-prefix names each opened input and retained byte boundary, selected known tag/hash union and exclusion policy; it can satisfy only that prefix selection while original discovery and unread total remain incomplete/unknown.",
+      "source_status": "present",
+      "source_evidence": "explicitprefix production two calls + typed named retained boundary",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-prefix-policy",
+      "assertion": 3,
+      "requirement": "A missing/unreadable required input cannot be converted into an accepted recovered prefix; optional unknown inputs remain named input exclusions. No full-coverage percentage is inferred from a zero selected count.",
+      "source_status": "present",
+      "source_evidence": "missingrequired prefix false, namedoptional unavailable, no coveragepercent",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-replay-hints",
+      "assertion": 1,
+      "requirement": "Create a known dependency-complete recorder fixture with all three pipeline kinds, run successful creation, teardown/reopen and explicitly harvest replay-v1 fragments using existing merge behavior; subsequent production dispatch suppresses exactly hinted tag/hash items.",
+      "source_status": "present",
+      "source_evidence": "hints actual fixtures allthree kinds successful create+harvest+reopen",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-replay-hints",
+      "assertion": 2,
+      "requirement": "Report exact hint exclusions and version/device/UUID namespace policy separately from whitelist/range exclusions, retain stable prehint indices required by robust resume, and record zero actual creation calls for hinted items and expected calls for unhinted items.",
+      "source_status": "present",
+      "source_evidence": "exact hint policy and mixed production key/originalindex1",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-replay-hints",
+      "assertion": 3,
+      "requirement": "Legacy UUID-only, unknown namespace, unavailable optional hint DB and nonmatching device mode cannot become successful work or hide unknown discovery. Hints prove neither physical Vulkan compilation nor driver cache hit or durable persistence. Existing validation whitelist behavior stays independent.",
+      "source_status": "present",
+      "source_evidence": "inherited cache_legacy_provenance/null_provenance/whitelist + unknownallhinted",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-metadata-transfer",
+      "assertion": 1,
+      "requirement": "Export/import the actual production OS metadata handle for intact, truncated-zero, prefix, missing optional and missing required composite inputs; reopened reports preserve paths/indexes, policy, scan state, unknown counts, prefix boundary, filtered/excluded sets and exact readable payloads.",
+      "source_status": "present",
+      "source_evidence": "metadata modes0..6 actualhandle all scalar tuple equality exact keys/readback",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-metadata-transfer",
+      "assertion": 2,
+      "requirement": "Do not reconstruct complete discovery from imported hash-list length. Portable Windows named mapping and Linux FD mechanisms share semantic assertions; reject malformed/unsupported private metadata records with bounded size checks.",
+      "source_status": "present",
+      "source_evidence": "malformed actual mappings4 variants bounded parser source",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-metadata-transfer",
+      "assertion": 3,
+      "requirement": "Private metadata is same-commit only; worker reason frames and SharedControlBlock fields/layout/version retain their existing meaning.",
+      "source_status": "present",
+      "source_evidence": "samecommit reportmagic version; untouched SharedControlBlock and workerframes",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-production-modes",
+      "assertion": 1,
+      "requirement": "Use real null-device CLI normal, direct slave, master and progress processes, one/four threads where supported; process watchdogs, isolated working dirs and actual exit statuses are the outcome oracle. Empty intact succeeds; full-scope truncated-zero/prefix and required missing/unreadable input return nonzero.",
+      "source_status": "present",
+      "source_evidence": "CLI foreach4modes x threads1,4 watchdog/isolateddir exact exit",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-production-modes",
+      "assertion": 2,
+      "requirement": "Explicit prefix acceptance succeeds for a valid prefix and names that scope in the structured in-process result exercised by the production fixture; default full discovery remains incomplete. Optional input policy succeeds only for remaining declared scope and retains unavailable-input exclusion.",
+      "source_status": "present",
+      "source_evidence": "prefix/optional explicit scopes + actual run_normal_process typed reports",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-production-modes",
+      "assertion": 3,
+      "requirement": "Actual production selection/dispatch fixture observes the report returned by the helper used by shipping paths, plus parse/create call set, not a parallel toy model. Assertions inspect typed metadata without parsing human prose.",
+      "source_status": "present",
+      "source_evidence": "selection production includes shipping cpp and private Vulkan call observer",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-production-modes",
+      "assertion": 4,
+      "requirement": "Master must check discovery before zero-worker shortcuts and before metadata export; progress forwards policy through ExternalReplayer; children importing metadata cannot erase required uncertainty. Direct-child whitelist selection remains the existing unsupported invocation boundary; test the supported controller-imported filtered metadata path instead.",
+      "source_status": "present",
+      "source_evidence": "controllers select before zero/export; external setter + bothlaunchers",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-production-modes",
+      "assertion": 5,
+      "requirement": "Unsuccessful preparation cannot be erased by quiet/progress absence, all-hinted work, zero selected range or another successful input. No test-only flag/hook is installed in shipping CLI.",
+      "source_status": "present",
+      "source_evidence": "quiet/progress direct path no shippinghook; hints/range/hash strictunknown",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-compatibility",
+      "assertion": 1,
+      "requirement": "Extract actual input headers from fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db and put them before candidate includes; compile and link unchanged recorder/database/custom subclass and ExternalReplayer Options{} callers with candidate libraries, then execute valid/empty ordinary invocations.",
+      "source_status": "present",
+      "source_evidence": "actual fd380 headers first six headers+three callers compile/link/run",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-compatibility",
+      "assertion": 2,
+      "requirement": "No new pure virtual method or required override is imposed on old DatabaseInterface subclasses. Preserve legacy bool prepare salvage and tolerant composite behavior for existing library/capture callers while additive report/policy APIs describe limits.",
+      "source_status": "present",
+      "source_evidence": "oldcustom unchanged override and legacy bool/capture fixture",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-compatibility",
+      "assertion": 3,
+      "requirement": "Preserve original healthy CLI flags, metadata same-commit contract, worker #18 records and shared progress schema. Intentionally changed replay behavior is documented: required incomplete discovery now returns nonzero unless explicit recovered-prefix policy; binary ABI for arbitrary prebuilt C++ consumers and mixed-version private metadata are not claimed.",
+      "source_status": "present",
+      "source_evidence": "samecommitmetadata docs; #18 unchanged framing/progress; old CLI modes",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-defect-sensitivity",
+      "assertion": 1,
+      "requirement": "Build unchanged input replay executable and run candidate-generated/readback-checked E9 fixture and valid empty control using old supported flags. Baseline empty succeeds; baseline E9 false-success exit zero is recorded by a baseline-compatible checker, while candidate E9 must be nonzero. Compile/deadline/crash failures are not defect reproduction.",
+      "source_status": "present",
+      "source_evidence": "fd380 baseline four modes empty0 E90; candidate empty0 E9nonzero",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-defect-sensitivity",
+      "assertion": 2,
+      "requirement": "In disposable candidate copies, mutate only (a) sliced-tail completeness to complete, (b) discard missing required input identity/policy or bypass full-scope gate, (c) unknown unread total to known zero, (d) filtered/ranged/hinted exclusion accounting, and (e) imported completeness propagation. Every mutation must build and fail a named explicit D20/M20 runtime assertion, with an appropriate unaffected healthy control still passing.",
+      "source_status": "present",
+      "source_evidence": "five isolated source patch families; healthy0 intendedFAIL ordinary1",
+      "runtime_status": "NOT RUN"
+    },
+    {
+      "case": "D20-defect-sensitivity",
+      "assertion": 3,
+      "requirement": "Controls cannot pass by expecting a compiler error from compiling new APIs against an old header; baseline behavior probe uses only old flags/API. Retain mutation patch, exact source/candidate, compile status, expected assertion name and execution status.",
+      "source_status": "present",
+      "source_evidence": "old API flags baseline and explicit mutation manifest runtime status",
+      "runtime_status": "NOT RUN"
+    }
+  ],
+  "limitations": [
+    "Source audit establishes assertion presence, not runtime pass. Windows source inspected only; waived NOT RUN."
+  ]
+}

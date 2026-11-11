@@ -1,0 +1,17 @@
+{
+  "intent_id": "c20-u5-debug-exceptions-on-compiler-config",
+  "command": [
+    "python3",
+    "-B",
+    "-c",
+    "import json,pathlib,subprocess; p=pathlib.Path('/tmp/fossilize-h20/build/checker-unit-5/debug-exceptions-on'); print(subprocess.run(['c++','--version'],capture_output=True,text=True).stdout); print((p/'CMakeCache.txt').read_text()); print(json.dumps(json.loads((p/'compile_commands.json').read_text())[:5],indent=2))"
+  ],
+  "cwd": "/tmp/fossilize-h20/checker-unit-5",
+  "timeout": 600.0,
+  "started": 1794431033.3728604,
+  "acquired": 1794431033.3761303,
+  "wait_seconds": 0.0,
+  "finished": 1794431033.4403584,
+  "exit_code": 0,
+  "timed_out": false
+}

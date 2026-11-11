@@ -1,0 +1,30 @@
+import json,pathlib,subprocess,sys,time
+out=pathlib.Path('/tmp/fossilize-h20/output/checker-unit-5')
+source=pathlib.Path('/tmp/fossilize-h20/checker-unit-5')
+rows={r['intent_id']:r for p in out.glob('batch-*.json') for r in json.load(open(p))}
+r=rows[sys.argv[1]]
+s=json.load(open('/tmp/fossilize-h20/result.json'))
+assert s['artifact_publication']['status']=='confirmed' and s['artifact_wait'] is None
+st=s['state'];a=st['attempts'][-1]
+assert a['attempt_id']=='checker-unit-5' and a['worker_id']=='/root/checker_directory20' and a['status']=='running'
+assert st['repository']['candidate_sha']=='6de877d4a30b61cc0349c6257e8645ea0ff3f1c8'
+assert a['input_revision']==573 and a['input_sha']==a['candidate_sha'] and a['base_sha']=='b86a23ea323ee86db19d4dace82afd904e75bae7' and a['plan_version']==2 and a['operation']=='work_unit'
+assert st['plan']['version']==2
+for prior in out.glob('c20-u5-*.receipt.json'):
+ actual=json.load(open(prior)); recorded=next(row for row in st['limits']['commands'] if row['intent_id']==actual['intent_id'])
+ assert recorded.get('wait_receipt')==actual, 'Unsettled or changed receipt '+str(prior)
+assert not st['limits']['exhausted'] and time.time()<st['limits']['deadline']
+intent=next(x for x in st['limits']['commands'] if x['intent_id']==r['intent_id']) if 'commands' in st['limits'] else None
+assert intent and not intent.get('wait_receipt') and all(intent[k]==r[k] for k in ('intent_id','child_command','cwd','timeout'))
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=source,text=True).strip()==a['candidate_sha']
+assert not subprocess.check_output(['git','status','--porcelain','--untracked-files=all'],cwd=source,text=True)
+receipt=out/(r['intent_id']+'.receipt.json'); log=out/(r['intent_id']+'.log')
+assert not receipt.exists() and not log.exists()
+cmd=['python3','-B',str(source/'.agents/skills/implement-change-harness/scripts/verification_lock.py'),'--repo',str(source),'--timeout','600','--intent-id',r['intent_id'],'--receipt',str(receipt),'--',*r['child_command']]
+started=time.time()
+with log.open('w') as f: proc=subprocess.run(cmd,cwd=source,stdout=f,stderr=subprocess.STDOUT)
+result={'intent_id':r['intent_id'],'command':cmd,'child_command':r['child_command'],'cwd':str(source),'exit_code':proc.returncode,'elapsed':time.time()-started,'receipt':str(receipt),'log':str(log)}
+(out/(r['intent_id']+'.execution.json')).write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps(result),flush=True)
+if proc.returncode: print(log.read_text()[-6000:],flush=True)
+sys.exit(proc.returncode)

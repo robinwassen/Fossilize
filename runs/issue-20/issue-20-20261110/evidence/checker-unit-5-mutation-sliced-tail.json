@@ -1,0 +1,32 @@
+{
+  "id": "database-discovery-sensitivity",
+  "mutation": "sliced-tail",
+  "expected_assertion": "D20/truncation-never-full-coverage",
+  "passed": true,
+  "runs": [
+    {
+      "kind": "healthy",
+      "case": "empty",
+      "command": [
+        "/tmp/fossilize-h20/build/checker-unit-5/mutation-sliced-tail/test/database-discovery-test",
+        "empty"
+      ],
+      "cwd": "/tmp/fossilize-h20/output/checker-unit-5/mutation-sliced-tail-work/healthy",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "mutated",
+      "case": "truncated-zero",
+      "command": [
+        "/tmp/fossilize-h20/build/checker-unit-5/mutation-sliced-tail/test/database-discovery-test",
+        "truncated-zero"
+      ],
+      "cwd": "/tmp/fossilize-h20/output/checker-unit-5/mutation-sliced-tail-work/mutated",
+      "exit_code": 1,
+      "stdout": "FAIL D20/truncation-never-full-coverage\nFAIL D20/truncation-boundary-unknown-tail\nFAIL D20/truncation-never-full-coverage\nFAIL D20/truncation-boundary-unknown-tail\n",
+      "stderr": "Fossilize WARN: Detected sliced file. Dropping entries from here.\nFossilize WARN: Detected sliced file. Dropping entries from here.\n"
+    }
+  ]
+}

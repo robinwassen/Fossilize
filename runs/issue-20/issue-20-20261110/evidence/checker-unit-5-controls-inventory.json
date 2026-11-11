@@ -1,0 +1,59 @@
+{
+  "registered_ids": [
+    "replay-discovery-original-defect",
+    "database-discovery-sensitivity",
+    "replay-selection-sensitivity"
+  ],
+  "mutations": {
+    "sliced-tail": {
+      "file": "fossilize_db.cpp",
+      "before": "observation.state = DiscoveryState::RecoveredPrefix;",
+      "after": "observation.state = DiscoveryState::Complete;",
+      "expected_replacements": 2,
+      "id": "database-discovery-sensitivity",
+      "case": "truncated-zero",
+      "healthy_case": "empty",
+      "expect_assertion": "D20/truncation-never-full-coverage"
+    },
+    "required-input": {
+      "file": "fossilize_db.cpp",
+      "before": "if (input.required && input.state != DiscoveryState::Complete &&",
+      "after": "if (false && input.required && input.state != DiscoveryState::Complete &&",
+      "expected_replacements": 1,
+      "id": "database-discovery-sensitivity",
+      "case": "inputs",
+      "healthy_case": "empty",
+      "expect_assertion": "D20/invalid-no-invented-errno"
+    },
+    "unread-total": {
+      "file": "fossilize_db.cpp",
+      "before": "report.unread_total_known = report.discovery_complete;",
+      "after": "report.unread_total_known = true;",
+      "expected_replacements": 1,
+      "id": "database-discovery-sensitivity",
+      "case": "truncated-zero",
+      "healthy_case": "empty",
+      "expect_assertion": "D20/truncation-never-full-coverage"
+    },
+    "selection-exclusions": {
+      "file": "cli/replay_selection.hpp",
+      "before": "report.scope_satisfied &= report.hash_found;",
+      "after": "report.excluded.clear();\n\treport.scope_satisfied &= report.hash_found;",
+      "expected_replacements": 1,
+      "id": "replay-selection-sensitivity",
+      "case": "ranges",
+      "healthy_case": "healthy",
+      "expect_assertion": "D20/range-exact-selection-and-exclusions"
+    },
+    "metadata-import": {
+      "file": "fossilize_db.cpp",
+      "before": "this->report = std::move(report);",
+      "after": "for (auto &input : report.inputs) { input.state=DiscoveryState::Complete; input.total_known=true; }\n\tthis->report = std::move(report);",
+      "expected_replacements": 1,
+      "id": "database-discovery-sensitivity",
+      "case": "metadata",
+      "healthy_case": "empty",
+      "expect_assertion": "D20/metadata-no-false-completeness"
+    }
+  }
+}

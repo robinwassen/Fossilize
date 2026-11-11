@@ -1,0 +1,17 @@
+import io,json,pathlib,shutil,subprocess,tarfile
+source=pathlib.Path('/tmp/fossilize-h20/checker-unit-5')
+sha='6de877d4a30b61cc0349c6257e8645ea0ff3f1c8'
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=source,text=True).strip()==sha
+paths=['rapidjson','cli/volk','cli/SPIRV-Cross','cli/SPIRV-Tools','cli/SPIRV-Headers','cli/dirent']
+result=[]
+for name in ['baseline','sliced-tail','required-input','unread-total','selection-exclusions','metadata-import']:
+ revision='fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db' if name=='baseline' else sha
+ dest=pathlib.Path('/tmp/fossilize-h20/mutations/checker-unit-5')/name
+ dest.mkdir(parents=True,exist_ok=False)
+ archive=subprocess.check_output(['git','archive',revision],cwd=source)
+ with tarfile.open(fileobj=io.BytesIO(archive)) as tf: tf.extractall(dest,filter='data')
+ for path in paths:
+  if (dest/path).exists(): (dest/path).rmdir()
+  shutil.copytree(source/path,dest/path,ignore=shutil.ignore_patterns('.git','__pycache__'))
+ result.append({'mutation':name,'source':str(dest),'revision':revision,'candidate_sha':sha,'pinned_submodules':subprocess.check_output(['git','submodule','status','--recursive'],cwd=source,text=True)})
+pathlib.Path('/tmp/fossilize-h20/output/checker-unit-5/mutation-source-provenance.json').write_text(json.dumps(result,indent=2))

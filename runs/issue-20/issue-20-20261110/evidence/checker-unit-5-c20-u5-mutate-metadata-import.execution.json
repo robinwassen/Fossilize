@@ -1,0 +1,40 @@
+{
+  "intent_id": "c20-u5-mutate-metadata-import",
+  "command": [
+    "python3",
+    "-B",
+    "/tmp/fossilize-h20/checker-unit-5/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+    "--repo",
+    "/tmp/fossilize-h20/checker-unit-5",
+    "--timeout",
+    "600",
+    "--intent-id",
+    "c20-u5-mutate-metadata-import",
+    "--receipt",
+    "/tmp/fossilize-h20/output/checker-unit-5/c20-u5-mutate-metadata-import.receipt.json",
+    "--",
+    "python3",
+    "/tmp/fossilize-h20/checker-unit-5/test/replay_discovery_controls.py",
+    "--mutate-source",
+    "/tmp/fossilize-h20/mutations/checker-unit-5/metadata-import",
+    "--mutation",
+    "metadata-import",
+    "--output",
+    "/tmp/fossilize-h20/output/checker-unit-5/patch-metadata-import.json"
+  ],
+  "child_command": [
+    "python3",
+    "/tmp/fossilize-h20/checker-unit-5/test/replay_discovery_controls.py",
+    "--mutate-source",
+    "/tmp/fossilize-h20/mutations/checker-unit-5/metadata-import",
+    "--mutation",
+    "metadata-import",
+    "--output",
+    "/tmp/fossilize-h20/output/checker-unit-5/patch-metadata-import.json"
+  ],
+  "cwd": "/tmp/fossilize-h20/checker-unit-5",
+  "exit_code": 0,
+  "elapsed": 0.11565232276916504,
+  "receipt": "/tmp/fossilize-h20/output/checker-unit-5/c20-u5-mutate-metadata-import.receipt.json",
+  "log": "/tmp/fossilize-h20/output/checker-unit-5/c20-u5-mutate-metadata-import.log"
+}

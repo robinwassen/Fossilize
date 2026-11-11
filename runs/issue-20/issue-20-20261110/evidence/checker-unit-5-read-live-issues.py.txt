@@ -1,0 +1,12 @@
+import sys,json,pathlib
+sys.path.insert(0,'.agents/skills/implement-change-harness/scripts')
+from github_issues import GitHub
+x=json.load(open('/tmp/fossilize-h20/checker-unit-5-input.json'))['state']
+g=GitHub(repository='robinwassen/Fossilize',timeout=45)
+live=g.unchanged(x['issue_snapshot'])
+shared=g.issue(8)
+prior_shared=json.load(open('/tmp/fossilize-h20/output/checker-unit-3/live-material-issues-after-pause.json'))['shared_issue8']['observation']
+for key in ('id','node_id','title','body','state','state_reason'):
+ assert shared[key]==prior_shared[key], 'Shared issue8 material drift: '+key
+pathlib.Path('/tmp/fossilize-h20/output/checker-unit-5/live-issues.json').write_text(json.dumps({'live':live,'shared8':shared},indent=2)+'\n')
+print(json.dumps({'nodes':len(live['nodes']),'digest':live['digest'],'ready':g.ready(live),'shared_title':shared['title']}))

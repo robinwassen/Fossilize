@@ -1,0 +1,939 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="91"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="28"
+	timestamp="2026-11-11T22:20:28"
+	>
+	<testcase name="fork-child-healthy" classname="fork-child-healthy" time="0.00604178" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Executed fork-child-healthy: births=2 injections=0 normal-workers=2 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-healthy-recovery" classname="fork-child-healthy-recovery" time="0.00600622" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 0 (PID: 523210) exited with status 2.
+Fossilize ERROR: Process index 0 (PID: 523210) crashed, but will retry.
+Fossilize ERROR:   New graphics range (0, 0)
+Fossilize ERROR:   New compute range (0, 2)
+Fossilize ERROR:   New raytracing range (0, 0)
+Executed fork-child-healthy-recovery: births=2 injections=0 normal-workers=1 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-parent-death" classname="fork-child-parent-death" time="0.00308667" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Executed fork-child-parent-death: births=1 injections=0 normal-workers=0 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-prctl-failure" classname="fork-child-prctl-failure" time="0.00483518" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Failed to set PR_SET_PDEATHSIG, aborting child startup.
+Fossilize ERROR: Worker 0 (PID: 523234) exited with status 1.
+Fossilize ERROR: Worker 0 (PID: 523234) unresolved: assigned graphics [0, 0), compute [0, 1), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-prctl-failure: births=2 injections=1 normal-workers=1 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-parent-race" classname="fork-child-parent-race" time="0.00549197" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 0 (PID: 523249) exited with status 1.
+Fossilize ERROR: Worker 0 (PID: 523249) unresolved: assigned graphics [0, 0), compute [0, 1), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-parent-race: births=2 injections=1 normal-workers=1 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-initial-first-sigmask" classname="fork-child-initial-first-sigmask" time="0.00482593" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 0 (PID: 523264) exited with status 1.
+Fossilize ERROR: Worker 0 (PID: 523264) unresolved: assigned graphics [0, 0), compute [0, 1), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-initial-first-sigmask: births=2 injections=1 normal-workers=1 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-initial-last-sigmask" classname="fork-child-initial-last-sigmask" time="0.00606798" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 1 (PID: 523280) exited with status 1.
+Fossilize ERROR: Worker 1 (PID: 523280) unresolved: assigned graphics [0, 0), compute [1, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-initial-last-sigmask: births=2 injections=1 normal-workers=1 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-recovery-sigmask" classname="fork-child-recovery-sigmask" time="0.00324663" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 0 (PID: 523292) exited with status 2.
+Fossilize ERROR: Process index 0 (PID: 523292) crashed, but will retry.
+Fossilize ERROR:   New graphics range (0, 0)
+Fossilize ERROR:   New compute range (0, 2)
+Fossilize ERROR:   New raytracing range (0, 0)
+Fossilize ERROR: Worker 0 (PID: 523293) exited with status 1.
+Fossilize ERROR: Worker 0 (PID: 523293) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-recovery-sigmask: births=2 injections=1 normal-workers=0 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-initial-first-stdout-dup2" classname="fork-child-initial-first-stdout-dup2" time="0.00467256" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 0 (PID: 523306) exited with status 1.
+Fossilize ERROR: Worker 0 (PID: 523306) unresolved: assigned graphics [0, 0), compute [0, 1), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-initial-first-stdout-dup2: births=2 injections=1 normal-workers=1 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-initial-last-stdout-dup2" classname="fork-child-initial-last-stdout-dup2" time="0.00552064" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 1 (PID: 523322) exited with status 1.
+Fossilize ERROR: Worker 1 (PID: 523322) unresolved: assigned graphics [0, 0), compute [1, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-initial-last-stdout-dup2: births=2 injections=1 normal-workers=1 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-recovery-stdout-dup2" classname="fork-child-recovery-stdout-dup2" time="0.00383084" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 0 (PID: 523334) exited with status 2.
+Fossilize ERROR: Process index 0 (PID: 523334) crashed, but will retry.
+Fossilize ERROR:   New graphics range (0, 0)
+Fossilize ERROR:   New compute range (0, 2)
+Fossilize ERROR:   New raytracing range (0, 0)
+Fossilize ERROR: Worker 0 (PID: 523335) exited with status 1.
+Fossilize ERROR: Worker 0 (PID: 523335) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-recovery-stdout-dup2: births=2 injections=1 normal-workers=0 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-initial-first-stdin-dup2" classname="fork-child-initial-first-stdin-dup2" time="0.00560445" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 0 (PID: 523348) exited with status 1.
+Fossilize ERROR: Worker 0 (PID: 523348) unresolved: assigned graphics [0, 0), compute [0, 1), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-initial-first-stdin-dup2: births=2 injections=1 normal-workers=1 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-initial-last-stdin-dup2" classname="fork-child-initial-last-stdin-dup2" time="0.00453451" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 1 (PID: 523364) exited with status 1.
+Fossilize ERROR: Worker 1 (PID: 523364) unresolved: assigned graphics [0, 0), compute [1, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-initial-last-stdin-dup2: births=2 injections=1 normal-workers=1 failures=0
+</system-out>
+	</testcase>
+	<testcase name="fork-child-recovery-stdin-dup2" classname="fork-child-recovery-stdin-dup2" time="0.0036222" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Not using control_fd.
+Fossilize ERROR: Worker 0 (PID: 523376) exited with status 2.
+Fossilize ERROR: Process index 0 (PID: 523376) crashed, but will retry.
+Fossilize ERROR:   New graphics range (0, 0)
+Fossilize ERROR:   New compute range (0, 2)
+Fossilize ERROR:   New raytracing range (0, 0)
+Fossilize ERROR: Worker 0 (PID: 523377) exited with status 1.
+Fossilize ERROR: Worker 0 (PID: 523377) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed fork-child-recovery-stdin-dup2: births=2 injections=1 normal-workers=0 failures=0
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-context-progress-1" classname="replay-timeout-controller-context-progress-1" time="0.00391411" status="run">
+		<properties/>
+		<system-out>Executed M70/context-progress-1 failures=0 native_exit=0 completed=4 abort=0 drained=1
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-context-progress-2" classname="replay-timeout-controller-context-progress-2" time="0.00388135" status="run">
+		<properties/>
+		<system-out>Executed M70/context-progress-2 failures=0 native_exit=0 completed=4 abort=0 drained=1
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-context-stall-1" classname="replay-timeout-controller-context-stall-1" time="0.00375872" status="run">
+		<properties/>
+		<system-out>Executed M70/context-stall-1 failures=0 native_exit=1 completed=1 abort=1 drained=0
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-context-stall-2" classname="replay-timeout-controller-context-stall-2" time="0.00401768" status="run">
+		<properties/>
+		<system-out>Executed M70/context-stall-2 failures=0 native_exit=1 completed=1 abort=1 drained=0
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-context-normal-1" classname="replay-timeout-controller-context-normal-1" time="0.00399534" status="run">
+		<properties/>
+		<system-out>Executed M70/context-normal-1 failures=0 native_exit=0 completed=4 abort=0 drained=1
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-context-normal-2" classname="replay-timeout-controller-context-normal-2" time="0.00548837" status="run">
+		<properties/>
+		<system-out>Executed M70/context-normal-2 failures=0 native_exit=0 completed=4 abort=0 drained=1
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-cancel-int" classname="replay-timeout-controller-cancel-int" time="1.00512" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Master process:     5 MiB resident,     5 MiB shared.
+Child process #0:               4 MiB resident,               4 MiB shared.
+Received signal SIGINT, cleaning up ...
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 (PID: 523504) terminated by signal 9 (par...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-cancel-term" classname="replay-timeout-controller-cancel-term" time="1.00502" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Master process:     5 MiB resident,     5 MiB shared.
+Child process #0:               4 MiB resident,               4 MiB shared.
+Received signal SIGTERM, cleaning up ...
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 (PID: 523517) terminated by signal 9 (pa...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-clean" classname="replay-timeout-controller-clean" time="0.00618322" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Total binary size for Shader Module: 120 (136 compressed)
+Opening archive took 0 ms:
+Parsing archive took 0 ms:
+Playing back 1 shader modules took 0.000 s (accumulated time)
+Shader cache evicted 0 shader modules in total
+Playing back 0 graphics pipelines took 0.000 s (accumulated time)
+Playin...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-no-progress" classname="replay-timeout-controller-no-progress" time="0.00685908" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Replay timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 termination mechanism=1 delivery=0 native_error=0.
+Termination SIGABRT delivery=accepted n...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-heartbeat" classname="replay-timeout-controller-heartbeat" time="0.00351847" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Worker 0 attempt 1 timeout origin=heartbeat threshold_ns=10000000000 elapsed_ns=10500000000.
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 (PID: 523551) terminated by signal 9.
+Worker 0 (PID: 523551) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed M16/controller-heartbeat failures=0 result=1 creates=0 completed=0
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-heartbeat-reset" classname="replay-timeout-controller-heartbeat-reset" time="0.00420417" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Worker 0 attempt 1 timeout origin=heartbeat threshold_ns=10000000000 elapsed_ns=10500000000.
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 (PID: 523557) terminated by signal 9.
+Worker 0 (PID: 523557) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed M16/controller-heartbeat-reset failures=0 result=1 creates=0 completed=0
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-cleanup" classname="replay-timeout-controller-cleanup" time="0.00714052" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Worker 0 attempt 1 timeout origin=post-crash-cleanup threshold_ns=3000000000 elapsed_ns=3500000000.
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 (PID: 523569) terminated by signal 9.
+Process index 0 (PID: 523569) crashed, but will retry.
+  New graphics ran...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-spontaneous" classname="replay-timeout-controller-spontaneous" time="0.00633611" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Worker 0 (PID: 523584) exited with status 2.
+Process index 0 (PID: 523584) crashed, but will retry.
+  New graphics range (0, 0)
+  New compute range (1, 2)
+  New raytracing range (0, 0)
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (7...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-escalation" classname="replay-timeout-controller-escalation" time="0.00806496" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Replay timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 termination mechanism=1 delivery=0 native_error=0.
+Termination SIGABRT delivery=accepted n...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-delivery-failure" classname="replay-timeout-controller-delivery-failure" time="0.00543035" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Replay timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 termination mechanism=1 delivery=0 native_error=0.
+Termination SIGABRT delivery=failed nat...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-kill-failure" classname="replay-timeout-controller-kill-failure" time="0.00533952" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Worker 0 attempt 1 timeout origin=post-crash-cleanup threshold_ns=3000000000 elapsed_ns=3500000000.
+Worker 0 attempt 1 termination=SIGKILL delivery=failed native_error=1.
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 (PID: 523619) terminated by signal 9 (pa...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-external-kill" classname="replay-timeout-controller-external-kill" time="0.00308764" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Worker 0 (PID: 523626) terminated by signal 9.
+Worker 0 (PID: 523626) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed M16/controller-external-kill failures=0 result=1 creates=0 completed=0
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-multithread" classname="replay-timeout-controller-multithread" time="0.00430223" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Replay timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+No-progress timeout has unknown individual attribution with multiple worker threads.
+Worker 0 attempt 1 timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 termi...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-recovery" classname="replay-timeout-controller-recovery" time="0.00615391" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Replay timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+No-progress timeout has unknown individual attribution with multiple worker threads.
+Worker 0 attempt 1 timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 termi...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-protocol" classname="replay-timeout-controller-protocol" time="0.0024665" status="run">
+		<properties/>
+		<system-out>Worker 0 attempt 1 timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 termination mechanism=1 delivery=0 native_error=0.
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-dispatcher-reset" classname="replay-timeout-controller-dispatcher-reset" time="0.00273086" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-dispatcher-disabled" classname="replay-timeout-controller-dispatcher-disabled" time="0.00476471" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Total binary size for Shader Module: 120 (136 compressed)
+Opening archive took 0 ms:
+Parsing archive took 0 ms:
+Playing back 1 shader modules took 0.000 s (accumulated time)
+Shader cache evicted 0 shader modules in total
+Playing back 0 graphics pipelines took 0.000 s (accumulated time)
+Playin...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-ordinary-no-progress" classname="replay-timeout-controller-ordinary-no-progress" time="0.00397873" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-ordinary-delivery-failure" classname="replay-timeout-controller-ordinary-delivery-failure" time="0.00430516" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-timer-create-failure" classname="replay-timeout-controller-timer-create-failure" time="0.00407522" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Failed to arm cleanup supervision (errno=24).
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 (PID: 523709) terminated by signal 9 (parent-requested cleanup).
+Worker 0 (PID: 523709) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); rema...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-timer-arm-failure" classname="replay-timeout-controller-timer-arm-failure" time="0.00527504" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Failed to arm cleanup supervision (errno=5).
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+epoll_ctl() DEL failed.
+Worker 0 (PID: 523718) terminated by signal 9 (parent-requested cleanup).
+Worker 0 (PID: 523718) unresolved: assigned graphics [0, 0), compute [0, 2), ...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-timer-register-failure" classname="replay-timeout-controller-timer-register-failure" time="0.00508901" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Creating Vulkan device took: 0 ms
+Total binary size for AppInfo: 62 (78 compressed)
+Total time decoding AppInfo in main thread: 0.000 s
+Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Total binary size for Pipeline Layout: 104 (120 compressed)
+Total time decoding Pipeline Layout in main thread: 0.000 s
+Total binary size for Render Pass: 0 (0 compressed)
+Total time decoding Render Pass in main thread: 0.000 s
+Total binary size for Graphics Pipeline: 0 (0 compressed)
+Total binary size for Compute Pipeline: 458 (490 compressed)
+Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Failed to arm cleanup supervision (errno=22).
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+epoll_ctl() DEL failed.
+Worker 0 (PID: 523727) terminated by signal 9 (parent-requested cleanup).
+Worker 0 (PID: 523727) unresolved: assigned graphics [0, 0), compute [0, 2),...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-heartbeat-timer-create-failure" classname="replay-timeout-controller-heartbeat-timer-create-failure" time="0.00391241" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Failed to arm heartbeat supervision (errno=24).
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 (PID: 523734) terminated by signal 9 (parent-requested cleanup).
+Worker 0 (PID: 523734) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed M16/controller-heartbeat-timer-create-failure failures=0 result=1 creates=0 completed=0
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-heartbeat-timer-arm-failure" classname="replay-timeout-controller-heartbeat-timer-arm-failure" time="0.00365525" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Failed to arm heartbeat supervision (errno=5).
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+epoll_ctl() DEL failed.
+Worker 0 (PID: 523740) terminated by signal 9 (parent-requested cleanup).
+Worker 0 (PID: 523740) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed M16/controller-heartbeat-timer-arm-failure failures=0 result=1 creates=0 completed=0
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-heartbeat-timer-register-failure" classname="replay-timeout-controller-heartbeat-timer-register-failure" time="0.00424742" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Failed to arm heartbeat supervision (errno=22).
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+epoll_ctl() DEL failed.
+Worker 0 (PID: 523746) terminated by signal 9 (parent-requested cleanup).
+Worker 0 (PID: 523746) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed M16/controller-heartbeat-timer-register-failure failures=0 result=1 creates=0 completed=0
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-heartbeat-timer-read-failure" classname="replay-timeout-controller-heartbeat-timer-read-failure" time="0.00354292" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Failed to read worker deadline timer (errno=5).
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 (PID: 523752) terminated by signal 9 (parent-requested cleanup).
+Worker 0 (PID: 523752) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed M16/controller-heartbeat-timer-read-failure failures=0 result=1 creates=0 completed=0
+</system-out>
+	</testcase>
+	<testcase name="replay-timeout-controller-heartbeat-timer-rearm-failure" classname="replay-timeout-controller-heartbeat-timer-rearm-failure" time="0.0047306" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Failed to rearm heartbeat supervision (errno=5).
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 attempt 1 termination=SIGKILL delivery=accepted native_error=0.
+Worker 0 (PID: 523758) terminated by signal 9 (parent-requested cleanup).
+Worker 0 (PID: 523758) unresolved: assigned graphics [0, 0), compute [0, 2), raytracing [0, 0); remainder unknown; skipped required culprit unknown.
+Executed M16/controller-heartbeat-timer-rearm-failure failures=0 result=1 creates=0 completed=0
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-clean" classname="replay-event-controller-clean" time="0.0076714" status="run">
+		<properties/>
+		<system-out>Executed R13/event-clean; failures=0; controller-result=0
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-empty" classname="replay-event-controller-empty" time="0.00331058" status="run">
+		<properties/>
+		<system-out>Executed R13/event-empty; failures=0; controller-result=0
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-parse" classname="replay-event-controller-parse" time="0.00870815" status="run">
+		<properties/>
+		<system-out>Executed R13/event-parse; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-initial-parse" classname="replay-event-controller-initial-parse" time="0.00805374" status="run">
+		<properties/>
+		<system-out>Executed R13/event-initial-parse; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-creation" classname="replay-event-controller-creation" time="0.00881968" status="run">
+		<properties/>
+		<system-out>Executed R13/event-creation; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-progress" classname="replay-event-controller-progress" time="0.00795302" status="run">
+		<properties/>
+		<system-out>Executed R13/event-progress; failures=0; controller-result=0
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-pre-report-death" classname="replay-event-controller-pre-report-death" time="0.00521112" status="run">
+		<properties/>
+		<system-out>Executed R13/event-pre-report-death; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-missing-final" classname="replay-event-controller-missing-final" time="0.00589882" status="run">
+		<properties/>
+		<system-out>Executed R13/event-missing-final; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-missing-final-origin" classname="replay-event-controller-missing-final-origin" time="0.00629751" status="run">
+		<properties/>
+		<system-out>Executed R13/event-missing-final-origin; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-truncated" classname="replay-event-controller-truncated" time="0.00632211" status="run">
+		<properties/>
+		<system-out>Executed R13/event-truncated; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-truncated-prefix" classname="replay-event-controller-truncated-prefix" time="0.00597186" status="run">
+		<properties/>
+		<system-out>Executed R13/event-truncated-prefix; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-truncated-length" classname="replay-event-controller-truncated-length" time="0.00508858" status="run">
+		<properties/>
+		<system-out>Executed R13/event-truncated-length; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-truncated-payload" classname="replay-event-controller-truncated-payload" time="0.00559171" status="run">
+		<properties/>
+		<system-out>Executed R13/event-truncated-payload; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-truncated-newline" classname="replay-event-controller-truncated-newline" time="0.00609043" status="run">
+		<properties/>
+		<system-out>Executed R13/event-truncated-newline; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-unknown" classname="replay-event-controller-unknown" time="0.00548259" status="run">
+		<properties/>
+		<system-out>Executed R13/event-unknown; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-unknown-version" classname="replay-event-controller-unknown-version" time="0.00627214" status="run">
+		<properties/>
+		<system-out>Executed R13/event-unknown-version; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-oversized" classname="replay-event-controller-oversized" time="0.00585334" status="run">
+		<properties/>
+		<system-out>Executed R13/event-oversized; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-drop-hello" classname="replay-event-controller-drop-hello" time="0.00568548" status="run">
+		<properties/>
+		<system-out>Executed R13/event-drop-hello; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-duplicate-final" classname="replay-event-controller-duplicate-final" time="0.00595859" status="run">
+		<properties/>
+		<system-out>Executed R13/event-duplicate-final; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-abnormal-final" classname="replay-event-controller-abnormal-final" time="0.00617779" status="run">
+		<properties/>
+		<system-out>Executed R13/event-abnormal-final; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-timeout" classname="replay-event-controller-timeout" time="0.00715743" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Worker 0 attempt 1 timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 termination mechanism=1 delivery=0 native_error=0.
+Worker 0 attempt 1 termination mechanism=1 delivery=1 native_error=0.
+Worker 0 (PID: 523905) exited with status 2.
+Process index 0 (PID: 523905) crashed, but will retry.
+  New graphics range (0, 0)
+  New compute range (1, 2)
+  New raytracing range (0, 0)
+Fossilize INFO: Creating null device.
+Worker 0 (PID: 523907) exited with status 1.
+Executed M16/controller-no-progress failures=0 result=1 creates=1 completed=0
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-retry" classname="replay-event-controller-retry" time="0.00600779" status="run">
+		<properties/>
+		<system-out>Not using control_fd.
+Fossilize INFO: Creating null device.
+Worker 0 attempt 1 timeout origin=work-no-progress threshold_ns=2000000000 elapsed_ns=2500000000.
+Worker 0 attempt 1 termination mechanism=1 delivery=0 native_error=0.
+Worker 0 (PID: 523924) exited with status 2.
+Process index 0 (PID: 523924) crashed, but will retry.
+  New graphics range (0, 0)
+  New compute range (0, 2)
+  New raytracing range (0, 0)
+Fossilize INFO: Creating null device.
+Executed M16/controller-recovery failures=0 result=0 creates=4 completed=2
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-startup-close" classname="replay-event-controller-startup-close" time="0.00559063" status="run">
+		<properties/>
+		<system-out>Executed R13/event-startup-close; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-startup-hash-close" classname="replay-event-controller-startup-hash-close" time="0.00596629" status="run">
+		<properties/>
+		<system-out>Executed R13/event-startup-hash-close; failures=0; controller-result=1
+</system-out>
+	</testcase>
+	<testcase name="replay-event-controller-startup-input" classname="replay-event-controller-startup-input" time="0.118639" status="run">
+		<properties/>
+		<system-out>M18 unit startup-files failures=0
+-- M18/production-startup/empty: status=0
+-- M18/production-startup/legacy: status=0
+-- M18/production-startup/reject-invalid-0: status=1
+-- M18/production-startup/reject-invalid-1: status=1
+-- M18/production-startup/reject-invalid-10: status=1
+-- M18/production-startup/reject-invalid-11: status=1
+-- M18/production-startup/reject-invalid-12: status=1
+-- M18/production-startup/reject-invalid-2: status=1
+-- M18/production-startup/reject-invalid-3: status=1
+-- M18/production-startup/reject-invalid-4: status=1
+-- M18/production-startup/reject-invalid-5: status=1
+-- M18/production-startup/reject-invalid-6: status=1
+-- M18/production-startup/reject-invalid-7: status=1
+-- M18/production-startup/reject-invalid-8: status=1
+-- M18/production-startup/reject-invalid-9: status=1
+-- M18/production-startup/reject-prefix-1: status=1
+-- M18/production-startup/reject-prefix-10: status=1
+-- M18/production-startup/reject-prefix-11: status=1
+-- M18/production-startup/reject-prefix-12: status=1
+--...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="database-discovery-empty" classname="database-discovery-empty" time="0.0029183" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="database-discovery-truncated-zero" classname="database-discovery-truncated-zero" time="0.00259299" status="run">
+		<properties/>
+		<system-out>Fossilize WARN: Detected sliced file. Dropping entries from here.
+Fossilize WARN: Detected sliced file. Dropping entries from here.
+</system-out>
+	</testcase>
+	<testcase name="database-discovery-prefix" classname="database-discovery-prefix" time="0.00286048" status="run">
+		<properties/>
+		<system-out>Fossilize WARN: Detected sliced file. Dropping entries from here.
+Fossilize WARN: Detected sliced file. Dropping entries from here.
+</system-out>
+	</testcase>
+	<testcase name="database-discovery-inputs" classname="database-discovery-inputs" time="0.00482262" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="database-discovery-errors" classname="database-discovery-errors" time="0.00402256" status="run">
+		<properties/>
+		<system-out>Fossilize WARN: Detected sliced file. Dropping entries from here.
+Fossilize WARN: Detected sliced file. Dropping entries from here.
+Fossilize WARN: Detected sliced file. Dropping entries from here.
+</system-out>
+	</testcase>
+	<testcase name="database-discovery-filters" classname="database-discovery-filters" time="0.00349549" status="run">
+		<properties/>
+		<system-out>Fossilize WARN: Detected sliced file. Dropping entries from here.
+</system-out>
+	</testcase>
+	<testcase name="database-discovery-metadata" classname="database-discovery-metadata" time="0.00701068" status="run">
+		<properties/>
+		<system-out>Fossilize WARN: Detected sliced file. Dropping entries from here.
+Fossilize WARN: Detected sliced file. Dropping entries from here.
+</system-out>
+	</testcase>
+	<testcase name="replay-selection-filters" classname="replay-selection-filters" time="0.00558386" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Creating null device.
+Fossilize INFO: Creating Vulkan device took: 0 ms
+Fossilize INFO: Total binary size for AppInfo: 62 (78 compressed)
+Fossilize INFO: Total time decoding AppInfo in main thread: 0.000 s
+Fossilize INFO: Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Fossilize INFO: Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Fossilize INFO: Total binary size for Pipeline Layout: 104 (120 compressed)
+Fossilize INFO: Total time decoding Pipeline Layout in main thread: 0.000 s
+Fossilize INFO: Total binary size for Render Pass: 0 (0 compressed)
+Fossilize INFO: Total time decoding Render Pass in main thread: 0.000 s
+Fossilize INFO: Total binary size for Graphics Pipeline: 0 (0 compressed)
+Fossilize INFO: Total binary size for Compute Pipeline: 229 (245 compressed)
+Fossilize INFO: Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Fossilize INFO: Total binary size for Shader Module: 175 (191 compressed)
+Fossilize INFO: Opening archive took 0 ms:
+Fossil...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-selection-ranges" classname="replay-selection-ranges" time="0.00310373" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="replay-selection-prefix-policy" classname="replay-selection-prefix-policy" time="0.00889092" status="run">
+		<properties/>
+		<system-out>Fossilize WARN: Detected sliced file. Dropping entries from here.
+Fossilize WARN: Detected sliced file. Dropping entries from here.
+Fossilize ERROR: Required database discovery is incomplete (full scope or explicitly accepted recovered prefix).
+Fossilize WARN: Detected sliced file. Dropping entries from here.
+Fossilize ERROR: Required database discovery is incomplete (full scope or explicitly accepted recovered prefix).
+Fossilize WARN:  ... warning spam detected at fossilize_db.cpp:1617, silencing.
+Fossilize ERROR: Required database discovery is incomplete (full scope or explicitly accepted recovered prefix).
+Fossilize INFO: Creating null device.
+Fossilize INFO: Creating Vulkan device took: 0 ms
+Fossilize INFO: Total binary size for AppInfo: 62 (78 compressed)
+Fossilize INFO: Total time decoding AppInfo in main thread: 0.000 s
+Fossilize INFO: Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Fossilize INFO: Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Fossilize INFO: Total bin...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-selection-hints" classname="replay-selection-hints" time="0.0265038" status="run">
+		<properties/>
+		<system-out>Fossilize INFO: Creating null device.
+Fossilize INFO: Creating null device.
+Fossilize INFO: Creating Vulkan device took: 0 ms
+Fossilize INFO: Total binary size for AppInfo: 62 (78 compressed)
+Fossilize INFO: Total time decoding AppInfo in main thread: 0.000 s
+Fossilize INFO: Total binary size for Descriptor Set Layout: 0 (0 compressed)
+Fossilize INFO: Total time decoding Descriptor Set Layout in main thread: 0.000 s
+Fossilize INFO: Total binary size for Pipeline Layout: 104 (120 compressed)
+Fossilize INFO: Total time decoding Pipeline Layout in main thread: 0.000 s
+Fossilize INFO: Total binary size for Render Pass: 0 (0 compressed)
+Fossilize INFO: Total time decoding Render Pass in main thread: 0.000 s
+Fossilize INFO: Total binary size for Graphics Pipeline: 277 (293 compressed)
+Fossilize INFO: Total binary size for Compute Pipeline: 0 (0 compressed)
+Fossilize INFO: Total binary size for Raytracing Pipeline: 0 (0 compressed)
+Fossilize INFO: Total binary size for Shader Module: 175 (191 compressed)
+Fossilize I...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="replay-discovery-cli-empty" classname="replay-discovery-cli-empty" time="0.251041" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="replay-discovery-cli-truncated-zero" classname="replay-discovery-cli-truncated-zero" time="0.0634493" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="replay-discovery-cli-prefix" classname="replay-discovery-cli-prefix" time="0.266783" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="replay-discovery-cli-required" classname="replay-discovery-cli-required" time="0.0980782" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="replay-discovery-cli-optional" classname="replay-discovery-cli-optional" time="1.4255" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="replay-discovery-cli-selection" classname="replay-discovery-cli-selection" time="1.40159" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="replay-discovery-legacy-invocations" classname="replay-discovery-legacy-invocations" time="1.47379" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="database-discovery-old-header-compatibility" classname="database-discovery-old-header-compatibility" time="1.80646" status="run">
+		<properties/>
+		<system-out>-- COMPATIBILITY: old caller, known resource/hash set and preserved --null-device invocation passed
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Fossilize INFO: Setting autogroup scheduling.
+Executed R14/old-source-ExternalReplayer; failures=0
+-- D20 actual input public headers first: compiled, linked and ran both unchanged callers
+</system-out>
+	</testcase>
+</testsuite>

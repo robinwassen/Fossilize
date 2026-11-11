@@ -1,0 +1,86 @@
+[1/10] Building CXX object test/CMakeFiles/varint-test.dir/varint_test.cpp.o
+[2/10] Building CXX object test/CMakeFiles/replay-event-test.dir/replay_event_test.cpp.o
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp: In lambda function:
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:42:130: warning: declaration of ‘p’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                      ~~~~~~~~~~~~^
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:38:30: note: shadowed declaration is here
+   38 |  State s;s.begin(0,0);Stream p;for(char c:all)feed(p,s,std::string(1,c));p.finish(s);checks.require(s.count==2&&s.final&&!s.lost,"M18/every-byte-split");
+      |                              ^
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:42:151: warning: declaration of ‘w’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                                                       ^
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:40:55: note: shadowed declaration is here
+   40 |  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
+      |                                                       ^
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:42:155: warning: declaration of ‘a’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                                                           ^
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:40:59: note: shadowed declaration is here
+   40 |  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
+      |                                                           ^
+[3/10] Linking CXX executable test/varint-test
+[4/10] Linking CXX executable test/replay-event-test
+[5/10] Building CXX object test/CMakeFiles/database-discovery-test.dir/database_discovery_test.cpp.o
+/tmp/fossilize-h20/checker-unit-5/test/database_discovery_test.cpp: In function ‘int main(int, char**)’:
+/tmp/fossilize-h20/checker-unit-5/test/database_discovery_test.cpp:467:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+  467 |  if(argc!=2)return 2;std::string mode=argv[1];
+      |  ^~
+/tmp/fossilize-h20/checker-unit-5/test/database_discovery_test.cpp:467:22: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+  467 |  if(argc!=2)return 2;std::string mode=argv[1];
+      |                      ^~~
+[6/10] Building CXX object test/CMakeFiles/parser-input-test.dir/parser_input_test.cpp.o
+[7/10] Linking CXX executable test/database-discovery-test
+[8/10] Linking CXX executable test/parser-input-test
+[9/10] Building CXX object test/CMakeFiles/replay-selection-test.dir/replay_selection_test.cpp.o
+/tmp/fossilize-h20/checker-unit-5/test/replay_selection_test.cpp: In function ‘void prefix_policy()’:
+/tmp/fossilize-h20/checker-unit-5/test/replay_selection_test.cpp:163:11: warning: declaration of ‘optional’ shadows a previous local [-Wshadow]
+  163 |  for(bool optional:{false,true})
+      |           ^~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_selection_test.cpp:152:172: note: shadowed declaration is here
+  152 |  db.reset(create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,2));configure_replay_inputs(*db,2,{1});checks.require(db->prepare(),"D20/optional-prepare");auto optional=select_replay_scope(*db,starts,ends,0,true);
+      |                                                                                                                                                                            ^~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_selection_test.cpp: In function ‘int main(int, char**)’:
+/tmp/fossilize-h20/checker-unit-5/test/replay_selection_test.cpp:286:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+  286 |  if(argc!=2)return 2;std::string mode=argv[1];
+      |  ^~
+/tmp/fossilize-h20/checker-unit-5/test/replay_selection_test.cpp:286:22: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+  286 |  if(argc!=2)return 2;std::string mode=argv[1];
+      |                      ^~~
+In file included from /tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:570,
+                 from /tmp/fossilize-h20/checker-unit-5/test/replay_selection_test.cpp:2:
+/tmp/fossilize-h20/checker-unit-5/test/replay_cache_tests.hpp: At global scope:
+/tmp/fossilize-h20/checker-unit-5/test/replay_cache_tests.hpp:306:13: warning: ‘void cache_test(const std::string&)’ defined but not used [-Wunused-function]
+  306 | static void cache_test(const std::string &test)
+      |             ^~~~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:538:13: warning: ‘void normal_matrix()’ defined but not used [-Wunused-function]
+  538 | static void normal_matrix()
+      |             ^~~~~~~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:525:13: warning: ‘void entry_test(const std::string&, const char*)’ defined but not used [-Wunused-function]
+  525 | static void entry_test(const std::string &scenario, const char *path)
+      |             ^~~~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:420:13: warning: ‘void queue_test()’ defined but not used [-Wunused-function]
+  420 | static void queue_test()
+      |             ^~~~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:386:13: warning: ‘void setup_test()’ defined but not used [-Wunused-function]
+  386 | static void setup_test()
+      |             ^~~~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:355:13: warning: ‘void validation_test()’ defined but not used [-Wunused-function]
+  355 | static void validation_test()
+      |             ^~~~~~~~~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:332:13: warning: ‘void support_test()’ defined but not used [-Wunused-function]
+  332 | static void support_test()
+      |             ^~~~~~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:313:13: warning: ‘void initial_creation_test()’ defined but not used [-Wunused-function]
+  313 | static void initial_creation_test()
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:253:13: warning: ‘void creation_test(bool)’ defined but not used [-Wunused-function]
+  253 | static void creation_test(bool loops)
+      |             ^~~~~~~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:202:13: warning: ‘void parse_test()’ defined but not used [-Wunused-function]
+  202 | static void parse_test()
+      |             ^~~~~~~~~~
+/tmp/fossilize-h20/checker-unit-5/test/replay_outcome_test.cpp:169:13: warning: ‘void state_test()’ defined but not used [-Wunused-function]
+  169 | static void state_test()
+      |             ^~~~~~~~~~
+[10/10] Linking CXX executable test/replay-selection-test

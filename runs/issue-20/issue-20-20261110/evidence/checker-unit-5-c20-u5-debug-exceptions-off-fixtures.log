@@ -1,0 +1,25 @@
+[1/6] Building CXX object test/CMakeFiles/varint-test.dir/varint_test.cpp.o
+[2/6] Linking CXX executable test/varint-test
+[3/6] Building CXX object test/CMakeFiles/replay-event-test.dir/replay_event_test.cpp.o
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp: In lambda function:
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:42:130: warning: declaration of ‘p’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                      ~~~~~~~~~~~~^
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:38:30: note: shadowed declaration is here
+   38 |  State s;s.begin(0,0);Stream p;for(char c:all)feed(p,s,std::string(1,c));p.finish(s);checks.require(s.count==2&&s.final&&!s.lost,"M18/every-byte-split");
+      |                              ^
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:42:151: warning: declaration of ‘w’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                                                       ^
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:40:55: note: shadowed declaration is here
+   40 |  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
+      |                                                       ^
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:42:155: warning: declaration of ‘a’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                                                           ^
+/tmp/fossilize-h20/checker-unit-5/test/replay_event_test.cpp:40:59: note: shadowed declaration is here
+   40 |  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
+      |                                                           ^
+[4/6] Building CXX object test/CMakeFiles/parser-input-test.dir/parser_input_test.cpp.o
+[5/6] Linking CXX executable test/replay-event-test
+[6/6] Linking CXX executable test/parser-input-test

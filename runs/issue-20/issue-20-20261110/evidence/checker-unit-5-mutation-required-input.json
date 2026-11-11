@@ -1,0 +1,32 @@
+{
+  "id": "database-discovery-sensitivity",
+  "mutation": "required-input",
+  "expected_assertion": "D20/invalid-no-invented-errno",
+  "passed": true,
+  "runs": [
+    {
+      "kind": "healthy",
+      "case": "empty",
+      "command": [
+        "/tmp/fossilize-h20/build/checker-unit-5/mutation-required-input/test/database-discovery-test",
+        "empty"
+      ],
+      "cwd": "/tmp/fossilize-h20/output/checker-unit-5/mutation-required-input-work/healthy",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "mutated",
+      "case": "inputs",
+      "command": [
+        "/tmp/fossilize-h20/build/checker-unit-5/mutation-required-input/test/database-discovery-test",
+        "inputs"
+      ],
+      "cwd": "/tmp/fossilize-h20/output/checker-unit-5/mutation-required-input-work/mutated",
+      "exit_code": 1,
+      "stdout": "FAIL D20/default-report-requires-requested-inputs\nFAIL D20/default-exact-logical-union-required-policy\nFAIL D20/invalid-no-invented-errno\nFAIL D20/input-observations-versus-exact-logical-dedup\nFAIL D20/composite-io-required-optional-unknown-policy\nFAIL D20/composite-io-exact-selected-prefix-policy\nFAIL D20/composite-io-required-optional-unknown-policy\nFAIL D20/composite-io-exact-selected-prefix-policy\nFAIL D20/composite-io-required-optional-unknown-policy\nFAIL D20/composite-io-exact-selected-prefix-policy\n",
+      "stderr": ""
+    }
+  ]
+}
