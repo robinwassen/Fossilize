@@ -381,13 +381,14 @@
       "observations": [],
       "operation": "final",
       "plan_version": 2,
+      "report": "runs/issue-20/issue-20-20261110/reports/checker-final-2.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1794434267.9519055,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
       "worker_id": "/root/checker_final20"
     }
@@ -411,7 +412,12 @@
       }
     ]
   },
-  "final_acceptance": null,
+  "final_acceptance": {
+    "attempt_id": "checker-final-2",
+    "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+    "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+    "plan_version": 2
+  },
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
@@ -17658,8 +17664,8 @@
     "replan_count": 1,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "final",
+  "next_action": "fetch target base, verify clean tuple, persist publication intent",
+  "operation": "publish",
   "original": [
     {
       "id": "AC1",
@@ -17671,7 +17677,7 @@
     "output_directory": "/tmp/fossilize-h20/output",
     "source_worktree": "/home/robin/.herdr/worktrees/fossilize/ticket-20"
   },
-  "phase": "checking",
+  "phase": "publishing",
   "plan": {
     "assumptions": [
       "Issue snapshot #20 matches live body read during planning; #18 is completed in supplied dependency snapshot. Coordinator rechecks snapshots at mandated boundaries.",
@@ -18712,7 +18718,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 911,
+  "revision": 912,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
@@ -18722,7 +18728,7 @@
   },
   "run_id": "issue-20-20261110",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-20",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/20",
   "verification": [
@@ -19233,6 +19239,526 @@
       "verdict": "accepted",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
       "worker_id": "/root/checker_directory20"
+    },
+    {
+      "attempt_id": "checker-final-2",
+      "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+      "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+      "command_evidence": {
+        "complete_full_command_report": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-full-report.json",
+        "execution_record": "{intent_id}.execution.json",
+        "log_record": "{intent_id}.log",
+        "receipt_record": "{intent_id}.receipt.json",
+        "record_prefix": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-",
+        "scope": "All82 actual separately wrapped commands returned0andsettled before final acceptance. Inline IDs; full exact argv/cwd/status/receipt/log facts in immutable records."
+      },
+      "commands": [
+        "c20-f2-live-issues",
+        "c20-f2-debug-exceptions-off-build",
+        "c20-f2-debug-exceptions-off-discover",
+        "c20-f2-debug-exceptions-off-ctest",
+        "c20-f2-debug-exceptions-off-compiler-config",
+        "c20-f2-debug-exceptions-on-configure",
+        "c20-f2-debug-exceptions-on-build",
+        "c20-f2-debug-exceptions-on-discover",
+        "c20-f2-debug-exceptions-on-ctest",
+        "c20-f2-debug-exceptions-on-compiler-config",
+        "c20-f2-release-exceptions-off-configure",
+        "c20-f2-release-exceptions-off-build",
+        "c20-f2-release-exceptions-off-discover",
+        "c20-f2-release-exceptions-off-ctest",
+        "c20-f2-release-exceptions-off-compiler-config",
+        "c20-f2-release-exceptions-on-configure",
+        "c20-f2-release-exceptions-on-build",
+        "c20-f2-release-exceptions-on-discover",
+        "c20-f2-release-exceptions-on-ctest",
+        "c20-f2-release-exceptions-on-compiler-config",
+        "c20-f2-asan-compiler-config",
+        "c20-f2-source-contract",
+        "c20-f2-repeat",
+        "c20-f2-compatibility",
+        "c20-f2-asan-configure",
+        "c20-f2-asan-static",
+        "c20-f2-asan-build",
+        "c20-f2-asan-inventory",
+        "c20-f2-asan-run",
+        "c20-f2-setup-mutations",
+        "c20-f2-baseline-configure",
+        "c20-f2-baseline-static",
+        "c20-f2-baseline-build",
+        "c20-f2-original-defect",
+        "c20-f2-controls-inventory",
+        "c20-f2-mutate-sliced-tail",
+        "c20-f2-configure-mutation-sliced-tail",
+        "c20-f2-build-mutation-sliced-tail",
+        "c20-f2-run-mutation-sliced-tail",
+        "c20-f2-mutate-required-input",
+        "c20-f2-configure-mutation-required-input",
+        "c20-f2-build-mutation-required-input",
+        "c20-f2-run-mutation-required-input",
+        "c20-f2-mutate-unread-total",
+        "c20-f2-configure-mutation-unread-total",
+        "c20-f2-build-mutation-unread-total",
+        "c20-f2-run-mutation-unread-total",
+        "c20-f2-mutate-selection-exclusions",
+        "c20-f2-configure-mutation-selection-exclusions",
+        "c20-f2-static-mutation-selection-exclusions",
+        "c20-f2-build-mutation-selection-exclusions",
+        "c20-f2-run-mutation-selection-exclusions",
+        "c20-f2-mutate-metadata-import",
+        "c20-f2-configure-mutation-metadata-import",
+        "c20-f2-build-mutation-metadata-import",
+        "c20-f2-run-mutation-metadata-import",
+        "c20-f2-incoming-repeat",
+        "c20-f2-incoming-asan-build",
+        "c20-f2-incoming-asan-inventory",
+        "c20-f2-incoming-asan-run",
+        "c20-f2-incoming-asan-flags",
+        "c20-f2-debug-exceptions-off-static",
+        "c20-f2-debug-exceptions-off-opt",
+        "c20-f2-debug-exceptions-on-static",
+        "c20-f2-debug-exceptions-on-opt",
+        "c20-f2-release-exceptions-off-static",
+        "c20-f2-release-exceptions-off-opt",
+        "c20-f2-release-exceptions-on-static",
+        "c20-f2-release-exceptions-on-opt",
+        "c20-f2-debug-exceptions-off-replay-layer",
+        "c20-f2-debug-exceptions-off-fixtures",
+        "c20-f2-debug-exceptions-on-replay-layer",
+        "c20-f2-debug-exceptions-on-fixtures",
+        "c20-f2-release-exceptions-off-replay-layer",
+        "c20-f2-release-exceptions-off-fixtures",
+        "c20-f2-release-exceptions-on-replay-layer",
+        "c20-f2-release-exceptions-on-fixtures",
+        "c20-f2-configure-focused",
+        "c20-f2-build-focused",
+        "c20-f2-run-focused",
+        "c20-f2-directory-repeat",
+        "c20-f2-final-audit"
+      ],
+      "discovered": [
+        "database-discovery-empty",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-inputs",
+        "database-discovery-metadata",
+        "database-discovery-old-header-compatibility",
+        "database-discovery-prefix",
+        "database-discovery-sensitivity",
+        "database-discovery-truncated-zero",
+        "diagnostic-compatibility-test",
+        "replay-controller-cli-compatibility",
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-selection",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-legacy-invocations",
+        "replay-discovery-original-defect",
+        "replay-event-old-header-compatibility",
+        "replay-outcome-cli-compatibility",
+        "replay-selection-filters",
+        "replay-selection-hints",
+        "replay-selection-prefix-policy",
+        "replay-selection-ranges",
+        "replay-selection-sensitivity"
+      ],
+      "evidence": [
+        {
+          "attempt_id": "checker-final-2",
+          "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+          "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+          "command": [
+            "git",
+            "diff",
+            "--check",
+            "b86a23ea323ee86db19d4dace82afd904e75bae7",
+            "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8"
+          ],
+          "complete_recipes": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-full-report.json",
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-h20/checker-final-2",
+          "environment": [
+            "Linux; fresh detached6de/baseb86, unchanged original baselinefd380",
+            "Debug/Release x exceptionsOFF/ON; CLI/layer/tests/SPIRVvalidationON, runtimeGPUlayerOFF",
+            "Every child separately published/wrapped/deadlined600; ordinaryjobs<=4/sanjobs<=2; all actual receipts settled exactly"
+          ],
+          "exit_code": 0,
+          "gate": "G20-source-contract",
+          "log": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-gate-summary.json",
+          "plan_version": 2,
+          "representative_intent_id": "c20-f2-source-contract",
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-final-2",
+          "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+          "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+          "command": [
+            "/tmp/fossilize-h20/toolenv/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "--output-junit",
+            "/tmp/fossilize-h20/output/checker-final-2/debug-exceptions-off-results.xml.txt"
+          ],
+          "complete_recipes": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-full-report.json",
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-h20/checker-final-2",
+          "environment": [
+            "Linux; fresh detached6de/baseb86, unchanged original baselinefd380",
+            "Debug/Release x exceptionsOFF/ON; CLI/layer/tests/SPIRVvalidationON, runtimeGPUlayerOFF",
+            "Every child separately published/wrapped/deadlined600; ordinaryjobs<=4/sanjobs<=2; all actual receipts settled exactly"
+          ],
+          "exit_code": 0,
+          "gate": "G20-linux-matrix",
+          "log": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-gate-summary.json",
+          "plan_version": 2,
+          "representative_intent_id": "c20-f2-debug-exceptions-off-ctest",
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-final-2",
+          "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+          "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+          "command": [
+            "/tmp/fossilize-h20/toolenv/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(database-discovery-|replay-selection-|replay-discovery-|replay-event-controller-|replay-timeout-controller-|fork-child-)",
+            "--repeat",
+            "until-fail:3",
+            "--output-junit",
+            "/tmp/fossilize-h20/output/checker-final-2/repeat.xml.txt"
+          ],
+          "complete_recipes": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-full-report.json",
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-h20/checker-final-2",
+          "environment": [
+            "Linux; fresh detached6de/baseb86, unchanged original baselinefd380",
+            "Debug/Release x exceptionsOFF/ON; CLI/layer/tests/SPIRVvalidationON, runtimeGPUlayerOFF",
+            "Every child separately published/wrapped/deadlined600; ordinaryjobs<=4/sanjobs<=2; all actual receipts settled exactly"
+          ],
+          "exit_code": 0,
+          "gate": "G20-repeat",
+          "log": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-gate-summary.json",
+          "plan_version": 2,
+          "representative_intent_id": "c20-f2-repeat",
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-final-2",
+          "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+          "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+          "command": [
+            "env",
+            "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+            "/tmp/fossilize-h20/toolenv/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+            "--output-junit",
+            "/tmp/fossilize-h20/output/checker-final-2/asan.xml.txt"
+          ],
+          "complete_recipes": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-full-report.json",
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-h20/checker-final-2",
+          "environment": [
+            "Linux; fresh detached6de/baseb86, unchanged original baselinefd380",
+            "Debug/Release x exceptionsOFF/ON; CLI/layer/tests/SPIRVvalidationON, runtimeGPUlayerOFF",
+            "Every child separately published/wrapped/deadlined600; ordinaryjobs<=4/sanjobs<=2; all actual receipts settled exactly"
+          ],
+          "exit_code": 0,
+          "gate": "G20-sanitizers",
+          "log": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-gate-summary.json",
+          "plan_version": 2,
+          "representative_intent_id": "c20-f2-asan-run",
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-final-2",
+          "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+          "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+          "command": [
+            "/tmp/fossilize-h20/toolenv/bin/cmake",
+            "-DGENERATOR=/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off/test/replay-selection-test",
+            "-DREPLAY=/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off/cli/fossilize-replay",
+            "-DBASELINE_REPLAY=/tmp/fossilize-h20/build/checker-final-2/baseline-debug-off/cli/fossilize-replay",
+            "-DCASE=original-defect",
+            "-DWORK=/tmp/fossilize-h20/output/checker-final-2/original-defect-work",
+            "-P",
+            "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_cli.cmake"
+          ],
+          "complete_recipes": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-full-report.json",
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-h20/checker-final-2",
+          "environment": [
+            "Linux; fresh detached6de/baseb86, unchanged original baselinefd380",
+            "Debug/Release x exceptionsOFF/ON; CLI/layer/tests/SPIRVvalidationON, runtimeGPUlayerOFF",
+            "Every child separately published/wrapped/deadlined600; ordinaryjobs<=4/sanjobs<=2; all actual receipts settled exactly"
+          ],
+          "exit_code": 0,
+          "gate": "G20-controls",
+          "log": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-gate-summary.json",
+          "plan_version": 2,
+          "representative_intent_id": "c20-f2-original-defect",
+          "result": "passed"
+        },
+        {
+          "attempt_id": "checker-final-2",
+          "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+          "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+          "command": [
+            "/tmp/fossilize-h20/toolenv/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-R",
+            "^(database-discovery-old-header-compatibility|replay-discovery-legacy-invocations|replay-event-old-header-compatibility|diagnostic-compatibility-test|replay-controller-cli-compatibility|replay-outcome-cli-compatibility)$",
+            "--output-junit",
+            "/tmp/fossilize-h20/output/checker-final-2/compatibility.xml.txt"
+          ],
+          "complete_recipes": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-full-report.json",
+          "criteria": [
+            "AC1"
+          ],
+          "cwd": "/tmp/fossilize-h20/checker-final-2",
+          "environment": [
+            "Linux; fresh detached6de/baseb86, unchanged original baselinefd380",
+            "Debug/Release x exceptionsOFF/ON; CLI/layer/tests/SPIRVvalidationON, runtimeGPUlayerOFF",
+            "Every child separately published/wrapped/deadlined600; ordinaryjobs<=4/sanjobs<=2; all actual receipts settled exactly"
+          ],
+          "exit_code": 0,
+          "gate": "G20-compatibility",
+          "log": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-gate-summary.json",
+          "plan_version": 2,
+          "representative_intent_id": "c20-f2-compatibility",
+          "result": "passed"
+        }
+      ],
+      "executed": [
+        "database-discovery-empty",
+        "database-discovery-errors",
+        "database-discovery-filters",
+        "database-discovery-inputs",
+        "database-discovery-metadata",
+        "database-discovery-old-header-compatibility",
+        "database-discovery-prefix",
+        "database-discovery-sensitivity",
+        "database-discovery-truncated-zero",
+        "diagnostic-compatibility-test",
+        "replay-controller-cli-compatibility",
+        "replay-discovery-cli-empty",
+        "replay-discovery-cli-optional",
+        "replay-discovery-cli-prefix",
+        "replay-discovery-cli-required",
+        "replay-discovery-cli-selection",
+        "replay-discovery-cli-truncated-zero",
+        "replay-discovery-legacy-invocations",
+        "replay-discovery-original-defect",
+        "replay-event-old-header-compatibility",
+        "replay-outcome-cli-compatibility",
+        "replay-selection-filters",
+        "replay-selection-hints",
+        "replay-selection-prefix-policy",
+        "replay-selection-ranges",
+        "replay-selection-sensitivity"
+      ],
+      "final_audit": {
+        "exit_code": 0,
+        "fresh_material_inputs": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-live-issues-final.json",
+        "intent_id": "c20-f2-final-audit",
+        "log": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-c20-f2-final-audit.log",
+        "receipt_settlement": "Full actual audit receipt exactly matched canonical command-wait; confirmed publication/no artifact wait at revision 911 before packaging.",
+        "timed_out": false
+      },
+      "findings": [],
+      "incomplete": [],
+      "input_revision": 745,
+      "input_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+      "inventory_scope": {
+        "assertions": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-planned-case-assertion-audit.json",
+        "complete_union_counts": {
+          "actual_control_manifest_ids": 3,
+          "ctest": 301,
+          "unique_total": 304
+        },
+        "complete_union_record": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-full-report.json",
+        "control_manifest": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-controls-inventory.json",
+        "gate_summary_record": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-gate-summary.json",
+        "inline": "Only26 planned mapped IDs inline for bounded canonical state; complete actually executed union retained without coverage reduction.",
+        "matrix_execution_records": [
+          "runs/issue-20/issue-20-20261110/evidence/checker-final-2-debug-exceptions-off-results.xml.txt",
+          "runs/issue-20/issue-20-20261110/evidence/checker-final-2-debug-exceptions-on-results.xml.txt",
+          "runs/issue-20/issue-20-20261110/evidence/checker-final-2-release-exceptions-off-results.xml.txt",
+          "runs/issue-20/issue-20-20261110/evidence/checker-final-2-release-exceptions-on-results.xml.txt"
+        ],
+        "matrix_inventory_records": [
+          "runs/issue-20/issue-20-20261110/evidence/checker-final-2-c20-f2-debug-exceptions-off-discover.log",
+          "runs/issue-20/issue-20-20261110/evidence/checker-final-2-c20-f2-debug-exceptions-on-discover.log",
+          "runs/issue-20/issue-20-20261110/evidence/checker-final-2-c20-f2-release-exceptions-off-discover.log",
+          "runs/issue-20/issue-20-20261110/evidence/checker-final-2-c20-f2-release-exceptions-on-discover.log"
+        ]
+      },
+      "limitations": [
+        "Native Windows explicitly user-waived for this root/run: NOT RUN/unverified; no Windows pass inferred.",
+        "Original baseline/old-header revisionfd380 remains unchanged although current target baseadvancedtob86.",
+        "No GPU, Steam, driver cache hit, cache persistence, physical compilation, general C++ binary ABI or mixed-version private metadata claim.",
+        "No candidate/source edits, canonical state writes or external mutations by this checker.",
+        "Final acceptance is candidate readiness; source push, actual PR publication/attachment and any merge remain separate coordinator actions."
+      ],
+      "next_action": "Root review/submit exact final report and records, then unchanged-input/base check and authorized one-PR publication workflow.",
+      "observations": [
+        {
+          "assertions": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-planned-case-assertion-audit.json",
+          "fact": "Entire20file diff, all12cases/36assertions and combined changelog independently reviewed before separate claims/runtime; no missing planned assertion.",
+          "source_audit": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-source-review.json"
+        },
+        {
+          "fact": "Full root/recursive prerequisite material graph unchanged; shared8sixmaterialfields unchanged; all prerequisites completed; #20/#8 remain open.",
+          "live_inputs_final": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-live-issues-final.json",
+          "live_inputs_initial": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-live-issues.json"
+        },
+        {
+          "closeout": "prepared",
+          "eligible_closing_references": [
+            "Closes https://github.com/robinwassen/Fossilize/issues/20"
+          ],
+          "fact": "Exact managed readiness body/id/marker/binding/reference read back at initial/final boundaries; parent8 excluded from closure."
+        },
+        {
+          "directory": "Native and forcedDT_UNKNOWN regular/socket/valid-link/dangling-link fixture passed in own focused11, directoryrepeat3 and all four complete suites."
+        },
+        {
+          "audit": {
+            "exit_code": 0,
+            "fresh_material_inputs": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-live-issues-final.json",
+            "intent_id": "c20-f2-final-audit",
+            "log": "runs/issue-20/issue-20-20261110/evidence/checker-final-2-c20-f2-final-audit.log",
+            "receipt_settlement": "Full actual audit receipt exactly matched canonical command-wait; confirmed publication/no artifact wait at revision 911 before packaging.",
+            "timed_out": false
+          }
+        }
+      ],
+      "operation": "final",
+      "plan_version": 2,
+      "records_file": "/tmp/fossilize-h20/checker-final-2-records.json",
+      "role": "checker",
+      "root_issue": "https://github.com/robinwassen/Fossilize/issues/20",
+      "run_id": "issue-20-20261110",
+      "skipped": [],
+      "summary": "Independent final review passed all six required Linux gates at candidate6de877d4/baseb86a23ea/plan2: 301 CPU tests in each of four configurations, 91 cases repeated3times, 29 planned sanitizer cases, six compatibility controls, unchanged fd380 baseline4modes and all five compiled mutations. Additional directory/focused and incoming issue19 repeat/sanitizer checks passed. All12cases/36assertions covered; fresh final task/readiness boundary unchanged.",
+      "test_mapping": {
+        "D20-compatibility": {
+          "location": "test/replay_discovery_compatibility.cmake and test/database_discovery_compatibility_test.cpp",
+          "tests": [
+            "database-discovery-old-header-compatibility",
+            "replay-discovery-legacy-invocations",
+            "replay-event-old-header-compatibility",
+            "diagnostic-compatibility-test",
+            "replay-controller-cli-compatibility",
+            "replay-outcome-cli-compatibility"
+          ]
+        },
+        "D20-defect-sensitivity": {
+          "location": "test/replay_discovery_cli.cmake baseline mode and isolated mutations",
+          "tests": [
+            "replay-discovery-original-defect",
+            "database-discovery-sensitivity",
+            "replay-selection-sensitivity"
+          ]
+        },
+        "D20-empty-e9": {
+          "location": "test/database_discovery_test.cpp",
+          "tests": [
+            "database-discovery-empty",
+            "database-discovery-truncated-zero"
+          ]
+        },
+        "D20-errors-unknown": {
+          "location": "test/database_discovery_test.cpp",
+          "tests": [
+            "database-discovery-errors"
+          ]
+        },
+        "D20-filter-scope": {
+          "location": "test/database_discovery_test.cpp and test/replay_selection_test.cpp",
+          "tests": [
+            "database-discovery-filters",
+            "replay-selection-filters"
+          ]
+        },
+        "D20-input-policy": {
+          "location": "test/database_discovery_test.cpp",
+          "tests": [
+            "database-discovery-inputs"
+          ]
+        },
+        "D20-metadata-transfer": {
+          "location": "test/database_discovery_test.cpp",
+          "tests": [
+            "database-discovery-metadata"
+          ]
+        },
+        "D20-prefix-policy": {
+          "location": "test/replay_selection_test.cpp",
+          "tests": [
+            "replay-selection-prefix-policy"
+          ]
+        },
+        "D20-prefix-read": {
+          "location": "test/database_discovery_test.cpp",
+          "tests": [
+            "database-discovery-prefix"
+          ]
+        },
+        "D20-production-modes": {
+          "location": "test/replay_discovery_cli.cmake and production-including replay_selection_test.cpp",
+          "tests": [
+            "replay-discovery-cli-empty",
+            "replay-discovery-cli-truncated-zero",
+            "replay-discovery-cli-prefix",
+            "replay-discovery-cli-required",
+            "replay-discovery-cli-optional",
+            "replay-discovery-cli-selection"
+          ]
+        },
+        "D20-range-scope": {
+          "location": "test/replay_selection_test.cpp",
+          "tests": [
+            "replay-selection-ranges"
+          ]
+        },
+        "D20-replay-hints": {
+          "location": "test/replay_selection_test.cpp with production ThreadedReplayer dispatch",
+          "tests": [
+            "replay-selection-hints"
+          ]
+        }
+      },
+      "verdict": "accepted",
+      "work_unit": "https://github.com/robinwassen/Fossilize/issues/20",
+      "worker_id": "/root/checker_final20"
     }
   ],
   "work_units": [
