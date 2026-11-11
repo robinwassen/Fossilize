@@ -28,6 +28,7 @@
 #include <atomic>
 #include <string.h>
 #include "fossilize_inttypes.h"
+#include "replay_dependency.hpp"
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1800)
 #define FOSSILIZE_NOEXCEPT
@@ -138,8 +139,20 @@ static inline void log_error_pnext_chain(std::string what, const void *pNext)
 	LOGW_LEVEL("%s\n", what.c_str());
 }
 
-static inline void log_missing_resource(const char *type, Hash hash)
+static inline void log_missing_resource(const char *type, Hash hash, bool read_failed = false,
+										bool known_missing = false)
 {
+	if (ReplayDependency::quiet_diagnostics()) return;
+	if (read_failed)
+	{
+		LOGW_LEVEL("Referenced %s %016" PRIx64 ", but reading the existing input failed.\n", type, hash);
+		return;
+	}
+	if (!known_missing)
+	{
+		LOGW_LEVEL("Referenced %s %016" PRIx64 ", but its dependency could not be resolved.\n", type, hash);
+		return;
+	}
 	LOGW_LEVEL("Referenced %s %016" PRIx64
 			           ", but it does not exist.\n"
 			           "This can be expected when replaying an archive from Steam.\n"
@@ -151,9 +164,9 @@ static inline void log_missing_resource(const char *type, Hash hash)
 
 static inline void log_invalid_resource(const char *type, Hash hash)
 {
+	if (ReplayDependency::quiet_diagnostics()) return;
 	LOGW_LEVEL("Referenced %s %016" PRIx64
-			           ", but it is VK_NULL_HANDLE.\n"
-			           "The create info was likely not supported by device.\n",
+			           ", but its dependency did not produce a usable handle; see its originating failure when available.\n",
 	           type, hash);
 }
 

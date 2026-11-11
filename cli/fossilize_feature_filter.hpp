@@ -26,6 +26,8 @@
 #error "Must include Vulkan headers before including fossilize_feature_filter.hpp"
 #endif
 
+#include "../replay_support.hpp"
+
 namespace Fossilize
 {
 struct VulkanFeatures
@@ -254,14 +256,23 @@ public:
 	void set_device_query_interface(DeviceQueryInterface *iface);
 
 	bool sampler_is_supported(const VkSamplerCreateInfo *info) const;
+	bool sampler_is_supported(const VkSamplerCreateInfo *info, SupportDetail &detail) const;
 	bool descriptor_set_layout_is_supported(const VkDescriptorSetLayoutCreateInfo *info) const;
+	bool descriptor_set_layout_is_supported(const VkDescriptorSetLayoutCreateInfo *info, SupportDetail &detail) const;
 	bool pipeline_layout_is_supported(const VkPipelineLayoutCreateInfo *info) const;
+	bool pipeline_layout_is_supported(const VkPipelineLayoutCreateInfo *info, SupportDetail &detail) const;
 	bool shader_module_is_supported(const VkShaderModuleCreateInfo *info) const;
+	bool shader_module_is_supported(const VkShaderModuleCreateInfo *info, SupportDetail &detail) const;
 	bool render_pass_is_supported(const VkRenderPassCreateInfo *info) const;
+	bool render_pass_is_supported(const VkRenderPassCreateInfo *info, SupportDetail &detail) const;
 	bool render_pass2_is_supported(const VkRenderPassCreateInfo2 *info) const;
+	bool render_pass2_is_supported(const VkRenderPassCreateInfo2 *info, SupportDetail &detail) const;
 	bool graphics_pipeline_is_supported(const VkGraphicsPipelineCreateInfo *info) const;
+	bool graphics_pipeline_is_supported(const VkGraphicsPipelineCreateInfo *info, SupportDetail &detail) const;
 	bool compute_pipeline_is_supported(const VkComputePipelineCreateInfo *info) const;
+	bool compute_pipeline_is_supported(const VkComputePipelineCreateInfo *info, SupportDetail &detail) const;
 	bool raytracing_pipeline_is_supported(const VkRayTracingPipelineCreateInfoKHR *info) const;
+	bool raytracing_pipeline_is_supported(const VkRayTracingPipelineCreateInfoKHR *info, SupportDetail &detail) const;
 
 	bool register_shader_module_info(VkShaderModule module, const VkShaderModuleCreateInfo *info);
 	void unregister_shader_module_info(VkShaderModule module);

@@ -184,7 +184,7 @@ redesign asynchronous persistence error reporting. Opt/disasm migration and the
 explicitly permitted optimizer fallback policy remain future scope; these tests
 make no claim to verify those tools or the complete observability standard.
 
-A normal Linux CLI/layer-enabled build with SPIR-V validation registers 174 tests before optional layer integration, including 14 Linux fork-child cases and 28 replay-controller cases retained from [issue #13](https://github.com/robinwassen/Fossilize/issues/13), plus 32 replay item-outcome cases. Discover the current platform-specific inventory with CTest before reporting coverage; this Linux count does not establish native Windows execution. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
+The Linux CPU inventory observed for issue #19 contains 274 tests with CLI/layer and SPIR-V validation enabled and optional runtime-layer integration disabled. This includes the 14 fork-child cases and 28 controller cases historically registered for [issue #13](https://github.com/robinwassen/Fossilize/issues/13), plus the 32 item-outcome cases introduced for issue #14 and the later regressions described below. Discover the current platform-specific inventory with CTest before reporting coverage; this Linux count does not establish native Windows execution. The original core/feature/lock subset is six on Linux and five on Windows. Explain platform/configuration differences. Direct execution is possible from an isolated working directory using absolute executable paths, but CTest supplies important environment settings for the layer test.
 
 The replay outcome regressions for [issue #14](https://github.com/robinwassen/Fossilize/issues/14)
 register `replay-outcome-{state,parse-read,creation,compile-required-loop,support,validation,setup-dependency,worker-queue,matrix}`,
@@ -887,3 +887,51 @@ a compiler failure, crash or deadline is never sensitivity evidence. The harness
 records actual execution and limitations. Native Windows requires its own runner
 or explicit task-specific platform disposition; Linux checks do not establish
 Windows, GPU/driver or Steam behavior.
+
+## Support reasons and blocked dependencies (issue #19)
+
+`replay-support-{compute,graphics,raytracing,static,call-scope}` exercise the actual
+FeatureFilter detectors with synthetic non-null feature/property initialization
+and explicit Release-active assertions. Each migrated entrypoint has supported
+and rejected controls; the fixture applicability table is in
+`test/replay_support_test.cpp`. Shader capability and unknown sType IDs retain
+numeric values; known limits retain input/device values. Malformed shader inputs
+remain distinguishable from device support rejection.
+
+`replay-dependency-{module-fanout,parent-fanout,common-cache,static}` and
+`replay-support-{categories,bounded}` use recorded outer FOZ inputs and production
+parse, scheduling, resolution and creation paths with private CPU Vulkan adapters.
+They assert originating failures, exact consumer/parent identities and the absence
+of pipeline creation for blocked work. Thread-count and memory-context controls
+exercise the same ThreadedReplayer process; these are not cross-process item
+reconciliation claims. `replay-{support,dependency}-worker-details` use actual
+worker/controller pipes with prose disabled. Category counts are independent of
+bounded retained examples and have worker-attempt scope, as documented in the
+[private protocol](specs/replay-worker-events.md).
+
+Run the complete CPU inventory in Linux Debug/Release with exceptions OFF/ON,
+CLI/layer and SPIR-V validation ON, runtime-layer testing OFF. Repeat call-scope,
+fanout, worker-detail and bounded cases three times. Build codec/parser/support
+and dependency runners with ASan+UBSan and run the focused issue #19 cases along
+with inherited codec/parser/producer/varint regressions. Run
+`replay-support-old-header-compatibility` and the existing event/diagnostic/outcome
+compatibility cases. Use compiled isolated mutations to suppress an actual
+support detector's detail and erase a source parent identity; only explicit M19
+assertion failures count as sensitivity evidence. Commands and recorded results
+are harness evidence; these procedures do not themselves establish a passing run.
+Native Windows verification is explicitly user-waived and remains unverified;
+these CPU fixtures make no GPU, driver-cache, Steam or persistence claim.
+
+Issue #19 ordinary warning tests register `replay-warning-{same-cause,grouping,
+overflow,dependencies,concurrency,lifecycle,legacy-controls,cli-worker}` with
+Release-active checks and normal CLI/core logging. They capture actual stderr
+from production setup, parser, recorded FOZ graphs and OS worker/controller
+paths; the existing prose-disabled pipe fixtures remain separate protocol tests.
+The fixed diagnostic collector retains 32 causes, two examples per cause subject
+to eight globally and 64 source contexts, with at most 42 report lines/32768 bytes.
+Tests distinguish exact attempt observations, overflow observations, saturated
+lower bounds and unknown unretained causes from unique item accounting. Run the
+complete four Linux CPU configurations, focused ASan+UBSan cases and repeated
+concurrency; compile isolated lost-support-detail, lost-parent-identity and restored
+per-object-warning mutations and require their precise assertion failures.
+Native Windows remains user-waived and unverified for this issue.
