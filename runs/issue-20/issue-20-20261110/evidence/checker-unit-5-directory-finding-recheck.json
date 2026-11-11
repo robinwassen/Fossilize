@@ -1,0 +1,42 @@
+{
+  "finding_id": "F20-DIRECTORY-DTYPE-REGULAR",
+  "attempt_id": "checker-unit-5",
+  "worker_id": "/root/checker_directory20",
+  "candidate_sha": "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+  "base_sha": "b86a23ea323ee86db19d4dace82afd904e75bae7",
+  "plan_version": 2,
+  "affected_task": "https://github.com/robinwassen/Fossilize/issues/20",
+  "source_evidence": [
+    "POSIX fallback now uses ::lstat and exact (status.st_mode & S_IFMT) != S_IFREG exclusion; it does not follow local symlinks. Windows unknown fallback explicitly skips FILE_ATTRIBUTE_REPARSE_POINT before stat; Windows remains source-only/unverified.",
+    "Registered database-discovery-empty now creates a real two-byte compute20 regular file, a local Unix socket compute21, valid symlink compute22 and dangling symlink compute23; checks native then forced DT_UNKNOWN on the identical directory.",
+    "Both rows assert exact regular-only discovered/selected key vectors, empty exclusion set, complete/known retained_count1, has_entry(false) for every nonregular key, positive regular membership and two-call exact {} payload readback. Explicit DiagnosticChecks survive Release.",
+    "Fixture unlinks stale socket/links before bind and after closing, preserving same-workdir repeatability; readdir forcing remains private Linux link wrapper, no shipping injection control."
+  ],
+  "runtime_evidence": {
+    "fresh_build": [
+      "c20-u5-configure-focused",
+      "c20-u5-debug-exceptions-off-static",
+      "c20-u5-build-focused"
+    ],
+    "fresh_focused": {
+      "intent_id": "c20-u5-run-focused",
+      "exit_code": 0,
+      "passed": 11,
+      "skipped": 0,
+      "log": "/tmp/fossilize-h20/output/checker-unit-5/c20-u5-run-focused.log"
+    },
+    "same_workdir_repeat": {
+      "intent_id": "c20-u5-directory-repeat",
+      "exit_code": 0,
+      "iterations": 3,
+      "test": "database-discovery-empty",
+      "log": "/tmp/fossilize-h20/output/checker-unit-5/c20-u5-directory-repeat.log"
+    }
+  },
+  "resolution_assessment": "Targeted defect concretely rechecked and resolved at6de by this fresh active checker; root alone records canonical resolution. Full remaining mandatory gates pending; this is not unit acceptance.",
+  "limits": [
+    "Native Windows waived NOT RUN/unverified; source predicate inspection not runtime evidence.",
+    "No large file, network connection, GPU or cache claim.",
+    "Prior checker/implementer runtime not counted as independent execution."
+  ]
+}
