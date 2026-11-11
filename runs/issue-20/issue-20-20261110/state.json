@@ -11345,7 +11345,24 @@
         "eligible_deadline": 1795176455.7034802,
         "intent_id": "c20-u5-debug-exceptions-off-compiler-config",
         "started": 1794429366.0478685,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1794430562.6276517,
+          "command": [
+            "python3",
+            "-B",
+            "-c",
+            "import json,pathlib,subprocess; p=pathlib.Path('/tmp/fossilize-h20/build/checker-unit-5/debug-exceptions-off'); print(subprocess.run(['c++','--version'],capture_output=True,text=True).stdout); print((p/'CMakeCache.txt').read_text()); print(json.dumps(json.loads((p/'compile_commands.json').read_text())[:5],indent=2))"
+          ],
+          "cwd": "/tmp/fossilize-h20/checker-unit-5",
+          "exit_code": 0,
+          "finished": 1794430562.6918294,
+          "intent_id": "c20-u5-debug-exceptions-off-compiler-config",
+          "started": 1794430562.6241572,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "child_command": [
@@ -13883,7 +13900,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 671,
+  "revision": 672,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
