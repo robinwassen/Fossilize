@@ -831,7 +831,10 @@ without a primary). Keys are deduplicated by tag/hash, with exclusions retained
 before filtering. No unread total is inferred from retained keys. Header/payload
 truncation names the retained byte boundary; read/seek errors and cancellation
 remain failed discovery. Linux deterministic I/O adapters are private test link
-wrappers, not shipping injection controls. The concurrent-input case checks deterministic opened-child seek/header-read failures after discard, required/optional policy, exact full input tables and live logical unions with adapter-disabled healthy controls. The errors case retains a small real
+wrappers, not shipping injection controls. The empty case also compares native directory types
+with forced unknown types on the same tiny regular resource, local Unix socket,
+valid symlink and dangling symlink; both rows require exact regular-only scope,
+known retained counts and positive payload readback. The concurrent-input case checks deterministic opened-child seek/header-read failures after discard, required/optional policy, exact full input tables and live logical unions with adapter-disabled healthy controls. The errors case retains a small real
 text archive readback and uses metadata-only logical positions to check text
 payload spans at uint32 limits, exact retained boundaries, and failed seek/tell
 uncertainty without large files or payload allocations. A key is retained only

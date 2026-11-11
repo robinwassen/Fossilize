@@ -17,6 +17,10 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #endif
+#ifdef __linux__
+#include <sys/socket.h>
+#include <sys/un.h>
+#endif
 using namespace Fossilize;
 static DiagnosticChecks c;
 #ifdef __linux__
@@ -80,9 +84,38 @@ static void empty()
 
 #ifdef __linux__
  {DB writer(create_dumb_folder_database("unknown-directory",DatabaseMode::OverWrite));c.require(writer->prepare()&&writer->write_entry(RESOURCE_COMPUTE_PIPELINE,0x20,"{}",2,0),"D20/directory-writer");}
- DB directory(create_dumb_folder_database("unknown-directory",DatabaseMode::ReadOnly));directory->set_input_required(0,true);force_unknown_type=true;
- bool prepared=directory->prepare();force_unknown_type=false;auto report=directory->get_preparation_report();
- c.require(prepared&&report.discovery_complete&&report.satisfies_required_scope()&&report.selected==std::vector<DiscoveryKey>({{RESOURCE_COMPUTE_PIPELINE,0x20}}),"D20/directory-unknown-type-resolved");
+ const char *socket_path="unknown-directory/07.0000000000000021.json";
+ const char *link_path="unknown-directory/07.0000000000000022.json";
+ const char *broken_path="unknown-directory/07.0000000000000023.json";
+ // Keep the fixture repeatable in CTest's persistent private directory.
+ unlink(socket_path);unlink(link_path);unlink(broken_path);
+ int socket_fd=socket(AF_UNIX,SOCK_STREAM,0);
+ c.require(socket_fd>=0,"D20/directory-local-socket");
+ sockaddr_un address={};address.sun_family=AF_UNIX;
+ memcpy(address.sun_path,socket_path,strlen(socket_path)+1);
+ c.require(socket_fd>=0&&bind(socket_fd,reinterpret_cast<sockaddr *>(&address),sizeof(address))==0,"D20/directory-socket-bind");
+ c.require(symlink("07.0000000000000020.json",link_path)==0,"D20/directory-valid-symlink");
+ c.require(symlink("absent.json",broken_path)==0,"D20/directory-broken-symlink");
+ for(bool unknown:{false,true})
+ {
+  std::string id=unknown?"D20/directory-unknown":"D20/directory-native";
+  DB directory(create_dumb_folder_database("unknown-directory",DatabaseMode::ReadOnly));directory->set_input_required(0,true);
+  force_unknown_type=unknown;bool prepared=directory->prepare();force_unknown_type=false;
+  auto report=directory->get_preparation_report();
+  const std::vector<DiscoveryKey> regular={{RESOURCE_COMPUTE_PIPELINE,0x20}};
+  c.require(prepared&&report.discovery_complete&&report.unread_total_known&&report.satisfies_required_scope(),id+"/complete");
+  c.require(report.discovered==regular&&report.selected==regular&&report.excluded.empty(),id+"/exact-regular-scope");
+  c.require(report.inputs.size()==1&&report.inputs[0].opened&&report.inputs[0].required&&
+   report.inputs[0].state==DiscoveryState::Complete&&report.inputs[0].reason==DiscoveryReason::None&&
+   report.inputs[0].total_known&&report.inputs[0].retained_count==1,id+"/exact-retained-count");
+  for(Hash hash:{0x21,0x22,0x23})c.require(!directory->has_entry(RESOURCE_COMPUTE_PIPELINE,hash),id+"/nonregular-excluded");
+  c.require(directory->has_entry(RESOURCE_COMPUTE_PIPELINE,0x20),id+"/regular-present");
+  size_t size=0;c.require(directory->read_entry(RESOURCE_COMPUTE_PIPELINE,0x20,&size,nullptr,0)&&size==2,id+"/regular-query");
+  char payload[2]={};c.require(directory->read_entry(RESOURCE_COMPUTE_PIPELINE,0x20,&size,payload,0)&&
+   size==2&&memcmp(payload,"{}",2)==0,id+"/regular-payload");
+ }
+ if(socket_fd>=0)close(socket_fd);
+ unlink(socket_path);unlink(link_path);unlink(broken_path);
 #endif
 }
 static void truncated(unsigned retained)

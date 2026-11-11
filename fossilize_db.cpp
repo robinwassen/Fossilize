@@ -921,7 +921,24 @@ struct DumbDirectoryDatabase : DatabaseInterface
 			{
 				struct stat status = {};
 				auto path = Path::join(base_directory, pEntry->d_name);
+#ifdef _WIN32
+				// Classify the entry itself, rather than following a reparse point.
+				DWORD attributes = GetFileAttributesA(path.c_str());
+				if (attributes == INVALID_FILE_ATTRIBUTES)
+				{
+					DWORD error = GetLastError();
+					closedir(dp);
+					observation.reason = DiscoveryReason::Read;
+					observation.raw_error_known = true;
+					observation.raw_error = error;
+					return false;
+				}
+				if (attributes & FILE_ATTRIBUTE_REPARSE_POINT)
+					continue;
 				if (::stat(path.c_str(), &status) != 0)
+#else
+				if (::lstat(path.c_str(), &status) != 0)
+#endif
 				{
 					int error = errno;
 					closedir(dp);
@@ -930,7 +947,7 @@ struct DumbDirectoryDatabase : DatabaseInterface
 					observation.raw_error = error;
 					return false;
 				}
-				if ((status.st_mode & S_IFREG) == 0)
+				if ((status.st_mode & S_IFMT) != S_IFREG)
 					continue;
 			}
 			else if (pEntry->d_type != DT_REG)
