@@ -11731,6 +11731,37 @@
         "intent_id": "c20-u5-compatibility",
         "started": 1794429557.7592366,
         "timeout": 600
+      },
+      {
+        "child_command": [
+          "/tmp/fossilize-h20/toolenv/bin/cmake",
+          "-S",
+          "/tmp/fossilize-h20/checker-unit-5",
+          "-B",
+          "/tmp/fossilize-h20/build/checker-unit-5/asan-ubsan",
+          "-G",
+          "Ninja",
+          "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+          "-DFOSSILIZE_TESTS=ON",
+          "-DFOSSILIZE_CLI=ON",
+          "-DFOSSILIZE_VULKAN_LAYER=ON",
+          "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+          "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+          "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+          "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer",
+          "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined",
+          "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=undefined",
+          "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+        ],
+        "command": "/tmp/fossilize-h20/toolenv/bin/cmake -S /tmp/fossilize-h20/checker-unit-5 -B /tmp/fossilize-h20/build/checker-unit-5/asan-ubsan -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DFOSSILIZE_ENABLE_EXCEPTIONS=OFF -DFOSSILIZE_TESTS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=ON -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DFOSSILIZE_SANITIZE_ADDRESS=ON '-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer' -DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined -DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=undefined -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "cwd": "/tmp/fossilize-h20/checker-unit-5",
+        "eligible_deadline": 1795176455.7034802,
+        "intent_id": "c20-u5-asan-configure",
+        "started": 1794429563.4247632,
+        "timeout": 600
       }
     ],
     "deadline": 1795176455.7034802,
@@ -12813,7 +12844,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 618,
+  "revision": 619,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
