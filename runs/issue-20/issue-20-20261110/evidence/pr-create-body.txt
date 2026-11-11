@@ -1,0 +1,39 @@
+## Problem
+
+A truncated archive with no retained entries could look like a complete empty database. Missing inputs and replay selection policies could also hide which work was actually covered.
+
+## What changes
+
+- Add owned preparation reports for database inputs, discovery state, retained boundaries, known keys and exclusions, preserving unknown unread totals.
+- Share filter, range, hash and creation-hint accounting across replay paths, and check required discovery before empty-work success.
+- Add explicit `--accept-recovered-prefix` and `--optional-database-index` policies, forwarded through ExternalReplayer and same-commit OS metadata.
+- Check text-archive position arithmetic, guard empty marker writes, and classify unknown directory entries without admitting sockets or following symlinks.
+
+## Why this matters
+
+Callers can distinguish complete empty input from incomplete discovery, choose a recovered prefix explicitly, and see policy exclusions without counting them as successful or failed execution.
+
+## Why this approach
+
+Discovery, selection and execution remain separate facts. Additive nonvirtual APIs preserve existing preparation signatures and tolerant library/capture behavior; owned snapshots retain input identities after failed children are discarded. Shared selection and checked metadata carry those facts into production replay. The existing Options and shared-progress layouts are preserved.
+
+## Verification and limits
+
+Independent unit and separate fresh final checkers each passed all six required Linux gates at `6de877d4a30b61cc0349c6257e8645ea0ff3f1c8`, against current master `b86a23ea323ee86db19d4dace82afd904e75bae7`:
+
+- Complete Debug/Release × exceptions OFF/ON builds and **301 CPU tests per configuration**, with CLI/layer and SPIR-V validation enabled.
+- 91 focused cases repeated three times, plus seven integration cases repeated three times.
+- 29 planned ASan+UBSan cases and 20 integration cases, with effective instrumentation checked.
+- Six compatibility controls, including actual original-header callers; the complete suites also include the inherited compatibility tests.
+- The unchanged `fd380aaf` baseline and candidate in four replay modes, plus five independently compiled mutation controls requiring healthy zero exits and the intended ordinary assertion failures.
+- Exact directory classification/readback with regular files, a Unix socket, valid/dangling symlinks and repeated native/unknown-type scans.
+
+Evidence: [final gate summary](https://github.com/robinwassen/Fossilize/blob/977ef3e2ee35142c7ddd187dd541d86ae77b65ac/runs/issue-20/issue-20-20261110/evidence/checker-final-2-gate-summary.json) and [unit gate summary](https://github.com/robinwassen/Fossilize/blob/977ef3e2ee35142c7ddd187dd541d86ae77b65ac/runs/issue-20/issue-20-20261110/evidence/checker-unit-5-gate-summary.json).
+
+Native Windows was explicitly waived for this run and remains unverified. No real GPU/driver, Steam, physical compilation, cache-hit or persistence result is claimed. Compatibility evidence covers source/invocation boundaries; private metadata is same-commit only, with no general prebuilt C++ binary-ABI claim.
+
+## Task references
+
+Closes https://github.com/robinwassen/Fossilize/issues/20
+
+Part of https://github.com/robinwassen/Fossilize/issues/8, which remains open.
