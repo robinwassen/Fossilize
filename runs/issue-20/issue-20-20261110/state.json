@@ -10845,7 +10845,33 @@
         "log": "/tmp/fossilize-h20/output/implementer-directory-6/asan-focused.log",
         "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/asan-focused-receipt.json",
         "started": 1794428220.6781101,
-        "timeout": 600
+        "timeout": 600,
+        "wait_receipt": {
+          "acquired": 1794428757.939266,
+          "command": [
+            "env",
+            "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+            "/tmp/fossilize-h20/toolenv/bin/ctest",
+            "--test-dir",
+            "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+            "--output-on-failure",
+            "--no-tests=error",
+            "--stop-on-failure",
+            "-R",
+            "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+            "--output-junit",
+            "/tmp/fossilize-h20/output/implementer-directory-6/asan-focused.xml"
+          ],
+          "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+          "exit_code": 0,
+          "finished": 1794428762.0120106,
+          "intent_id": "d20-i6-asan-focused",
+          "started": 1794428757.9359589,
+          "timed_out": false,
+          "timeout": 600.0,
+          "wait_seconds": 0.0
+        }
       },
       {
         "child_command": [
@@ -11943,7 +11969,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 568,
+  "revision": 569,
   "root_issue": {
     "id": 6079844260,
     "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
