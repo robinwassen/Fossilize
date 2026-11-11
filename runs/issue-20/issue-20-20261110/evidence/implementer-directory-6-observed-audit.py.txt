@@ -1,0 +1,45 @@
+import json, pathlib, subprocess, sys, xml.etree.ElementTree as ET
+repo=pathlib.Path('/home/robin/.herdr/worktrees/fossilize/ticket-20')
+out=pathlib.Path('/tmp/fossilize-h20/output/implementer-directory-6')
+sha='6de877d4a30b61cc0349c6257e8645ea0ff3f1c8'
+def command(argv):
+ return subprocess.check_output(argv,cwd=repo,text=True,timeout=60)
+assert command(['git','rev-parse','HEAD']).strip()==sha
+assert not command(['git','status','--porcelain']).strip()
+inventory=json.loads((out/'debug-inventory.json').read_text())
+discovered=[x['name'] for x in inventory['tests']]
+def results(name):
+ root=ET.parse(out/(name+'.xml')).getroot();cases=list(root.iter('testcase'))
+ for case in cases:
+  assert case.get('status')!='notrun' and not list(case.iter('failure')) and not list(case.iter('error')) and not list(case.iter('skipped')),ET.tostring(case)
+ return [case.get('name') for case in cases]
+executed=results('debug-full')
+assert len(executed)==len(set(executed)) and set(executed)==set(discovered)
+focused={name:results(name) for name in ['debug-focused','release-focused','debug-directory-repeat','release-directory-repeat','asan-focused']}
+assert focused['debug-focused']==focused['release-focused']
+assert len(focused['asan-focused'])==29
+configs={}
+for config in ['debug-off','release-off','asan-ubsan']:
+ build=pathlib.Path('/tmp/fossilize-h20/build/implementer-1')/config
+ cache={}
+ for line in (build/'CMakeCache.txt').read_text().splitlines():
+  if '=' in line and not line.startswith(('#','//')):
+   key,value=line.split('=',1);cache[key.split(':')[0]]=value
+ wanted=['CMAKE_BUILD_TYPE','CMAKE_CXX_COMPILER','CMAKE_CXX_FLAGS','CMAKE_EXE_LINKER_FLAGS','CMAKE_SHARED_LINKER_FLAGS','FOSSILIZE_ENABLE_EXCEPTIONS','FOSSILIZE_TESTS','FOSSILIZE_CLI','FOSSILIZE_VULKAN_LAYER','FOSSILIZE_REPLAYER_SPIRV_VAL','FOSSILIZE_TEST_RUNTIME_LAYER','FOSSILIZE_SANITIZE_ADDRESS','CMAKE_HOME_DIRECTORY']
+ values={k:cache.get(k) for k in wanted}
+ for k in ['FOSSILIZE_TESTS','FOSSILIZE_CLI','FOSSILIZE_VULKAN_LAYER','FOSSILIZE_REPLAYER_SPIRV_VAL']:assert values[k]=='ON'
+ assert values['FOSSILIZE_TEST_RUNTIME_LAYER']=='OFF' and values['FOSSILIZE_ENABLE_EXCEPTIONS']=='OFF'
+ assert values['CMAKE_HOME_DIRECTORY']==str(repo)
+ assert values['CMAKE_BUILD_TYPE']==('Release' if config=='release-off' else 'Debug')
+ configs[config]=values
+build='/tmp/fossilize-h20/build/implementer-1/asan-ubsan'
+commands=command(['/tmp/fossilize-h20/toolenv/bin/ninja','-C',build,'-t','commands','database-discovery-test','replay-selection-test','replay-event-test','parser-input-test','varint-test']).splitlines()
+source_names=['/fossilize_db.cpp','/test/database_discovery_test.cpp','/test/replay_selection_test.cpp','/test/replay_event_test.cpp','/test/parser_input_test.cpp','/test/varint_test.cpp']
+compile_commands={source:next(line for line in commands if ' -c ' in line and source in line) for source in source_names}
+for line in compile_commands.values():assert '-fsanitize=address' in line and '-fsanitize=undefined' in line
+link_commands={target:next(line for line in commands if ' -o test/'+target+' ' in line) for target in ['database-discovery-test','replay-selection-test','replay-event-test','parser-input-test','varint-test']}
+for line in link_commands.values():assert '-fsanitize=address' in line and '-fsanitize=undefined' in line
+for name in ['debug-directory-repeat','release-directory-repeat']:
+ text=(out/(name+'.log')).read_text();assert text.count('Passed')==3
+report=dict(candidate_sha=sha,source_clean=True,discovered=discovered,executed=executed,focused=focused,configurations=configs,sanitizer_compile_commands=compile_commands,sanitizer_link_commands=link_commands,directory_repetitions_per_configuration=3,native_windows='NOT RUN/unverified; user-waived for this run')
+print(json.dumps(report,indent=2))

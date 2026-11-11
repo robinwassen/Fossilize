@@ -1,0 +1,195 @@
+[
+  {
+    "intent_id": "d20-i6-source-check",
+    "child_command": [
+      "git",
+      "diff",
+      "--check",
+      "c49ab3f73652cdcbcf52a2446036d068b0930e27",
+      "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8"
+    ],
+    "command": "git diff --check c49ab3f73652cdcbcf52a2446036d068b0930e27 6de877d4a30b61cc0349c6257e8645ea0ff3f1c8",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/source-check-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-directory-6/source-check.log"
+  },
+  {
+    "intent_id": "d20-i6-debug-full",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--stop-on-failure",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-directory-6/debug-full.xml"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --output-on-failure --no-tests=error --stop-on-failure --output-junit /tmp/fossilize-h20/output/implementer-directory-6/debug-full.xml",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/debug-full-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-directory-6/debug-full.log"
+  },
+  {
+    "intent_id": "d20-i6-debug-focused",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--stop-on-failure",
+      "-R",
+      "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)|replay-selection-(filters|ranges|prefix-policy|hints))$",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-directory-6/debug-focused.xml"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --output-on-failure --no-tests=error --stop-on-failure -R '^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)|replay-selection-(filters|ranges|prefix-policy|hints))$' --output-junit /tmp/fossilize-h20/output/implementer-directory-6/debug-focused.xml",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/debug-focused-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-directory-6/debug-focused.log"
+  },
+  {
+    "intent_id": "d20-i6-debug-directory-repeat",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/debug-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--stop-on-failure",
+      "-R",
+      "^database-discovery-empty$",
+      "--repeat",
+      "until-fail:3",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-directory-6/debug-directory-repeat.xml"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/debug-off --output-on-failure --no-tests=error --stop-on-failure -R '^database-discovery-empty$' --repeat until-fail:3 --output-junit /tmp/fossilize-h20/output/implementer-directory-6/debug-directory-repeat.xml",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/debug-directory-repeat-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-directory-6/debug-directory-repeat.log"
+  },
+  {
+    "intent_id": "d20-i6-release-build",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/implementer-1/release-off",
+      "--parallel",
+      "4",
+      "--target",
+      "database-discovery-test",
+      "replay-selection-test",
+      "fossilize-replay"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/cmake --build /tmp/fossilize-h20/build/implementer-1/release-off --parallel 4 --target database-discovery-test replay-selection-test fossilize-replay",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/release-build-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-directory-6/release-build.log"
+  },
+  {
+    "intent_id": "d20-i6-release-focused",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/release-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--stop-on-failure",
+      "-R",
+      "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)|replay-selection-(filters|ranges|prefix-policy|hints))$",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-directory-6/release-focused.xml"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/release-off --output-on-failure --no-tests=error --stop-on-failure -R '^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)|replay-selection-(filters|ranges|prefix-policy|hints))$' --output-junit /tmp/fossilize-h20/output/implementer-directory-6/release-focused.xml",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/release-focused-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-directory-6/release-focused.log"
+  },
+  {
+    "intent_id": "d20-i6-release-directory-repeat",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/release-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--stop-on-failure",
+      "-R",
+      "^database-discovery-empty$",
+      "--repeat",
+      "until-fail:3",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-directory-6/release-directory-repeat.xml"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/release-off --output-on-failure --no-tests=error --stop-on-failure -R '^database-discovery-empty$' --repeat until-fail:3 --output-junit /tmp/fossilize-h20/output/implementer-directory-6/release-directory-repeat.xml",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/release-directory-repeat-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-directory-6/release-directory-repeat.log"
+  },
+  {
+    "intent_id": "d20-i6-asan-build",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+      "--parallel",
+      "2",
+      "--target",
+      "database-discovery-test",
+      "replay-selection-test",
+      "replay-event-test",
+      "parser-input-test",
+      "varint-test"
+    ],
+    "command": "/tmp/fossilize-h20/toolenv/bin/cmake --build /tmp/fossilize-h20/build/implementer-1/asan-ubsan --parallel 2 --target database-discovery-test replay-selection-test replay-event-test parser-input-test varint-test",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/asan-build-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-directory-6/asan-build.log"
+  },
+  {
+    "intent_id": "d20-i6-asan-focused",
+    "child_command": [
+      "env",
+      "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+      "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/implementer-1/asan-ubsan",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--stop-on-failure",
+      "-R",
+      "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/implementer-directory-6/asan-focused.xml"
+    ],
+    "command": "env ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /tmp/fossilize-h20/toolenv/bin/ctest --test-dir /tmp/fossilize-h20/build/implementer-1/asan-ubsan --output-on-failure --no-tests=error --stop-on-failure -R '^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)' --output-junit /tmp/fossilize-h20/output/implementer-directory-6/asan-focused.xml",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/asan-focused-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-directory-6/asan-focused.log"
+  },
+  {
+    "intent_id": "d20-i6-evidence-audit",
+    "child_command": [
+      "python3",
+      "-B",
+      "/tmp/fossilize-h20/output/implementer-directory-6/audit.py"
+    ],
+    "command": "python3 -B /tmp/fossilize-h20/output/implementer-directory-6/audit.py",
+    "cwd": "/home/robin/.herdr/worktrees/fossilize/ticket-20",
+    "timeout": 600,
+    "receipt": "/tmp/fossilize-h20/output/implementer-directory-6/evidence-audit-receipt.json",
+    "log": "/tmp/fossilize-h20/output/implementer-directory-6/evidence-audit.json"
+  }
+]

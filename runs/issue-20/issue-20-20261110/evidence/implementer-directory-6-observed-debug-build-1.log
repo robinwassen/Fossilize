@@ -1,0 +1,314 @@
+[0/1] Re-running CMake...
+CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+-- Did not find googletest, tests will not be built. To enable tests place googletest in '<spirv-dir>/external/googletest'.
+-- SPIRV-Cross: Finding Git version for SPIRV-Cross.
+-- SPIRV-Cross: Git hash: vulkan-sdk-1.4.341.0
+SPIRV-Cross:  Testing will be disabled for SPIRV-Cross. Could not find glslang or SPIRV-Tools build under external/. To enable testing, run ./checkout_glslang_spirv_tools.sh and ./build_glslang_spirv_tools.sh first.
+-- Configuring done (0.8s)
+-- Generating done (0.2s)
+-- Build files have been written to: /tmp/fossilize-h20/build/implementer-1/debug-off
+[1/74] Building CXX object CMakeFiles/fossilize.dir/replay_parse_result.cpp.o
+[2/74] Building CXX object cli/CMakeFiles/cli-utils.dir/device.cpp.o
+[3/74] Building CXX object cli/CMakeFiles/cli-utils.dir/fossilize_feature_filter.cpp.o
+[4/74] Building CXX object CMakeFiles/fossilize.dir/fossilize_db.cpp.o
+/home/robin/.herdr/worktrees/fossilize/ticket-20/fossilize_db.cpp: In member function ‘bool Fossilize::DatabaseInterface::Impl::parse_imported_metadata(const void*, size_t)’:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/fossilize_db.cpp:715:35: warning: declaration of ‘report’ shadows a member of ‘Fossilize::DatabaseInterface::Impl’ [-Wshadow]
+  715 |         DatabasePreparationReport report;
+      |                                   ^~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/fossilize_db.cpp:147:35: note: shadowed declaration is here
+  147 |         DatabasePreparationReport report;
+      |                                   ^~~~~~
+[5/74] Building CXX object layer/CMakeFiles/VkLayer_fossilize.dir/instance.cpp.o
+[6/74] Linking CXX static library cli/libcli-utils.a
+[7/74] Building CXX object layer/CMakeFiles/VkLayer_fossilize.dir/dispatch.cpp.o
+[8/74] Building CXX object cli/SPIRV-Cross/CMakeFiles/spirv-cross-c.dir/spirv_cross_c.cpp.o
+[9/74] Linking CXX static library cli/SPIRV-Cross/libspirv-cross-c.a
+[10/74] Building CXX object cli/CMakeFiles/fossilize-disasm.dir/fossilize_disasm.cpp.o
+[11/74] Building CXX object test/CMakeFiles/fossilize-test.dir/fossilize_test.cpp.o
+[12/74] Building CXX object test/CMakeFiles/feature-filter-test.dir/feature_filter_test.cpp.o
+[13/74] Building CXX object CMakeFiles/fossilize.dir/fossilize.cpp.o
+[14/74] Building CXX object test/CMakeFiles/multi-instance-and-device-test.dir/multi_instance_and_device_test.cpp.o
+[15/74] Linking CXX static library libfossilize.a
+[16/74] Building CXX object test/CMakeFiles/diagnostic-compatibility-test.dir/diagnostic_compatibility_test.cpp.o
+[17/74] Building CXX object test/CMakeFiles/device-diagnostic-test.dir/device_diagnostic_test.cpp.o
+[18/74] Building CXX object cli/CMakeFiles/fossilize-replay.dir/fossilize_replay.cpp.o
+[19/74] Building CXX object test/CMakeFiles/replay-diagnostic-test.dir/replay_diagnostic_test.cpp.o
+[20/74] Building CXX object test/CMakeFiles/replay-timeout-test.dir/replay_timeout_test.cpp.o
+[21/74] Building CXX object test/CMakeFiles/replay-controller-test.dir/replay_controller_test.cpp.o
+[22/74] Building CXX object test/CMakeFiles/fork-child-setup-test.dir/fork_child_setup_test.cpp.o
+[23/74] Building CXX object test/CMakeFiles/parser-input-test.dir/parser_input_test.cpp.o
+[24/74] Building CXX object test/CMakeFiles/replay-event-test.dir/replay_event_test.cpp.o
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_test.cpp: In lambda function:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_test.cpp:42:130: warning: declaration of ‘p’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                      ~~~~~~~~~~~~^
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_test.cpp:38:30: note: shadowed declaration is here
+   38 |  State s;s.begin(0,0);Stream p;for(char c:all)feed(p,s,std::string(1,c));p.finish(s);checks.require(s.count==2&&s.final&&!s.lost,"M18/every-byte-split");
+      |                              ^
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_test.cpp:42:151: warning: declaration of ‘w’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                                                       ^
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_test.cpp:40:55: note: shadowed declaration is here
+   40 |  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
+      |                                                       ^
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_test.cpp:42:155: warning: declaration of ‘a’ shadows a previous local [-Wshadow]
+   42 |  for(size_t split=0;split<=offerwire.size();split++){State state;Stream stream;unsigned selected=0;auto on_offer=[&](const char *p,size_t n){uint64_t w=9,a=9;if(select_offer(p,n,w,a)&&w==0&&a==0)selected++;};stream.feed_frames(state,offerwire.data(),split,[](const char*){},on_offer);stream.feed_frames(state,offerwire.data()+split,offerwire.size()-split,[](const char*){},on_offer);checks.require(selected==1&&!state.lost,"M18/every-offer-frame-split");}
+      |                                                                                                                                                           ^
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_test.cpp:40:59: note: shadowed declaration is here
+   40 |  const auto offerwire=wire("1 OFFER 2 0 0"); uint64_t w=9,a=9;bool recognized=false;
+      |                                                           ^
+[25/74] Building CXX object test/CMakeFiles/database-discovery-test.dir/database_discovery_test.cpp.o
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/database_discovery_test.cpp: In function ‘int main(int, char**)’:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/database_discovery_test.cpp:467:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+  467 |  if(argc!=2)return 2;std::string mode=argv[1];
+      |  ^~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/database_discovery_test.cpp:467:22: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+  467 |  if(argc!=2)return 2;std::string mode=argv[1];
+      |                      ^~~
+[26/74] Building CXX object test/CMakeFiles/replay-outcome-test.dir/replay_outcome_test.cpp.o
+[27/74] Building CXX object test/CMakeFiles/replay-support-test.dir/replay_support_test.cpp.o
+[28/74] Building CXX object test/CMakeFiles/replay-timeout-controller-test.dir/replay_timeout_controller_test.cpp.o
+[29/74] Building CXX object test/CMakeFiles/replay-event-producer-test.dir/replay_event_producer_test.cpp.o
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_producer_test.cpp: In lambda function:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_producer_test.cpp:8:55: warning: declaration of ‘b’ shadows a previous local [-Wshadow]
+    8 |  r.event_attempt=1;r.event_writer=[&s,&p](const char *b){p.feed(s,b,strlen(b),[](const char*){});return true;};
+      |                                           ~~~~~~~~~~~~^
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_producer_test.cpp:7:20: note: shadowed declaration is here
+    7 |  s.begin(0,1);char b[MaxFrame];frame(b,sizeof(b),"1 HELLO 0 1");p.feed(s,b,strlen(b),[](const char*){});
+      |                    ^
+In file included from /home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:570,
+                 from /home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_event_producer_test.cpp:2:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_cache_tests.hpp: At global scope:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_cache_tests.hpp:306:13: warning: ‘void cache_test(const std::string&)’ defined but not used [-Wunused-function]
+  306 | static void cache_test(const std::string &test)
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:538:13: warning: ‘void normal_matrix()’ defined but not used [-Wunused-function]
+  538 | static void normal_matrix()
+      |             ^~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:525:13: warning: ‘void entry_test(const std::string&, const char*)’ defined but not used [-Wunused-function]
+  525 | static void entry_test(const std::string &scenario, const char *path)
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:420:13: warning: ‘void queue_test()’ defined but not used [-Wunused-function]
+  420 | static void queue_test()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:386:13: warning: ‘void setup_test()’ defined but not used [-Wunused-function]
+  386 | static void setup_test()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:355:13: warning: ‘void validation_test()’ defined but not used [-Wunused-function]
+  355 | static void validation_test()
+      |             ^~~~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:332:13: warning: ‘void support_test()’ defined but not used [-Wunused-function]
+  332 | static void support_test()
+      |             ^~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:313:13: warning: ‘void initial_creation_test()’ defined but not used [-Wunused-function]
+  313 | static void initial_creation_test()
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:253:13: warning: ‘void creation_test(bool)’ defined but not used [-Wunused-function]
+  253 | static void creation_test(bool loops)
+      |             ^~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:202:13: warning: ‘void parse_test()’ defined but not used [-Wunused-function]
+  202 | static void parse_test()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:169:13: warning: ‘void state_test()’ defined but not used [-Wunused-function]
+  169 | static void state_test()
+      |             ^~~~~~~~~~
+[30/74] Building CXX object test/CMakeFiles/replay-selection-test.dir/replay_selection_test.cpp.o
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_selection_test.cpp: In function ‘void prefix_policy()’:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_selection_test.cpp:163:11: warning: declaration of ‘optional’ shadows a previous local [-Wshadow]
+  163 |  for(bool optional:{false,true})
+      |           ^~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_selection_test.cpp:152:172: note: shadowed declaration is here
+  152 |  db.reset(create_concurrent_database(nullptr,DatabaseMode::ReadOnly,paths,2));configure_replay_inputs(*db,2,{1});checks.require(db->prepare(),"D20/optional-prepare");auto optional=select_replay_scope(*db,starts,ends,0,true);
+      |                                                                                                                                                                            ^~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_selection_test.cpp: In function ‘int main(int, char**)’:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_selection_test.cpp:286:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+  286 |  if(argc!=2)return 2;std::string mode=argv[1];
+      |  ^~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_selection_test.cpp:286:22: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+  286 |  if(argc!=2)return 2;std::string mode=argv[1];
+      |                      ^~~
+In file included from /home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:570,
+                 from /home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_selection_test.cpp:2:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_cache_tests.hpp: At global scope:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_cache_tests.hpp:306:13: warning: ‘void cache_test(const std::string&)’ defined but not used [-Wunused-function]
+  306 | static void cache_test(const std::string &test)
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:538:13: warning: ‘void normal_matrix()’ defined but not used [-Wunused-function]
+  538 | static void normal_matrix()
+      |             ^~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:525:13: warning: ‘void entry_test(const std::string&, const char*)’ defined but not used [-Wunused-function]
+  525 | static void entry_test(const std::string &scenario, const char *path)
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:420:13: warning: ‘void queue_test()’ defined but not used [-Wunused-function]
+  420 | static void queue_test()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:386:13: warning: ‘void setup_test()’ defined but not used [-Wunused-function]
+  386 | static void setup_test()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:355:13: warning: ‘void validation_test()’ defined but not used [-Wunused-function]
+  355 | static void validation_test()
+      |             ^~~~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:332:13: warning: ‘void support_test()’ defined but not used [-Wunused-function]
+  332 | static void support_test()
+      |             ^~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:313:13: warning: ‘void initial_creation_test()’ defined but not used [-Wunused-function]
+  313 | static void initial_creation_test()
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:253:13: warning: ‘void creation_test(bool)’ defined but not used [-Wunused-function]
+  253 | static void creation_test(bool loops)
+      |             ^~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:202:13: warning: ‘void parse_test()’ defined but not used [-Wunused-function]
+  202 | static void parse_test()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:169:13: warning: ‘void state_test()’ defined but not used [-Wunused-function]
+  169 | static void state_test()
+      |             ^~~~~~~~~~
+[31/74] Linking CXX shared library layer/libVkLayer_fossilize.so
+[32/74] Building CXX object test/CMakeFiles/replay-support-dependency-test.dir/replay_support_dependency_test.cpp.o
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp: In function ‘bool graph(const char*, const std::string&, unsigned int, unsigned int)’:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:364:24: warning: declaration of ‘size_t n’ shadows a parameter [-Wshadow]
+  364 |                 size_t n = 0;
+      |                        ^
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:177:71: note: shadowed declaration is here
+  177 | static bool graph(const char *path, const std::string &mode, unsigned n = 4, unsigned kinds = 7)
+      |                                                              ~~~~~~~~~^~~~~
+In file included from /home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:570,
+                 from /home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:20:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_cache_tests.hpp: At global scope:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_cache_tests.hpp:306:13: warning: ‘void cache_test(const std::string&)’ defined but not used [-Wunused-function]
+  306 | static void cache_test(const std::string &test)
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:538:13: warning: ‘void normal_matrix()’ defined but not used [-Wunused-function]
+  538 | static void normal_matrix()
+      |             ^~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:525:13: warning: ‘void entry_test(const std::string&, const char*)’ defined but not used [-Wunused-function]
+  525 | static void entry_test(const std::string &scenario, const char *path)
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:420:13: warning: ‘void queue_test()’ defined but not used [-Wunused-function]
+  420 | static void queue_test()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:386:13: warning: ‘void setup_test()’ defined but not used [-Wunused-function]
+  386 | static void setup_test()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:313:13: warning: ‘void initial_creation_test()’ defined but not used [-Wunused-function]
+  313 | static void initial_creation_test()
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:253:13: warning: ‘void creation_test(bool)’ defined but not used [-Wunused-function]
+  253 | static void creation_test(bool loops)
+      |             ^~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:169:13: warning: ‘void state_test()’ defined but not used [-Wunused-function]
+  169 | static void state_test()
+      |             ^~~~~~~~~~
+[33/74] Linking CXX executable cli/fossilize-bench
+[34/74] Linking CXX executable cli/fossilize-convert-db
+[35/74] Linking CXX executable cli/fossilize-replay
+[36/74] Linking CXX executable cli/fossilize-merge-db
+[37/74] Linking CXX executable cli/fossilize-prune
+[38/74] Linking CXX executable cli/fossilize-list
+[39/74] Linking CXX executable cli/fossilize-rehash
+[40/74] Linking CXX executable cli/fossilize-disasm
+[41/74] Linking CXX executable cli/fossilize-synth
+[42/74] Linking CXX executable cli/fossilize-validate-cache-roundtrip
+[43/74] Building CXX object test/CMakeFiles/replay-warning-test.dir/replay_warning_test.cpp.o
+In file included from /home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_warning_test.cpp:2:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp: In function ‘bool graph(const char*, const std::string&, unsigned int, unsigned int)’:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:364:24: warning: declaration of ‘size_t n’ shadows a parameter [-Wshadow]
+  364 |                 size_t n = 0;
+      |                        ^
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:177:71: note: shadowed declaration is here
+  177 | static bool graph(const char *path, const std::string &mode, unsigned n = 4, unsigned kinds = 7)
+      |                                                              ~~~~~~~~~^~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_warning_test.cpp: In function ‘void legacy_controls()’:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_warning_test.cpp:509:31: warning: declaration of ‘parser’ shadows a previous local [-Wshadow]
+  509 |                 StateReplayer parser;std::vector<uint8_t> bytes;
+      |                               ^~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_warning_test.cpp:468:23: note: shadowed declaration is here
+  468 |         StateReplayer parser; BlobDatabase db;
+      |                       ^~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp: At global scope:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:776:13: warning: ‘void detail_codec()’ defined but not used [-Wunused-function]
+  776 | static void detail_codec()
+      |             ^~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:726:13: warning: ‘void categories()’ defined but not used [-Wunused-function]
+  726 | static void categories()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:692:13: warning: ‘void static_dependencies()’ defined but not used [-Wunused-function]
+  692 | static void static_dependencies()
+      |             ^~~~~~~~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:671:13: warning: ‘void common_cache()’ defined but not used [-Wunused-function]
+  671 | static void common_cache()
+      |             ^~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:566:13: warning: ‘void parent_fanout()’ defined but not used [-Wunused-function]
+  566 | static void parent_fanout()
+      |             ^~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:556:13: warning: ‘void module_fanout()’ defined but not used [-Wunused-function]
+  556 | static void module_fanout()
+      |             ^~~~~~~~~~~~~
+In file included from /home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:570,
+                 from /home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_support_dependency_test.cpp:20:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_cache_tests.hpp:306:13: warning: ‘void cache_test(const std::string&)’ defined but not used [-Wunused-function]
+  306 | static void cache_test(const std::string &test)
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:538:13: warning: ‘void normal_matrix()’ defined but not used [-Wunused-function]
+  538 | static void normal_matrix()
+      |             ^~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:525:13: warning: ‘void entry_test(const std::string&, const char*)’ defined but not used [-Wunused-function]
+  525 | static void entry_test(const std::string &scenario, const char *path)
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:420:13: warning: ‘void queue_test()’ defined but not used [-Wunused-function]
+  420 | static void queue_test()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:386:13: warning: ‘void setup_test()’ defined but not used [-Wunused-function]
+  386 | static void setup_test()
+      |             ^~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:313:13: warning: ‘void initial_creation_test()’ defined but not used [-Wunused-function]
+  313 | static void initial_creation_test()
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:253:13: warning: ‘void creation_test(bool)’ defined but not used [-Wunused-function]
+  253 | static void creation_test(bool loops)
+      |             ^~~~~~~~~~~~~
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_outcome_test.cpp:169:13: warning: ‘void state_test()’ defined but not used [-Wunused-function]
+  169 | static void state_test()
+      |             ^~~~~~~~~~
+[44/74] Linking CXX executable cli/fossilize-feature-sifter
+[45/74] Linking CXX executable test/varint-test
+[46/74] Linking CXX executable test/fossilize-test
+[47/74] Linking CXX executable test/application-info-filter-test
+[48/74] Linking CXX executable test/object-cache-test
+[49/74] Linking CXX executable test/multi-instance-and-device-test
+[50/74] Linking CXX executable test/futex-test
+[51/74] Linking CXX executable test/feature-filter-test
+[52/74] Linking CXX executable test/device-diagnostic-test
+[53/74] Linking CXX executable test/diagnostic-compatibility-test
+[54/74] Linking CXX executable test/replay-diagnostic-test
+[55/74] Linking CXX executable test/utility-parse-test
+[56/74] Linking CXX executable test/fork-child-setup-test
+[57/74] Linking CXX executable test/replay-controller-compatibility-test
+[58/74] Building CXX object test/CMakeFiles/replay-warning-worker-test.dir/replay_warning_worker_test.cpp.o
+In file included from /home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_warning_worker_test.cpp:3:
+/home/robin/.herdr/worktrees/fossilize/ticket-20/test/replay_controller_test.cpp:29:13: warning: ‘void discard_prose(const char*, ...)’ defined but not used [-Wunused-function]
+   29 | static void discard_prose(const char *, ...) {}
+      |             ^~~~~~~~~~~~~
+[59/74] Linking CXX executable test/replay-controller-test
+[60/74] Linking CXX executable test/replay-outcome-compatibility-test
+[61/74] Linking CXX executable test/replay-timeout-test
+[62/74] Linking CXX executable test/parser-input-test
+[63/74] Linking CXX executable test/replay-event-test
+[64/74] Linking CXX executable test/replay-timeout-controller-test
+[65/74] Linking CXX executable test/database-discovery-test
+[66/74] Linking CXX executable test/replay-outcome-test
+[67/74] Linking CXX executable test/replay-support-test
+[68/74] Linking CXX executable test/replay-event-producer-test
+[69/74] Linking CXX executable test/replay-selection-test
+[70/74] Linking CXX executable test/replay-support-dependency-test
+[71/74] Linking CXX executable test/replay-warning-worker-test
+[72/74] Linking CXX executable test/replay-warning-test
+[73/74] Linking CXX executable cli/fossilize-opt
