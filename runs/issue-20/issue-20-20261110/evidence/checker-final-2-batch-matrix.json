@@ -1,0 +1,285 @@
+[
+  {
+    "intent_id": "c20-f2-debug-exceptions-off-build",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+      "--parallel",
+      "4"
+    ],
+    "command": "Final checker c20-f2-debug-exceptions-off-build; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-debug-exceptions-off-discover",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+      "--show-only=json-v1"
+    ],
+    "command": "Final checker c20-f2-debug-exceptions-off-discover; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-debug-exceptions-off-ctest",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/checker-final-2/debug-exceptions-off-results.xml.txt"
+    ],
+    "command": "Final checker c20-f2-debug-exceptions-off-ctest; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-debug-exceptions-off-compiler-config",
+    "child_command": [
+      "python3",
+      "-B",
+      "-c",
+      "import json,pathlib,subprocess; p=pathlib.Path('/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off'); print(subprocess.run(['c++','--version'],capture_output=True,text=True).stdout); print((p/'CMakeCache.txt').read_text()); print(json.dumps(json.loads((p/'compile_commands.json').read_text())[:5],indent=2))"
+    ],
+    "command": "Final checker c20-f2-debug-exceptions-off-compiler-config; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-debug-exceptions-on-configure",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h20/checker-final-2",
+      "-B",
+      "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-on",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+      "-DCMAKE_BUILD_TYPE=Debug",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+    ],
+    "command": "Final checker c20-f2-debug-exceptions-on-configure; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-debug-exceptions-on-build",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-on",
+      "--parallel",
+      "4"
+    ],
+    "command": "Final checker c20-f2-debug-exceptions-on-build; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-debug-exceptions-on-discover",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-on",
+      "--show-only=json-v1"
+    ],
+    "command": "Final checker c20-f2-debug-exceptions-on-discover; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-debug-exceptions-on-ctest",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-on",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/checker-final-2/debug-exceptions-on-results.xml.txt"
+    ],
+    "command": "Final checker c20-f2-debug-exceptions-on-ctest; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-debug-exceptions-on-compiler-config",
+    "child_command": [
+      "python3",
+      "-B",
+      "-c",
+      "import json,pathlib,subprocess; p=pathlib.Path('/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-on'); print(subprocess.run(['c++','--version'],capture_output=True,text=True).stdout); print((p/'CMakeCache.txt').read_text()); print(json.dumps(json.loads((p/'compile_commands.json').read_text())[:5],indent=2))"
+    ],
+    "command": "Final checker c20-f2-debug-exceptions-on-compiler-config; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-release-exceptions-off-configure",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h20/checker-final-2",
+      "-B",
+      "/tmp/fossilize-h20/build/checker-final-2/release-exceptions-off",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+    ],
+    "command": "Final checker c20-f2-release-exceptions-off-configure; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-release-exceptions-off-build",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/release-exceptions-off",
+      "--parallel",
+      "4"
+    ],
+    "command": "Final checker c20-f2-release-exceptions-off-build; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-release-exceptions-off-discover",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/release-exceptions-off",
+      "--show-only=json-v1"
+    ],
+    "command": "Final checker c20-f2-release-exceptions-off-discover; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-release-exceptions-off-ctest",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/release-exceptions-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/checker-final-2/release-exceptions-off-results.xml.txt"
+    ],
+    "command": "Final checker c20-f2-release-exceptions-off-ctest; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-release-exceptions-off-compiler-config",
+    "child_command": [
+      "python3",
+      "-B",
+      "-c",
+      "import json,pathlib,subprocess; p=pathlib.Path('/tmp/fossilize-h20/build/checker-final-2/release-exceptions-off'); print(subprocess.run(['c++','--version'],capture_output=True,text=True).stdout); print((p/'CMakeCache.txt').read_text()); print(json.dumps(json.loads((p/'compile_commands.json').read_text())[:5],indent=2))"
+    ],
+    "command": "Final checker c20-f2-release-exceptions-off-compiler-config; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-release-exceptions-on-configure",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h20/checker-final-2",
+      "-B",
+      "/tmp/fossilize-h20/build/checker-final-2/release-exceptions-on",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=ON",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+    ],
+    "command": "Final checker c20-f2-release-exceptions-on-configure; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-release-exceptions-on-build",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/release-exceptions-on",
+      "--parallel",
+      "4"
+    ],
+    "command": "Final checker c20-f2-release-exceptions-on-build; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-release-exceptions-on-discover",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/release-exceptions-on",
+      "--show-only=json-v1"
+    ],
+    "command": "Final checker c20-f2-release-exceptions-on-discover; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-release-exceptions-on-ctest",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/release-exceptions-on",
+      "--output-on-failure",
+      "--no-tests=error",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/checker-final-2/release-exceptions-on-results.xml.txt"
+    ],
+    "command": "Final checker c20-f2-release-exceptions-on-ctest; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-release-exceptions-on-compiler-config",
+    "child_command": [
+      "python3",
+      "-B",
+      "-c",
+      "import json,pathlib,subprocess; p=pathlib.Path('/tmp/fossilize-h20/build/checker-final-2/release-exceptions-on'); print(subprocess.run(['c++','--version'],capture_output=True,text=True).stdout); print((p/'CMakeCache.txt').read_text()); print(json.dumps(json.loads((p/'compile_commands.json').read_text())[:5],indent=2))"
+    ],
+    "command": "Final checker c20-f2-release-exceptions-on-compiler-config; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  }
+]

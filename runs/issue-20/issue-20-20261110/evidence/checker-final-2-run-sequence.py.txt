@@ -1,0 +1,48 @@
+import json,pathlib,subprocess,sys,time
+out=pathlib.Path('/tmp/fossilize-h20/output/checker-final-2')
+source=pathlib.Path('/tmp/fossilize-h20/checker-final-2')
+def settled():
+ s=json.load(open('/tmp/fossilize-h20/result.json'));st=s['state'];a=st['attempts'][-1]
+ assert a['attempt_id']=='checker-final-2' and a['worker_id']=='/root/checker_final20' and a['status']=='running'
+ assert a['input_revision']==745 and a['input_sha']==a['candidate_sha']=='6de877d4a30b61cc0349c6257e8645ea0ff3f1c8'
+ assert a['base_sha']=='b86a23ea323ee86db19d4dace82afd904e75bae7' and a['plan_version']==2 and a['operation']=='final'
+ assert a['work_unit']==st['root_issue']['url']=='https://github.com/robinwassen/Fossilize/issues/20' and st['run_id']=='issue-20-20261110'
+ assert st['repository']['candidate_sha']==a['candidate_sha'] and st['repository']['base_sha']==a['base_sha'] and st['plan']['version']==2
+ assert not st['limits']['exhausted'] and time.time()<st['limits']['deadline']
+ if s['artifact_publication']['status']!='confirmed' or s['artifact_wait'] is not None:return False
+ for prior in out.glob('c20-f2-*.receipt.json'):
+  actual=json.load(open(prior));recorded=next(row for row in st['limits']['commands'] if row['intent_id']==actual['intent_id'])
+  if recorded.get('wait_receipt') is None:return False
+  assert recorded['wait_receipt']==actual,'Changed full receipt '+str(prior)
+ return True
+phase1=['live-issues','source-contract','configure-focused','debug-exceptions-off-static','build-focused','run-focused','directory-repeat']
+phase2=[]
+for config in ['debug-exceptions-off','debug-exceptions-on','release-exceptions-off','release-exceptions-on']:
+ if config!='debug-exceptions-off':phase2.extend([config+'-configure',config+'-static'])
+ phase2.extend([config+'-opt',config+'-replay-layer',config+'-fixtures',config+'-build',config+'-discover',config+'-ctest',config+'-compiler-config'])
+phase2.extend(['repeat','incoming-repeat','compatibility','asan-configure','asan-static','asan-build','asan-compiler-config','asan-inventory','asan-run','incoming-asan-build','incoming-asan-flags','incoming-asan-inventory','incoming-asan-run','setup-mutations','controls-inventory','baseline-configure','baseline-static','baseline-build','original-defect'])
+for mutation in ['sliced-tail','required-input','unread-total','selection-exclusions','metadata-import']:
+ phase2.extend(['mutate-'+mutation,'configure-mutation-'+mutation])
+ if mutation=='selection-exclusions':phase2.append('static-mutation-'+mutation)
+ phase2.extend(['build-mutation-'+mutation,'run-mutation-'+mutation])
+phase=sys.argv[1];assert phase in ('phase1','phase2','all')
+if phase=='phase2':
+ assert settled()
+ st=json.load(open('/tmp/fossilize-h20/result.json'))['state']
+ assert next(f for f in st['findings'] if f['id']=='F20-DIRECTORY-DTYPE-REGULAR')['status']=='resolved'
+for suffix in (phase1 if phase=='phase1' else phase2 if phase=='phase2' else phase1+phase2):
+ started=time.time()
+ while not settled():
+  assert time.time()-started<600,'Settlement did not finish in600s; hold'
+  time.sleep(1)
+ intent='c20-f2-'+suffix
+ print('START '+intent,flush=True)
+ status=subprocess.run(['python3','-B',str(out/'run-one.py'),intent],cwd=source).returncode
+ if status:raise SystemExit(status)
+ print('RECEIPT_READY '+intent,flush=True)
+# Wait final receipt too, then stop; never resolve findings or submit acceptance.
+started=time.time()
+while not settled():
+ assert time.time()-started<600,'Final settlement did not finish in600s; hold'
+ time.sleep(1)
+print('SEQUENCE_COMPLETE '+phase,flush=True)

@@ -1,0 +1,30 @@
+import sys,json,pathlib,hashlib
+source=pathlib.Path('/tmp/fossilize-h20/checker-final-2')
+out=pathlib.Path('/tmp/fossilize-h20/output/checker-final-2')
+sys.path.insert(0,str(source/'.agents/skills/implement-change-harness/scripts'))
+from github_issues import GitHub
+def collect(destination,boundary):
+ x=json.load(open('/tmp/fossilize-h20/checker-final-2-input.json'))['state']
+ g=GitHub(repository='robinwassen/Fossilize',timeout=45)
+ live=g.unchanged(x['issue_snapshot']);shared=g.issue(8)
+ prior_shared=json.load(open('/tmp/fossilize-h20/output/checker-unit-3/live-material-issues-after-pause.json'))['shared_issue8']['observation']
+ for key in ('id','node_id','title','body','state','state_reason'):assert shared[key]==prior_shared[key], 'Shared issue8 material drift: '+key
+ assert g.ready(live) and shared['state']=='open' and live['nodes'][live['root']]['state']=='open'
+ closeout=x['closeout'];current=json.load(open('/tmp/fossilize-h20/result.json'))['state']['closeout']
+ assert current==closeout and closeout['stage']=='prepared'
+ assert closeout['candidate_sha']=='6de877d4a30b61cc0349c6257e8645ea0ff3f1c8' and closeout['base_sha']=='b86a23ea323ee86db19d4dace82afd904e75bae7' and closeout['plan_version']==2
+ assert closeout['closing_references']==['Closes https://github.com/robinwassen/Fossilize/issues/20']
+ assert len(closeout['targets'])==1 and closeout['targets'][0]['issue']==live['root']
+ assert closeout['targets'][0]['reference']=='https://github.com/robinwassen/Fossilize/compare/master...ticket-20'
+ comments=g.comments(20);matches=[c for c in comments if closeout['marker'] in c.get('body','')]
+ assert len(matches)==1 and matches[0]['html_url']=='https://github.com/robinwassen/Fossilize/issues/20#issuecomment-6807967536'
+ body=matches[0]['body'];assert closeout['binding'] in body
+ for target in closeout['targets']:assert target['evidence'] in body and target['reference'] in body
+ expected=out/'readiness-expected-body.txt'
+ assert expected.is_file(), 'Readiness expected body absent'
+ assert body==expected.read_text(), 'Readiness full body differs'
+ result={'boundary':boundary,'live':live,'shared8':shared,'closeout':closeout,'managed_readiness':{'id':matches[0]['id'],'url':matches[0]['html_url'],'body':body,'sha256':hashlib.sha256(body.encode()).hexdigest()},'eligibility':'Only issue20; issue8 remains open. Prepared compare ref is readiness, no PR/merged claim.'}
+ destination.write_text(json.dumps(result,indent=2)+'\n')
+ print(json.dumps({'boundary':boundary,'nodes':len(live['nodes']),'digest':live['digest'],'ready':True,'readiness_sha256':result['managed_readiness']['sha256']}))
+ return result
+if __name__=='__main__':collect(out/'live-issues.json','initial pre-runtime material input and managed readiness readback')

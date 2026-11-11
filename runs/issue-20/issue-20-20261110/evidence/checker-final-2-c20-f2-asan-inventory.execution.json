@@ -1,0 +1,36 @@
+{
+  "intent_id": "c20-f2-asan-inventory",
+  "command": [
+    "python3",
+    "-B",
+    "/tmp/fossilize-h20/checker-final-2/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+    "--repo",
+    "/tmp/fossilize-h20/checker-final-2",
+    "--timeout",
+    "600",
+    "--intent-id",
+    "c20-f2-asan-inventory",
+    "--receipt",
+    "/tmp/fossilize-h20/output/checker-final-2/c20-f2-asan-inventory.receipt.json",
+    "--",
+    "/tmp/fossilize-h20/toolenv/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+    "--show-only=json-v1",
+    "-R",
+    "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)"
+  ],
+  "child_command": [
+    "/tmp/fossilize-h20/toolenv/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+    "--show-only=json-v1",
+    "-R",
+    "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)"
+  ],
+  "cwd": "/tmp/fossilize-h20/checker-final-2",
+  "exit_code": 0,
+  "elapsed": 0.06642627716064453,
+  "receipt": "/tmp/fossilize-h20/output/checker-final-2/c20-f2-asan-inventory.receipt.json",
+  "log": "/tmp/fossilize-h20/output/checker-final-2/c20-f2-asan-inventory.log"
+}

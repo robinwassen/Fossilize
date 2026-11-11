@@ -1,0 +1,17 @@
+{
+  "intent_id": "c20-f2-incoming-asan-flags",
+  "command": [
+    "python3",
+    "-B",
+    "-c",
+    "import json,pathlib; rows=json.loads(pathlib.Path('/tmp/fossilize-h20/build/checker-final-2/asan-ubsan/compile_commands.json').read_text()); names=('replay_support_test.cpp','replay_support_dependency_test.cpp','replay_warning_test.cpp','replay_event_producer_test.cpp'); selected=[r for r in rows if any(r['file'].endswith('/'+n) for n in names)]; assert len(selected)==4; assert all('-fsanitize=undefined' in r['command'] and '-fsanitize=address' in r['command'] for r in selected); print(json.dumps(selected,indent=2))"
+  ],
+  "cwd": "/tmp/fossilize-h20/checker-final-2",
+  "timeout": 600.0,
+  "started": 1794437165.4179523,
+  "acquired": 1794437165.4212008,
+  "wait_seconds": 0.0,
+  "finished": 1794437165.4855816,
+  "exit_code": 0,
+  "timed_out": false
+}

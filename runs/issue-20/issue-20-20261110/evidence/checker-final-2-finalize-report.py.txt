@@ -1,0 +1,73 @@
+import json,pathlib,xml.etree.ElementTree as ET,sys,subprocess,importlib.util
+out=pathlib.Path('/tmp/fossilize-h20/output/checker-final-2');src=pathlib.Path('/tmp/fossilize-h20/checker-final-2')
+candidate='6de877d4a30b61cc0349c6257e8645ea0ff3f1c8';base='b86a23ea323ee86db19d4dace82afd904e75bae7';issue='https://github.com/robinwassen/Fossilize/issues/20'
+tuple_={'role':'checker','attempt_id':'checker-final-2','worker_id':'/root/checker_final20','input_revision':745,'input_sha':candidate,'candidate_sha':candidate,'base_sha':base,'plan_version':2,'operation':'final','work_unit':issue}
+x=json.load(open('/tmp/fossilize-h20/result.json'));st=x['state']
+assert x['artifact_publication']['status']=='confirmed' and x['artifact_wait'] is None
+assert all(st['attempts'][-1][k]==v for k,v in tuple_.items()) and st['attempts'][-1]['status']=='running'
+assert st['root_issue']['url']==issue and st['run_id']=='issue-20-20261110'
+assert st['repository']['candidate_sha']==candidate and st['repository']['base_sha']==base and st['plan']['version']==2
+assert all(f['status']=='resolved' for f in st['findings'])
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=src,text=True).strip()==candidate
+assert not subprocess.check_output(['git','status','--porcelain','--untracked-files=all'],cwd=src,text=True)
+# This audit is itself pending. Only the 81 already completed main commands count here.
+rows={r['intent_id']:r for p in out.glob('batch-*.json') for r in json.load(open(p)) if r['intent_id']!='c20-f2-final-audit'};assert len(rows)==81
+commands=[]
+for id,r in rows.items():
+ e=json.load(open(out/(id+'.execution.json')));receipt=json.load(open(out/(id+'.receipt.json')))
+ assert e['exit_code']==0 and receipt['exit_code']==0 and not receipt['timed_out']
+ assert receipt==next(c for c in st['limits']['commands'] if c['intent_id']==id)['wait_receipt']
+ assert receipt['command']==r['child_command'] and receipt['cwd']==str(src) and receipt['timeout']==600
+ commands.append({**e,'receipt_data':receipt})
+def junit(file):
+ root=ET.parse(out/file).getroot();cases=list(root.iter('testcase'));assert cases
+ assert not list(root.iter('failure')) and not list(root.iter('error')) and not list(root.iter('skipped'))
+ names=[c.attrib['name'] for c in cases];assert len(names)==len(set(names));return names
+configs=['debug-exceptions-off','debug-exceptions-on','release-exceptions-off','release-exceptions-on'];matrix=[]
+for config in configs:
+ inv=json.load(open(out/('c20-f2-'+config+'-discover.log')));discovered=[t['name'] for t in inv['tests']];executed=junit(config+'-results.xml.txt');assert set(discovered)==set(executed) and len(discovered)==len(set(discovered))
+ b=pathlib.Path('/tmp/fossilize-h20/build/checker-final-2')/config;cache=(b/'CMakeCache.txt').read_text()
+ for flag in ['FOSSILIZE_TESTS:BOOL=ON','FOSSILIZE_CLI:BOOL=ON','FOSSILIZE_VULKAN_LAYER:BOOL=ON','FOSSILIZE_REPLAYER_SPIRV_VAL:BOOL=ON','FOSSILIZE_TEST_RUNTIME_LAYER:BOOL=OFF']:assert flag in cache,(config,flag)
+ assert 'CMAKE_BUILD_TYPE:STRING='+('Debug' if config.startswith('debug') else 'Release') in cache
+ assert 'FOSSILIZE_ENABLE_EXCEPTIONS:BOOL='+('OFF' if config.endswith('off') else 'ON') in cache
+ comp=json.load(open(b/'compile_commands.json'));own=[r for r in comp if r['file'].endswith(('/fossilize_db.cpp','/replay_selection_test.cpp','/database_discovery_test.cpp','/cli/fossilize_replay.cpp'))];assert len(own)==4
+ assert all(('-fno-exceptions' in r['command'])==config.endswith('off') for r in own)
+ assert any(r['file'].endswith('/cli/fossilize_replay.cpp') and '-DFOSSILIZE_REPLAYER_SPIRV_VAL' in r['command'] for r in own)
+ matrix.append({'configuration':config,'discovered':discovered,'executed':executed,'count':len(executed),'passed':len(executed),'skipped':[],'command':'c20-f2-'+config+'-ctest'})
+assert all(set(m['executed'])==set(matrix[0]['executed']) for m in matrix)
+focused=junit('focused.xml.txt');assert len(focused)==11
+assert junit('directory-repeat.xml.txt')==['database-discovery-empty']
+repeat=junit('repeat.xml.txt');assert len(repeat)==91
+incoming_repeat=junit('incoming-repeat.xml.txt');assert len(incoming_repeat)==7
+compatibility=junit('compatibility.xml.txt');assert len(compatibility)==6
+san=junit('asan.xml.txt');assert len(san)==29
+san_inv=json.load(open(out/'c20-f2-asan-inventory.log'));assert {t['name'] for t in san_inv['tests']}==set(san)
+incoming_san=junit('incoming-asan.xml.txt');assert len(incoming_san)==20
+incoming_inv=json.load(open(out/'c20-f2-incoming-asan-inventory.log'));assert {t['name'] for t in incoming_inv['tests']}==set(incoming_san)
+for suffix,ids in [('repeat',repeat),('incoming-repeat',incoming_repeat),('directory-repeat',['database-discovery-empty'])]:
+ log=(out/('c20-f2-'+suffix+'.log')).read_text()
+ for id in ids:assert log.count(': '+id+' ')==3,(suffix,id,'repeat must actually report3 rows')
+sanbuild=pathlib.Path('/tmp/fossilize-h20/build/checker-final-2/asan-ubsan');comp=json.load(open(sanbuild/'compile_commands.json'))
+for names in [('fossilize_db.cpp','database_discovery_test.cpp','replay_selection_test.cpp','replay_event_test.cpp','parser_input_test.cpp','varint.cpp'),('replay_support_test.cpp','replay_support_dependency_test.cpp','replay_event_producer_test.cpp','replay_warning_test.cpp')]:
+ for name in names:
+  found=[r for r in comp if r['file'].endswith('/'+name)];assert found and all('-fsanitize=undefined' in r['command'] and '-fsanitize=address' in r['command'] for r in found),name
+mutations=[]
+for name in ['sliced-tail','required-input','unread-total','selection-exclusions','metadata-import']:
+ result=json.load(open(out/('mutation-'+name+'.json')));assert result['passed'] and result['runs'][0]['exit_code']==0 and result['runs'][1]['exit_code']==1 and ('FAIL '+result['expected_assertion']) in result['runs'][1]['stdout'];mutations.append(result)
+assert 'D20/original-defect: compiled baseline false-success and healthy controls observed; candidate rejects unknown scope' in (out/'c20-f2-original-defect.log').read_text()
+provenance=json.load(open(out/'mutation-source-provenance.json'));assert len(provenance)==6
+for row in provenance:assert row['revision']==('fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db' if row['mutation']=='baseline' else candidate) and '/checker-final-2/' in row['source']
+manifest=json.load(open(out/'controls-inventory.json'));control_ids=manifest['registered_ids'];assert len(control_ids)==3
+executed=sorted(set(matrix[0]['executed'])|set(control_ids));input_state=json.load(open('/tmp/fossilize-h20/checker-final-2-input.json'))['state'];mapping={}
+audit=json.load(open(out/'planned-case-assertion-audit.json'));assert audit['counts']=={'cases':12,'assertions':36,'present':36,'missing':0}
+for case in input_state['plan']['cases']:
+ assert set(case['tests'])<=set(executed)
+ mapping[case['id']]={'location':case['location'],'tests':case['tests']}
+# Separate fresh service boundary AFTER long runtime, including exact managed readiness.
+spec=importlib.util.spec_from_file_location('final_live_reader',out/'read-live-issues.py');reader=importlib.util.module_from_spec(spec);spec.loader.exec_module(reader)
+final_live=reader.collect(out/'live-issues-final.json','final independent audit after all81 main commands settled')
+initial=json.load(open(out/'live-issues.json'));assert initial['live']==final_live['live'] and initial['managed_readiness']==final_live['managed_readiness']
+summary={**tuple_,'matrix':matrix,'focused':focused,'directory_repeat':{'ids':['database-discovery-empty'],'iterations':3},'repeat':{'ids':repeat,'iterations':3},'incoming_repeat':{'ids':incoming_repeat,'iterations':3},'sanitizers':{'ids':san,'effective_flags':'address+undefined independently asserted for six planned translation units','runtime':'ASAN_OPTIONS=detect_leaks=1:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1'},'incoming_sanitizers':{'ids':incoming_san,'effective_flags':'address+undefined independently asserted for four incoming translation units'},'compatibility':compatibility,'controls':{'original_baseline':'fd380aafe1df5a5379216d70c4fe4bfcf7f4b5db','baseline_modes':['normal','slave-process','master-process','progress'],'baseline_empty':0,'baseline_e9':0,'candidate_empty':0,'candidate_e9':'ordinary nonzero','mutations':[{'name':m['mutation'],'id':m['id'],'healthy':0,'mutated':1,'assertion':m['expected_assertion']} for m in mutations]},'native_windows':'user-waived NOT RUN/unverified','source_assertions':'All12 cases/all36 assertions independently reviewed before separate claims and runtime','eligible_closing_references':input_state['closeout']['closing_references'],'readiness':'Exact full managed comment body/identity/binding/reference unchanged at initial and final boundaries; parent8open','main_command_count':81,'audit_status':'This record excludes the currently pending audit command; root must settle its actual returned receipt before any verdict packaging.'}
+(out/'gate-summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+(out/'audited-runtime-data.json').write_text(json.dumps({'tuple':tuple_,'commands':commands,'discovered':executed,'executed':executed,'test_mapping':mapping,'gate_summary':summary},indent=2)+'\n')
+print(json.dumps({'audit':'all81 main commands and six required gates checked; no final verdict until audit wrapper returns0andsettles','matrix_count':len(matrix[0]['executed']),'union_count':len(executed),'source_assertions':36,'initial_final_material_match':True,'readiness_body_match':True}))

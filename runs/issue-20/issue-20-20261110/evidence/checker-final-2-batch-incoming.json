@@ -1,0 +1,85 @@
+[
+  {
+    "intent_id": "c20-f2-incoming-repeat",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(replay-support-(call-scope|bounded|worker-details)$|replay-dependency-(module-fanout|parent-fanout|worker-details)$|replay-warning-concurrency$)",
+      "--repeat",
+      "until-fail:3",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/checker-final-2/incoming-repeat.xml.txt"
+    ],
+    "command": "Final checker c20-f2-incoming-repeat; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-incoming-asan-build",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+      "--parallel",
+      "2",
+      "--target",
+      "replay-support-test",
+      "replay-support-dependency-test",
+      "replay-warning-test",
+      "replay-event-producer-test"
+    ],
+    "command": "Final checker c20-f2-incoming-asan-build; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-incoming-asan-inventory",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+      "--show-only=json-v1",
+      "-R",
+      "^(replay-support-(compute|graphics|raytracing|static|call-scope|categories|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-warning-(same-cause|grouping|overflow|dependencies|concurrency|lifecycle|legacy-controls)$|replay-event-producer-(parse|creation)$)"
+    ],
+    "command": "Final checker c20-f2-incoming-asan-inventory; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-incoming-asan-run",
+    "child_command": [
+      "env",
+      "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+      "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(replay-support-(compute|graphics|raytracing|static|call-scope|categories|bounded)$|replay-dependency-(module-fanout|parent-fanout|common-cache|static)$|replay-warning-(same-cause|grouping|overflow|dependencies|concurrency|lifecycle|legacy-controls)$|replay-event-producer-(parse|creation)$)",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/checker-final-2/incoming-asan.xml.txt"
+    ],
+    "command": "Final checker c20-f2-incoming-asan-run; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-incoming-asan-flags",
+    "child_command": [
+      "python3",
+      "-B",
+      "-c",
+      "import json,pathlib; rows=json.loads(pathlib.Path('/tmp/fossilize-h20/build/checker-final-2/asan-ubsan/compile_commands.json').read_text()); names=('replay_support_test.cpp','replay_support_dependency_test.cpp','replay_warning_test.cpp','replay_event_producer_test.cpp'); selected=[r for r in rows if any(r['file'].endswith('/'+n) for n in names)]; assert len(selected)==4; assert all('-fsanitize=undefined' in r['command'] and '-fsanitize=address' in r['command'] for r in selected); print(json.dumps(selected,indent=2))"
+    ],
+    "command": "Final checker c20-f2-incoming-asan-flags; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  }
+]

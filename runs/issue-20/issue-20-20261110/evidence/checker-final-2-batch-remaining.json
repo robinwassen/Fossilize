@@ -1,0 +1,611 @@
+[
+  {
+    "intent_id": "c20-f2-source-contract",
+    "child_command": [
+      "git",
+      "diff",
+      "--check",
+      "b86a23ea323ee86db19d4dace82afd904e75bae7",
+      "6de877d4a30b61cc0349c6257e8645ea0ff3f1c8"
+    ],
+    "command": "Final checker c20-f2-source-contract; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-repeat",
+    "command": "Final checker c20-f2-repeat; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(database-discovery-|replay-selection-|replay-discovery-|replay-event-controller-|replay-timeout-controller-|fork-child-)",
+      "--repeat",
+      "until-fail:3",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/checker-final-2/repeat.xml.txt"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-compatibility",
+    "command": "Final checker c20-f2-compatibility; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(database-discovery-old-header-compatibility|replay-discovery-legacy-invocations|replay-event-old-header-compatibility|diagnostic-compatibility-test|replay-controller-cli-compatibility|replay-outcome-cli-compatibility)$",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/checker-final-2/compatibility.xml.txt"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-asan-configure",
+    "command": "Final checker c20-f2-asan-configure; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h20/checker-final-2",
+      "-B",
+      "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+      "-DCMAKE_BUILD_TYPE=Debug",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF",
+      "-DFOSSILIZE_SANITIZE_ADDRESS=ON",
+      "-DCMAKE_CXX_FLAGS=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer",
+      "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined",
+      "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=undefined",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-asan-static",
+    "command": "Final checker c20-f2-asan-static; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+      "--parallel",
+      "2",
+      "--target",
+      "SPIRV-Tools-static"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-asan-build",
+    "command": "Final checker c20-f2-asan-build; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+      "--parallel",
+      "2",
+      "--target",
+      "database-discovery-test",
+      "replay-selection-test",
+      "replay-event-test",
+      "parser-input-test",
+      "varint-test"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-asan-inventory",
+    "command": "Final checker c20-f2-asan-inventory; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+      "--show-only=json-v1",
+      "-R",
+      "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-asan-run",
+    "command": "Final checker c20-f2-asan-run; exact argv in child_command",
+    "child_command": [
+      "env",
+      "ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+      "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1",
+      "/tmp/fossilize-h20/toolenv/bin/ctest",
+      "--test-dir",
+      "/tmp/fossilize-h20/build/checker-final-2/asan-ubsan",
+      "--output-on-failure",
+      "--no-tests=error",
+      "-R",
+      "^(database-discovery-(empty|truncated-zero|prefix|inputs|errors|filters|metadata)$|replay-selection-|replay-event-unit-|parser-input-|varint-system-test$)",
+      "--output-junit",
+      "/tmp/fossilize-h20/output/checker-final-2/asan.xml.txt"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-setup-mutations",
+    "command": "Final checker c20-f2-setup-mutations; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/output/checker-final-2/setup-mutations.py"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-baseline-configure",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h20/mutations/checker-final-2/baseline",
+      "-B",
+      "/tmp/fossilize-h20/build/checker-final-2/baseline-debug-off",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+      "-DCMAKE_BUILD_TYPE=Debug",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+    ],
+    "command": "Final checker c20-f2-baseline-configure; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-baseline-static",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/baseline-debug-off",
+      "--parallel",
+      "4",
+      "--target",
+      "SPIRV-Tools-static"
+    ],
+    "command": "Final checker c20-f2-baseline-static; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-baseline-build",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/baseline-debug-off",
+      "--parallel",
+      "4",
+      "--target",
+      "fossilize-replay"
+    ],
+    "command": "Final checker c20-f2-baseline-build; exact argv in child_command",
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-original-defect",
+    "command": "Final checker c20-f2-original-defect; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-DGENERATOR=/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off/test/replay-selection-test",
+      "-DREPLAY=/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off/cli/fossilize-replay",
+      "-DBASELINE_REPLAY=/tmp/fossilize-h20/build/checker-final-2/baseline-debug-off/cli/fossilize-replay",
+      "-DCASE=original-defect",
+      "-DWORK=/tmp/fossilize-h20/output/checker-final-2/original-defect-work",
+      "-P",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_cli.cmake"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-controls-inventory",
+    "command": "Final checker c20-f2-controls-inventory; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--inventory",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/controls-inventory.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-mutate-sliced-tail",
+    "command": "Final checker c20-f2-mutate-sliced-tail; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--mutate-source",
+      "/tmp/fossilize-h20/mutations/checker-final-2/sliced-tail",
+      "--mutation",
+      "sliced-tail",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/patch-sliced-tail.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-configure-mutation-sliced-tail",
+    "command": "Final checker c20-f2-configure-mutation-sliced-tail; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h20/mutations/checker-final-2/sliced-tail",
+      "-B",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-sliced-tail",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-build-mutation-sliced-tail",
+    "command": "Final checker c20-f2-build-mutation-sliced-tail; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-sliced-tail",
+      "--parallel",
+      "4",
+      "--target",
+      "database-discovery-test"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-run-mutation-sliced-tail",
+    "command": "Final checker c20-f2-run-mutation-sliced-tail; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--check-mutation",
+      "sliced-tail",
+      "--runner",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-sliced-tail/test/database-discovery-test",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/mutation-sliced-tail.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-mutate-required-input",
+    "command": "Final checker c20-f2-mutate-required-input; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--mutate-source",
+      "/tmp/fossilize-h20/mutations/checker-final-2/required-input",
+      "--mutation",
+      "required-input",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/patch-required-input.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-configure-mutation-required-input",
+    "command": "Final checker c20-f2-configure-mutation-required-input; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h20/mutations/checker-final-2/required-input",
+      "-B",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-required-input",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-build-mutation-required-input",
+    "command": "Final checker c20-f2-build-mutation-required-input; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-required-input",
+      "--parallel",
+      "4",
+      "--target",
+      "database-discovery-test"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-run-mutation-required-input",
+    "command": "Final checker c20-f2-run-mutation-required-input; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--check-mutation",
+      "required-input",
+      "--runner",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-required-input/test/database-discovery-test",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/mutation-required-input.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-mutate-unread-total",
+    "command": "Final checker c20-f2-mutate-unread-total; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--mutate-source",
+      "/tmp/fossilize-h20/mutations/checker-final-2/unread-total",
+      "--mutation",
+      "unread-total",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/patch-unread-total.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-configure-mutation-unread-total",
+    "command": "Final checker c20-f2-configure-mutation-unread-total; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h20/mutations/checker-final-2/unread-total",
+      "-B",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-unread-total",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-build-mutation-unread-total",
+    "command": "Final checker c20-f2-build-mutation-unread-total; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-unread-total",
+      "--parallel",
+      "4",
+      "--target",
+      "database-discovery-test"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-run-mutation-unread-total",
+    "command": "Final checker c20-f2-run-mutation-unread-total; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--check-mutation",
+      "unread-total",
+      "--runner",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-unread-total/test/database-discovery-test",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/mutation-unread-total.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-mutate-selection-exclusions",
+    "command": "Final checker c20-f2-mutate-selection-exclusions; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--mutate-source",
+      "/tmp/fossilize-h20/mutations/checker-final-2/selection-exclusions",
+      "--mutation",
+      "selection-exclusions",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/patch-selection-exclusions.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-configure-mutation-selection-exclusions",
+    "command": "Final checker c20-f2-configure-mutation-selection-exclusions; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h20/mutations/checker-final-2/selection-exclusions",
+      "-B",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-selection-exclusions",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-static-mutation-selection-exclusions",
+    "command": "Final checker c20-f2-static-mutation-selection-exclusions; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-selection-exclusions",
+      "--parallel",
+      "4",
+      "--target",
+      "SPIRV-Tools-static"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-build-mutation-selection-exclusions",
+    "command": "Final checker c20-f2-build-mutation-selection-exclusions; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-selection-exclusions",
+      "--parallel",
+      "4",
+      "--target",
+      "replay-selection-test"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-run-mutation-selection-exclusions",
+    "command": "Final checker c20-f2-run-mutation-selection-exclusions; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--check-mutation",
+      "selection-exclusions",
+      "--runner",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-selection-exclusions/test/replay-selection-test",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/mutation-selection-exclusions.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-mutate-metadata-import",
+    "command": "Final checker c20-f2-mutate-metadata-import; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--mutate-source",
+      "/tmp/fossilize-h20/mutations/checker-final-2/metadata-import",
+      "--mutation",
+      "metadata-import",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/patch-metadata-import.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-configure-mutation-metadata-import",
+    "command": "Final checker c20-f2-configure-mutation-metadata-import; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "-S",
+      "/tmp/fossilize-h20/mutations/checker-final-2/metadata-import",
+      "-B",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-metadata-import",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DFOSSILIZE_ENABLE_EXCEPTIONS=OFF",
+      "-DFOSSILIZE_CLI=ON",
+      "-DFOSSILIZE_TESTS=ON",
+      "-DFOSSILIZE_VULKAN_LAYER=ON",
+      "-DFOSSILIZE_REPLAYER_SPIRV_VAL=ON",
+      "-DFOSSILIZE_TEST_RUNTIME_LAYER=OFF"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-build-mutation-metadata-import",
+    "command": "Final checker c20-f2-build-mutation-metadata-import; exact argv in child_command",
+    "child_command": [
+      "/tmp/fossilize-h20/toolenv/bin/cmake",
+      "--build",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-metadata-import",
+      "--parallel",
+      "4",
+      "--target",
+      "database-discovery-test"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  },
+  {
+    "intent_id": "c20-f2-run-mutation-metadata-import",
+    "command": "Final checker c20-f2-run-mutation-metadata-import; exact argv in child_command",
+    "child_command": [
+      "python3",
+      "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+      "--check-mutation",
+      "metadata-import",
+      "--runner",
+      "/tmp/fossilize-h20/build/checker-final-2/mutation-metadata-import/test/database-discovery-test",
+      "--output",
+      "/tmp/fossilize-h20/output/checker-final-2/mutation-metadata-import.json"
+    ],
+    "cwd": "/tmp/fossilize-h20/checker-final-2",
+    "timeout": 600
+  }
+]

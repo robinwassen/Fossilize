@@ -1,0 +1,32 @@
+{
+  "intent_id": "c20-f2-asan-compiler-config",
+  "command": [
+    "python3",
+    "-B",
+    "/tmp/fossilize-h20/checker-final-2/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+    "--repo",
+    "/tmp/fossilize-h20/checker-final-2",
+    "--timeout",
+    "600",
+    "--intent-id",
+    "c20-f2-asan-compiler-config",
+    "--receipt",
+    "/tmp/fossilize-h20/output/checker-final-2/c20-f2-asan-compiler-config.receipt.json",
+    "--",
+    "python3",
+    "-B",
+    "-c",
+    "import json,pathlib,subprocess; p=pathlib.Path('/tmp/fossilize-h20/build/checker-final-2/asan-ubsan'); print(subprocess.run(['c++','--version'],capture_output=True,text=True).stdout); print((p/'CMakeCache.txt').read_text()); rows=json.loads((p/'compile_commands.json').read_text()); names=('fossilize_db.cpp','database_discovery_test.cpp','replay_selection_test.cpp','replay_event_test.cpp','parser_input_test.cpp','varint.cpp'); selected=[r for r in rows if any(r['file'].endswith('/'+n) for n in names)]; assert len(selected)>=6; assert all('-fsanitize=undefined' in r['command'] and '-fsanitize=address' in r['command'] for r in selected); print(json.dumps(selected,indent=2))"
+  ],
+  "child_command": [
+    "python3",
+    "-B",
+    "-c",
+    "import json,pathlib,subprocess; p=pathlib.Path('/tmp/fossilize-h20/build/checker-final-2/asan-ubsan'); print(subprocess.run(['c++','--version'],capture_output=True,text=True).stdout); print((p/'CMakeCache.txt').read_text()); rows=json.loads((p/'compile_commands.json').read_text()); names=('fossilize_db.cpp','database_discovery_test.cpp','replay_selection_test.cpp','replay_event_test.cpp','parser_input_test.cpp','varint.cpp'); selected=[r for r in rows if any(r['file'].endswith('/'+n) for n in names)]; assert len(selected)>=6; assert all('-fsanitize=undefined' in r['command'] and '-fsanitize=address' in r['command'] for r in selected); print(json.dumps(selected,indent=2))"
+  ],
+  "cwd": "/tmp/fossilize-h20/checker-final-2",
+  "exit_code": 0,
+  "elapsed": 0.11073875427246094,
+  "receipt": "/tmp/fossilize-h20/output/checker-final-2/c20-f2-asan-compiler-config.receipt.json",
+  "log": "/tmp/fossilize-h20/output/checker-final-2/c20-f2-asan-compiler-config.log"
+}

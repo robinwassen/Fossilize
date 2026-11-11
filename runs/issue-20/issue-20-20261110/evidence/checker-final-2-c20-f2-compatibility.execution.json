@@ -1,0 +1,42 @@
+{
+  "intent_id": "c20-f2-compatibility",
+  "command": [
+    "python3",
+    "-B",
+    "/tmp/fossilize-h20/checker-final-2/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+    "--repo",
+    "/tmp/fossilize-h20/checker-final-2",
+    "--timeout",
+    "600",
+    "--intent-id",
+    "c20-f2-compatibility",
+    "--receipt",
+    "/tmp/fossilize-h20/output/checker-final-2/c20-f2-compatibility.receipt.json",
+    "--",
+    "/tmp/fossilize-h20/toolenv/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-R",
+    "^(database-discovery-old-header-compatibility|replay-discovery-legacy-invocations|replay-event-old-header-compatibility|diagnostic-compatibility-test|replay-controller-cli-compatibility|replay-outcome-cli-compatibility)$",
+    "--output-junit",
+    "/tmp/fossilize-h20/output/checker-final-2/compatibility.xml.txt"
+  ],
+  "child_command": [
+    "/tmp/fossilize-h20/toolenv/bin/ctest",
+    "--test-dir",
+    "/tmp/fossilize-h20/build/checker-final-2/debug-exceptions-off",
+    "--output-on-failure",
+    "--no-tests=error",
+    "-R",
+    "^(database-discovery-old-header-compatibility|replay-discovery-legacy-invocations|replay-event-old-header-compatibility|diagnostic-compatibility-test|replay-controller-cli-compatibility|replay-outcome-cli-compatibility)$",
+    "--output-junit",
+    "/tmp/fossilize-h20/output/checker-final-2/compatibility.xml.txt"
+  ],
+  "cwd": "/tmp/fossilize-h20/checker-final-2",
+  "exit_code": 0,
+  "elapsed": 4.6275904178619385,
+  "receipt": "/tmp/fossilize-h20/output/checker-final-2/c20-f2-compatibility.receipt.json",
+  "log": "/tmp/fossilize-h20/output/checker-final-2/c20-f2-compatibility.log"
+}

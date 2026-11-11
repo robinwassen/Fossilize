@@ -1,0 +1,40 @@
+{
+  "intent_id": "c20-f2-release-exceptions-off-replay-layer",
+  "command": [
+    "python3",
+    "-B",
+    "/tmp/fossilize-h20/checker-final-2/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+    "--repo",
+    "/tmp/fossilize-h20/checker-final-2",
+    "--timeout",
+    "600",
+    "--intent-id",
+    "c20-f2-release-exceptions-off-replay-layer",
+    "--receipt",
+    "/tmp/fossilize-h20/output/checker-final-2/c20-f2-release-exceptions-off-replay-layer.receipt.json",
+    "--",
+    "/tmp/fossilize-h20/toolenv/bin/cmake",
+    "--build",
+    "/tmp/fossilize-h20/build/checker-final-2/release-exceptions-off",
+    "--parallel",
+    "4",
+    "--target",
+    "fossilize-replay",
+    "VkLayer_fossilize"
+  ],
+  "child_command": [
+    "/tmp/fossilize-h20/toolenv/bin/cmake",
+    "--build",
+    "/tmp/fossilize-h20/build/checker-final-2/release-exceptions-off",
+    "--parallel",
+    "4",
+    "--target",
+    "fossilize-replay",
+    "VkLayer_fossilize"
+  ],
+  "cwd": "/tmp/fossilize-h20/checker-final-2",
+  "exit_code": 0,
+  "elapsed": 25.125301122665405,
+  "receipt": "/tmp/fossilize-h20/output/checker-final-2/c20-f2-release-exceptions-off-replay-layer.receipt.json",
+  "log": "/tmp/fossilize-h20/output/checker-final-2/c20-f2-release-exceptions-off-replay-layer.log"
+}

@@ -1,0 +1,40 @@
+{
+  "intent_id": "c20-f2-mutate-unread-total",
+  "command": [
+    "python3",
+    "-B",
+    "/tmp/fossilize-h20/checker-final-2/.agents/skills/implement-change-harness/scripts/verification_lock.py",
+    "--repo",
+    "/tmp/fossilize-h20/checker-final-2",
+    "--timeout",
+    "600",
+    "--intent-id",
+    "c20-f2-mutate-unread-total",
+    "--receipt",
+    "/tmp/fossilize-h20/output/checker-final-2/c20-f2-mutate-unread-total.receipt.json",
+    "--",
+    "python3",
+    "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+    "--mutate-source",
+    "/tmp/fossilize-h20/mutations/checker-final-2/unread-total",
+    "--mutation",
+    "unread-total",
+    "--output",
+    "/tmp/fossilize-h20/output/checker-final-2/patch-unread-total.json"
+  ],
+  "child_command": [
+    "python3",
+    "/tmp/fossilize-h20/checker-final-2/test/replay_discovery_controls.py",
+    "--mutate-source",
+    "/tmp/fossilize-h20/mutations/checker-final-2/unread-total",
+    "--mutation",
+    "unread-total",
+    "--output",
+    "/tmp/fossilize-h20/output/checker-final-2/patch-unread-total.json"
+  ],
+  "cwd": "/tmp/fossilize-h20/checker-final-2",
+  "exit_code": 0,
+  "elapsed": 0.11716794967651367,
+  "receipt": "/tmp/fossilize-h20/output/checker-final-2/c20-f2-mutate-unread-total.receipt.json",
+  "log": "/tmp/fossilize-h20/output/checker-final-2/c20-f2-mutate-unread-total.log"
+}
