@@ -1,17 +1,39 @@
 #pragma once
 
 // Private scalar evidence; not a public API or shared-memory layout.
+#include "replay_dependency.hpp"
+#include "replay_support.hpp"
 #include <array>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <limits>
 
 namespace Fossilize { namespace ReplayEvent {
-enum Phase : uint64_t { Parse = 1, Create = 2, Timeout = 3 };
-enum Reason : uint64_t { GenericParse = 1, InvalidJSON = 2, IncompatibleVersion = 3, MalformedEnvelope = 4,
-                        InvalidShader = 5, InvalidRecord = 6, CreationFailed = 16, NoProgress = 32, Heartbeat = 33, Cleanup = 34 };
+enum Phase : uint64_t
+{
+	Parse = 1,
+	Create = 2,
+	Timeout = 3,
+	Support = 4,
+	Dependency = 5
+};
+enum Reason : uint64_t
+{
+	GenericParse = 1,
+	InvalidJSON = 2,
+	IncompatibleVersion = 3,
+	MalformedEnvelope = 4,
+	InvalidShader = 5,
+	InvalidRecord = 6,
+	CreationFailed = 16,
+	Unsupported = 48,
+	Blocked = 49,
+	NoProgress = 32,
+	Heartbeat = 33,
+	Cleanup = 34
+};
 enum Domain : uint64_t { Vulkan = 1, RapidJSON = 2, Native = 3 };
 enum Known : uint64_t { Raw = 1, HasTag = 2, HasHash = 4, Worker = 8, Attempt = 16, Range = 32, Offset = 64, Duration = 128 };
 struct Event
@@ -19,6 +41,8 @@ struct Event
 	uint64_t phase = 0, reason = 0, domain = 0, known = 0;
 	int64_t raw = 0;
 	uint64_t tag = 0, hash = 0, worker = 0, attempt = 0, begin = 0, end = 0, offset = 0, threshold = 0, elapsed = 0;
+	SupportDetail support;
+	ReplayDependency::Detail parent;
 };
 // A caller-owned capture, scoped independently on each parsing thread. Impl
 // recursion uses the same capture, retaining the first detected originating fact.
@@ -35,7 +59,7 @@ struct ParseCapture
 };
 inline void detected(const Event &e) { auto *p = parse_slot(); if (p && !p->reason) *p = e; }
 
-static constexpr size_t MaxFrame = 512;
+static constexpr size_t MaxFrame = 1024;
 static constexpr unsigned MaxEvents = 16;
 // Length excludes prefix and terminating LF. Every frame is one printable ASCII
 // line; explicit lengths and counts are checked before numeric interpretation.
@@ -49,10 +73,39 @@ inline size_t event_frame(char *out, size_t size, const Event &e)
 	char payload[MaxFrame];
 	int n = std::snprintf(payload, sizeof(payload),
 	    "1 EVENT %llu %llu %llu %llu %lld %llu %llu %llu %llu %llu %llu %llu %llu %llu",
-	    (unsigned long long)e.phase, (unsigned long long)e.reason, (unsigned long long)e.domain, (unsigned long long)e.known,
-	    (long long)e.raw, (unsigned long long)e.tag, (unsigned long long)e.hash, (unsigned long long)e.worker,
-	    (unsigned long long)e.attempt, (unsigned long long)e.begin, (unsigned long long)e.end, (unsigned long long)e.offset,
+						  (unsigned long long)e.phase, (unsigned long long)e.reason, (unsigned long long)e.domain,
+						  (unsigned long long)e.known, (long long)e.raw, (unsigned long long)e.tag,
+						  (unsigned long long)e.hash, (unsigned long long)e.worker, (unsigned long long)e.attempt,
+						  (unsigned long long)e.begin, (unsigned long long)e.end, (unsigned long long)e.offset,
 	    (unsigned long long)e.threshold, (unsigned long long)e.elapsed);
+	if (e.phase == Support || e.phase == Dependency)
+	{
+		// DETAIL schema 1 is an additive private record; EVENT 1 stays unchanged.
+		n = std::snprintf(payload, sizeof(payload),
+						  "1 DETAIL 1 %llu %llu %llu %llu %lld %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu "
+						  "%llu %llu %llu ",
+						  (unsigned long long)e.phase, (unsigned long long)e.reason, (unsigned long long)e.domain,
+						  (unsigned long long)e.known, (long long)e.raw, (unsigned long long)e.tag,
+						  (unsigned long long)e.hash, (unsigned long long)e.worker, (unsigned long long)e.attempt,
+						  (unsigned long long)e.support.kind, (unsigned long long)e.support.known,
+						  (unsigned long long)e.support.required, (unsigned long long)e.support.available,
+						  (unsigned long long)e.support.raw, (unsigned long long)e.parent.tag,
+						  (unsigned long long)e.parent.hash, (unsigned long long)e.parent.status,
+						  (unsigned long long)e.parent.category, (unsigned long long)e.parent.omitted);
+		if (n <= 0 || size_t(n) + sizeof(e.support.identifier) * 2 >= sizeof(payload))
+			return 0;
+		static const char digits[] = "0123456789abcdef";
+		size_t i = 0;
+		for (; i + 1 < sizeof(e.support.identifier) && e.support.identifier[i]; i++)
+		{
+			unsigned char c = static_cast<unsigned char>(e.support.identifier[i]);
+			payload[n++] = digits[c >> 4];
+			payload[n++] = digits[c & 15];
+		}
+		if (!i)
+			payload[n++] = '-';
+		payload[n] = 0;
+	}
 	return n > 0 && size_t(n) < sizeof(payload) ? frame(out, size, payload) : 0;
 }
 struct Numbers
@@ -103,6 +156,10 @@ inline bool supported(const Event &e)
 {
 	return (e.phase == Parse && e.reason >= GenericParse && e.reason <= InvalidRecord) ||
 	       (e.phase == Create && e.reason == CreationFailed) ||
+		   (e.phase == Support && e.reason == Unsupported && uint64_t(e.support.kind) > 0 &&
+			uint64_t(e.support.kind) <= uint64_t(SupportKind::Constraint)) ||
+		   (e.phase == Dependency && e.reason == Blocked &&
+			uint64_t(e.parent.status) <= uint64_t(ReplayDependency::Status::ReadFailed)) ||
 	       (e.phase == Timeout && e.reason >= NoProgress && e.reason <= Cleanup);
 }
 struct State
@@ -110,6 +167,8 @@ struct State
 	std::array<Event, MaxEvents> events = {};
 	unsigned count = 0;
 	uint64_t omitted = 0, received = 0;
+	std::array<uint64_t, 7> categories = {};
+	bool categories_known = false;
 	bool offered = false, hello = false, final = false, failed = false, lost = false, unsupported = false, eof = false;
 	uint64_t worker = 0, attempt = 0;
 	void begin(uint64_t w, uint64_t a) { *this = {}; offered = true; worker = w; attempt = a; }
@@ -138,11 +197,94 @@ struct State
 			if (!supported(e) || ((e.known & Raw) && e.domain > Native)) unsupported = true;
 			if (count < events.size()) events[count++] = e; else { omitted++; lost = true; }
 		}
+		else if (k == 6 && !std::memcmp(kind, "DETAIL", 6))
+		{
+			Event e;
+			uint64_t schema, sk, ps;
+			if (!nums.next(schema) || schema != 1)
+			{
+				unsupported = true;
+				return;
+			}
+			if (!nums.next(e.phase) || !nums.next(e.reason) || !nums.next(e.domain) || !nums.next(e.known) ||
+				!nums.signed_next(e.raw) || !nums.next(e.tag) || !nums.next(e.hash) || !nums.next(e.worker) ||
+				!nums.next(e.attempt) || !nums.next(sk) || !nums.next(e.support.known) ||
+				!nums.next(e.support.required) || !nums.next(e.support.available) || !nums.next(e.support.raw) ||
+				!nums.next(e.parent.tag) || !nums.next(e.parent.hash) || !nums.next(ps) ||
+				!nums.next(e.parent.category) || !nums.next(e.parent.omitted) || nums.p == nums.end ||
+				*nums.p++ != ' ' || !hello || final || !valid(e) || ((e.known & Worker) && e.worker != worker) ||
+				((e.known & Attempt) && e.attempt != attempt))
+			{
+				lost = true;
+				return;
+			}
+			e.support.kind = SupportKind(sk);
+			e.parent.status = ReplayDependency::Status(ps);
+			size_t length = size_t(nums.end - nums.p);
+			if (length == 1 && *nums.p == '-')
+				length = 0;
+			if ((length & 1) || length / 2 >= sizeof(e.support.identifier) || (e.support.known & ~uint64_t(7)) ||
+				(!(e.support.known & SupportDetail::Required) && e.support.required) ||
+				(!(e.support.known & SupportDetail::Available) && e.support.available) ||
+				(!(e.support.known & SupportDetail::Raw) && e.support.raw))
+			{
+				lost = true;
+				return;
+			}
+			for (size_t i = 0; i < length; i += 2)
+			{
+				auto hex = [](char c) {
+					return c >= '0' && c <= '9' ? c - '0' : c >= 'a' && c <= 'f' ? c - 'a' + 10 : -1;
+				};
+				int a = hex(nums.p[i]), b = hex(nums.p[i + 1]);
+				if (a < 0 || b < 0 || (a * 16 + b) < 32 || (a * 16 + b) > 126)
+				{
+					lost = true;
+					return;
+				}
+				e.support.identifier[i / 2] = char(a * 16 + b);
+			}
+			if ((e.phase != Support && e.phase != Dependency) || !supported(e) || e.parent.category > 7)
+				unsupported = true;
+			received++;
+			if (count < events.size())
+				events[count++] = e;
+			else
+			{
+				omitted++;
+				lost = true;
+			}
+		}
+		else if (k == 6 && !std::memcmp(kind, "COUNTS", 6))
+		{
+			uint64_t schema;
+			std::array<uint64_t, 7> values = {};
+			bool ok = nums.next(schema) && schema == 1;
+			for (auto &v : values)
+				ok = ok && nums.next(v);
+			if (!ok || nums.p != nums.end || !hello || final || categories_known)
+			{
+				lost = true;
+				return;
+			}
+			categories = values;
+			categories_known = true;
+			for (auto v : values)
+				if (v)
+					failed = true;
+		}
 		else if (k == 5 && !std::memcmp(kind,"FINAL",5))
 		{
 			uint64_t status, dropped;
 			if (!nums.next(status) || !nums.next(dropped) || nums.p != nums.end || status > 1 || !hello || final) lost = true;
-			else { final = true; failed = status != 0; omitted += dropped; if (dropped) lost = true; }
+			else
+			{
+				final = true;
+				failed = failed || status != 0;
+				omitted += dropped;
+				if (dropped)
+					lost = true;
+			}
 		}
 		else { unsupported = true; }
 	}
