@@ -5,6 +5,7 @@ and their status. Follow the [changelog writing guideline](local-docs/changelog-
 
 ## Unreleased
 
+- **[Observability]** Added discovery and selection reports, regular-file directory classification and guarded empty marker writes so replay applies explicit scope policies without claiming incomplete required input is complete. ([#20](https://github.com/robinwassen/Fossilize/issues/20))
 - **[Observability]** Group replay support and dependency warnings into bounded examples and cause counts so unsupported work remains explainable without flooding logs or blaming unattempted consumers on the driver. ([#19](https://github.com/robinwassen/Fossilize/issues/19))
 
 - **[Observability]** Carry worker parse, creation and timeout reasons through bounded, strictly framed startup negotiation so controllers retain known causes and expose incomplete reports. ([#18](https://github.com/robinwassen/Fossilize/issues/18))

@@ -63,6 +63,14 @@ bool ExternalReplayer::start(const Options &options)
 	return impl->start(options);
 }
 
+void ExternalReplayer::set_database_scope_policy(bool prefix, const unsigned *indices, size_t count)
+{
+	impl->accept_recovered_prefix = prefix;
+	impl->optional_database_indices.clear();
+	if (count && indices)
+		impl->optional_database_indices.assign(indices, indices + count);
+}
+
 ExternalReplayer::PollResult ExternalReplayer::poll_progress(Progress &progress)
 {
 	return impl->poll_progress(progress);

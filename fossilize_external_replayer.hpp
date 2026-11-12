@@ -165,6 +165,7 @@ public:
 		// This is useful if we only want to use the whitelist for e.g. shader modules.
 		// Must be non-zero if on_disk_replay_whitelist is set.
 		WhiteListMaskFlags on_disk_replay_whitelist_mask;
+
 	};
 
 	ExternalReplayer();
@@ -174,6 +175,10 @@ public:
 
 	// This may only be called once.
 	bool start(const Options &options);
+
+	// Set before start(); source input indices are zero-based. Defaults retain full scope.
+	// The values are copied and do not change Options or shared progress layout.
+	void set_database_scope_policy(bool accept_recovered_prefix, const unsigned *optional_indices, size_t count);
 
 	// On Unix, this can be cast to a pid_t, on Windows, a HANDLE.
 	// On Unix, the caller is responsible for reaping the child PID when it dies, unless

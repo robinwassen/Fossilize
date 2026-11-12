@@ -55,9 +55,12 @@ static VkResult next_result()
 	return results.empty() ? VK_SUCCESS : results[std::min<size_t>(call, results.size() - 1)];
 }
 static std::vector<VkPipelineCreateFlags> observed_pipeline_flags;
+// Optional observation belongs only to this private Vulkan producer adapter.
+static void (*pipeline_call_observer)();
 static VkResult pipeline_result(VkPipeline *p, VkPipelineCreateFlags flags)
 {
 	if (marker_mode) observed_pipeline_flags.push_back(flags);
+	if (pipeline_call_observer) pipeline_call_observer();
 	auto result = next_result();
 	*p = result == VK_SUCCESS ? (VkPipeline)uintptr_t(0x1234) : VK_NULL_HANDLE;
 	return result;
@@ -567,6 +570,8 @@ static void normal_matrix()
 #include "replay_cache_tests.hpp"
 
 #ifndef FOSSILIZE_REPLAY_OUTCOME_NO_MAIN
+
+#ifndef FOSSILIZE_OUTCOME_NO_MAIN
 int main(int argc, char **argv)
 {
 	if (argc == 3 && std::string(argv[1]) == "--whitelist")
@@ -592,5 +597,7 @@ int main(int argc, char **argv)
 	printf("Executed R14/%s; failures=%d\n",test.c_str(),checks.failures);
 	return checks.failures ? 1 : 0;
 }
+
+#endif
 
 #endif
