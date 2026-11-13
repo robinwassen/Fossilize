@@ -141,13 +141,15 @@
       "observations": [],
       "operation": "final",
       "plan_version": 1,
+      "rejection_signature": "45c7e86bd36b70a367336100b6833d09182dd71e15818e670af0b135b55d6167",
+      "report": "runs/issue-21/issue21-20261113/reports/checker-final-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1794609934.7844555,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/21",
       "worker_id": "/root/checker_final_1"
     }
@@ -162,7 +164,10 @@
     "generation": 150,
     "marker": "<!-- harness-ready:issue21-20261113:deb7b825da22103fb1a5433342f5a4c470b90540fc574674d83437237ede48f5 -->",
     "plan_version": 1,
-    "stage": "prepared",
+    "reason": "checker rejected proposed completion",
+    "resume_operation": "repair",
+    "resume_phase": "implementing",
+    "stage": "cleanup",
     "targets": [
       {
         "evidence": "All 320 CPU tests passed independently in each of three Linux configurations (Debug exceptions off, Release off and on). Five focused ASan+UBSan tests passed with the sanitizer alternate signal stack disabled. A compiled lost-creation-report mutation failed the intended assertion. The real recovery fixture preserved 19 observed creations, one skipped culprit, and one unknown deferred pipeline. Native Windows execution was waived.",
@@ -217,6 +222,15 @@
       },
       "route": "implementation",
       "status": "resolved"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+      "evidence": "Exact Release/OFF standalone and master each exit 1 for absent requested hash fff in the complete synthetic selection.foz, but emit scope=incomplete discovery=complete selected=0 selected_total=unknown. The same summary says discovery is incomplete even with complete preparation. Unknown extent is correct when a required archive is absent; both modes then report discovery=incomplete. A complete required archive with an explicitly unavailable optional source also has an exact zero in the eligible scope, yet both modes report scope=incomplete selected_total=unknown instead of retaining the optional-input scope. An optional-only unavailable archive without a hash request correctly stays successful with scope=optional-inputs discovery=incomplete selected_total=known. See final1-missing-hash.log and final1-scope-contrast.log. The source folds hash_found into scope_satisfied before setting selected_total_known; scope() then derives the incomplete label from that flag.",
+      "id": "R21-F1-KNOWN-ABSENT-HASH",
+      "location": "cli/replay_selection.hpp:108,124,184; cli/replay_reconciliation.hpp:130,256; cli/fossilize_replay.cpp:5025; cli/fossilize_replay_linux.hpp:1255; cli/fossilize_replay_windows.hpp:934",
+      "next_action": "Distinguish a rejected explicit hash request from unresolved input discovery. Keep nonzero exit when an explicit hash is absent, report an exact zero for a completely enumerated eligible scope, and preserve accepted-prefix/optional-input labels and unknown required-input extent. Add Release-active actual CLI cases in normal and robust master modes for a complete archive with an absent requested hash, required discovery that cannot determine absence, and eligible optional-input exclusion. Keep no-hash known-empty and optional-only behavior.",
+      "route": "implementation",
+      "status": "open"
     }
   ],
   "issue_snapshot": {
@@ -3134,8 +3148,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "final",
+  "next_action": "journal superseding issue evidence, then closeout-cleanup",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -3147,7 +3161,7 @@
     "output_directory": "/tmp/fossilize-h21-20261113/out",
     "source_worktree": "/tmp/fossilize-h21-20261113/source"
   },
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -3494,7 +3508,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 179,
+  "revision": 180,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
@@ -3504,7 +3518,7 @@
   },
   "run_id": "issue21-20261113",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-21",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/21",
   "verification": [
@@ -4432,16 +4446,11 @@
   ],
   "work_units": [
     {
-      "accepted": {
-        "attempt_id": "checker-unit-2",
-        "base_sha": "4c3f25e7c08da36585dca1f6f9a06e45cb4f1321",
-        "candidate_sha": "54c826db2417abe3b94396845a99928cdb3b2bf7",
-        "plan_version": 1
-      },
+      "accepted": null,
       "dependencies": [],
       "issue": "https://github.com/robinwassen/Fossilize/issues/21",
       "key": "https://github.com/robinwassen/Fossilize/issues/21",
-      "status": "accepted"
+      "status": "ready"
     }
   ]
 }
