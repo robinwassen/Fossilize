@@ -256,7 +256,23 @@
     }
   ],
   "closeout": {
-    "stage": "pending"
+    "base_sha": "4c3f25e7c08da36585dca1f6f9a06e45cb4f1321",
+    "binding": "Candidate: `c685f49befe4d7f2382b94ec7cfc804a2bb51a5d`; base: `4c3f25e7c08da36585dca1f6f9a06e45cb4f1321`; plan: `1`; issue input: `03a87126cd5287bf71e63894b0713068e03a7c9f27abda738b1348bed4d1b462`.",
+    "candidate_sha": "c685f49befe4d7f2382b94ec7cfc804a2bb51a5d",
+    "closing_references": [
+      "Closes https://github.com/robinwassen/Fossilize/issues/21"
+    ],
+    "generation": 294,
+    "marker": "<!-- harness-ready:issue21-20261113:93a8675a5807539e85a9bbd5abcbfa153646f378aeea7bba72d64d5fca313a99 -->",
+    "plan_version": 1,
+    "stage": "intent",
+    "targets": [
+      {
+        "evidence": "All 320 CPU tests passed independently in each of three Linux configurations (Debug exceptions off, Release off and on). Five focused ASan+UBSan tests passed with the sanitizer alternate signal stack disabled. Compiled replay and discovery mutants failed their intended assertions, and the real CLI verified 32 missing-hash and input-policy variants. The recovery fixture preserved 19 observed creations, one skipped culprit, and one unknown deferred pipeline. Native Windows execution was waived.",
+        "issue": "https://github.com/robinwassen/Fossilize/issues/21",
+        "reference": "https://github.com/robinwassen/Fossilize/compare/master...codex/issue-21-replay-reconciliation"
+      }
+    ]
   },
   "final_acceptance": null,
   "findings": [
@@ -4914,7 +4930,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "persist closeout-intent before journaled issue evidence",
+  "next_action": "journal concise readiness comments on exact issue targets; keep issues open; then closeout-record",
   "operation": "closeout",
   "original": [
     {
@@ -5299,7 +5315,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 293,
+  "revision": 294,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
