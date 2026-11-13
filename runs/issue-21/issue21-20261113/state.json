@@ -164,12 +164,18 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+      "attempt_id": "checker-unit-2",
       "evidence": "The master now keeps the complete ReplaySelectionReport until shutdown because the ledger borrows its three stable_hash vectors. Previously the scope report was destroyed in the preparation block before worker creation. The new persistent scope retains preparation.discovered/selected/excluded, replay selected/dispatch/excluded and input metadata, including a range/hash exclusion per excluded item. A one-item --pipeline-hash selection from a large archive retains O(total discovered) storage across worker execution, in addition to the documented 20 bytes per selected item and fixed worker slots. The existing 105,000-item stress checks storage_bytes(), which excludes these backing vectors and cannot detect the lifetime regression.",
       "id": "R21-U1-RETENTION",
       "location": "cli/fossilize_replay_linux.hpp:1184\u20131186, 1251\u20131254; cli/fossilize_replay_windows.hpp:859\u2013861, 931\u2013934; cli/replay_reconciliation.hpp:128\u2013154; local-docs/specs/replay-worker-events.md:245\u2013260",
       "next_action": "Keep only stable selected hashes, offsets and compact policy metadata alive in both masters. Release the rest of the discovery and exclusion report at the existing block boundary. Assert a narrow selection from a large generated universe retains only O(selected + worker slots) after preparation and update the documented bound, including retained hash backing and capacity.",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+        "evidence": "Independent exact Release/OFF unit2-repair-proofs: one selected item and exactly sized ledger, one worker, 21,738,472 bytes peak tracked large preparation allocations and zero at actual fork. Both masters release full discovery state before launching; exact-size owned arrays remain.",
+        "finding_id": "R21-U1-RETENTION"
+      },
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -2886,7 +2892,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 140,
+  "revision": 141,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
