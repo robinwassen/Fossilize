@@ -134,12 +134,18 @@
   "findings": [
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+      "attempt_id": "checker-unit-2",
       "evidence": "All three independent full CPU CTest runs fail the same three old-caller checks (312/315 each). Existing CMake matcher `ERROR|failed|Failed|unsupported` interprets the new informational `unsupported=0`, `create_failed=0` and `failed_attempts=0` summary as actual failure despite CLI exit 0 and 3/3 creations. See unit1-debug-off-ctest.log, unit1-release-off-ctest.log and unit1-release-on-ctest.log.",
       "id": "R21-U1-COMPATIBILITY",
       "location": "test/diagnostic_compatibility.cmake:18; cli/fossilize_replay.cpp:280\u2013297",
       "next_action": "Preserve legacy success/no-error checks and make them distinguish a legitimate zero-valued summary from real diagnostic/failure values, or preserve the previous success log compatibility. Run all three complete CPU configurations.",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+        "evidence": "Independent exact Release/OFF unit2-repair-proofs: all 3 old-caller checks passed; CMake validates one exact 3-created zero-failure summary, removes only that line, and retains the legacy diagnostic matcher.",
+        "finding_id": "R21-U1-COMPATIBILITY"
+      },
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
@@ -2874,7 +2880,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 138,
+  "revision": 139,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
