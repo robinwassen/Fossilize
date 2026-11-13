@@ -1,0 +1,65 @@
+diff --git a/cli/replay_selection.hpp b/cli/replay_selection.hpp
+index bfd30f11..9e4e3c1b 100644
+--- a/cli/replay_selection.hpp
++++ b/cli/replay_selection.hpp
+@@ -182,6 +182,7 @@ inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const un
+ 				report.dispatch.push_back(key);
+ 		}
+ 	}
++	report.excluded.clear();
+ 	report.selected_total_known = report.scope_satisfied;
+ 	return report;
+ }
+
+{
+  "id": "replay-selection-sensitivity",
+  "mutation": "selection-exclusions",
+  "expected_assertion": "D20/range-exact-selection-and-exclusions",
+  "passed": true,
+  "runs": [
+    {
+      "kind": "healthy",
+      "case": "healthy",
+      "command": [
+        "/tmp/fossilize-h21-20261113/build/repair-3-d20-mutant-release-off/test/replay-selection-test-mutant",
+        "healthy"
+      ],
+      "cwd": "/tmp/fossilize-h21-20261113/out/final3-d20-result-work/healthy",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Fossilize INFO: Creating null device.\nFossilize INFO: Creating Vulkan device took: 0 ms\nFossilize INFO: Total binary size for AppInfo: 62 (78 compressed)\nFossilize INFO: Total time decoding AppInfo in main thread: 0.000 s\nFossilize INFO: Total binary size for Descriptor Set Layout: 0 (0 compressed)\nFossilize INFO: Total time decoding Descriptor Set Layout in main thread: 0.000 s\nFossilize INFO: Total binary size for Pipeline Layout: 104 (120 compressed)\nFossilize INFO: Total time decoding Pipeline Layout in main thread: 0.000 s\nFossilize INFO: Total binary size for Render Pass: 0 (0 compressed)\nFossilize INFO: Total time decoding Render Pass in main thread: 0.000 s\nFossilize INFO: Total binary size for Graphics Pipeline: 0 (0 compressed)\nFossilize INFO: Total binary size for Compute Pipeline: 458 (490 compressed)\nFossilize INFO: Total binary size for Raytracing Pipeline: 0 (0 compressed)\nFossilize INFO: Total binary size for Shader Module: 175 (191 compressed)\nFossilize INFO: Opening archive took 0 ms:\nFossilize INFO: Parsing archive took 0 ms:\nFossilize INFO: Playing back 1 shader modules took 0.000 s (accumulated time)\nFossilize INFO: Shader cache evicted 0 shader modules in total\nFossilize INFO: Playing back 0 graphics pipelines took 0.000 s (accumulated time)\nFossilize INFO: Playing back 2 compute pipelines took 0.000 s (accumulated time)\nFossilize INFO: Playing back 0 raytracing pipelines took 0.000 s (accumulated time)\nFossilize INFO: Threads were idling in total for 0.000 s (accumulated time)\nFossilize INFO: Threads were active in total for 0.001 s (accumulated time)\nFossilize INFO: Total peak memory consumption by parser: 0.197 MB.\nFossilize INFO: Replayed 3 objects in 1 ms:\nFossilize INFO:   compute pipelines:           2\nFossilize INFO:   graphics pipelines:          0\nFossilize INFO:   raytracing pipelines:        0\n"
+    },
+    {
+      "kind": "mutated",
+      "case": "ranges",
+      "command": [
+        "/tmp/fossilize-h21-20261113/build/repair-3-d20-mutant-release-off/test/replay-selection-test-mutant",
+        "ranges"
+      ],
+      "cwd": "/tmp/fossilize-h21-20261113/out/final3-d20-result-work/mutated",
+      "exit_code": 1,
+      "stdout": "FAIL D20/range-exact-selection-and-exclusions\nFAIL D20/range-exact-excluded-complement-unique\nFAIL D20/range-exact-selection-and-exclusions\nFAIL D20/range-exact-excluded-complement-unique\nFAIL D20/range-exact-selection-and-exclusions\nFAIL D20/range-exact-excluded-complement-unique\nFAIL D20/range-exact-selection-and-exclusions\nFAIL D20/range-exact-excluded-complement-unique\nFAIL D20/range-exact-selection-and-exclusions\nFAIL D20/range-exact-excluded-complement-unique\nFAIL D20/hash-exact-and-missing\nFAIL D20/hash-hit-exact-excluded-complement-unique\nFAIL D20/hash-miss-exact-excluded-complement-unique\n",
+      "stderr": ""
+    }
+  ]
+}
+
+Test project /tmp/fossilize-h21-20261113/build/repair-3-d20-mutant-release-off
+    Start 273: replay-selection-hints
+    Start 272: replay-selection-prefix-policy
+    Start 270: replay-selection-filters
+    Start 271: replay-selection-ranges
+1/4 Test #271: replay-selection-ranges ..........   Passed    0.00 sec
+2/4 Test #270: replay-selection-filters .........   Passed    0.00 sec
+3/4 Test #272: replay-selection-prefix-policy ...   Passed    0.01 sec
+4/4 Test #273: replay-selection-hints ...........   Passed    0.02 sec
+
+100% tests passed, 0 tests failed out of 4
+
+Total Test time (real) =   0.03 sec
+
+sliced-tail: matched 2; generated exact expected patch; oracle D20/truncation-never-full-coverage
+required-input: matched 1; generated exact expected patch; oracle D20/invalid-no-invented-errno
+unread-total: matched 1; generated exact expected patch; oracle D20/truncation-never-full-coverage
+selection-exclusions: matched 1; generated exact expected patch; oracle D20/range-exact-selection-and-exclusions
+metadata-import: matched 1; generated exact expected patch; oracle D20/metadata-no-false-completeness
