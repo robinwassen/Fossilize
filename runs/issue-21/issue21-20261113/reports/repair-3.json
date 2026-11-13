@@ -1,0 +1,247 @@
+{
+  "attempt_id": "repair-3",
+  "base_sha": "4c3f25e7c08da36585dca1f6f9a06e45cb4f1321",
+  "candidate_sha": "a746fa1d2d7616c1156fd5f8bc63d629099244bc",
+  "commands": [
+    {
+      "acquired": 1794611715.1587276,
+      "command": [
+        "/bin/bash",
+        "/tmp/fossilize-h21-20261113/out/setup-source.sh"
+      ],
+      "cwd": "/tmp/fossilize-h21-20261113/mutation-d20-c685f49b",
+      "exit_code": 0,
+      "finished": 1794611732.4097786,
+      "intent_id": "repair-3-d20-worktree-dependencies",
+      "log": "/tmp/fossilize-h21-20261113/out/repair-3-d20-worktree-dependencies.log",
+      "receipt": "/tmp/fossilize-h21-20261113/out/repair-3-d20-worktree-dependencies-receipt.json",
+      "source_binding": "exact detached committed source",
+      "started": 1794611715.1561263,
+      "timed_out": false,
+      "timeout": 600.0,
+      "wait_seconds": 0.0
+    },
+    {
+      "acquired": 1794611732.4101043,
+      "command": [
+        "python3",
+        "/tmp/fossilize-h21-20261113/mutation-d20-c685f49b/test/replay_discovery_controls.py",
+        "--mutate-source",
+        "/tmp/fossilize-h21-20261113/mutation-d20-c685f49b",
+        "--mutation",
+        "selection-exclusions",
+        "--output",
+        "/tmp/fossilize-h21-20261113/out/repair-3-d20-mutation.json"
+      ],
+      "cwd": "/tmp/fossilize-h21-20261113/mutation-d20-c685f49b",
+      "exit_code": 0,
+      "finished": 1794611732.474518,
+      "intent_id": "repair-3-d20-mutate-source",
+      "log": "/tmp/fossilize-h21-20261113/out/repair-3-d20-mutate-source.log",
+      "receipt": "/tmp/fossilize-h21-20261113/out/repair-3-d20-mutate-source-receipt.json",
+      "source_binding": "exact detached committed source before the one-line mutation",
+      "started": 1794611720.709589,
+      "timed_out": false,
+      "timeout": 600.0,
+      "wait_seconds": 11.69731922307983
+    },
+    {
+      "acquired": 1794611765.5333545,
+      "command": [
+        "python3",
+        "/tmp/fossilize-h21-20261113/out/repair-3-d20-anchor-controls.py"
+      ],
+      "cwd": "/tmp/fossilize-h21-20261113/clean-d20-c685f49b",
+      "exit_code": 0,
+      "finished": 1794611765.9482865,
+      "intent_id": "repair-3-d20-anchor-controls",
+      "log": "/tmp/fossilize-h21-20261113/out/repair-3-d20-anchor-controls.log",
+      "receipt": "/tmp/fossilize-h21-20261113/out/repair-3-d20-anchor-controls-receipt.json",
+      "source_binding": "exact clean detached committed source with a temporary source copy per mutation",
+      "started": 1794611765.530209,
+      "timed_out": false,
+      "timeout": 600.0,
+      "wait_seconds": 0.0
+    },
+    {
+      "acquired": 1794611779.224782,
+      "command": [
+        "/bin/bash",
+        "/tmp/fossilize-h21-20261113/out/build-linux.sh",
+        "Release",
+        "OFF",
+        "/tmp/fossilize-h21-20261113/build/repair-3-d20-mutant-release-off",
+        "--target",
+        "replay-selection-test"
+      ],
+      "cwd": "/tmp/fossilize-h21-20261113/mutation-d20-c685f49b",
+      "environment": {
+        "FOSSILIZE_H21_JOBS": "6"
+      },
+      "exit_code": 0,
+      "finished": 1794611841.2784164,
+      "intent_id": "repair-3-d20-mutant-build",
+      "log": "/tmp/fossilize-h21-20261113/out/repair-3-d20-mutant-build.log",
+      "receipt": "/tmp/fossilize-h21-20261113/out/repair-3-d20-mutant-build-receipt.json",
+      "source_binding": "exact detached committed source plus the generated mutation",
+      "started": 1794611779.2218869,
+      "timed_out": false,
+      "timeout": 600.0,
+      "wait_seconds": 0.0
+    },
+    {
+      "acquired": 1794611841.2787673,
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "a746fa1d2d7616c1156fd5f8bc63d629099244bc",
+        "c685f49befe4d7f2382b94ec7cfc804a2bb51a5d"
+      ],
+      "cwd": "/tmp/fossilize-h21-20261113/clean-d20-c685f49b",
+      "exit_code": 0,
+      "finished": 1794611841.2868905,
+      "intent_id": "repair-3-d20-source-contract",
+      "log": "/tmp/fossilize-h21-20261113/out/repair-3-d20-source-contract.log",
+      "receipt": "/tmp/fossilize-h21-20261113/out/repair-3-d20-source-contract-receipt.json",
+      "source_binding": "exact clean detached committed source",
+      "started": 1794611811.4957855,
+      "timed_out": false,
+      "timeout": 600.0,
+      "wait_seconds": 29.77855892595835
+    },
+    {
+      "acquired": 1794611863.0226176,
+      "command": [
+        "python3",
+        "/tmp/fossilize-h21-20261113/mutation-d20-c685f49b/test/replay_discovery_controls.py",
+        "--check-mutation",
+        "selection-exclusions",
+        "--runner",
+        "/tmp/fossilize-h21-20261113/build/repair-3-d20-mutant-release-off/test/replay-selection-test",
+        "--output",
+        "/tmp/fossilize-h21-20261113/out/repair-3-d20-sensitivity.json"
+      ],
+      "cwd": "/tmp/fossilize-h21-20261113/mutation-d20-c685f49b",
+      "exit_code": 0,
+      "finished": 1794611863.0867436,
+      "intent_id": "repair-3-d20-check-mutation",
+      "log": "/tmp/fossilize-h21-20261113/out/repair-3-d20-check-mutation.log",
+      "receipt": "/tmp/fossilize-h21-20261113/out/repair-3-d20-check-mutation-receipt.json",
+      "source_binding": "runner built from exact detached committed source plus the generated mutation",
+      "started": 1794611863.0197945,
+      "timed_out": false,
+      "timeout": 600.0,
+      "wait_seconds": 0.0
+    },
+    {
+      "acquired": 1794611889.3506584,
+      "command": [
+        "/tmp/fossilize-h20/toolenv/bin/cmake",
+        "--build",
+        "/tmp/fossilize-h21-20261113/build/repair-3-d20-mutant-release-off",
+        "--parallel",
+        "6",
+        "--target",
+        "replay-selection-test"
+      ],
+      "cwd": "/tmp/fossilize-h21-20261113/mutation-d20-c685f49b",
+      "exit_code": 0,
+      "finished": 1794611907.501823,
+      "intent_id": "repair-3-d20-clean-build",
+      "log": "/tmp/fossilize-h21-20261113/out/repair-3-d20-clean-build.log",
+      "receipt": "/tmp/fossilize-h21-20261113/out/repair-3-d20-clean-build-receipt.json",
+      "source_binding": "exact detached committed source after restoring its sole mutation",
+      "started": 1794611889.3479166,
+      "timed_out": false,
+      "timeout": 600.0,
+      "wait_seconds": 0.0
+    },
+    {
+      "acquired": 1794611938.929021,
+      "command": [
+        "python3",
+        "/tmp/fossilize-h21-20261113/out/collect-ctest.py",
+        "/tmp/fossilize-h21-20261113/build/repair-3-d20-mutant-release-off",
+        "/tmp/fossilize-h21-20261113/out/repair-3-d20-clean-ctest.json",
+        "--filter",
+        "^replay-selection-(filters|ranges|prefix-policy|hints)$"
+      ],
+      "cwd": "/tmp/fossilize-h21-20261113/mutation-d20-c685f49b",
+      "exit_code": 0,
+      "finished": 1794611939.0434453,
+      "intent_id": "repair-3-d20-clean-ctest",
+      "log": "/tmp/fossilize-h21-20261113/out/repair-3-d20-clean-ctest.log",
+      "receipt": "/tmp/fossilize-h21-20261113/out/repair-3-d20-clean-ctest-receipt.json",
+      "source_binding": "runner rebuilt from exact detached committed source with the mutation removed",
+      "started": 1794611938.9259331,
+      "timed_out": false,
+      "timeout": 600.0,
+      "wait_seconds": 0.0
+    }
+  ],
+  "discovered": [
+    "replay-selection-sensitivity",
+    "replay-discovery-mutation-anchor-generation",
+    "replay-selection-ranges",
+    "replay-selection-filters",
+    "replay-selection-prefix-policy",
+    "replay-selection-hints"
+  ],
+  "environment": {
+    "build": "/tmp/fossilize-h21-20261113/build/repair-3-d20-mutant-release-off",
+    "clean_anchor_worktree": "/tmp/fossilize-h21-20261113/clean-d20-c685f49b",
+    "compiler": "GNU C++ 13.3.0",
+    "configuration": "Release, exceptions OFF, CLI/layer/tests and SPIR-V validation ON, runtime layer tests OFF",
+    "mutation_worktree": "/tmp/fossilize-h21-20261113/mutation-d20-c685f49b",
+    "platform": "Linux x86_64 CPU/null-device fixtures"
+  },
+  "executed": [
+    "replay-selection-sensitivity",
+    "replay-discovery-mutation-anchor-generation",
+    "replay-selection-ranges",
+    "replay-selection-filters",
+    "replay-selection-prefix-policy",
+    "replay-selection-hints"
+  ],
+  "finding_evidence": {
+    "R21-U3-DISCOVERY-CONTROL-ANCHOR": {
+      "all_anchor_results": "/tmp/fossilize-h21-20261113/out/repair-3-d20-anchor-controls.log",
+      "clean_counterpart_results": "/tmp/fossilize-h21-20261113/out/repair-3-d20-clean-ctest.json",
+      "compiled_mutant_results": "/tmp/fossilize-h21-20261113/out/repair-3-d20-sensitivity.json",
+      "mutation_generation": "/tmp/fossilize-h21-20261113/out/repair-3-d20-mutation.json",
+      "mutation_patch": "/tmp/fossilize-h21-20261113/out/repair-3-d20-mutation.diff",
+      "observation": "One exact replacement inserts only report.excluded.clear(). The shipped --check-mutation exits zero with healthy=0 and ranges=1, including FAIL D20/range-exact-selection-and-exclusions. With the mutation restored, the rebuilt ranges case passes."
+    }
+  },
+  "input_revision": 236,
+  "input_sha": "a746fa1d2d7616c1156fd5f8bc63d629099244bc",
+  "issue": "https://github.com/robinwassen/Fossilize/issues/21",
+  "operation": "repair",
+  "plan_version": 1,
+  "result_candidate_sha": "c685f49befe4d7f2382b94ec7cfc804a2bb51a5d",
+  "role": "implementer",
+  "summary": "Retargeted the existing selection-exclusions source mutation to the unique final assignment/return sequence. The healthy case, Release-active assertion and existing accurate #21 changelog entry are preserved.",
+  "test_mapping": {
+    "R21-U3-DISCOVERY-CONTROL-ANCHOR": {
+      "assertions": "All five shipped source mutators apply their exact patches. The Release/OFF mutant retains healthy work and fails the named range/exclusions assertion with ordinary exit 1. The exact clean binary passes all four registered selection cases.",
+      "location": "test/replay_discovery_controls.py:28",
+      "tests": [
+        "replay-selection-sensitivity",
+        "replay-discovery-mutation-anchor-generation",
+        "replay-selection-ranges",
+        "replay-selection-filters",
+        "replay-selection-prefix-policy",
+        "replay-selection-hints"
+      ]
+    }
+  },
+  "verification_limits": [
+    "All five #20 anchors were exercised. Only the affected selection-exclusions mutant was compiled and run in this repair.",
+    "The full candidate test matrix and #21 publication mutation remain separate independent checker gates.",
+    "Native Windows execution was user-waived.",
+    "These CPU/null-device tests provide no Vulkan hardware, driver cache, persistence or Steam-runtime evidence."
+  ],
+  "work_unit": "https://github.com/robinwassen/Fossilize/issues/21",
+  "worker_id": "/root/repair_3"
+}
