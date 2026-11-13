@@ -124,7 +124,7 @@ public:
 	static_assert(unsigned(ReplayTerminal::Count) <= 16, "Terminal masks must cover every status");
 	using Counts = std::array<uint64_t, unsigned(ReplayTerminal::Count)>;
 
-	// The selection owns the stable sorted hashes for the lifetime of this ledger.
+	// Retain only the selected hashes and their offsets after discovery.
 	void initialize(const ReplaySelectionReport &report)
 	{
 		selected_total_known = report.selected_total_known;
@@ -145,9 +145,13 @@ public:
 				items = {};
 				continue;
 			}
-			items.hashes = &report.stable_hashes[i];
-			items.begin = report.ranges[i].effective_begin;
-			items.states.reset(items.hashes->empty() ? nullptr : new Item[items.hashes->size()]);
+			const auto &hashes = report.stable_hashes[i];
+			items.begin = range.effective_begin;
+			items.count = hashes.size();
+			items.hashes.reset(items.count ? new Hash[items.count] : nullptr);
+			items.states.reset(items.count ? new Item[items.count] : nullptr);
+			if (items.count)
+				std::copy(hashes.begin(), hashes.end(), items.hashes.get());
 		}
 	}
 
@@ -172,7 +176,7 @@ public:
 			return nullptr;
 		const auto &items = selected[kind];
 		if (index < items.begin || index - items.begin >= items.size() ||
-		    (*items.hashes)[index - items.begin] != hash)
+		    items.hashes[index - items.begin] != hash)
 			return nullptr;
 		return &items.states[index - items.begin];
 	}
@@ -227,7 +231,7 @@ public:
 	}
 
 	size_t item_capacity() const { return selected[0].size() + selected[1].size() + selected[2].size(); }
-	size_t storage_bytes() const { return sizeof(*this) + sizeof(Item) * item_capacity(); }
+	size_t storage_bytes() const { return sizeof(*this) + (sizeof(Hash) + sizeof(Item)) * item_capacity(); }
 	size_t conflicted_items() const
 	{
 		size_t conflicts = 0;
@@ -264,10 +268,11 @@ public:
 private:
 	struct Selection
 	{
-		const std::vector<Hash> *hashes = nullptr;
+		std::unique_ptr<Hash[]> hashes;
 		std::unique_ptr<Item[]> states;
+		size_t count = 0;
 		unsigned begin = 0;
-		size_t size() const { return hashes ? hashes->size() : 0; }
+		size_t size() const { return count; }
 	};
 	Selection selected[3];
 	bool recovered_prefix = false, optional_scope = false;

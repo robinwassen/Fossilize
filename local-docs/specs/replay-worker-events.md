@@ -193,7 +193,13 @@ Each selected `(resource tag, hash)` has a stable absolute index within its tag
 and one final outcome. The sorted, deduplicated selection precedes device setup
 and replay-v1 hint application. Equal hashes in different tags remain separate.
 Extra dependency executions use the dependency role even when a different
-assignment selects the same key. Benchmark repetitions belong to the same key.
+assignment selects the same key. When a parent execution replaces an active
+assignment’s deferred selected item, that execution supplies the selected
+terminal outcome for its stable tag, hash and index. This applies across both
+scheduler memory contexts in the same scheduling group. Parent executions keep
+their borrowed legacy crash cursor, which cannot prove a skipped selected item.
+Already processed groups and replay-v1 hint skips keep their original evidence.
+Benchmark repetitions belong to the same key.
 An orderly success requires every requested creation iteration to succeed and
 the item to have no validation error. Zero iterations preserve the invocation's
 exit policy and receive their own no-execution outcome. A compatible replay-v1
@@ -232,10 +238,14 @@ only on an eligible recovery with a complete matching crash marker inside the
 active assignment. The reported contiguous boundary is derived from observed
 terminal items and stops at unknown or skipped entries. Native status,
 REPLAY_FAILED, COUNTS, FINAL, timeout records and sampled events retain their
-independent roles. Ordinary clean worker exit and FINAL require item coverage
-to certify successful work, and earlier valid item evidence remains available
-when native observation fails. Validation or driver failure and persisted cache
-state remain separate from execution evidence.
+independent roles. The reconciliation summary’s `failed_attempts` includes
+orderly controlled failure alongside abnormal attempts. An orderly controller
+attempt with insufficient item evidence has an unresolved disposition. For a
+standalone invocation the single attempt is counted after the coverage check.
+Ordinary clean worker exit and FINAL require item coverage to certify successful
+work. Earlier valid item evidence remains available when native observation fails.
+Validation or driver failure and persisted cache state remain separate from
+execution evidence.
 
 For each selected item the reconciliation allocates exactly 20 bytes of
 backing storage, including deduplication masks for the latest two observed
@@ -246,12 +256,17 @@ Older missing reports leave existing item evidence intact. Dropping detail
 beyond the two attempts sets a per-item omission flag and the summary counts
 affected items. Fixed worker state holds the current attempt and four prior
 attempt ranges/dispositions plus totals for attempts, failures and history
-omissions. The added variable backing storage is exactly
-`20 * selected + sizeof(ProcessProgress) * worker_slots` when the controller
-allocates the worker vector at its final size. The worker slot size includes the
-existing diagnostic, timeout, decoder and OS state and the added fixed-size
-attempt bookkeeping. The ledger itself holds three fixed tag descriptors.
-Stable hashes use the selection's existing vectors. The standalone ledger
-requires no worker-slot vector, and workers stream facts without accumulating
-per-item history. Diagnostic samples and the optional shared ring do not supply
-or evict authoritative item evidence.
+omissions. Controller reconciliation retains exactly
+`sizeof(ReplayReconciliation) + 28 * selected + sizeof(ProcessProgress) * worker_capacity`
+bytes of ledger and worker-slot storage, excluding allocator overhead. The
+28 bytes per item consist of the 20-byte state and its owned eight-byte hash.
+The hash and state arrays allocate exactly the selected count with no spare
+capacity. The worker vector is sized once for the worker slots and its capacity
+is included. The slot size includes the existing diagnostic, timeout, decoder
+and OS state and the fixed-size attempt bookkeeping. Three fixed tag descriptors
+hold the offsets and counts. The preparation report, including discovery,
+exclusions and their backing capacity, is destroyed before worker launch and
+so is also absent from the live inherited state of Linux forked workers. The
+standalone ledger requires no worker-slot vector. Workers stream facts without
+accumulating per-item history. Diagnostic samples and the optional shared ring
+do not supply or evict authoritative item evidence.

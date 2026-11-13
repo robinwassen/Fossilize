@@ -318,6 +318,8 @@ struct PipelineWorkItem
 {
 	Hash hash = 0;
 	ResourceTag tag = RESOURCE_COUNT;
+	// A parent can borrow its consumer's recovery cursor, even when it
+	// replaces a selected pipeline at a different stable index.
 	unsigned index = 0;
 	unsigned selected_index = ~0u;
 	unsigned memory_context_index = 0;
@@ -984,6 +986,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		Hash source_base = 0;
 		bool derivative_parent_candidate = false;
 		ReplayDependency::Detail blocker;
+		unsigned selected_index = ~0u;
 
 		static ResourceTag get_tag() { return RESOURCE_GRAPHICS_PIPELINE; }
 	};
@@ -997,6 +1000,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		Hash source_base = 0;
 		bool derivative_parent_candidate = false;
 		ReplayDependency::Detail blocker;
+		unsigned selected_index = ~0u;
 
 		static ResourceTag get_tag() { return RESOURCE_COMPUTE_PIPELINE; }
 	};
@@ -1010,6 +1014,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		Hash source_base = 0;
 		bool derivative_parent_candidate = false;
 		ReplayDependency::Detail blocker;
+		unsigned selected_index = ~0u;
 
 		static ResourceTag get_tag() { return RESOURCE_RAYTRACING_PIPELINE; }
 	};
@@ -1032,7 +1037,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		bool force_outside_range = false;
 		bool triggered_validation_error = false;
 		bool creation_succeeded = true;
-		bool selected_creation = false;
+		unsigned selected_index = ~0u;
+		bool selected_crash_cursor = false;
 		ReplayTerminal creation_status = ReplayTerminal::OtherFailed;
 		uint64_t failure_generation = 0, warning_generation = 0;
 		ResourceTag active_tag = RESOURCE_COUNT;
@@ -1818,7 +1824,9 @@ struct ThreadedReplayer : StateCreatorInterface
 		per_thread.active_hash = work_item.hash;
 		per_thread.triggered_validation_error = false;
 		per_thread.creation_succeeded = true;
-		per_thread.selected_creation = work_item.selected_index != ~0u;
+		per_thread.selected_index = work_item.selected_index;
+		per_thread.selected_crash_cursor = work_item.selected_index != ~0u &&
+		                                   work_item.memory_context_index != PARENT_PIPELINE_MEMORY_CONTEXT;
 		per_thread.creation_status = work_item.dependency_blocked ? ReplayTerminal::Dependency : ReplayTerminal::OtherFailed;
 		bool ret = !work_item.dependency_blocked;
 
@@ -3375,13 +3383,12 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_pipeline(Hash hash, const VkComputePipelineCreateInfo *create_info, VkPipeline *pipeline,
 						  unsigned index, unsigned memory_context_index, ReplayDependency::Detail blocker = {},
-						  bool derivative_parent_candidate = false)
+						  bool derivative_parent_candidate = false, unsigned selected_index = ~0u)
 	{
 		if (!create_info)
 		{
 			record_failure(ReplayFailure::Setup, RESOURCE_COMPUTE_PIPELINE, hash);
-			if (memory_context_index != PARENT_PIPELINE_MEMORY_CONTEXT)
-				record_terminal(RESOURCE_COMPUTE_PIPELINE, hash, index, ReplayTerminal::OtherFailed);
+			record_terminal(RESOURCE_COMPUTE_PIPELINE, hash, selected_index, ReplayTerminal::OtherFailed);
 			*pipeline = VK_NULL_HANDLE;
 			return false;
 		}
@@ -3390,8 +3397,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		work_item.tag = RESOURCE_COMPUTE_PIPELINE;
 		work_item.output.pipeline = pipeline;
 		work_item.index = index;
-		if (memory_context_index != PARENT_PIPELINE_MEMORY_CONTEXT)
-			work_item.selected_index = index;
+		work_item.selected_index = selected_index;
 		work_item.memory_context_index = memory_context_index;
 		work_item.blocker = blocker;
 		work_item.derivative_parent_candidate = derivative_parent_candidate;
@@ -3428,13 +3434,12 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_pipeline(Hash hash, const VkGraphicsPipelineCreateInfo *create_info, VkPipeline *pipeline,
 						  unsigned index, unsigned memory_context_index, ReplayDependency::Detail blocker = {},
-						  bool derivative_parent_candidate = false)
+						  bool derivative_parent_candidate = false, unsigned selected_index = ~0u)
 	{
 		if (!create_info)
 		{
 			record_failure(ReplayFailure::Setup, RESOURCE_GRAPHICS_PIPELINE, hash);
-			if (memory_context_index != PARENT_PIPELINE_MEMORY_CONTEXT)
-				record_terminal(RESOURCE_GRAPHICS_PIPELINE, hash, index, ReplayTerminal::OtherFailed);
+			record_terminal(RESOURCE_GRAPHICS_PIPELINE, hash, selected_index, ReplayTerminal::OtherFailed);
 			*pipeline = VK_NULL_HANDLE;
 			return false;
 		}
@@ -3458,8 +3463,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		work_item.tag = RESOURCE_GRAPHICS_PIPELINE;
 		work_item.output.pipeline = pipeline;
 		work_item.index = index;
-		if (memory_context_index != PARENT_PIPELINE_MEMORY_CONTEXT)
-			work_item.selected_index = index;
+		work_item.selected_index = selected_index;
 		work_item.memory_context_index = memory_context_index;
 		work_item.blocker = blocker;
 		work_item.derivative_parent_candidate = derivative_parent_candidate;
@@ -3486,13 +3490,12 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_pipeline(Hash hash, const VkRayTracingPipelineCreateInfoKHR *create_info, VkPipeline *pipeline,
 						  unsigned index, unsigned memory_context_index, ReplayDependency::Detail blocker = {},
-						  bool derivative_parent_candidate = false)
+						  bool derivative_parent_candidate = false, unsigned selected_index = ~0u)
 	{
 		if (!create_info)
 		{
 			record_failure(ReplayFailure::Setup, RESOURCE_RAYTRACING_PIPELINE, hash);
-			if (memory_context_index != PARENT_PIPELINE_MEMORY_CONTEXT)
-				record_terminal(RESOURCE_RAYTRACING_PIPELINE, hash, index, ReplayTerminal::OtherFailed);
+			record_terminal(RESOURCE_RAYTRACING_PIPELINE, hash, selected_index, ReplayTerminal::OtherFailed);
 			*pipeline = VK_NULL_HANDLE;
 			return false;
 		}
@@ -3513,8 +3516,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		work_item.tag = RESOURCE_RAYTRACING_PIPELINE;
 		work_item.output.pipeline = pipeline;
 		work_item.index = index;
-		if (memory_context_index != PARENT_PIPELINE_MEMORY_CONTEXT)
-			work_item.selected_index = index;
+		work_item.selected_index = selected_index;
 		work_item.memory_context_index = memory_context_index;
 		work_item.blocker = blocker;
 		work_item.derivative_parent_candidate = derivative_parent_candidate;
@@ -3875,6 +3877,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		};
 
 		auto parsed_parents = make_shared<unordered_set<Hash>>();
+		using DerivedContexts = std::array<std::shared_ptr<vector<DerivedInfo>>, NUM_PIPELINE_MEMORY_CONTEXTS>;
+		std::shared_ptr<DerivedContexts> derived_contexts;
 
 		for (unsigned hash_offset = 0; hash_offset < hashes.size(); hash_offset += NUM_PIPELINES_PER_CONTEXT, iteration++)
 		{
@@ -3883,6 +3887,9 @@ struct ThreadedReplayer : StateCreatorInterface
 
 			// State which is used between pipeline stages.
 			auto derived = make_shared<vector<DerivedInfo>>();
+			if (memory_index == 0)
+				derived_contexts = make_shared<DerivedContexts>();
+			(*derived_contexts)[memory_index] = derived;
 
 			// Submit pipelines to be parsed.
 			work.push_back({ get_order_index(PARSE_ENQUEUE_OFFSET),
@@ -4039,9 +4046,9 @@ struct ThreadedReplayer : StateCreatorInterface
 					                 if (item.info)
 					                 {
 										 item.blocker = resolve_shader_modules(item.info);
-						                 enqueue_pipeline(item.hash, item.info, item.pipeline,
-														  item.index + hash_offset + start_index, memory_index,
-														  item.blocker, item.derivative_parent_candidate);
+						                 unsigned index = item.index + hash_offset + start_index;
+						                 enqueue_pipeline(item.hash, item.info, item.pipeline, index, memory_index,
+						                                  item.blocker, item.derivative_parent_candidate, index);
 					                 }
 				                 }
 			                 }});
@@ -4057,7 +4064,7 @@ struct ThreadedReplayer : StateCreatorInterface
 			{
 				// This is a join-like operation. We need to wait for all parent pipelines and all shader modules to have completed.
 				work.push_back({get_order_index(ENQUEUE_SHADER_MODULE_SECONDARY_OFFSET),
-				                [this, &pipelines, &parents, parsed_parents, hash_offset, start_index]()
+				                [this, &pipelines, &parents, parsed_parents, derived_contexts, hash_offset, start_index]()
 				                {
 					                unordered_set<Hash> dependencies;
 					                while (true)
@@ -4129,6 +4136,22 @@ struct ThreadedReplayer : StateCreatorInterface
 							                dependencies.insert((Hash)library->pLibraries[i]);
 					                }
 
+					                // Each group starts by clearing parents. These lists contain only
+					                // active, parsed derived work that the ordinary pass will suppress.
+					                for (unsigned context = 0; context < derived_contexts->size(); context++)
+					                {
+						                const auto &items = (*derived_contexts)[context];
+						                if (!items)
+							                continue;
+						                unsigned base = start_index + hash_offset + context * NUM_PIPELINES_PER_CONTEXT;
+						                for (const auto &item : *items)
+						                {
+							                auto parent = parents.find(item.hash);
+							                if (parent != parents.end())
+								                parent->second.selected_index = base + item.index;
+						                }
+					                }
+
 					                // Compute the depth of every pipeline library using a DFS starting at the top level libraries.
 					                vector<DerivedInfo> ordered_parents; 
 					                for (const auto &parent : parents)
@@ -4154,13 +4177,6 @@ struct ThreadedReplayer : StateCreatorInterface
 						                if (!parent.info)
 							                continue;
 
-						                if (!derived_work_item_is_satisfied(parent, pipelines))
-							                {
-												resolve_pipelines(parent, pipelines);
-												record_dependency(DerivedInfo::get_tag(), parent.hash, parent.blocker);
-								                continue;
-							                }
-
 						                uint32_t depth = parents_depth.at(parent.hash);
 						                if (prev_depth != depth)
 						                {
@@ -4168,12 +4184,21 @@ struct ThreadedReplayer : StateCreatorInterface
 							                sync_worker_memory_context(PARENT_PIPELINE_MEMORY_CONTEXT);
 						                }
 
+						                if (!derived_work_item_is_satisfied(parent, pipelines))
+						                {
+							                resolve_pipelines(parent, pipelines);
+							                record_dependency(DerivedInfo::get_tag(), parent.hash, parent.blocker);
+							                record_terminal(DerivedInfo::get_tag(), parent.hash, parent.selected_index,
+							                                ReplayTerminal::Dependency);
+							                continue;
+						                }
+
 										parent.blocker = resolve_shader_modules(parent.info);
 						                resolve_pipelines(parent, pipelines);
 										enqueue_pipeline(parent.hash, parent.info, parent.pipeline,
 						                                 parent.index + hash_offset + start_index,
 														 PARENT_PIPELINE_MEMORY_CONTEXT, parent.blocker,
-														 parent.derivative_parent_candidate);
+														 parent.derivative_parent_candidate, parent.selected_index);
 					                }
 				                }});
 			}
@@ -4218,9 +4243,9 @@ struct ThreadedReplayer : StateCreatorInterface
 					                 {
 										 i->blocker = resolve_shader_modules(i->info);
 						                 resolve_pipelines(*i, pipelines);
-						                 enqueue_pipeline(i->hash, i->info, i->pipeline,
-														  i->index + hash_offset + start_index, memory_index,
-														  i->blocker, i->derivative_parent_candidate);
+						                 unsigned index = i->index + hash_offset + start_index;
+						                 enqueue_pipeline(i->hash, i->info, i->pipeline, index, memory_index,
+						                                  i->blocker, i->derivative_parent_candidate, index);
 					                 }
 				                 }
 
@@ -5605,7 +5630,6 @@ int main(int argc, char *argv[])
 		                         whitelist_path, whitelist_mask,
 		                         DatabaseInterface::invalid_metadata_handle());
 		const auto &result = replayer.reconciliation;
-		log_reconciliation(result, 1, 1, ret == EXIT_SUCCESS ? 0 : 1, 0);
 		if (ret == EXIT_SUCCESS)
 		{
 			auto ranges = result.assignment();
@@ -5613,6 +5637,7 @@ int main(int argc, char *argv[])
 				if (!result.coverage(i, ranges[i]).satisfied)
 					ret = EXIT_FAILURE;
 		}
+		log_reconciliation(result, 1, 1, ret == EXIT_SUCCESS ? 0 : 1, 0);
 #ifndef NO_ROBUST_REPLAYER
 		if (log_memory)
 			log_process_memory();

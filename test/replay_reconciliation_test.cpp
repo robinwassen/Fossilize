@@ -174,7 +174,7 @@ static void stress()
 		ledger.initialize(selection);
 		ReplayWarnings warnings;
 		const auto capacity = ledger.storage_bytes();
-		checks.require(ledger.item_capacity() == 105000 && capacity == sizeof(ReplayReconciliation) + 20 * 105000,
+		checks.require(ledger.item_capacity() == 105000 && capacity == sizeof(ReplayReconciliation) + 28 * 105000,
 		               "R21/stress-documented-capacity");
 		for (unsigned w = 0; w < 4; w++)
 		{

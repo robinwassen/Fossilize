@@ -956,7 +956,14 @@ or an extra library. The ordinary crash fixture expects nine completed prefix
 items, ten completed tail items, one skipped culprit and one uncreated deferred
 item. It disables the work watchdog and core dumps. A separate worker can
 execute a selected key as a dependency while the worker owning the selection
-reports a different final outcome.
+reports a different final outcome. Nested same-worker libraries exercise
+selected success, Vulkan failure and a blocked parent in the replacement path,
+including a parent in a different scheduler memory context. A hash selection
+from a generated archive with over 105,000 entries verifies the retained ledger
+and worker-slot capacity, observes release of large preparation allocations
+before the worker fork and checks a single actual creation. The shared old-caller
+compatibility check validates the three-item summary and retains the legacy
+checks for error, failed and unsupported diagnostics.
 
 The `replay-reconciliation-producer-*` and `replay-reconciliation-cli` cases cover
 standalone outcome sources, replay-v1 hints, incomplete input and accepted

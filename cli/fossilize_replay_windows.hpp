@@ -839,7 +839,7 @@ struct ControllerChildrenCleanup
 		{
 			child.outcome.refresh_coverage();
 			report.attempts += child.outcome.attempts;
-			report.failed_attempts += child.outcome.failed_attempts;
+			report.failed_attempts += child.outcome.failed_attempts + unsigned(child.outcome.controlled_failure);
 			report.omitted_attempts += child.outcome.omitted_attempts;
 		}
 #ifdef FOSSILIZE_REPLAY_TEST_OBSERVE
@@ -856,7 +856,6 @@ static int run_master_process(const VulkanDevice::Options &opts,
 							  const char *whitelist_path, uint32_t whitelist_mask,
 							  bool quiet_slave, const char *shm_name, const char *shm_mutex_name)
 {
-	ReplaySelectionReport selection;
 	ReplayReconciliation reconciliation;
 	ControllerReconciliationReport report{reconciliation};
 
@@ -928,8 +927,8 @@ static int run_master_process(const VulkanDevice::Options &opts,
 		bool prepared = db->prepare();
 		unsigned starts[] = {replayer_opts.start_graphics_index, replayer_opts.start_compute_index, replayer_opts.start_raytracing_index};
 		unsigned ends[] = {replayer_opts.end_graphics_index, replayer_opts.end_compute_index, replayer_opts.end_raytracing_index};
-		selection = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash,
-		                                replayer_opts.accept_recovered_prefix, nullptr, prepared);
+		const auto selection = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash,
+		                                          replayer_opts.accept_recovered_prefix, nullptr, prepared);
 		reconciliation.initialize(selection);
 		if (!selection.scope_satisfied)
 		{
@@ -1222,7 +1221,7 @@ static void crash_handler(ThreadedReplayer &replayer, ThreadedReplayer::PerThrea
 	    per_thread.current_compute_pipeline ||
 	    per_thread.current_raytracing_pipeline)
 	{
-		if (!per_thread.selected_creation && !write_all(crash_handle, "DEPENDENCY_CRASH\n"))
+		if (!per_thread.selected_crash_cursor && !write_all(crash_handle, "DEPENDENCY_CRASH\n"))
 			ExitProcess(2);
 
 		// Report where we stopped, so we can continue.
