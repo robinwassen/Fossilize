@@ -155,26 +155,7 @@
     }
   ],
   "closeout": {
-    "base_sha": "4c3f25e7c08da36585dca1f6f9a06e45cb4f1321",
-    "binding": "Candidate: `54c826db2417abe3b94396845a99928cdb3b2bf7`; base: `4c3f25e7c08da36585dca1f6f9a06e45cb4f1321`; plan: `1`; issue input: `03a87126cd5287bf71e63894b0713068e03a7c9f27abda738b1348bed4d1b462`.",
-    "candidate_sha": "54c826db2417abe3b94396845a99928cdb3b2bf7",
-    "closing_references": [
-      "Closes https://github.com/robinwassen/Fossilize/issues/21"
-    ],
-    "generation": 150,
-    "marker": "<!-- harness-ready:issue21-20261113:deb7b825da22103fb1a5433342f5a4c470b90540fc574674d83437237ede48f5 -->",
-    "plan_version": 1,
-    "reason": "checker rejected proposed completion",
-    "resume_operation": "repair",
-    "resume_phase": "implementing",
-    "stage": "cleanup",
-    "targets": [
-      {
-        "evidence": "All 320 CPU tests passed independently in each of three Linux configurations (Debug exceptions off, Release off and on). Five focused ASan+UBSan tests passed with the sanitizer alternate signal stack disabled. A compiled lost-creation-report mutation failed the intended assertion. The real recovery fixture preserved 19 observed creations, one skipped culprit, and one unknown deferred pipeline. Native Windows execution was waived.",
-        "issue": "https://github.com/robinwassen/Fossilize/issues/21",
-        "reference": "https://github.com/robinwassen/Fossilize/compare/master...codex/issue-21-replay-reconciliation"
-      }
-    ]
+    "stage": "pending"
   },
   "final_acceptance": null,
   "findings": [
@@ -3148,7 +3129,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "journal superseding issue evidence, then closeout-cleanup",
+  "next_action": "fresh implementation/checks after invalidating stale readiness",
   "operation": "repair",
   "original": [
     {
@@ -3491,6 +3472,31 @@
         "root": "https://github.com/robinwassen/Fossilize/issues/21"
       },
       "snapshot_reason": "validated plan deliverables and native relationships"
+    },
+    {
+      "invalidated_closeout": {
+        "base_sha": "4c3f25e7c08da36585dca1f6f9a06e45cb4f1321",
+        "binding": "Candidate: `54c826db2417abe3b94396845a99928cdb3b2bf7`; base: `4c3f25e7c08da36585dca1f6f9a06e45cb4f1321`; plan: `1`; issue input: `03a87126cd5287bf71e63894b0713068e03a7c9f27abda738b1348bed4d1b462`.",
+        "candidate_sha": "54c826db2417abe3b94396845a99928cdb3b2bf7",
+        "closing_references": [
+          "Closes https://github.com/robinwassen/Fossilize/issues/21"
+        ],
+        "generation": 150,
+        "marker": "<!-- harness-ready:issue21-20261113:deb7b825da22103fb1a5433342f5a4c470b90540fc574674d83437237ede48f5 -->",
+        "plan_version": 1,
+        "reason": "checker rejected proposed completion",
+        "resume_operation": "repair",
+        "resume_phase": "implementing",
+        "stage": "cleanup",
+        "targets": [
+          {
+            "evidence": "All 320 CPU tests passed independently in each of three Linux configurations (Debug exceptions off, Release off and on). Five focused ASan+UBSan tests passed with the sanitizer alternate signal stack disabled. A compiled lost-creation-report mutation failed the intended assertion. The real recovery fixture preserved 19 observed creations, one skipped culprit, and one unknown deferred pipeline. Native Windows execution was waived.",
+            "issue": "https://github.com/robinwassen/Fossilize/issues/21",
+            "reference": "https://github.com/robinwassen/Fossilize/compare/master...codex/issue-21-replay-reconciliation"
+          }
+        ]
+      },
+      "observation": "Read back managed superseding comment https://github.com/robinwassen/Fossilize/issues/21#issuecomment-6866953355 for the rejected final candidate. R21-F1-KNOWN-ABSENT-HASH remains open for bounded implementation repair."
     }
   ],
   "publishing": {
@@ -3508,7 +3514,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 180,
+  "revision": 181,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
