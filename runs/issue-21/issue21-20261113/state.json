@@ -5391,7 +5391,7 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "push implementation without force, then record remote head",
+  "next_action": "create once; always exact all-state lookup to reconcile response or failure",
   "operation": "publish",
   "original": [
     {
@@ -5763,6 +5763,10 @@
   ],
   "publishing": {
     "ci_policy": "local",
+    "creation_intent": {
+      "at": 1794613038.495061,
+      "event": "create-dispatched"
+    },
     "intent": {
       "base_sha": "4c3f25e7c08da36585dca1f6f9a06e45cb4f1321",
       "branch": "codex/issue-21-replay-reconciliation",
@@ -5782,10 +5786,13 @@
         "event": "lookup",
         "matches": [],
         "unambiguous": true
+      },
+      {
+        "event": "create-dispatched"
       }
     ],
     "remote_sha": "c685f49befe4d7f2382b94ec7cfc804a2bb51a5d",
-    "stage": "create"
+    "stage": "lookup"
   },
   "repository": {
     "base_sha": "4c3f25e7c08da36585dca1f6f9a06e45cb4f1321",
@@ -5798,7 +5805,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 327,
+  "revision": 328,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
