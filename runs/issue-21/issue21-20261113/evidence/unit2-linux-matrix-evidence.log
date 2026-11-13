@@ -1,0 +1,82 @@
+{"build": "/tmp/fossilize-h21-20261113/build/checker-debug-off", "commit": "54c826db2417abe3b94396845a99928cdb3b2bf7", "cwd": "/tmp/fossilize-h21-20261113/checker-build-source", "config": {"CMAKE_BUILD_TYPE": "Debug", "FOSSILIZE_ENABLE_EXCEPTIONS": "OFF", "FOSSILIZE_VULKAN_LAYER": "ON", "FOSSILIZE_REPLAYER_SPIRV_VAL": "ON", "FOSSILIZE_SANITIZE_ADDRESS": "OFF", "CMAKE_CXX_FLAGS": "", "CMAKE_EXE_LINKER_FLAGS": ""}}
+{"build": "/tmp/fossilize-h21-20261113/build/checker-release-off", "commit": "54c826db2417abe3b94396845a99928cdb3b2bf7", "cwd": "/tmp/fossilize-h21-20261113/checker-build-source", "config": {"CMAKE_BUILD_TYPE": "Release", "FOSSILIZE_ENABLE_EXCEPTIONS": "OFF", "FOSSILIZE_VULKAN_LAYER": "ON", "FOSSILIZE_REPLAYER_SPIRV_VAL": "ON", "FOSSILIZE_SANITIZE_ADDRESS": "OFF", "CMAKE_CXX_FLAGS": "", "CMAKE_EXE_LINKER_FLAGS": ""}}
+{"build": "/tmp/fossilize-h21-20261113/build/checker-release-on", "commit": "54c826db2417abe3b94396845a99928cdb3b2bf7", "cwd": "/tmp/fossilize-h21-20261113/checker-build-source", "config": {"CMAKE_BUILD_TYPE": "Release", "FOSSILIZE_ENABLE_EXCEPTIONS": "ON", "FOSSILIZE_VULKAN_LAYER": "ON", "FOSSILIZE_REPLAYER_SPIRV_VAL": "ON", "FOSSILIZE_SANITIZE_ADDRESS": "OFF", "CMAKE_CXX_FLAGS": "", "CMAKE_EXE_LINKER_FLAGS": ""}}
+{"build": "/tmp/fossilize-h21-20261113/build/checker-sanitized", "commit": "54c826db2417abe3b94396845a99928cdb3b2bf7", "cwd": "/tmp/fossilize-h21-20261113/checker-build-source", "config": {"CMAKE_BUILD_TYPE": "Debug", "FOSSILIZE_ENABLE_EXCEPTIONS": "OFF", "FOSSILIZE_VULKAN_LAYER": "OFF", "FOSSILIZE_REPLAYER_SPIRV_VAL": "ON", "FOSSILIZE_SANITIZE_ADDRESS": "ON", "CMAKE_CXX_FLAGS": "-fsanitize=undefined -fno-pie", "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=undefined -no-pie"}}
+debug-off: python3 /tmp/fossilize-h21-20261113/out/collect-ctest.py /tmp/fossilize-h21-20261113/out/../build/checker-debug-off /tmp/fossilize-h21-20261113/out/unit2-debug-off-ctest.json
+  1/320 Test  #54: diagnostic-compatibility-test ................................   Passed    0.01 sec
+  2/320 Test #259: replay-event-old-header-compatibility ........................   Passed    1.16 sec
+  5/320 Test #281: database-discovery-old-header-compatibility ..................   Passed    1.81 sec
+ 14/320 Test #306: replay-reconciliation-stress .................................   Passed    0.34 sec
+ 16/320 Test #295: replay-support-old-header-compatibility ......................   Passed    0.23 sec
+ 36/320 Test #320: replay-reconciliation-cli ....................................   Passed    0.13 sec
+ 43/320 Test #304: replay-reconciliation-properties .............................   Passed    0.11 sec
+ 52/320 Test #137: replay-controller-cli-compatibility ..........................   Passed    0.05 sec
+ 55/320 Test #173: replay-outcome-cli-compatibility .............................   Passed    0.04 sec
+ 64/320 Test #316: replay-reconciliation-producer-outcomes ......................   Passed    0.01 sec
+ 66/320 Test #307: replay-reconciliation-ordering-clean .........................   Passed    0.01 sec
+108/320 Test #308: replay-reconciliation-ordering-crash .........................   Passed    0.01 sec
+111/320 Test #309: replay-reconciliation-ordering-dependency-crash ..............   Passed    0.01 sec
+123/320 Test #310: replay-reconciliation-ordering-cross-worker ..................   Passed    0.01 sec
+177/320 Test #317: replay-reconciliation-producer-hints .........................   Passed    0.01 sec
+180/320 Test #319: replay-reconciliation-producer-discovery .....................   Passed    0.01 sec
+224/320 Test #318: replay-reconciliation-producer-read ..........................   Passed    0.01 sec
+281/320 Test #305: replay-reconciliation-codec ..................................   Passed    0.00 sec
+285/320 Test  #90: file-helper-legacy-compatibility .............................   Passed    0.00 sec
+316/320 Test #311: replay-reconciliation-ordering-same-worker ...................   Passed    0.01 sec
+317/320 Test #312: replay-reconciliation-ordering-same-worker-fail ..............   Passed    0.01 sec
+318/320 Test #313: replay-reconciliation-ordering-same-worker-blocked ...........   Passed    0.01 sec
+319/320 Test #314: replay-reconciliation-ordering-same-worker-contexts ..........   Passed    0.10 sec
+320/320 Test #315: replay-reconciliation-ordering-narrow-retention ..............   Passed    1.53 sec
+100% tests passed, 0 tests failed out of 320
+release-off: python3 /tmp/fossilize-h21-20261113/out/collect-ctest.py /tmp/fossilize-h21-20261113/out/../build/checker-release-off /tmp/fossilize-h21-20261113/out/unit2-release-off-ctest.json
+  4/320 Test #281: database-discovery-old-header-compatibility ..................   Passed    1.48 sec
+ 10/320 Test #295: replay-support-old-header-compatibility ......................   Passed    0.44 sec
+ 11/320 Test #315: replay-reconciliation-ordering-narrow-retention ..............   Passed    0.50 sec
+ 13/320 Test #259: replay-event-old-header-compatibility ........................   Passed    1.49 sec
+ 26/320 Test #320: replay-reconciliation-cli ....................................   Passed    0.12 sec
+ 35/320 Test #306: replay-reconciliation-stress .................................   Passed    0.04 sec
+ 45/320 Test #137: replay-controller-cli-compatibility ..........................   Passed    0.03 sec
+ 46/320 Test #173: replay-outcome-cli-compatibility .............................   Passed    0.03 sec
+ 65/320 Test #304: replay-reconciliation-properties .............................   Passed    0.02 sec
+ 77/320 Test #314: replay-reconciliation-ordering-same-worker-contexts ..........   Passed    0.03 sec
+ 82/320 Test #309: replay-reconciliation-ordering-dependency-crash ..............   Passed    0.01 sec
+105/320 Test #316: replay-reconciliation-producer-outcomes ......................   Passed    0.01 sec
+123/320 Test #308: replay-reconciliation-ordering-crash .........................   Passed    0.01 sec
+129/320 Test #317: replay-reconciliation-producer-hints .........................   Passed    0.00 sec
+137/320 Test #319: replay-reconciliation-producer-discovery .....................   Passed    0.01 sec
+148/320 Test  #54: diagnostic-compatibility-test ................................   Passed    0.01 sec
+169/320 Test #318: replay-reconciliation-producer-read ..........................   Passed    0.00 sec
+245/320 Test #311: replay-reconciliation-ordering-same-worker ...................   Passed    0.01 sec
+263/320 Test #313: replay-reconciliation-ordering-same-worker-blocked ...........   Passed    0.01 sec
+273/320 Test #312: replay-reconciliation-ordering-same-worker-fail ..............   Passed    0.01 sec
+277/320 Test #305: replay-reconciliation-codec ..................................   Passed    0.00 sec
+284/320 Test  #90: file-helper-legacy-compatibility .............................   Passed    0.00 sec
+319/320 Test #307: replay-reconciliation-ordering-clean .........................   Passed    0.00 sec
+320/320 Test #310: replay-reconciliation-ordering-cross-worker ..................   Passed    0.00 sec
+100% tests passed, 0 tests failed out of 320
+release-on: python3 /tmp/fossilize-h21-20261113/out/collect-ctest.py /tmp/fossilize-h21-20261113/out/../build/checker-release-on /tmp/fossilize-h21-20261113/out/unit2-release-on-ctest.json
+  1/320 Test  #54: diagnostic-compatibility-test ................................   Passed    0.01 sec
+  2/320 Test #259: replay-event-old-header-compatibility ........................   Passed    0.98 sec
+  5/320 Test #281: database-discovery-old-header-compatibility ..................   Passed    1.52 sec
+ 21/320 Test #295: replay-support-old-header-compatibility ......................   Passed    0.23 sec
+ 28/320 Test #320: replay-reconciliation-cli ....................................   Passed    0.13 sec
+ 43/320 Test #306: replay-reconciliation-stress .................................   Passed    0.04 sec
+ 49/320 Test #173: replay-outcome-cli-compatibility .............................   Passed    0.03 sec
+ 50/320 Test #137: replay-controller-cli-compatibility ..........................   Passed    0.03 sec
+ 70/320 Test #304: replay-reconciliation-properties .............................   Passed    0.03 sec
+125/320 Test #309: replay-reconciliation-ordering-dependency-crash ..............   Passed    0.01 sec
+128/320 Test #316: replay-reconciliation-producer-outcomes ......................   Passed    0.01 sec
+134/320 Test #308: replay-reconciliation-ordering-crash .........................   Passed    0.01 sec
+135/320 Test #307: replay-reconciliation-ordering-clean .........................   Passed    0.01 sec
+149/320 Test #310: replay-reconciliation-ordering-cross-worker ..................   Passed    0.01 sec
+168/320 Test #317: replay-reconciliation-producer-hints .........................   Passed    0.01 sec
+207/320 Test #318: replay-reconciliation-producer-read ..........................   Passed    0.00 sec
+211/320 Test #319: replay-reconciliation-producer-discovery .....................   Passed    0.01 sec
+280/320 Test  #90: file-helper-legacy-compatibility .............................   Passed    0.00 sec
+304/320 Test #305: replay-reconciliation-codec ..................................   Passed    0.00 sec
+315/320 Test #311: replay-reconciliation-ordering-same-worker ...................   Passed    0.01 sec
+316/320 Test #312: replay-reconciliation-ordering-same-worker-fail ..............   Passed    0.01 sec
+317/320 Test #313: replay-reconciliation-ordering-same-worker-blocked ...........   Passed    0.01 sec
+318/320 Test #314: replay-reconciliation-ordering-same-worker-contexts ..........   Passed    0.03 sec
+319/320 Test #315: replay-reconciliation-ordering-narrow-retention ..............   Passed    0.35 sec
+100% tests passed, 0 tests failed out of 320
