@@ -179,3 +179,79 @@ parser diagnostics. Detailed FeatureFilter calls suppress unsupported detector
 prose in favor of the report; bool-only callers preserve legacy diagnostics.
 Unrelated parse, validation, OOM and driver errors retain ordinary reporting;
 the bound applies to the support/dependency report, not all stderr.
+
+## Selected pipeline reconciliation (issue #21)
+
+The standalone CLI and the robust master reconcile the selected graphics,
+compute and ray tracing pipelines after all available evidence is collected,
+including controlled failure and scoped worker cleanup. The robust master used
+by `--progress` uses the same reconciliation. The compact summary uses the
+existing CLI logging path, so direct masters still report with `--quiet-slave`
+and the `--progress` wrapper retains its existing quiet logging behavior.
+
+Each selected `(resource tag, hash)` has a stable absolute index within its tag
+and one final outcome. The sorted, deduplicated selection precedes device setup
+and replay-v1 hint application. Equal hashes in different tags remain separate.
+Extra dependency executions use the dependency role even when a different
+assignment selects the same key. Benchmark repetitions belong to the same key.
+An orderly success requires every requested creation iteration to succeed and
+the item to have no validation error. Zero iterations preserve the invocation's
+exit policy and receive their own no-execution outcome. A compatible replay-v1
+hint is recorded when the selected skip actually occurs under the active
+device-mode and `pipelineCacheUUID` policy.
+
+The remaining terminal outcomes are unsupported, dependency-blocked, read
+failed, parse failed, create failed, validation failed, other failed, blacklisted,
+and a matching crash culprit skipped by recovery. An unreported item or a
+conflict in its latest observation attempt remains unknown. Distinct item
+counts sum to the displayed selected count. `selected_total=unknown` identifies
+a known subset with unknown missing extent. A narrowed index range over
+unaccepted incomplete discovery cannot establish membership when unread hashes
+could shift indices. An accepted recovered prefix and unavailable optional input
+have explicit scope labels and can coexist with incomplete underlying discovery.
+
+The additive `1 ITEM <worker> <attempt> <tag> <index> <hash> <status>` frame uses the
+existing FZ18 envelope. Numeric fields are decimal. The private status values
+are created=1, hint=2, unsupported=3, dependency-blocked=4, read failed=5, parse
+failed=6, create failed=7, validation failed=8, other failed=9, no execution=11
+and blacklisted=12. The controller alone can derive crash skipped=10. The fixed
+producer buffer is 128 bytes. The existing fixed 1024-byte decoder discards bad
+or truncated frames without allocating based on the length. The controller
+accepts these records after a matching HELLO and before FINAL, validates the
+source worker and attempt, original and active ranges, and exact tag, index and
+hash. Complete records survive a later crash, incomplete frame or failed
+native status. A healthy producer publishes each terminal outcome from an
+ordinary thread. Crash handlers keep their small direct writes and identify
+dependency-only crashes before writing legacy cursor records. Linux consumes
+the stream on a nonblocking read end and tags poll readiness with the attempt.
+Windows writes item messages without flushing each record and feeds message
+fragments into the same decoder.
+
+Recovery cursors only schedule work. The controller accepts a skipped culprit
+only on an eligible recovery with a complete matching crash marker inside the
+active assignment. The reported contiguous boundary is derived from observed
+terminal items and stops at unknown or skipped entries. Native status,
+REPLAY_FAILED, COUNTS, FINAL, timeout records and sampled events retain their
+independent roles. Ordinary clean worker exit and FINAL require item coverage
+to certify successful work, and earlier valid item evidence remains available
+when native observation fails. Validation or driver failure and persisted cache
+state remain separate from execution evidence.
+
+For each selected item the reconciliation allocates exactly 20 bytes of
+backing storage, including deduplication masks for the latest two observed
+attempts and one separately retained latest failure attempt and mask. The
+highest attempt with evidence determines the final status. Identical facts
+coalesce, and distinct statuses in that attempt yield an explicit conflict.
+Older missing reports leave existing item evidence intact. Dropping detail
+beyond the two attempts sets a per-item omission flag and the summary counts
+affected items. Fixed worker state holds the current attempt and four prior
+attempt ranges/dispositions plus totals for attempts, failures and history
+omissions. The added variable backing storage is exactly
+`20 * selected + sizeof(ProcessProgress) * worker_slots` when the controller
+allocates the worker vector at its final size. The worker slot size includes the
+existing diagnostic, timeout, decoder and OS state and the added fixed-size
+attempt bookkeeping. The ledger itself holds three fixed tag descriptors.
+Stable hashes use the selection's existing vectors. The standalone ledger
+requires no worker-slot vector, and workers stream facts without accumulating
+per-item history. Diagnostic samples and the optional shared ring do not supply
+or evict authoritative item evidence.

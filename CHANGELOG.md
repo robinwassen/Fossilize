@@ -5,6 +5,7 @@ and their status. Follow the [changelog writing guideline](local-docs/changelog-
 
 ## Unreleased
 
+- **[Observability]** Report each selected pipeline once across replay attempts so crashes and lost worker reports leave unproven work visible. ([#21](https://github.com/robinwassen/Fossilize/issues/21))
 - **[Observability]** Added discovery and selection reports, regular-file directory classification and guarded empty marker writes so replay applies explicit scope policies without claiming incomplete required input is complete. ([#20](https://github.com/robinwassen/Fossilize/issues/20))
 - **[Observability]** Group replay support and dependency warnings into bounded examples and cause counts so unsupported work remains explainable without flooding logs or blaming unattempted consumers on the driver. ([#19](https://github.com/robinwassen/Fossilize/issues/19))
 

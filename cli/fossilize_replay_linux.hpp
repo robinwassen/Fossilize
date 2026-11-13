@@ -145,13 +145,25 @@ struct ProcessProgress
 
 	char module_uuid_path[2 * VK_UUID_SIZE + 1] = {};
 	Fossilize::ReplayEvent::Stream stream;
+	void feed(const char *bytes, size_t size)
+	{
+		stream.feed_frames(outcome.events, bytes, size, [this](const char *line) { parse(line); },
+		                   [this](const char *payload, size_t length) { outcome.accept_frame(payload, length); });
+	}
+
+	ReplayAssignment current_assignment() const
+	{
+		return {{{start_graphics_index, end_graphics_index}, {start_compute_index, end_compute_index},
+		         {start_raytracing_index, end_raytracing_index}}};
+	}
+
 	std::string parse_buffer;
 	bool discard_record = false;
 };
 
 void ProcessProgress::parse_raw(const char *str)
 {
-	stream.feed(outcome.events, str, strlen(str), [this](const char *line) { parse(line); });
+	feed(str, strlen(str));
 	// Retained compatibility inspection fields; actual transport is length-aware.
 	parse_buffer.assign(stream.buffer.data(), stream.used); discard_record = stream.discard;
 }
@@ -184,8 +196,13 @@ void ProcessProgress::parse(const char *cmd)
 		outcome.failure_mask |= failure_mask;
 		outcome.orderly_drained = drained != 0;
 	}
-	else if (strncmp(cmd, "CRASH", 5) == 0)
+	else if (strcmp(cmd, "DEPENDENCY_CRASH") == 0)
 	{
+		outcome.dependency_crash = true;
+	}
+	else if (strcmp(cmd, "CRASH") == 0)
+	{
+		outcome.crash_reported = true;
 		begin_cleanup();
 	}
 	else if (strncmp(cmd, "GRAPHICS_VERR", 13) == 0 ||
@@ -206,11 +223,9 @@ void ProcessProgress::parse(const char *cmd)
 	}
 	else if (strncmp(cmd, "GRAPHICS", 8) == 0)
 	{
-		char *end = nullptr;
-		graphics_progress = int(strtol(cmd + 8, &end, 0));
-		if (end)
+		Hash graphics_pipeline;
+		if (replay_crash_cursor(cmd + 8, graphics_progress, graphics_pipeline))
 		{
-			Hash graphics_pipeline = strtoull(end, nullptr, 16);
 			outcome.culprit(0, graphics_progress, graphics_pipeline);
 			// graphics_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && graphics_progress > 0 && graphics_pipeline != 0)
@@ -225,11 +240,9 @@ void ProcessProgress::parse(const char *cmd)
 	}
 	else if (strncmp(cmd, "RAYTRACE", 8) == 0)
 	{
-		char *end = nullptr;
-		raytracing_progress = int(strtol(cmd + 8, &end, 0));
-		if (end)
+		Hash raytracing_pipeline;
+		if (replay_crash_cursor(cmd + 8, raytracing_progress, raytracing_pipeline))
 		{
-			Hash raytracing_pipeline = strtoull(end, nullptr, 16);
 			outcome.culprit(2, raytracing_progress, raytracing_pipeline);
 			// raytracing_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && raytracing_progress > 0 && raytracing_pipeline != 0)
@@ -244,11 +257,9 @@ void ProcessProgress::parse(const char *cmd)
 	}
 	else if (strncmp(cmd, "COMPUTE", 7) == 0)
 	{
-		char *end = nullptr;
-		compute_progress = int(strtol(cmd + 7, &end, 0));
-		if (end)
+		Hash compute_pipeline;
+		if (replay_crash_cursor(cmd + 7, compute_progress, compute_pipeline))
 		{
-			Hash compute_pipeline = strtoull(end, nullptr, 16);
 			outcome.culprit(1, compute_progress, compute_pipeline);
 			// compute_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && compute_progress > 0 && compute_pipeline)
@@ -304,12 +315,20 @@ bool ProcessProgress::process_once()
 	// to be able to read a newline here.
 	// This can happen if the child process started writing to the file,
 	// but received a SIGSTOP in the middle of writing for whatever reason.
-	char buffer[65];
-	ssize_t ret = ::read(crash_fd, buffer, sizeof(buffer) - 1);
-	if (ret <= 0)
+	char buffer[4096];
+	ssize_t ret;
+	do { ret = ::read(crash_fd, buffer, sizeof(buffer)); } while (ret < 0 && errno == EINTR);
+	if (ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
 		return false;
+	if (ret <= 0)
+	{
+		if (ret < 0)
+			outcome.events.lost = true;
+		close_and_remove_epoll_entry(crash_fd);
+		return false;
+	}
 
-	stream.feed(outcome.events, buffer, size_t(ret), [this](const char *line) { parse(line); });
+	feed(buffer, size_t(ret));
 	return true;
 }
 
@@ -600,9 +619,8 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 	raytracing_progress = -1;
 	stopped = false;
 
-	outcome.attempts++;
-	outcome.timeout.begin(outcome.attempts);
-	outcome.begin_events(index);
+	if (!outcome.begin_attempt(index, current_assignment()))
+		return false;
 	stream = {};
 	cleanup_deadline = {}; heartbeat_deadline = {};
 	expect_kill = false;
@@ -617,7 +635,17 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 	if (pipe(crash_fds) < 0)
 		return false;
 	if (pipe(input_fds) < 0)
+	{
+		close(crash_fds[0]);
+		close(crash_fds[1]);
 		return false;
+	}
+	if (fcntl(crash_fds[0], F_SETFL, O_NONBLOCK) < 0)
+	{
+		for (int fd : {crash_fds[0], crash_fds[1], input_fds[0], input_fds[1]})
+			close(fd);
+		return false;
+	}
 
 	pid_t parent_pid = getpid();
 	pid_t new_pid = fork(); // Fork off a child.
@@ -633,7 +661,7 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 		Global::active_processes++;
 
 		epoll_event event = {};
-		event.data.u64 = replay_event_token(index);
+		event.data.u64 = replay_event_token(index, outcome.attempts);
 		event.events = EPOLLIN | EPOLLRDHUP;
 		if (epoll_ctl(Global::epoll_fd, EPOLL_CTL_ADD, crash_fd, &event) < 0)
 		{
@@ -725,6 +753,8 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 
 		// Run the slave process.
 		auto copy_opts = Global::base_replayer_options;
+		// The master has already resolved any hash selection to per-tag ranges.
+		copy_opts.pipeline_hash = 0;
 		copy_opts.start_graphics_index = start_graphics_index;
 		copy_opts.end_graphics_index = end_graphics_index;
 		copy_opts.start_compute_index = start_compute_index;
@@ -762,8 +792,9 @@ bool ProcessProgress::start_child_process(vector<ProcessProgress> &siblings)
 		exit(run_slave_process(Global::device_options, copy_opts, Global::databases));
 #endif
 	}
-	else
-		return false;
+	for (int fd : {crash_fds[0], crash_fds[1], input_fds[0], input_fds[1]})
+		close(fd);
+	return false;
 }
 
 struct StallState
@@ -1042,6 +1073,7 @@ static void handle_control_commands(std::vector<ProcessProgress> &child_processe
 struct ControllerChildrenCleanup
 {
 	vector<ProcessProgress> &children;
+	ControllerReconciliationReport &report;
 	~ControllerChildrenCleanup()
 	{
 		for (auto &child : children)
@@ -1055,10 +1087,19 @@ struct ControllerChildrenCleanup
 				do { ret = waitpid(child.pid, &status, 0); } while (ret < 0 && errno == EINTR);
 				child.expect_kill = true;
 				if (ret == child.pid) child.process_shutdown(status);
+				else while (child.process_once()) {}
 			}
 			close_and_remove_epoll_entry(child.crash_fd);
 			close_and_remove_epoll_entry(child.timer_fd);
 			close_and_remove_epoll_entry(child.watchdog_timer_fd);
+		}
+		report.workers = unsigned(children.size());
+		for (auto &child : children)
+		{
+			child.outcome.refresh_coverage();
+			report.attempts += child.outcome.attempts;
+			report.failed_attempts += child.outcome.failed_attempts;
+			report.omitted_attempts += child.outcome.omitted_attempts;
 		}
 #ifdef FOSSILIZE_REPLAY_TEST_OBSERVE
 		FOSSILIZE_REPLAY_TEST_OBSERVE(children);
@@ -1140,6 +1181,10 @@ static int run_master_process(const VulkanDevice::Options &opts,
 							  const char *whitelist, uint32_t whitelist_mask,
 							  bool quiet_slave, int shmem_fd, int control_fd)
 {
+	ReplaySelectionReport selection;
+	ReplayReconciliation reconciliation;
+	ControllerReconciliationReport report{reconciliation};
+
 	Global::quiet_slave = quiet_slave;
 	Global::device_options = opts;
 	Global::base_replayer_options = replayer_opts;
@@ -1181,13 +1226,6 @@ static int run_master_process(const VulkanDevice::Options &opts,
 		close(shmem_fd);
 	}
 
-	size_t num_graphics_pipelines;
-	size_t num_compute_pipelines;
-	size_t num_raytracing_pipelines;
-
-	unsigned graphics_pipeline_offset = 0;
-	unsigned compute_pipeline_offset = 0;
-	unsigned raytracing_pipeline_offset = 0;
 
 	{
 		auto db = create_database(databases);
@@ -1199,7 +1237,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			if (!db->load_whitelist_database(whitelist))
 			{
 				LOGE("Failed to load whitelist database: %s.\n", whitelist);
-				exit(EXIT_FAILURE);
+				return EXIT_FAILURE;
 			}
 		}
 
@@ -1210,14 +1248,15 @@ static int run_master_process(const VulkanDevice::Options &opts,
 		bool prepared = db->prepare();
 		unsigned starts[] = {replayer_opts.start_graphics_index, replayer_opts.start_compute_index, replayer_opts.start_raytracing_index};
 		unsigned ends[] = {replayer_opts.end_graphics_index, replayer_opts.end_compute_index, replayer_opts.end_raytracing_index};
-		auto scope = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash,
-		                                 replayer_opts.accept_recovered_prefix, nullptr, prepared);
-		if (!scope.scope_satisfied)
+		selection = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash,
+		                                replayer_opts.accept_recovered_prefix, nullptr, prepared);
+		reconciliation.initialize(selection);
+		if (!selection.scope_satisfied)
 		{
 			LOGE("Required database preparation/discovery is incomplete.\n");
 			return EXIT_FAILURE;
 		}
-		if (scope.optional_inputs_excluded)
+		if (selection.optional_inputs_excluded)
 			return EXIT_SUCCESS;
 
 		// An explicitly requested missing item is not an empty successful
@@ -1244,18 +1283,11 @@ static int run_master_process(const VulkanDevice::Options &opts,
 		}
 
 
-		num_graphics_pipelines = scope.stable_hashes[0].size();
-		graphics_pipeline_offset = scope.ranges[0].effective_begin;
-		num_compute_pipelines = scope.stable_hashes[1].size();
-		compute_pipeline_offset = scope.ranges[1].effective_begin;
-		num_raytracing_pipelines = scope.stable_hashes[2].size();
-		raytracing_pipeline_offset = scope.ranges[2].effective_begin;
-
 		if (Global::control_block)
 		{
-			Global::control_block->static_total_count_graphics = num_graphics_pipelines;
-			Global::control_block->static_total_count_compute = num_compute_pipelines;
-			Global::control_block->static_total_count_raytracing = num_raytracing_pipelines;
+			Global::control_block->static_total_count_graphics = selection.stable_hashes[0].size();
+			Global::control_block->static_total_count_compute = selection.stable_hashes[1].size();
+			Global::control_block->static_total_count_raytracing = selection.stable_hashes[2].size();
 		}
 	}
 
@@ -1300,7 +1332,7 @@ static int run_master_process(const VulkanDevice::Options &opts,
 	}
 
 	vector<ProcessProgress> child_processes(processes);
-	ControllerChildrenCleanup cleanup{child_processes};
+	ControllerChildrenCleanup cleanup{child_processes, report};
 	Global::target_running_processes = processes;
 	Global::running_processes = processes;
 
@@ -1386,13 +1418,20 @@ static int run_master_process(const VulkanDevice::Options &opts,
 	for (unsigned i = 0; i < processes; i++)
 	{
 		auto &progress = child_processes[i];
-		progress.start_graphics_index = graphics_pipeline_offset + (i * unsigned(num_graphics_pipelines)) / processes;
-		progress.end_graphics_index = graphics_pipeline_offset + ((i + 1) * unsigned(num_graphics_pipelines)) / processes;
-		progress.start_compute_index = compute_pipeline_offset + (i * unsigned(num_compute_pipelines)) / processes;
-		progress.end_compute_index = compute_pipeline_offset + ((i + 1) * unsigned(num_compute_pipelines)) / processes;
-		progress.start_raytracing_index = raytracing_pipeline_offset + (i * unsigned(num_raytracing_pipelines)) / processes;
-		progress.end_raytracing_index = raytracing_pipeline_offset + ((i + 1) * unsigned(num_raytracing_pipelines)) / processes;
+		auto ranges = reconciliation.assignment(i, processes);
+		progress.start_graphics_index = ranges[0].begin;
+		progress.end_graphics_index = ranges[0].end;
+		progress.start_compute_index = ranges[1].begin;
+		progress.end_compute_index = ranges[1].end;
+		progress.start_raytracing_index = ranges[2].begin;
+		progress.end_raytracing_index = ranges[2].end;
 		progress.index = i;
+		progress.outcome.reconciliation = &reconciliation;
+		progress.outcome.assign(ranges[0].begin, ranges[0].end, ranges[1].begin, ranges[1].end,
+		                        ranges[2].begin, ranges[2].end);
+	}
+	for (auto &progress : child_processes)
+	{
 		if (!progress.start_child_process(child_processes))
 		{
 			LOGE("Failed to start child process.\n");
@@ -1455,8 +1494,8 @@ static int run_master_process(const VulkanDevice::Options &opts,
 					}
 					else if (proc.crash_fd >= 0)
 					{
-						if (!proc.process_once())
-							close_and_remove_epoll_entry(proc.crash_fd);
+						if (replay_event_attempt(e.data.u64) != proc.outcome.attempts) continue;
+						proc.process_once();
 						if (proc.supervision_failed) return EXIT_FAILURE;
 					}
 				}
@@ -1516,7 +1555,8 @@ static int run_master_process(const VulkanDevice::Options &opts,
 				if (event_id < 0x80000000u)
 				{
 					auto &proc = child_processes[event_id & 0x7fffffffu];
-					close_and_remove_epoll_entry(proc.crash_fd);
+					if (replay_event_attempt(e.data.u64) == proc.outcome.attempts)
+						proc.process_once();
 				}
 			}
 		}
@@ -1633,6 +1673,9 @@ static void crash_handler(ThreadedReplayer &replayer, ThreadedReplayer::PerThrea
 	    per_thread.current_compute_pipeline ||
 	    per_thread.current_raytracing_pipeline)
 	{
+		if (!per_thread.selected_creation && !write_all(crash_fd, "DEPENDENCY_CRASH\n"))
+			_exit(2);
+
 		// Report where we stopped, so we can continue.
 		sprintf(buffer, "GRAPHICS %d %" PRIx64 "\n", per_thread.current_graphics_index,
 		        per_thread.current_graphics_pipeline);
@@ -1822,6 +1865,7 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 	tmp_opts.on_validation_error_callback = validation_error_cb;
 	ThreadedReplayer replayer(opts, tmp_opts);
 	replayer.robustness = true;
+	replayer.report_locally = false;
 
 	// In slave mode, we can receive a list of shader module hashes we should ignore.
 	// This is to avoid trying to replay the same faulty shader modules again and again.
@@ -1839,6 +1883,7 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 	{
 		replayer.event_worker = event_worker; replayer.event_attempt = event_attempt;
 		replayer.event_writer = [](const char *frame) { return write_all(crash_fd, frame); };
+		replayer.terminal_writer = replayer.event_writer;
 		char payload[96], frame[ReplayEvent::MaxFrame];
 		snprintf(payload,sizeof(payload),"1 HELLO %llu %llu",(unsigned long long)event_worker,(unsigned long long)event_attempt);
 		if (!ReplayEvent::frame(frame,sizeof(frame),payload) || !replayer.event_writer(frame)) return EXIT_FAILURE;
