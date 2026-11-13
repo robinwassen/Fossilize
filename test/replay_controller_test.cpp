@@ -95,6 +95,9 @@ static ssize_t event_native_write(int, const void *, size_t);
 #endif
 #define FOSSILIZE_REPLAY_TEST_WORKER test_worker
 #define FOSSILIZE_REPLAY_TEST_OBSERVE observe
+namespace Fossilize { class ReplayReconciliation; }
+static void observe_reconciliation(const Fossilize::ReplayReconciliation &);
+#define FOSSILIZE_REPLAY_TEST_RECONCILIATION observe_reconciliation
 #ifndef FOSSILIZE_REPLAY_TEST_REAL_PROSE
 #define FOSSILIZE_REPLAY_TEST_PROSE_OFF
 #endif
@@ -205,9 +208,40 @@ static std::string marker_path(unsigned index, unsigned attempt)
 }
 static bool orderly() { return scenario.find("orderly-") == 0; }
 static bool mixed() { return scenario == "mixed-success-first" || scenario == "mixed-loss-first" || orderly(); }
-static void complete_items(std::ofstream &out, unsigned kind, unsigned begin, unsigned end)
+static ReplayReconciliation::Counts reconciled;
+static void observe_reconciliation(const ReplayReconciliation &result)
 {
-	for (unsigned i = begin; i < end; i++) out << "complete " << kind << ' ' << i << '\n';
+	reconciled = result.counts();
+	if (scenario == "recover")
+	{
+		auto *item = result.item(RESOURCE_GRAPHICS_PIPELINE, 2, 0x202);
+		checks.require(item && item->status() == ReplayTerminal::Created && item->attempt[0] == 2 &&
+		               item->failure_attempt == 1 && item->failure_mask == (1u << unsigned(ReplayTerminal::CreateFailed)),
+		               "R21/retry-keeps-earlier-item-failure");
+	}
+}
+
+static Hash fixture_hash(unsigned kind, unsigned index)
+{
+	return 0x200 + kind * 0x100 + index;
+}
+
+static void write_item(unsigned worker, unsigned attempt, unsigned kind, unsigned index, ReplayTerminal terminal)
+{
+	char frame[128];
+	ReplayTerminalFact fact{worker, attempt, replay_pipeline_tags[kind], index, fixture_hash(kind, index), terminal};
+	checks.require(replay_terminal_frame(frame, sizeof(frame), fact) != 0, "R21/synthetic-terminal-encoding");
+	event_write(frame);
+}
+
+static void complete_items(std::ofstream &out, unsigned worker, unsigned attempt,
+                           unsigned kind, unsigned begin, unsigned end)
+{
+	for (unsigned i = begin; i < end; i++)
+	{
+		write_item(worker, attempt, kind, i, ReplayTerminal::Created);
+		out << "complete " << kind << ' ' << i << '\n';
+	}
 	out.flush();
 }
 
@@ -244,6 +278,18 @@ template <typename Options> static int test_worker(unsigned index, unsigned atte
 		return result;
 	}
  SyntheticReport synthetic(index,attempt);
+ if (scenario == "no-items")
+     return 0;
+ if (scenario == "truncated-items")
+ {
+     synthetic.enabled = false;
+     write_item(index, attempt, 0, begin[0], ReplayTerminal::Created);
+     event_write("FZ18 15:1 ITEM 0 1");
+#ifndef _WIN32
+     kill(getpid(), SIGKILL);
+#endif
+     return 2;
+ }
  if(event_case())
  {
   synthetic.enabled=false;
@@ -292,6 +338,8 @@ template <typename Options> static int test_worker(unsigned index, unsigned atte
 #endif
 		return 78;
 	}
+	if (mixed() && index == 0)
+		write_item(index, attempt, 0, begin[0], ReplayTerminal::Created);
 	if (scenario == "lost" || scenario == "lost-progress" || (mixed() && index == 0) ||
 	    (scenario == "held-sibling" && index == 0) || (scenario == "loss-after-retry" && attempt > 1))
 		return 2;
@@ -308,6 +356,9 @@ template <typename Options> static int test_worker(unsigned index, unsigned atte
 	if (attempt == 1 && (scenario == "recover" || scenario == "loss-after-retry" ||
 	                    scenario == "partial" || scenario.find("skip-") == 0))
 	{
+		event_write("CRASH\n");
+		if (scenario == "recover")
+			write_item(index, attempt, 0, begin[0], ReplayTerminal::CreateFailed);
 		unsigned skip_kind = scenario.find("compute") != std::string::npos ? 1 :
 		                     scenario.find("raytracing") != std::string::npos ? 2 : 0;
 		for (unsigned i = 0; i < 3; i++)
@@ -318,13 +369,13 @@ template <typename Options> static int test_worker(unsigned index, unsigned atte
 			if (scenario == "loss-after-retry")
 			{
 				cursor = begin[i] + 1;
-				complete_items(out, i, begin[i], cursor);
+				complete_items(out, index, attempt, i, begin[i], cursor);
 			}
 			if (scenario.find("skip-") == 0)
 			{
 				bool final = scenario.find("final") != std::string::npos;
 				cursor = final ? end[i] : begin[i];
-				if (i == skip_kind) { cursor = final ? end[i] : begin[i] + 1; hash = 0xabc + i; }
+				if (i == skip_kind) { cursor = final ? end[i] : begin[i] + 1; hash = fixture_hash(i, cursor - 1); }
 			}
 #ifdef _WIN32
 			char message[128];
@@ -337,7 +388,7 @@ template <typename Options> static int test_worker(unsigned index, unsigned atte
 		}
 		return 2;
 	}
-	for (unsigned i = 0; i < 3; i++) complete_items(out, i, begin[i], end[i]);
+	for (unsigned i = 0; i < 3; i++) complete_items(out, index, attempt, i, begin[i], end[i]);
 	out << "success\n";
 	return 0;
 }
@@ -611,12 +662,32 @@ static void validate(int result, unsigned workers, bool zero)
 		}
 	const auto &lost = retained[0];
 	if (scenario == "lost" || scenario == "lost-progress" || mixed() || scenario == "partial" ||
-	    scenario == "held-sibling" || scenario == "signal" || scenario == "loss-after-retry" || scenario == "status-error")
+	    scenario == "held-sibling" || scenario == "signal" || scenario == "loss-after-retry")
 	{
 		checks.require(lost.unknown_remainder && !lost.complete && !lost.skipped(), "loss/unknown-remainder-and-identity");
 		checks.require(lost.failed_attempts > 0, "loss/failed-attempt-retained");
 	}
-	if (mixed()) checks.contains(read_marker(1, 1), "success", "mixed/clean-sibling-actually-completed");
+	if (scenario == "status-error")
+		checks.require(lost.native_error != 0 && !lost.complete && !lost.skipped() &&
+		               lost.unknown_remainder == (reconciled[unsigned(ReplayTerminal::Unknown)] > 0),
+		               "R21/native-status-error-is-independent-of-retained-item-coverage");
+	if (mixed())
+	{
+		checks.contains(read_marker(1, 1), "success", "mixed/clean-sibling-actually-completed");
+		checks.require(reconciled[unsigned(ReplayTerminal::Created)] == 7 &&
+		               reconciled[unsigned(ReplayTerminal::Unknown)] == 5,
+		               "R21/reordered-harvest-retains-independent-terminal-facts");
+	}
+	if (scenario == "no-items" || scenario == "truncated-items")
+	{
+		unsigned known = scenario == "truncated-items" ? 1u : 0u;
+		checks.require(reconciled[unsigned(ReplayTerminal::Created)] == known &&
+		               reconciled[unsigned(ReplayTerminal::Unknown)] == 12 - known &&
+		               lost.unknown_remainder && !lost.complete, "R21/missing-item-evidence-remains-unknown");
+		if (!known)
+			checks.require(lost.events.final && lost.events.successful() && lost.termination == 0,
+			               "R21/clean-final-and-native-zero-are-insufficient");
+	}
 	if (scenario == "recover")
 	{
 		checks.require(lost.attempts == 2 && lost.failed_attempts == 1, "recover/attempt-history");
@@ -638,7 +709,7 @@ static void validate(int result, unsigned workers, bool zero)
 	{
 		unsigned kind = scenario.find("compute") != std::string::npos ? 1 : scenario.find("raytracing") != std::string::npos ? 2 : 0;
 		bool final = scenario.find("final") != std::string::npos;
-		checks.require(lost.skipped() && !lost.complete && lost.assigned[kind].skipped_hash == 0xabc + kind &&
+		checks.require(lost.skipped() && !lost.complete && lost.assigned[kind].skipped_hash == fixture_hash(kind, final ? 5u : 2u) &&
 		               lost.assigned[kind].skipped_index == (final ? 5u : 2u), "skip/culprit-retained");
 		checks.require(lost.attempts == (final ? 1u : 2u), "skip/retry-or-final-boundary");
 		if (!final) checks.contains(read_marker(0, 2), "success", "skip/tail-completed-but-required-culprit-unresolved");
@@ -674,10 +745,10 @@ static int state_and_protocol()
 		checks.require(shared_control_block_read(&memory.control, message, sizeof(message)), "protocol/forwarded-ring-message");
 		checks.require(strcmp(message, value) == 0, "protocol/preserved-index-hash-message");
 	}
-	checks.require(process.outcome.assigned[0].skipped_index == 2 && process.outcome.assigned[0].skipped_hash == 0xabc &&
-	               process.outcome.assigned[1].skipped_index == 3 && process.outcome.assigned[1].skipped_hash == 0xdef &&
-	               process.outcome.assigned[2].skipped_index == 4 && process.outcome.assigned[2].skipped_hash == 0x123,
-	               "protocol/authoritative-culprits-independent-of-forwarding");
+	checks.require(process.outcome.markers[0].resume == 3 && process.outcome.markers[0].hash == 0xabc &&
+	               process.outcome.markers[1].resume == 4 && process.outcome.markers[1].hash == 0xdef &&
+	               process.outcome.markers[2].resume == 5 && process.outcome.markers[2].hash == 0x123,
+	               "protocol/legacy-markers-independent-of-forwarding");
  const char *uuid="000102030405060708090a0b0c0d0e0f";
  std::string uuid_record=std::string("MODULE_UUID ")+uuid;process.parse(uuid_record.c_str());checks.require(strcmp(process.module_uuid_path,uuid)==0,"M18/legacy-module-uuid-golden");
  process.parse("MODULE abc");char module_message[ControlBlockMessageSize]={};checks.require(Global::faulty_spirv_modules.count(0xabc)==1&&shared_control_block_read(&memory.control,module_message,sizeof(module_message))&&strcmp(module_message,"MODULE abc")==0,"M18/legacy-module-golden-and-ring-forward");
@@ -701,9 +772,21 @@ static int state_and_protocol()
 	checks.require(unknown.finish(true, true, 6, 0, 0) == WorkerDisposition::Unresolved &&
 	               unknown.unknown_remainder && !unknown.complete && unknown.native_error == 5,
 	               "state/failed-native-status-never-defaults-to-success");
+	ReplaySelectionReport selection;
+	selection.stable_hashes[0] = {0x202, 0x203, 0x204, 0x205};
+	selection.ranges[0].effective_begin = 2;
+	ReplayReconciliation reconciliation;
+	reconciliation.initialize(selection);
 	ReplayWorkerOutcome retry;
+	retry.reconciliation = &reconciliation;
 	retry.assign(2, 6, 0, 0, 0, 0);
+	retry.begin_attempt(0, retry.original);
 	checks.require(retry.finish(false, true, 2, -1, -1) == WorkerDisposition::Retry, "state/zero-work-kinds-need-no-marker");
+	retry.begin_attempt(0, retry.original);
+	retry.events.hello = retry.events.final = true;
+	for (unsigned i = 2; i < 6; i++)
+		reconciliation.accept(0, 2, retry.original, retry.active.ranges,
+		                      {0, 2, RESOURCE_GRAPHICS_PIPELINE, i, 0x200 + i, ReplayTerminal::Created});
 	checks.require(retry.finish(true, true, -1, -1, -1) == WorkerDisposition::Complete && retry.failed_attempts == 1,
 	               "state/failed-attempt-does-not-poison-complete-retry");
 	printf("Executed R13/state-and-current-protocol; failures=%d\n", checks.failures);

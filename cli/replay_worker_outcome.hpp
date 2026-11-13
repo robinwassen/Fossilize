@@ -23,8 +23,38 @@
 #pragma once
 
 #include <cstdint>
+#include <climits>
 #include "replay_timeout.hpp"
-#include "replay_event.hpp"
+#include "replay_reconciliation.hpp"
+
+// Legacy markers still carry scheduler cursors. Only complete, bounded
+// numeric fields can also supply candidate evidence for a skipped item.
+inline bool replay_crash_cursor(const char *fields, int &resume, Fossilize::Hash &hash)
+{
+	using Fossilize::ReplayEvent::Numbers;
+	Numbers nums{fields, fields + std::strlen(fields)};
+	uint64_t index;
+	if (!nums.next(index) || index > INT_MAX || nums.p == nums.end || *nums.p++ != ' ')
+		return false;
+	hash = 0;
+	unsigned digits = 0;
+	for (; nums.p != nums.end; nums.p++)
+	{
+		unsigned char c = *nums.p;
+		unsigned digit;
+		if (c >= '0' && c <= '9') digit = c - '0';
+		else if (c >= 'a' && c <= 'f') digit = c - 'a' + 10;
+		else if (c >= 'A' && c <= 'F') digit = c - 'A' + 10;
+		else return false;
+		if (++digits > 16)
+			return false;
+		hash = (hash << 4) | digit;
+	}
+	if (!digits)
+		return false;
+	resume = int(index);
+	return true;
+}
 
 // Internal controller state. This is deliberately separate from optional shared
 // progress and from the mutable range used to launch the next attempt.
@@ -64,40 +94,88 @@ struct ReplayWorkerOutcome
 	bool orderly_reported = false;
 	bool orderly_drained = false;
 
-	WorkerDisposition finish_controlled()
+	struct Attempt
 	{
-		timeout.current.recovery = ReplayRecovery::Failed;
-		controlled_failure = true;
-		complete = false;
-		unknown_remainder = !orderly_drained;
-		// Drained means processed, not a successfully replayed prefix.
-		// A bounded category summary cannot certify individual item success.
-		return WorkerDisposition::Failed;
-	}
+		Fossilize::ReplayAssignment ranges;
+		unsigned number = 0;
+		WorkerDisposition disposition = WorkerDisposition::Unresolved;
+	};
+	struct CrashMarker
+	{
+		unsigned resume = 0;
+		Fossilize::Hash hash = 0;
+		bool conflicting = false;
+	};
+	Fossilize::ReplayReconciliation *reconciliation = nullptr;
+	Fossilize::ReplayAssignment original;
+	Attempt active;
+	std::array<Attempt, 4> previous_attempts = {};
+	unsigned previous_attempt_count = 0, omitted_attempts = 0;
+	CrashMarker markers[3];
+	bool dependency_crash = false, crash_reported = false;
 
 	void assign(unsigned gb, unsigned ge, unsigned cb, unsigned ce, unsigned rb, unsigned re)
 	{
 		if (initialized)
 			return;
-		assigned[0].begin = assigned[0].confirmed_end = gb; assigned[0].end = ge;
-		assigned[1].begin = assigned[1].confirmed_end = cb; assigned[1].end = ce;
-		assigned[2].begin = assigned[2].confirmed_end = rb; assigned[2].end = re;
+		original = {{{gb, ge}, {cb, ce}, {rb, re}}};
+		for (unsigned i = 0; i < original.size(); i++)
+		{
+			assigned[i].begin = assigned[i].confirmed_end = original[i].begin;
+			assigned[i].end = original[i].end;
+		}
 		initialized = true;
+	}
+
+	bool begin_attempt(unsigned worker, const Fossilize::ReplayAssignment &ranges)
+	{
+		if (attempts == UINT32_MAX)
+			return false;
+		if (active.number)
+		{
+			if (previous_attempt_count < previous_attempts.size())
+				previous_attempts[previous_attempt_count++] = active;
+			else
+				omitted_attempts++;
+		}
+		attempts++;
+		active = {ranges, attempts, WorkerDisposition::Unresolved};
+		for (auto &marker : markers)
+			marker = {};
+		dependency_crash = false;
+		crash_reported = false;
+		timeout.begin(attempts);
+		begin_events(worker);
+		return true;
+	}
+
+	void accept_frame(const char *payload, size_t length)
+	{
+		if (length < 6 || std::memcmp(payload, "1 ITEM", 6))
+		{
+			events.accept(payload, length);
+			return;
+		}
+
+		Fossilize::ReplayTerminalFact fact;
+		if (!reconciliation || !events.hello || events.final ||
+		    !Fossilize::replay_decode_terminal(payload, length, fact) ||
+		    !reconciliation->accept(unsigned(events.worker), active.number, original, active.ranges, fact))
+			events.lost = true;
 	}
 
 	void culprit(unsigned kind, int resume, uint64_t hash)
 	{
-		auto &r = assigned[kind];
-		if (hash && resume > 0 && unsigned(resume - 1) >= r.begin && unsigned(resume - 1) < r.end)
+		if (!hash || resume <= 0)
+			return;
+		auto &marker = markers[kind];
+		if (!marker.hash)
 		{
-			// One culprit is sufficient to retain unsuccessful required work. Keep
-			// the first rather than letting a later attempt erase the evidence.
-			if (!r.skipped_hash)
-			{
-				r.skipped_hash = hash;
-				r.skipped_index = unsigned(resume - 1);
-			}
+			marker.resume = unsigned(resume);
+			marker.hash = hash;
 		}
+		else if (marker.hash != hash || marker.resume != unsigned(resume))
+			marker.conflicting = true;
 	}
 
 	bool skipped() const
@@ -105,44 +183,93 @@ struct ReplayWorkerOutcome
 		return assigned[0].skipped_hash || assigned[1].skipped_hash || assigned[2].skipped_hash;
 	}
 
+	WorkerDisposition finish_controlled()
+	{
+		timeout.current.recovery = ReplayRecovery::Failed;
+		controlled_failure = true;
+		complete = false;
+		update_coverage();
+		return active.disposition = WorkerDisposition::Failed;
+	}
+
 	WorkerDisposition finish(bool clean, bool can_retry, int graphics, int compute, int raytracing)
 	{
 		if (native_error) { clean = false; can_retry = false; }
-		if (clean && !events.successful()) { clean = false; can_retry = false; }
+		if (clean && (orderly_reported || !events.successful())) { clean = false; can_retry = false; }
 		if (clean)
 		{
-			for (auto &r : assigned) r.confirmed_end = r.skipped_hash ? r.skipped_index : r.end;
-			unknown_remainder = false;
-			complete = !skipped();
+			complete = update_coverage() && !skipped();
 			timeout.current.recovery = complete ? ReplayRecovery::Complete : ReplayRecovery::Unresolved;
-			return complete ? WorkerDisposition::Complete : WorkerDisposition::Unresolved;
+			return active.disposition = complete ? WorkerDisposition::Complete : WorkerDisposition::Unresolved;
 		}
+
 		failed_attempts++;
-		int progress[] = { graphics, compute, raytracing };
+		const int progress[] = { graphics, compute, raytracing };
 		bool remaining = false;
 		for (unsigned i = 0; i < 3; i++)
 		{
-			auto &r = assigned[i];
-			if (r.begin == r.end) continue;
-			if (progress[i] < 0 || unsigned(progress[i]) < r.confirmed_end || unsigned(progress[i]) > r.end)
+			auto range = active.number ? active.ranges[i] : original[i];
+			if (range.begin == range.end)
+				continue;
+			if (progress[i] < 0 || unsigned(progress[i]) < range.begin || unsigned(progress[i]) > range.end)
 				can_retry = false;
 			else
-			{
-				unsigned known = unsigned(progress[i]);
-				if (r.skipped_hash && known > r.skipped_index) known = r.skipped_index;
-				if (known > r.confirmed_end) r.confirmed_end = known;
-				remaining = remaining || unsigned(progress[i]) < r.end;
-			}
+				remaining |= unsigned(progress[i]) < range.end;
 		}
+		if (can_retry && crash_reported && !dependency_crash)
+			mark_skipped(progress);
 		if (can_retry && remaining)
 		{
 			timeout.current.recovery = ReplayRecovery::Retry;
-			return WorkerDisposition::Retry;
+			return active.disposition = WorkerDisposition::Retry;
 		}
-		// A failed final attempt cannot certify a successful assignment. Retain
-		// uncertainty even if a cursor happened to reach the end of its range.
-		unknown_remainder = !can_retry || remaining || !skipped();
+		update_coverage();
 		timeout.current.recovery = ReplayRecovery::Unresolved;
-		return WorkerDisposition::Unresolved;
+		return active.disposition = WorkerDisposition::Unresolved;
+	}
+
+	void refresh_coverage() { update_coverage(); }
+
+private:
+	void mark_skipped(const int *progress)
+	{
+		if (!reconciliation)
+			return;
+		for (unsigned i = 0; i < 3; i++)
+		{
+			const auto &marker = markers[i];
+			if (!marker.hash || marker.conflicting || marker.resume != unsigned(progress[i]))
+				continue;
+			Fossilize::ReplayTerminalFact fact{unsigned(events.worker), active.number, Fossilize::replay_pipeline_tags[i],
+			                                  marker.resume - 1, marker.hash, Fossilize::ReplayTerminal::CrashSkipped};
+			if (reconciliation->accept(fact.worker, fact.attempt, original, active.ranges, fact) &&
+			    !assigned[i].skipped_hash)
+			{
+				assigned[i].skipped_hash = fact.hash;
+				assigned[i].skipped_index = fact.index;
+			}
+		}
+	}
+
+	bool update_coverage()
+	{
+		bool satisfied = true;
+		unknown_remainder = false;
+		for (unsigned i = 0; i < 3; i++)
+		{
+			if (original[i].begin == original[i].end)
+				continue;
+			if (!reconciliation)
+			{
+				satisfied = false;
+				unknown_remainder = true;
+				continue;
+			}
+			auto coverage = reconciliation->coverage(i, original[i]);
+			assigned[i].confirmed_end = coverage.confirmed_end;
+			unknown_remainder |= coverage.unknown;
+			satisfied &= coverage.satisfied;
+		}
+		return satisfied;
 	}
 };
