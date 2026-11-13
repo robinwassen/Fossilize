@@ -968,7 +968,10 @@ checks for error, failed and unsupported diagnostics.
 The `replay-reconciliation-producer-*` and `replay-reconciliation-cli` cases cover
 standalone outcome sources, replay-v1 hints, incomplete input and accepted
 prefixes, overlapping archives, repeated iterations, and normal, quiet and
-progress controller modes. Run the full Linux CPU inventory in Debug/OFF,
+progress controller modes. The real normal and master CLI checks assert a
+known zero and unsuccessful exit for an absent requested hash, preserve
+accepted-prefix and optional-input scope labels, and require unknown totals
+for missing or invalid required discovery. Run the full Linux CPU inventory in Debug/OFF,
 Release/OFF and Release/ON, then run model and ordinary producer cases under
 ASan+UBSan. The mutation control removes the successful creation publication
 and requires the isolated exact-baseline ordering test to fail its selected

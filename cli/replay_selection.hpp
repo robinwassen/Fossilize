@@ -23,6 +23,7 @@ struct ReplaySelectionReport
 	DatabasePreparationReport preparation;
 	bool recovered_prefix_requested = false;
 	bool preparation_succeeded = false;
+	// Scope eligibility and enumeration are independent of a requested hash match.
 	bool scope_satisfied = false;
 	bool hash_found = true;
 	bool selected_total_known = false;
@@ -103,7 +104,7 @@ inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const un
 			report.optional_inputs_excluded &= !input.required;
 		}
 		report.optional_inputs_excluded &= has_source;
-		report.scope_satisfied &= report.optional_inputs_excluded && report.hash_found;
+		report.scope_satisfied &= report.optional_inputs_excluded;
 		if (report.optional_inputs_excluded)
 		{
 			report.optional_unavailable.clear();
@@ -181,7 +182,6 @@ inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const un
 				report.dispatch.push_back(key);
 		}
 	}
-	report.scope_satisfied &= report.hash_found;
 	report.selected_total_known = report.scope_satisfied;
 	return report;
 }

@@ -605,6 +605,7 @@ if(TARGET replay-reconciliation-ordering-test)
     file(MAKE_DIRECTORY "${work}")
     add_test(NAME replay-reconciliation-cli COMMAND ${CMAKE_COMMAND}
         -DGENERATOR=$<TARGET_FILE:replay-reconciliation-ordering-test> -DREPLAY=$<TARGET_FILE:fossilize-replay>
+        -DDISCOVERY_GENERATOR=$<TARGET_FILE:replay-selection-test>
         -P ${CMAKE_CURRENT_SOURCE_DIR}/replay_reconciliation_cli.cmake)
     set_tests_properties(replay-reconciliation-cli PROPERTIES TIMEOUT 90 WORKING_DIRECTORY "${work}")
 endif()

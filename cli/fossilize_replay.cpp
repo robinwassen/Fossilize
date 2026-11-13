@@ -276,6 +276,16 @@ static void heartbeat();
 #define heartbeat() ((void)0)
 #endif
 
+// Call only after the eligible scope has been enumerated.
+static bool validate_requested_pipeline_hash(const ReplaySelectionReport &selection)
+{
+	if (selection.hash_found)
+		return true;
+	LOGE("Specified pipeline hash %016" PRIx64 " not found in the selected replay scope.\n",
+	     selection.requested_hash);
+	return false;
+}
+
 static void log_reconciliation(const ReplayReconciliation &result, unsigned workers,
                                uint64_t attempts, uint64_t failed_attempts, uint64_t omitted_attempts)
 {
@@ -4679,7 +4689,7 @@ static int run_progress_process(const VulkanDevice::Options &device_opts,
 		unsigned starts[] = {opts.start_graphics_index, opts.start_compute_index, opts.start_raytracing_index};
 		unsigned ends[] = {opts.end_graphics_index, opts.end_compute_index, opts.end_raytracing_index};
 		auto scope = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash, replayer_opts.accept_recovered_prefix, nullptr, prepared);
-		if (!scope.scope_satisfied)
+		if (!scope.scope_satisfied || !validate_requested_pipeline_hash(scope))
 			return EXIT_FAILURE;
 		unsigned *out_starts[] = {&opts.start_graphics_index, &opts.start_compute_index, &opts.start_raytracing_index};
 		unsigned *out_ends[] = {&opts.end_graphics_index, &opts.end_compute_index, &opts.end_raytracing_index};
@@ -5028,6 +5038,8 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 		LOGE("Required database discovery is incomplete (full scope or explicitly accepted recovered prefix).\n");
 		return replayer.fail_run(ReplayFailure::Setup);
 	}
+	if (!validate_requested_pipeline_hash(replayer.selection_report))
+		return replayer.fail_run(ReplayFailure::Setup);
 	if (replayer.selection_report.optional_inputs_excluded)
 	{
 		replayer.work_drained = true;
@@ -5359,17 +5371,6 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 // The implementations are drastically different.
 // To simplify build system, just include implementation inline here.
 #ifndef NO_ROBUST_REPLAYER
-static bool validate_requested_pipeline_hash(DatabaseInterface &db, Hash hash)
-{
-	if (!hash) return true;
-	for (auto tag : {RESOURCE_GRAPHICS_PIPELINE, RESOURCE_COMPUTE_PIPELINE, RESOURCE_RAYTRACING_PIPELINE})
-	{
-		size_t size = 0;
-		if (db.read_entry(tag, hash, &size, nullptr, 0)) return true;
-	}
-	LOGE("Specified pipeline hash %016" PRIx64 " not found in database.\n", hash);
-	return false;
-}
 #ifdef __linux__
 #include "fossilize_replay_linux.hpp"
 #elif defined(_WIN32)

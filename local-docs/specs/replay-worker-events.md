@@ -215,6 +215,9 @@ a known subset with unknown missing extent. A narrowed index range over
 unaccepted incomplete discovery cannot establish membership when unread hashes
 could shift indices. An accepted recovered prefix and unavailable optional input
 have explicit scope labels and can coexist with incomplete underlying discovery.
+A requested hash absent from an eligible, enumerated scope produces a known
+zero selection and an unsuccessful exit. Incomplete required discovery leaves
+the total unknown and prevents a definitive missing-hash diagnostic.
 
 The additive `1 ITEM <worker> <attempt> <tag> <index> <hash> <status>` frame uses the
 existing FZ18 envelope. Numeric fields are decimal. The private status values

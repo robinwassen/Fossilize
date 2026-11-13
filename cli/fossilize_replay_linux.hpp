@@ -1255,13 +1255,10 @@ static int run_master_process(const VulkanDevice::Options &opts,
 			LOGE("Required database preparation/discovery is incomplete.\n");
 			return EXIT_FAILURE;
 		}
+		if (!validate_requested_pipeline_hash(selection))
+			return EXIT_FAILURE;
 		if (selection.optional_inputs_excluded)
 			return EXIT_SUCCESS;
-
-		// An explicitly requested missing item is not an empty successful
-		// assignment, even when enumeration would launch no children.
-		if (!validate_requested_pipeline_hash(*db, replayer_opts.pipeline_hash))
-			return EXIT_FAILURE;
 
 
 		// Export metadata so that we don't have to re-parse the archive over and over.
@@ -1936,8 +1933,9 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 		unsigned ends[] = {replayer_opts.end_graphics_index, replayer_opts.end_compute_index, replayer_opts.end_raytracing_index};
 		replayer.selection_report = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash,
 		                                              replayer_opts.accept_recovered_prefix, nullptr, prepared);
-		replayer.work_drained = replayer.selection_report.scope_satisfied;
-		ret = replayer.selection_report.scope_satisfied ? EXIT_SUCCESS : replayer.fail_run(ReplayFailure::Setup);
+		replayer.work_drained = replayer.selection_report.scope_satisfied &&
+		                        validate_requested_pipeline_hash(replayer.selection_report);
+		ret = replayer.work_drained ? EXIT_SUCCESS : replayer.fail_run(ReplayFailure::Setup);
 	}
 	else
 		ret = run_normal_process(replayer, databases, nullptr, 0, Global::metadata_fd);

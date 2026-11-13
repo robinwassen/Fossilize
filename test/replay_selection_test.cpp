@@ -56,7 +56,7 @@ static void ranges()
  }
  unsigned starts[]={0,0,0},ends[]={~0u,~0u,~0u};
  auto hit=select_replay_scope(*db,starts,ends,0x20,false),miss=select_replay_scope(*db,starts,ends,0x99,false);
- checks.require(hit.scope_satisfied&&hit.selected.size()==3&&hit.excluded.size()==6&&miss.selected.empty()&&!miss.hash_found&&!miss.scope_satisfied,"D20/hash-exact-and-missing");
+ checks.require(hit.scope_satisfied&&hit.selected.size()==3&&hit.excluded.size()==6&&miss.selected.empty()&&!miss.hash_found&&miss.scope_satisfied&&miss.selected_total_known,"D20/hash-exact-and-missing");
  const std::vector<DiscoveryKey> hits={{RESOURCE_GRAPHICS_PIPELINE,0x20},{RESOURCE_COMPUTE_PIPELINE,0x20},{RESOURCE_RAYTRACING_PIPELINE,0x20}};
  checks.require(hit.selected==hits&&hit.dispatch==hits&&hit.hash_found&&hit.requested_hash==0x20&&miss.requested_hash==0x99&&miss.dispatch.empty(),"D20/hash-exact-selected-dispatch-identity");
  std::set<ReplayExcludedTuple> hit_excluded,miss_excluded;

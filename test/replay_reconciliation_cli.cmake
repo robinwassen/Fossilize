@@ -40,3 +40,75 @@ foreach(mode normal master quiet-master progress hash-master)
     endif()
 endforeach()
 message(STATUS "Executed R21/CLI selection, composite duplicates, equal tag hashes, dependency, loops and quiet controls")
+
+execute_process(COMMAND "${DISCOVERY_GENERATOR}" --fixture empty empty.foz RESULT_VARIABLE fixture TIMEOUT 10)
+if(NOT fixture STREQUAL "0")
+    message(FATAL_ERROR "R21/CLI empty fixture failed with status ${fixture}")
+endif()
+configure_file(selection.foz prefix.foz COPYONLY)
+file(APPEND prefix.foz "slice")
+file(WRITE invalid.foz "invalid")
+file(REMOVE absent.foz)
+
+function(check_empty_selection mode case expected_status scope discovery total reason)
+    set(args --null-device --num-threads 1)
+    if(mode STREQUAL "master")
+        list(APPEND args --master-process)
+    endif()
+    execute_process(COMMAND "${REPLAY}" ${args} ${ARGN} RESULT_VARIABLE status ERROR_VARIABLE log TIMEOUT 15)
+    file(WRITE "${mode}-${case}.stderr" "${log}")
+    set(id "R21/CLI/${mode}/${case}")
+    if(NOT status STREQUAL expected_status)
+        message(FATAL_ERROR "${id} expected exit ${expected_status}, got ${status}\n${log}")
+    endif()
+
+    string(REGEX MATCHALL "Replay reconciliation [^\n]+" summaries "${log}")
+    list(LENGTH summaries count)
+    string(CONCAT expected_summary
+        "scope=${scope} discovery=${discovery} selected=0 selected_total=${total}"
+        " created=0 cache_hint=0 unsupported=0 dependency_blocked=0 read_failed=0 parse_failed=0"
+        " create_failed=0 validation_failed=0 other_failed=0 crash_skipped=0 no_execution=0"
+        " blacklisted=0 unknown=0 conflicts=0 workers=")
+    if(NOT count EQUAL 1 OR NOT summaries MATCHES "${expected_summary}")
+        message(FATAL_ERROR "${id} expected ${expected_summary} in one summary\n${log}")
+    endif()
+
+    set(hash_error "Specified pipeline hash 0000000000000fff not found in the selected replay scope")
+    set(discovery_error "Required database (preparation/)?discovery is incomplete")
+    if(reason STREQUAL "hash")
+        if(NOT log MATCHES "${hash_error}" OR log MATCHES "${discovery_error}")
+            message(FATAL_ERROR "${id} expected only the missing-hash diagnostic for selection\n${log}")
+        endif()
+    elseif(reason STREQUAL "discovery")
+        if(NOT log MATCHES "${discovery_error}" OR log MATCHES "${hash_error}")
+            message(FATAL_ERROR "${id} expected only the incomplete-discovery diagnostic for selection\n${log}")
+        endif()
+    elseif(log MATCHES "${hash_error}|${discovery_error}")
+        message(FATAL_ERROR "${id} emitted a selection error for a successful empty scope\n${log}")
+    endif()
+endfunction()
+
+foreach(mode normal master)
+    check_empty_selection(${mode} absent-hash 1 full complete known hash --pipeline-hash fff selection.foz)
+    check_empty_selection(${mode} empty 0 full complete known none empty.foz)
+    check_empty_selection(${mode} absent-hash-empty 1 full complete known hash --pipeline-hash fff empty.foz)
+    foreach(bad absent invalid)
+        check_empty_selection(${mode} required-${bad} 1 incomplete incomplete unknown discovery
+            --pipeline-hash fff selection.foz ${bad}.foz)
+        check_empty_selection(${mode} only-required-${bad} 1 incomplete incomplete unknown discovery
+            --pipeline-hash fff ${bad}.foz)
+        check_empty_selection(${mode} optional-${bad} 1 optional-inputs incomplete known hash
+            --optional-database-index 1 --pipeline-hash fff selection.foz ${bad}.foz)
+        check_empty_selection(${mode} only-optional-${bad} 0 optional-inputs incomplete known none
+            --optional-database-index 0 ${bad}.foz)
+        check_empty_selection(${mode} hash-only-optional-${bad} 1 optional-inputs incomplete known hash
+            --optional-database-index 0 --pipeline-hash fff ${bad}.foz)
+    endforeach()
+    check_empty_selection(${mode} rejected-prefix 1 incomplete incomplete unknown discovery
+        --pipeline-hash fff prefix.foz)
+    check_empty_selection(${mode} accepted-prefix 1 recovered-prefix incomplete known hash
+        --accept-recovered-prefix --pipeline-hash fff prefix.foz)
+    check_empty_selection(${mode} prefix-and-optional 1 "recovered-prefix[+]optional-inputs" incomplete known hash
+        --accept-recovered-prefix --optional-database-index 1 --pipeline-hash fff prefix.foz absent.foz)
+endforeach()
+message(STATUS "Executed R21/CLI missing hashes, empty inputs, invalid and unavailable sources, and composed scope policies")
