@@ -321,12 +321,18 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+      "attempt_id": "checker-unit-4",
       "evidence": "The documented #20 selection-exclusions sensitivity command used to match one source anchor at the exact base. Candidate3 deletes that anchor, so the shipped --mutate-source command exits 2 with mutation anchor count changed, leaves the isolated copy unmodified, and never reaches the sensitivity build or assertion. All four sibling mutation families still generate exact patches. See unit3-discovery-anchors.log.",
       "id": "R21-U3-DISCOVERY-CONTROL-ANCHOR",
       "location": "test/replay_discovery_controls.py:28\u201331; cli/replay_selection.hpp:185; local-docs/verification.md:884\u2013889",
       "next_action": "Retarget the existing selection-exclusions mutation to the unique current final selection statement, preserving the injected loss of exclusions, the healthy zero-exit control and the D20/range-exact-selection-and-exclusions oracle. Build the exact repaired-candidate mutant and run --check-mutation in Release/OFF.",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+        "evidence": "Independent unit4-d20-anchors generated all five shipped mutations with exact replacements, including one unique exclusion mutation. Exact Release/OFF unit4-d20-mutant used the shipped runner: healthy exit 0, ranges exit 1 with FAIL D20/range-exact-selection-and-exclusions. Verified sole generated insertion, build provenance and clean counterpart passing all four CTest selection cases.",
+        "finding_id": "R21-U3-DISCOVERY-CONTROL-ANCHOR"
+      },
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -5078,7 +5084,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 279,
+  "revision": 280,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
