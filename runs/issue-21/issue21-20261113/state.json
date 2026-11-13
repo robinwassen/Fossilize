@@ -2599,6 +2599,25 @@
           "timeout": 600.0,
           "wait_seconds": 0.0
         }
+      },
+      {
+        "child_command": [
+          "env",
+          "ASAN_OPTIONS=halt_on_error=1:use_sigaltstack=0",
+          "UBSAN_OPTIONS=halt_on_error=1",
+          "python3",
+          "/tmp/fossilize-h21-20261113/out/collect-ctest.py",
+          "/tmp/fossilize-h21-20261113/out/../build/checker-sanitized",
+          "/tmp/fossilize-h21-20261113/out/unit2-sanitized-ctest.json",
+          "--filter",
+          "^replay-reconciliation-(properties|codec|stress|producer-outcomes|ordering-clean)$"
+        ],
+        "command": "env ASAN_OPTIONS=halt_on_error=1:use_sigaltstack=0 UBSAN_OPTIONS=halt_on_error=1 python3 /tmp/fossilize-h21-20261113/out/collect-ctest.py /tmp/fossilize-h21-20261113/out/../build/checker-sanitized /tmp/fossilize-h21-20261113/out/unit2-sanitized-ctest.json --filter '^replay-reconciliation-(properties|codec|stress|producer-outcomes|ordering-clean)$'",
+        "cwd": "/tmp/fossilize-h21-20261113/checker-unit-2",
+        "eligible_deadline": 1794620550.0211146,
+        "intent_id": "unit2-sanitized-ctest",
+        "started": 1794609692.752629,
+        "timeout": 600
       }
     ],
     "deadline": 1794620550.0211146,
@@ -2971,7 +2990,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 146,
+  "revision": 147,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
