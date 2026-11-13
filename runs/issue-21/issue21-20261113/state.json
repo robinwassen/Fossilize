@@ -255,12 +255,18 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+      "attempt_id": "checker-unit-3",
       "evidence": "Exact Release/OFF standalone and master each exit 1 for absent requested hash fff in the complete synthetic selection.foz, but emit scope=incomplete discovery=complete selected=0 selected_total=unknown. The same summary says discovery is incomplete even with complete preparation. Unknown extent is correct when a required archive is absent; both modes then report discovery=incomplete. A complete required archive with an explicitly unavailable optional source also has an exact zero in the eligible scope, yet both modes report scope=incomplete selected_total=unknown instead of retaining the optional-input scope. An optional-only unavailable archive without a hash request correctly stays successful with scope=optional-inputs discovery=incomplete selected_total=known. See final1-missing-hash.log and final1-scope-contrast.log. The source folds hash_found into scope_satisfied before setting selected_total_known; scope() then derives the incomplete label from that flag.",
       "id": "R21-F1-KNOWN-ABSENT-HASH",
       "location": "cli/replay_selection.hpp:108,124,184; cli/replay_reconciliation.hpp:130,256; cli/fossilize_replay.cpp:5025; cli/fossilize_replay_linux.hpp:1255; cli/fossilize_replay_windows.hpp:934",
       "next_action": "Distinguish a rejected explicit hash request from unresolved input discovery. Keep nonzero exit when an explicit hash is absent, report an exact zero for a completely enumerated eligible scope, and preserve accepted-prefix/optional-input labels and unknown required-input extent. Add Release-active actual CLI cases in normal and robust master modes for a complete archive with an absent requested hash, required discovery that cannot determine absence, and eligible optional-input exclusion. Keep no-hash known-empty and optional-only behavior.",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+        "evidence": "Independent exact Release/OFF replay-reconciliation-cli (unit3-focused-release) passed 32 real CLI combinations across normal/master. A hash absent from complete, accepted-prefix and optional eligible scopes exits 1 with exact known zero and the matching scope label. Missing/invalid required inputs and rejected prefix retain unknown extent and discovery diagnostics. Empty and optional-only no-hash scopes still succeed.",
+        "finding_id": "R21-F1-KNOWN-ABSENT-HASH"
+      },
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "issue_snapshot": {
@@ -4057,7 +4063,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 215,
+  "revision": 216,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
