@@ -149,12 +149,18 @@
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+      "attempt_id": "checker-unit-2",
       "evidence": "One worker selected all 23 graphics pipelines in a nested GPL FOZ. The only Vulkan call for selected parent hash 0x300 at index 21 ran through PARENT_PIPELINE_MEMORY_CONTEXT and returned success, but the item stayed Unknown (created=22, unknown=1, aggregate exit 1). When the same sole call returns VK_ERROR_DEVICE_LOST, consumer 0x200 is Dependency, parent stays Unknown, foundation 0x301 is Created, aggregate created=21 dependency_blocked=1 create_failed=0 unknown=1. The parent-context path strips selected_index and the ordinary deferred loop suppresses the second creation. The independent source and recipe are /tmp/fossilize-h21-20261113/out/unit1-parent/probe-nested.cpp and probe-nested.sh; output is unit1-parent-nested.log. Current ordinary out-of-assignment, cross-worker and simple same-worker library controls pass.",
       "id": "R21-U1-SELECTED-PARENT",
       "location": "cli/fossilize_replay.cpp:3752\u20133782, 4152\u20134176, 4186\u20134223 and 3460\u20133462 (analogous creation overloads 3394/3517)",
       "next_action": "Carry the actual active-assignment tag/hash/index when dependency scheduling substitutes for the selected item, including its blocked/unsupported and controlled Vulkan failure outcomes. Keep borrowed retry cursors independent of selected proof. Commit a Release-active nested same-worker production fixture requiring one actual parent call, clean selected=23 created=23 unknown=0 exit 0 and forced-create failure selected=23 created=21 create_failed=1 dependency_blocked=1 unknown=0 exit 1. Retain the out-of-range and cross-worker controls. Distinguish reuse across contexts from extra execution and keep any already authoritative hint/result from being replaced by a dependency-only repeat.",
+      "recheck": {
+        "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+        "evidence": "Independent exact Release/OFF unit2-repair-proofs: nested clean 23/23, selected parent create failure and dependency-blocked controls, 1047/1047 cross-context, explicit absolute identity versus borrowed cursor, and cross-worker extra parent cannot erase its selected failure.",
+        "finding_id": "R21-U1-SELECTED-PARENT"
+      },
       "route": "implementation",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
@@ -2880,7 +2886,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 139,
+  "revision": 140,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
