@@ -65,13 +65,15 @@
       "observations": [],
       "operation": "work_unit",
       "plan_version": 1,
+      "rejection_signature": "24d33520272ee6e614d3c1840c40ab7294713a28db595c7f068562b1149adbfb",
+      "report": "runs/issue-21/issue21-20261113/reports/checker-unit-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "checker",
       "started": 1794607800.295757,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/21",
       "worker_id": "/root/checker_unit_1"
     }
@@ -80,7 +82,35 @@
     "stage": "pending"
   },
   "final_acceptance": null,
-  "findings": [],
+  "findings": [
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+      "evidence": "All three independent full CPU CTest runs fail the same three old-caller checks (312/315 each). Existing CMake matcher `ERROR|failed|Failed|unsupported` interprets the new informational `unsupported=0`, `create_failed=0` and `failed_attempts=0` summary as actual failure despite CLI exit 0 and 3/3 creations. See unit1-debug-off-ctest.log, unit1-release-off-ctest.log and unit1-release-on-ctest.log.",
+      "id": "R21-U1-COMPATIBILITY",
+      "location": "test/diagnostic_compatibility.cmake:18; cli/fossilize_replay.cpp:280\u2013297",
+      "next_action": "Preserve legacy success/no-error checks and make them distinguish a legitimate zero-valued summary from real diagnostic/failure values, or preserve the previous success log compatibility. Run all three complete CPU configurations.",
+      "route": "implementation",
+      "status": "open"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+      "evidence": "One worker selected all 23 graphics pipelines in a nested GPL FOZ. The only Vulkan call for selected parent hash 0x300 at index 21 ran through PARENT_PIPELINE_MEMORY_CONTEXT and returned success, but the item stayed Unknown (created=22, unknown=1, aggregate exit 1). When the same sole call returns VK_ERROR_DEVICE_LOST, consumer 0x200 is Dependency, parent stays Unknown, foundation 0x301 is Created, aggregate created=21 dependency_blocked=1 create_failed=0 unknown=1. The parent-context path strips selected_index and the ordinary deferred loop suppresses the second creation. The independent source and recipe are /tmp/fossilize-h21-20261113/out/unit1-parent/probe-nested.cpp and probe-nested.sh; output is unit1-parent-nested.log. Current ordinary out-of-assignment, cross-worker and simple same-worker library controls pass.",
+      "id": "R21-U1-SELECTED-PARENT",
+      "location": "cli/fossilize_replay.cpp:3752\u20133782, 4152\u20134176, 4186\u20134223 and 3460\u20133462 (analogous creation overloads 3394/3517)",
+      "next_action": "Carry the actual active-assignment tag/hash/index when dependency scheduling substitutes for the selected item, including its blocked/unsupported and controlled Vulkan failure outcomes. Keep borrowed retry cursors independent of selected proof. Commit a Release-active nested same-worker production fixture requiring one actual parent call, clean selected=23 created=23 unknown=0 exit 0 and forced-create failure selected=23 created=21 create_failed=1 dependency_blocked=1 unknown=0 exit 1. Retain the out-of-range and cross-worker controls. Distinguish reuse across contexts from extra execution and keep any already authoritative hint/result from being replaced by a dependency-only repeat.",
+      "route": "implementation",
+      "status": "open"
+    },
+    {
+      "affected_task": "https://github.com/robinwassen/Fossilize/issues/21",
+      "evidence": "The master now keeps the complete ReplaySelectionReport until shutdown because the ledger borrows its three stable_hash vectors. Previously the scope report was destroyed in the preparation block before worker creation. The new persistent scope retains preparation.discovered/selected/excluded, replay selected/dispatch/excluded and input metadata, including a range/hash exclusion per excluded item. A one-item --pipeline-hash selection from a large archive retains O(total discovered) storage across worker execution, in addition to the documented 20 bytes per selected item and fixed worker slots. The existing 105,000-item stress checks storage_bytes(), which excludes these backing vectors and cannot detect the lifetime regression.",
+      "id": "R21-U1-RETENTION",
+      "location": "cli/fossilize_replay_linux.hpp:1184\u20131186, 1251\u20131254; cli/fossilize_replay_windows.hpp:859\u2013861, 931\u2013934; cli/replay_reconciliation.hpp:128\u2013154; local-docs/specs/replay-worker-events.md:245\u2013260",
+      "next_action": "Keep only stable selected hashes, offsets and compact policy metadata alive in both masters. Release the rest of the discovery and exclusion report at the existing block boundary. Assert a narrow selection from a large generated universe retains only O(selected + worker slots) after preparation and update the documented bound, including retained hash backing and capacity.",
+      "route": "implementation",
+      "status": "open"
+    }
+  ],
   "issue_snapshot": {
     "deliverables": [
       "https://github.com/robinwassen/Fossilize/issues/21"
@@ -1750,8 +1780,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "work_unit",
+  "next_action": "Dispatch a bounded repair for the three open implementation findings and independently rerun the exact repaired-candidate matrix, sanitized controls and production counterexamples.",
+  "operation": "repair",
   "original": [
     {
       "id": "AC1",
@@ -1763,7 +1793,7 @@
     "output_directory": "/tmp/fossilize-h21-20261113/out",
     "source_worktree": "/tmp/fossilize-h21-20261113/source"
   },
-  "phase": "checking",
+  "phase": "implementing",
   "plan": {
     "cases": [
       {
@@ -2110,7 +2140,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 93,
+  "revision": 94,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
@@ -2120,7 +2150,7 @@
   },
   "run_id": "issue21-20261113",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-21",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/21",
   "verification": [],
