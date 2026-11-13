@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/issue-21/issue21-20261113/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1794605105.2319233,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/21",
       "worker_id": "/root/planner"
     }
@@ -299,8 +300,8 @@
     "replan_count": 0,
     "replans": 1
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -312,9 +313,338 @@
     "output_directory": "/tmp/fossilize-h21-20261113/out",
     "source_worktree": "/tmp/fossilize-h21-20261113/source"
   },
-  "phase": "planning",
-  "plan": null,
-  "provenance": [],
+  "phase": "implementing",
+  "plan": {
+    "cases": [
+      {
+        "assertions": [
+          "Create a known selected set including equal hashes across different tags, nonzero indices and multiple disjoint worker ranges. For all permutations of a small complete history and duplicate subsets, compare every final status and aggregate to a literal independent oracle; counts sum exactly to selected set. A stale failure arriving after newer success retains failed-attempt history without replacing success; duplicated item/attempt facts and conflicting same-attempt observations are deterministic and cannot inflate counts.",
+          "Exercise malformed/truncated/overlong input, off-by-one ranges, wrong tag/hash/index, mismatched worker or stale/invalid attempt, empty partitions, and bad transport after independently valid terminal facts. Preserve only sound facts, explicit unknowns, and bounded decoder recovery."
+        ],
+        "id": "R21-reconciliation-properties",
+        "location": "New replay-reconciliation CTest model cases using the production merge and decoder."
+      },
+      {
+        "assertions": [
+          "Failed first attempt followed by a complete retry is one successful item per selected key, with attempt IDs and the prior failure retained; assert the actual retry ranges and status. Kill or truncate the worker after some provable item records and exercise a native-zero/normal-final but absent required item report; unresolved keys remain unknown, and independent reports from a successful sibling are preserved under reordered harvest. Check no report plus nonempty assignment, a true empty workload, and setup failure before creation.",
+          "Assert synthetic negative controls cannot pass by using only a fabricated clean exit, old progress/cursor, sampled diagnostics or overlapping failure counts. Existing child cleanup and exit-status regressions remain active."
+        ],
+        "id": "R21-retry-and-evidence-loss",
+        "location": "Linux CTest cases using actual ProcessProgress supervision and worker IPC, plus any portable model cases needed."
+      },
+      {
+        "assertions": [
+          "Create 21 selected graphics items at sorted absolute indices plus one outside-range GPL library. Index 0 is deferred and its shader is distinct from the ordinary shader. With watchdog trigger disabled and core files disabled, force one SIGSEGV during ordinary item index 10 via a deterministic hook. Assert actual create calls by identity, two attempt/range records including retry [11,21), 9 proven prefix creations at indices 1..9, selected culprit index 10 explicitly skipped, 10 proven tail successes, deferred selected index 0 unknown, dependency outside the selected ledger, and nonzero aggregate. A clean paired control creates all 21 selected plus the extra library and reports complete.",
+          "Include a dependency crash or equivalent production-path assertion that a parent using a borrowed cursor cannot be attributed to a different selected hash at that cursor. Confirm actual report, not a separate toy scheduler; disable watchdog influence by explicit test settings rather than timing."
+        ],
+        "id": "R21-production-ordering",
+        "location": "Linux CTest integration invoking real replay scheduler, real worker/crash handler, and real controller using a synthetic FOZ and null-device creation hook only."
+      },
+      {
+        "assertions": [
+          "Include overlapping composite input archives with the same tag/hash, at least two resource tags sharing a hash, explicit ranges/exclusions, an actual extra pipeline dependency, and nonzero repeated loops. Report exactly one outcome per selected logical item and no count from repeat iterations or dependency-only work. A dependency-only execution in another worker or attempt cannot replace its selected result.",
+          "Assert actual pipeline read/parse, unsupported, dependency-blocked, validation, create failure, success and validated creation-hint skip statuses, where case fixtures may be split. Check a first-success/later-failure loop remains unsuccessful and zero iterations have no creation success. Assert recovered-prefix and unavailable-required input cannot claim unseen coverage; include known empty and nonempty incomplete controls. Test real ordinary and quiet worker production output separately from capped diagnostics."
+        ],
+        "id": "R21-selected-boundary-and-outcomes",
+        "location": "Production standalone CLI and robust controller/worker CTest fixtures; existing replay selection/outcome/device hooks may be reused."
+      },
+      {
+        "assertions": [
+          "Generate a large deterministic workload (at least 100,000 selected items) across tags/ranges with repeated observations, out-of-order facts, known losses and more attempts or samples than detailed history retention. Measure accounted backing storage/capacity against the documented numeric formula and require exact independent expected final distribution. Repeat with diagnostic emission capped/disabled and confirm the same authoritative distribution; the cap or a full ring cannot alter outcomes. Assert observed history omissions and that invalid frame sizes and duplicate bursts do not increase retained state."
+        ],
+        "id": "R21-bounded-state",
+        "location": "New replay-reconciliation stress CTest on the real implementation and framing."
+      },
+      {
+        "assertions": [
+          "Demonstrate the corresponding unmodified test passes and a mutant which uses a recovery index as proof of earlier success, or drops terminal creation publication while still allowing ordinary FINAL, fails for the intended outcome assertion after a successful rebuild. Use a disposable exact-candidate clone/worktree/build and retain the single-line mutation, test IDs, expected nonzero status and diagnostic; a build failure or fixture crash alone is not evidence."
+        ],
+        "id": "R21-regression-sensitivity",
+        "location": "Focused model/production CTest negative controls and one isolated source mutation against the exact candidate."
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{exact_role_candidate_worktree}",
+        "expected": [
+          "Private ABI/protocol boundary, concrete state bound and normal, recovery and unknown semantics documented; no runtime claim follows from inspection. Changelog one short factual issue-linked sentence."
+        ],
+        "id": "G21-source-contract",
+        "kind": "both",
+        "method": "Run git diff --check <exact-base> HEAD and inspect the entire exact base-to-candidate source/test diff, CTest registration, current issue and recursively closed prerequisite evidence, and changelog. Audit all selected producer and consumer paths and both OS source paths.",
+        "prerequisites": [
+          "Exact clean candidate, bound base/plan/current issue snapshots."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{exact_role_candidate_worktree}",
+        "expected": [
+          "All configurations build and complete nonempty CPU CTest inventories with no failures or required skips. Covered commands and evidence reflect actual worktrees and build outputs."
+        ],
+        "id": "G21-linux-matrix",
+        "kind": "both",
+        "method": {
+          "assertions": "Run all R21 registered production and model cases and all existing CPU CTest cases. Record configuration, real execution/discovery inventory, status and relevant assertion logs.",
+          "build": "python3 /tmp/fossilize-h21-20261113/out/run-check.py UNIQUE_ID ABS_WORKTREE -- bash /tmp/fossilize-h21-20261113/out/build-linux.sh MODE EXCEPTIONS /tmp/fossilize-h21-20261113/build/ROLE/CONFIG",
+          "chunking": "Commands each retain their 600 s deadline. Build in dependency/target chunks when needed, then a successful all-target build under the same configuration. Each chunk has its own intent and receipt. Complete CPU CTest inventory in each configuration, with isolated test work directories. The exact same clean-candidate configured build may be used for independent final CTest execution if build command/source/config binding is rechecked; do not reuse mutable or different-candidate binaries.",
+          "configurations": [
+            "Debug/OFF",
+            "Release/OFF",
+            "Release/ON"
+          ],
+          "test": "python3 /tmp/fossilize-h21-20261113/out/run-check.py UNIQUE_ID ABS_WORKTREE -- python3 /tmp/fossilize-h21-20261113/out/collect-ctest.py /tmp/fossilize-h21-20261113/build/ROLE/CONFIG /tmp/fossilize-h21-20261113/out/ROLE-CONFIG-ctest.json"
+        },
+        "prerequisites": [
+          "Initialized exact pinned submodules in each worktree used to build; Linux GCC and Python3, bundled CMake/Ninja; CLI, layer, tests and SPIR-V validation ON, real GPU layer tests OFF."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{exact_role_candidate_worktree}",
+        "expected": [
+          "Production merge/codec property and stress cases plus an ordinary producer integration case run with no sanitizer findings; actual selected CTest IDs and flags recorded."
+        ],
+        "id": "G21-sanitizers",
+        "kind": "both",
+        "method": {
+          "build": "/tmp/fossilize-h20/toolenv/bin/cmake --build ROLE_ASAN_BUILD --parallel 4 --target REGISTERED_R21_MODEL_AND_ORDINARY_INTEGRATION_TARGETS",
+          "configure": "/tmp/fossilize-h20/toolenv/bin/cmake -S ABS_WORKTREE -B ROLE_ASAN_BUILD -G Ninja -DCMAKE_MAKE_PROGRAM=/tmp/fossilize-h20/toolenv/bin/ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS_DEBUG=-g1 -DCMAKE_CXX_FLAGS_DEBUG=-g1 -DFOSSILIZE_TESTS=ON -DFOSSILIZE_CLI=ON -DFOSSILIZE_VULKAN_LAYER=OFF -DFOSSILIZE_REPLAYER_SPIRV_VAL=ON -DFOSSILIZE_TEST_RUNTIME_LAYER=OFF -DSPIRV_SKIP_EXECUTABLES=ON -DSPIRV_SKIP_TESTS=ON -DFOSSILIZE_SANITIZE_ADDRESS=ON -DCMAKE_C_FLAGS=-fsanitize=undefined -DCMAKE_CXX_FLAGS=-fsanitize=undefined -DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined",
+          "execution": "Run configure, build (can chunk), and CTest through python3 /tmp/fossilize-h21-20261113/out/run-check.py UNIQUE_ID ABS_WORKTREE -- argv. Use known-good compiler sanitizer runtime and non-PIE flags if host ASan requires it. Deliberate-signal cases belong to the ordinary Linux matrix.",
+          "test": "env ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 /tmp/fossilize-h21-20261113/out/collect-ctest.py ROLE_ASAN_BUILD RESULT.json --filter REGISTERED_R21_MODEL_CODEC_STRESS_AND_ORDINARY_INTEGRATION_IDS"
+        },
+        "prerequisites": [
+          "Independent sanitizer build or verified reuse of the same exact candidate build; supported Linux ASan+UBSan runtime."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{exact_role_candidate_worktree}",
+        "expected": [
+          "Mutation builds and targeted CTest fails on specific outcome assertion; clean candidate passes same test."
+        ],
+        "id": "G21-regression-sensitivity",
+        "kind": "both",
+        "method": {
+          "command": "Using /tmp/fossilize-h21-20261113/out/run-check.py, configure/build a disposable exact-candidate worktree with one focused behavior mutant in Release/OFF, then run /tmp/fossilize-h20/toolenv/bin/ctest --test-dir MUTANT_BUILD --output-on-failure --no-tests=error -R EXACT_R21_CONTROL_CASE. Also run the same focused case on the unmodified exact candidate. A small assertion-bearing driver may treat the expected nonzero mutant exit and specific assertion match as its passing gate.",
+          "controls": "Prefer the actual reordered worker/scheduler assertion, otherwise remove the production completion publication for a known successful selected item while leaving FINAL intact."
+        },
+        "prerequisites": [
+          "Candidate and mutation diff captured, exact baseline passes, isolated build and per-command receipts."
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "{exact_role_candidate_worktree}",
+        "expected": [
+          "One verified PR references https://github.com/robinwassen/Fossilize/issues/21 with exact accepted branch head; artifact publication confirmed; no merge performed by this run."
+        ],
+        "id": "G21-publication",
+        "kind": "publication",
+        "method": "Use the harness exact-head local publication policy and current issue snapshot. Read back one PR to robinwassen/Fossilize master, its accepted head/base/plan and root issue attachment plus artifact confirmation. Explicit closing reference for the fully satisfied root only.",
+        "prerequisites": [
+          "Fresh accepted work-unit and final checks against exact candidate, managed issue readiness and unchanged material inputs."
+        ]
+      }
+    ],
+    "implementation": [
+      "Build an internal indexed run reconciliation model against ReplaySelectionReport stable_hashes and effective per-tag offsets. Keep the authoritative item identity mapped to the initial logical set and disjoint worker assignments across retries. Validate worker/attempt, tag, absolute range index and hash against controller-assigned work before applying facts; check arithmetic, empty ranges, invalid records and wrong/stale sources. Derive contiguous confirmation, when retained for diagnostics, from actual terminal facts only. Keep controller resume cursors separate and preserve current scheduling/retry policy.",
+      "Attach terminal facts to actual production paths. Translate parser work's chunk-local index to the stable selected index or resolve through the stable selection identity. Distinguish selected work from extra parents with borrowed indices, including when an out-of-assignment parent hash is selected by a different worker. Cover read and parse rejection/missing acknowledgement, selected dependency-blocked work both at enqueue and deferred scheduling, blacklist/unsupported, validation and Vulkan failure, and successful completion only after all requested iterations succeed with no validation error. Cache hint membership gets its own result only at the actual selected skip under the active v1 device-mode and pipelineCacheUUID policy. A setup/early return must leave unprocessed selected work unknown and must not masquerade as empty; selection can be established before Vulkan initialization and hint application recorded later. Preserve zero-iteration invocation behavior while never reporting creation success for zero iterations.",
+      "Use bounded unsampled item evidence on ordinary worker paths, with the same shared codec/model consumed by both platform controllers, or an equally reliable private channel. Explicitly distinguish terminal item data from sampled FZ18 detail, COUNTS, FINAL, legacy validation/crash records, and activity counters. Deliver surviving individual records when practical before later hard death, with bounded framing/no allocation from untrusted record length. Missing, malformed, conflicting, wrong-worker, out-of-assignment or truncated evidence cannot manufacture coverage; a successful native exit/FINAL/drained flag alone proves no item's outcome. Keep evidence transport outside crash signal locks; mark a skipped culprit only when the legacy marker matches that attempt's stable selected index and hash, and preserve dependency crashes as unresolved attribution.",
+      "Reconcile using a deterministic attempt and status policy. Equivalent duplicate and reordered observations yield the same final item state. A newer authoritative completion supersedes a stale failure, with evidence of the earlier failure retained. Preserve explicit results independently of missing results for other items and retain unreported entries as unknown. Bound in-memory storage by selected items plus worker slots with compact fixed-width states and an explicit bounded prior-attempt representation; keep attempt identifiers, failed-attempt totals and relevant earlier item failure evidence, and explicitly report history omissions if detailed retention is capped. Do not hold a raw event vector per item/attempt. Document the concrete bound including capacity and dedup state, and keep correctness independent of warning/diagnostic sampling.",
+      "Report once from a normal invocation or controller termination after collecting all available worker evidence, including cleanup paths, with unknown evidence and discovery kept explicit. An old/optional diagnostic producer cannot be silently treated as a source of authoritative item completion. Keep native success/failure and prior error gates in place, including failed setup, controlled failure and skipped culprit, and prevent an ordinary successful required worker assignment from certifying missing logical reports. Keep existing quiet behavior and preserve independently meaningful native and timeout evidence. Update tests using synthetic worker transport to send real terminal facts for any claimed known completion.",
+      "Document contract, per-item outcome and replay identity rules, private transport boundaries, retained history, memory formula and verification scope in the existing replay worker and verification documentation. Add a one-sentence [Observability] CHANGELOG entry linked to issue #21. Keep changed scope and evidence limitations accurate."
+    ],
+    "non_goals": [
+      "Do not redesign scheduler ordering, dependency replay, quarantine or progress weighting. Reporting the reordered deferred item as unfinished is sufficient; this issue does not require forcing unrelated work to finish after a fatal failure.",
+      "No new public structured-result schema, SharedControlBlock change, driver-cache or persistence guarantee, Steam presentation/scheduling integration, or native Windows execution. The user expressly waived Windows execution. Keep paired Windows source behavior as feasible and identify it as unverified. CPU/null-device tests do not verify actual Vulkan/driver-cache hardware behavior."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "Legacy identity: `FOS-000012`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n12. **FOS-000012 \u2014 Reconcile final logical items across recovery attempts.** **M, split types/range-recovery if necessary; depends on `FOS-000009`, `FOS-000010`, `FOS-000011`; \u00a72\u2013\u00a74.** Current atomics count activity and broad skips, while [condensed progress:71](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize_external_replayer.cpp#L71) explicitly clamps/weights counts and documents retry duplication. Preserve that UI estimate, but add authoritative accounting by selected `(tag, hash)` and attempt within a run/input scope. Distinguish selected work from extra dependencies and benchmark repetitions. Each selected item gets one final outcome; attempts retain their history. **Check:** duplicate/reordered messages, stale attempt failure after successful retry, one crash plus skipped culprit plus successful tail, unreported worker work. Do not infer exact successful counts by subtracting overlapping failure counters. Bound memory using range summaries/compact tables where possible; lost evidence must remain unknown.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Reconciliation model/property tests:** For a known selected set, every item has exactly one final outcome and final counts sum to that set. Permutations and duplicates of equivalent event histories yield the same final result; a stale failure cannot overwrite a newer authoritative success.\n   - **Recovery and evidence-loss tests:** Failed attempt then complete retry succeeds with attempt history retained; skipped culprit plus successful tail remains incomplete. Lost reports retain unknown scope/counts. Extra dependencies, duplicate hashes across inputs and benchmark repetitions obey the declared identity rules without inflating selected-item counts.\n   - **Bounded-state stress test:** Reconciliation of a generated large workload respects a documented state-size bound for the chosen representation; log sampling cannot alter authoritative accounting.\n\n<!-- fossilize-migration-v1:FOS-000012 -->\n"
+      }
+    ],
+    "scope": [
+      "Single work unit for the root issue. Account for each selected graphics, compute and ray-tracing pipeline exactly once within one replay invocation and its selected composite input and discovery policy. Existing replay selection chooses the stable tag/hash set before replay-v1 hints. Duplicate source archives providing the same tag/hash collapse under the existing resolver policy; equal hashes of different tags are distinct. Static/shader inputs and extra dependency execution remain operational work outside selected pipeline accounting. Keep the existing estimated/weighted progress behavior and SharedControlBlock layout and public callers.",
+      "Production scope is standalone and robust master/slave, including the master used by --progress. Ordinary completion and controlled failure expose a compact reconciliation summary through the existing CLI logging path and a private inspectable result by item. The controller accounts for all original assignments, including workers that did not report or launch and cancelled siblings. Keep private transport independent of quiet, warning sample caps and the optional shared progress ring.",
+      "Authoritative final classes distinguish completed creation, a compatible replay-v1 hint, unsupported, dependency-blocked, other failed, crash culprit skipped by recovery, and unfinished/unknown; separate no-execution policy such as zero benchmark iterations from success if needed. Discovered selected totals and coverage of the requested scope are separate facts. For a known selected set the mutually exclusive final counts always sum to it; on incomplete discovery report the known subset with the missing extent explicitly unknown. Name accepted recovered-prefix or optional-input scope without implying complete underlying input discovery.",
+      "Known terminal evidence is useful even on an abnormal attempt. A resume index schedules a retry and may skip a selected culprit, but establishes no contiguous prefix, successful tail, or other work. A retained complete retry can supersede earlier evidence without erasing the earlier attempt. Supporting production ordering evidence: https://github.com/robinwassen/Fossilize/issues/21#issuecomment-6561225073."
+    ],
+    "version": 1,
+    "work_units": []
+  },
+  "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/21"
+        ],
+        "digest": "03a87126cd5287bf71e63894b0713068e03a7c9f27abda738b1348bed4d1b462",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/10": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000001`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n1. **FOS-000001 \u2014 Preserve precise context in existing diagnostics.** **S; no dependencies; \u00a75.** Pipeline creation failure logs discard the available `VkResult` at [replay:1559](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1559), with analogous compute/ray-tracing branches. Device setup similarly reduces failures to prose. Include phase, resource type/hash and raw numeric result; capture `errno`/`GetLastError()` immediately at OS failures. Fix compute/ray-tracing capture messages incorrectly naming graphics/compute in [dispatch:918](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/layer/dispatch.cpp#L918) and nearby ray-tracing paths. Start with these sites, then extend per subsystem. **Check:** inject distinct Vulkan results and verify distinguishable evidence. Do not classify every non-success as a driver crash or every capture rejection as unsupported pNext. This delivers immediate value before a common schema exists.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Unit tests with Vulkan/OS failure injection:** Distinct injected Vulkan results and OS errors retain their exact numeric values, phase and known resource identity after cleanup; an intervening OS call cannot overwrite the originating error.\n   - **Captured-diagnostic assertions:** Compute and ray-tracing failures name the correct resource type. Controlled Vulkan errors and capture rejections do not claim a driver crash or unsupported feature without evidence; a successful control case emits no failure diagnostic.\n\n<!-- fossilize-migration-v1:FOS-000001 -->\n",
+            "children": [],
+            "id": 6079794262,
+            "node_id": "I_kwDOVZpjbc8AAAABamJMVg",
+            "number": 10,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000001 \u2014 Preserve precise context in existing diagnostics",
+            "url": "https://github.com/robinwassen/Fossilize/issues/10"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/13": {
+            "blocked_by": [],
+            "body": "Legacy identity: `FOS-000004`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n4. **FOS-000004 \u2014 Retain unrecoverable child loss in the controller.** **S\u2013M; no dependencies; \u00a72\u2013\u00a74.** [Linux shutdown:335](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L335) and [Windows shutdown:278](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L278) use the same boolean for \u201cdo not restart because done\u201d and \u201ccannot continue.\u201d Their callers restart conditionally but otherwise continue to exit success ([Linux:1429](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1429), [Windows:1035](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1035)). Separate restart disposition from the retained worker outcome. Immediately return an aggregate unsuccessful result when assigned required work is unresolved. **Check:** E5/E6; clean worker; failed worker alongside a clean worker; failure before resource identity is known. Record the assigned range and unknown remainder. Do not fail all successfully recovered attempts just because a child once died.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Controller subprocess tests on Linux and Windows:** A worker lost before its first progress report produces an unsuccessful controller outcome, retaining its assigned range and unknown remainder. Repeat with another worker succeeding and with worker report order reversed; the unsuccessful aggregate is unchanged.\n   - **Recovery control tests:** Clean completion succeeds; a failed attempt followed by verified completion of every required item can succeed. A skipped required culprit or unresolved range cannot succeed. Assert the controller result directly, independently of stderr and optional shared progress.\n\n<!-- fossilize-migration-v1:FOS-000004 -->\n",
+            "children": [],
+            "id": 6079809809,
+            "node_id": "I_kwDOVZpjbc8AAAABamKJEQ",
+            "number": 13,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000004 \u2014 Retain unrecoverable child loss in the controller",
+            "url": "https://github.com/robinwassen/Fossilize/issues/13"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/14": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/10",
+              "https://github.com/robinwassen/Fossilize/issues/13"
+            ],
+            "body": "Legacy identity: `FOS-000005`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n5. **FOS-000005 \u2014 Separate replay-thread work completion from item success.** **M; depends on `FOS-000001` and `FOS-000004` for complete propagation; \u00a72\u2013\u00a73.** [worker:1800](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1800) discards the parse return and increments `completed_count` after processing; creation helpers return void. [normal replay:4553](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L4553) returns success after the queue finishes (E7). Introduce a thread-safe outcome accumulator independent of optional shared memory. First cover parse/read and Vulkan creation failures, then setup/validation/support/dependency exits. Propagate the result through normal replay, child and controller. **Check:** E7, missing entry, injected Vulkan failure, and mixed success/failure. Keep queue progress as queue progress. Unsupported required work must be unsuccessful under the declared policy, even when it is not a crash.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Replay unit and CLI integration tests:** E7, missing input entries, injected creation errors, unsupported required work, validation failures and dependency-blocked work produce the expected distinct outcomes and nonzero aggregate exits. A fully successful workload returns zero.\n   - **Thread/mode matrix:** The same fixed mixed workload has the same final logical outcome in normal, child/controller and progress modes, with shared progress absent/present and one/multiple threads. Queue completion still reaches its expected count even when processing fails; it is never the success oracle.\n\n<!-- fossilize-migration-v1:FOS-000005 -->\n",
+            "children": [],
+            "id": 6079814916,
+            "node_id": "I_kwDOVZpjbc8AAAABamKdBA",
+            "number": 14,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000005 \u2014 Separate replay-thread work completion from item success",
+            "url": "https://github.com/robinwassen/Fossilize/issues/14"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/16": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/13"
+            ],
+            "body": "Legacy identity: `FOS-000007`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n7. **FOS-000007 \u2014 Record timeout origin before invoking crash recovery.** **S\u2013M; depends on `FOS-000004`; \u00a74\u2013\u00a75.** [no-progress wait:965](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L965) invokes the timeout handler before its diagnostic. [Linux:1589](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_linux.hpp#L1589) sends SIGABRT; [Windows:1203](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay_windows.hpp#L1203) writes `CRASH`. Store/send a distinct trigger from the healthy dispatcher before termination. Distinguish configured work-no-progress timeout, controller heartbeat timeout, and post-crash cleanup timeout. Include actual monotonic elapsed time and configured threshold. **Check:** deterministic no-progress injection, spontaneous fault, heartbeat loss, failed signal delivery and escalation. An externally observed SIGKILL alone does not prove a controller timeout or OOM. Multiple threads imply unknown individual attribution unless independently established.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Fake-clock and termination-adapter unit tests:** Each configured no-progress, heartbeat and cleanup deadline records its own trigger, threshold and monotonic elapsed time before requesting termination. Progress resets only the applicable deadline; a spontaneous fault has no invented timeout trigger.\n   - **Controller integration tests:** Injected SIGABRT/Windows recovery, failed termination delivery and escalation preserve trigger, mechanism and final effect separately. An unexplained external SIGKILL remains unattributed; multi-thread cases without item evidence retain unknown attribution. Use synchronization barriers, not timing races, to order events.\n\n<!-- fossilize-migration-v1:FOS-000007 -->\n",
+            "children": [],
+            "id": 6079824724,
+            "node_id": "I_kwDOVZpjbc8AAAABamLDVA",
+            "number": 16,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000007 \u2014 Record timeout origin before invoking crash recovery",
+            "url": "https://github.com/robinwassen/Fossilize/issues/16"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/17": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/10",
+              "https://github.com/robinwassen/Fossilize/issues/14"
+            ],
+            "body": "Legacy identity: `FOS-000008`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n8. **FOS-000008 \u2014 Reject malformed resource envelopes as controlled input errors.** **S for envelope guard, M for nested validation; depends on `FOS-000001` and `FOS-000005`; \u00a71\u2013\u00a72.** [parse:6368](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize.cpp#L6368) indexes `doc[\"version\"].GetInt()` without checking object/member/type (E5). Start with the envelope, reporting invalid shape versus incompatible version; audit nested field reads in subsequent bounded patches. Preserve numeric parse error/offset and resource identity without dumping shader contents. **Check:** `{}`, `[]`, null, missing/string version, malformed nested records; none may assert, terminate the embedding host or be blamed on the driver. Test release and debug builds. This is an outcome/containment prerequisite, not merely prettier logging; no claim of a complete parser-security audit is made here.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Parser table tests in debug and release builds:** Null, arrays, {}, missing/wrong-type version, invalid JSON and malformed nested fixtures for every migrated parser return controlled reason-bearing errors without assertions, signals or host termination. Incompatible numeric versions have a different reason from malformed shape.\n   - **Containment and input-mutation tests:** A subprocess sentinel continues after each rejected input; valid fixtures still parse identically. A fixed-seed mutation corpus is run automatically with a bounded runtime, and newly found failures become deterministic fixtures. Diagnostics expose available error offsets/identity but no shader payload.\n\n<!-- fossilize-migration-v1:FOS-000008 -->\n",
+            "children": [],
+            "id": 6079829518,
+            "node_id": "I_kwDOVZpjbc8AAAABamLWDg",
+            "number": 17,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000008 \u2014 Reject malformed resource envelopes as controlled input errors",
+            "url": "https://github.com/robinwassen/Fossilize/issues/17"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/18": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/14",
+              "https://github.com/robinwassen/Fossilize/issues/16",
+              "https://github.com/robinwassen/Fossilize/issues/17"
+            ],
+            "body": "Legacy identity: `FOS-000009`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n9. **FOS-000009 \u2014 Carry reason data from the place that detects it.** **M; depends on `FOS-000005`, `FOS-000007`, `FOS-000008`; \u00a71, \u00a74\u2013\u00a75.** Add a small stable internal result/event representation: phase, reason ID, known raw error, tag/hash or range, worker and attempt, plus unknown-context flags. Start with parse, creation and timeout paths. Extend child messages on both platforms with explicit framing/version negotiation and bounded parsing; never require the controller to infer categories from human logs. **Check:** split/truncated messages, unknown version/reason, missing final message, worker exit before first report. Unknown information stays unknown. This is where downstream controllers acquire causes; a parent-only summary cannot recover details a worker never sends.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Result serialization and streaming-parser unit tests:** Each migrated producer preserves reason, phase, raw error and applicable identity through a round trip. Feed every split position, multiple records per read, truncated/oversized records and unknown versions/reasons; parsing stays bounded and never converts absent context into known values.\n   - **Worker/controller integration tests:** With worker prose disabled, injected parse, creation and timeout failures remain distinguishable at the controller. Death before the first report and loss of the final report yield explicit uncertainty rather than fabricated resource identity or success.\n\n<!-- fossilize-migration-v1:FOS-000009 -->\n",
+            "children": [],
+            "id": 6079834852,
+            "node_id": "I_kwDOVZpjbc8AAAABamLq5A",
+            "number": 18,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000009 \u2014 Carry reason data from the place that detects it",
+            "url": "https://github.com/robinwassen/Fossilize/issues/18"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/19": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/18"
+            ],
+            "body": "Legacy identity: `FOS-000010`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n10. **FOS-000010 \u2014 Explain unsupported features and blocked dependencies.** **M, staged by resource type; depends on `FOS-000009`; \u00a71\u2013\u00a72.** Feature filter predicates return bool, often at detailed feature/property checks; [setup:1270](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/cli/fossilize_replay.cpp#L1270) reduces this to \u201cnot supported.\u201d Return feature/extension/property identifiers and relevant limits when known. Pilot compute, then graphics/ray-tracing/static objects. Link missing/failed parents or modules to blocked consumers rather than counting consumers as independent compiler faults. **Check:** one unsupported feature; one invalid module referenced by many pipelines; missing common-cache input; unknown pNext sType. Preserve existing support advice only where justified. Do not make \u201cunsupported\u201d a catch-all for parse, OOM or missing dependency failures.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Feature-filter unit tests per migrated resource type:** Known feature, extension, property-limit and unknown-sType rejections return the correct identifier and available observed/required values; supported controls succeed. Parse errors and OOM remain separate categories.\n   - **Dependency-graph tests:** One failed shader/module or parent referenced by N pipelines yields one originating failure and N correctly linked blocked consumers, with zero creation calls for those unattempted consumers. Missing-common-cache cases identify a missing dependency without claiming the driver failed.\n\n<!-- fossilize-migration-v1:FOS-000010 -->\n\n## Text warning volume \u2014 PR #75 follow-up\n\nAt the user's request, cap ordinary unsupported-object and blocked-dependency text warnings, show a few representative examples, and summarize affected replay work by the relevant cause: for example, \u201cX pipelines could not be replayed because Y is not supported.\u201d Preserve all original acceptance criteria above.\n\n- Group by meaningful feature, extension, property/API boundary or unknown identifier, rather than individual pipeline hashes or every varying requested limit; retain relevant values and source identities in bounded examples. Keep unsupported, missing/failed dependencies, parse errors, OOM and driver failures distinct.\n- Bound retained cause groups, example output and memory even for many distinct causes, with honest overflow counts. Totals remain correct after the example cap and under concurrent replay. State the summary's worker/attempt scope; do not imply cross-worker unique-item accounting.\n- Replace duplicate legacy warnings for these same support/dependency failures, including detector/parser paths, so they cannot bypass the cap. Preserve unrelated error reporting, existing bool/non-replay callers, quiet-worker behavior, support policy and structured-event/outcome counts.\n- Produce the summary once on ordinary completion/failure, including standalone replay without a structured-event writer. Success-only runs must not gain warning noise; hard process death must not be presented as a completed summary.\n- Add Release-active automated checks of actual production text output: large repeated fanout, multiple meaningful causes and values, distinct-cause overflow, concurrency, representative identities, standalone/worker/quiet paths, duplicate-warning suppression and successful controls. Preserve the original full regression obligations. Native Windows verification remains user-waived and unverified.\n\n<!-- pr75-text-warning-cap-20261110 -->\n",
+            "children": [],
+            "id": 6079839416,
+            "node_id": "I_kwDOVZpjbc8AAAABamL8uA",
+            "number": 19,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000010 \u2014 Explain unsupported features and blocked dependencies",
+            "url": "https://github.com/robinwassen/Fossilize/issues/19"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/20": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/18"
+            ],
+            "body": "Legacy identity: `FOS-000011`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n11. **FOS-000011 \u2014 Expose discovery and selection completeness.** **M; depends on `FOS-000009`; \u00a72.** [stream scanning:1200](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize_db.cpp#L1200) intentionally salvages truncated tails (E9). Database composites may omit unavailable inputs; whitelists/ranges and replay-cache checks change observable work. Return preparation/discovery metadata: requested/opened inputs, excluded inputs/items with policy, selected logical scope, truncation/read failures, complete/unknown discovery. Keep salvage behavior and report its limits. **Check:** intact empty archive versus truncated archive with zero retained entries; missing optional versus required subdatabase; filters and ranges. Known processed items cannot establish full coverage when unread scope is unknown. A caller may explicitly accept a recovered prefix, but the report must name that scope.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Database/discovery integration tests:** E9 reports incomplete discovery even with zero retained items, while an intact empty archive reports known complete empty scope. The intact prefix remains readable; required missing/unreadable inputs prevent full-scope success.\n   - **Selection/policy table tests:** Ranges, whitelists, deliberately optional inputs and explicitly accepted recovered-prefix policy report the exact selected/excluded scope and policy. Unknown unread totals remain unknown, never zero or full coverage; excluded items are not counted as failures or successes.\n\n<!-- fossilize-migration-v1:FOS-000011 -->\n",
+            "children": [],
+            "id": 6079844260,
+            "node_id": "I_kwDOVZpjbc8AAAABamMPpA",
+            "number": 20,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "closed",
+            "state_reason": "completed",
+            "title": "FOS-000011 \u2014 Expose discovery and selection completeness",
+            "url": "https://github.com/robinwassen/Fossilize/issues/20"
+          },
+          "https://github.com/robinwassen/Fossilize/issues/21": {
+            "blocked_by": [
+              "https://github.com/robinwassen/Fossilize/issues/18",
+              "https://github.com/robinwassen/Fossilize/issues/19",
+              "https://github.com/robinwassen/Fossilize/issues/20"
+            ],
+            "body": "Legacy identity: `FOS-000012`. Original source: [immutable historical definition](https://github.com/robinwassen/Fossilize/blob/73f891d6c0cf498ac92e804d7d0f0cd344a083f5/local-docs/reviews/observability-sweep.md).\n\nShared requirements and grouping: https://github.com/robinwassen/Fossilize/issues/8. All original criteria below remain required. Source status statements below describe their historical revision; current delivery evidence is recorded separately. Original relative links are resolved below.\n\n## Original definition (verbatim)\n\n12. **FOS-000012 \u2014 Reconcile final logical items across recovery attempts.** **M, split types/range-recovery if necessary; depends on `FOS-000009`, `FOS-000010`, `FOS-000011`; \u00a72\u2013\u00a74.** Current atomics count activity and broad skips, while [condensed progress:71](https://github.com/robinwassen/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize_external_replayer.cpp#L71) explicitly clamps/weights counts and documents retry duplication. Preserve that UI estimate, but add authoritative accounting by selected `(tag, hash)` and attempt within a run/input scope. Distinguish selected work from extra dependencies and benchmark repetitions. Each selected item gets one final outcome; attempts retain their history. **Check:** duplicate/reordered messages, stale attempt failure after successful retry, one crash plus skipped culprit plus successful tail, unreported worker work. Do not infer exact successful counts by subtracting overlapping failure counters. Bound memory using range summaries/compact tables where possible; lost evidence must remain unknown.\n\n   **Required automated success criteria \u2014 pending implementation:**\n\n   - **Reconciliation model/property tests:** For a known selected set, every item has exactly one final outcome and final counts sum to that set. Permutations and duplicates of equivalent event histories yield the same final result; a stale failure cannot overwrite a newer authoritative success.\n   - **Recovery and evidence-loss tests:** Failed attempt then complete retry succeeds with attempt history retained; skipped culprit plus successful tail remains incomplete. Lost reports retain unknown scope/counts. Extra dependencies, duplicate hashes across inputs and benchmark repetitions obey the declared identity rules without inflating selected-item counts.\n   - **Bounded-state stress test:** Reconciliation of a generated large workload respects a documented state-size bound for the chosen representation; log sampling cannot alter authoritative accounting.\n\n<!-- fossilize-migration-v1:FOS-000012 -->\n",
+            "children": [],
+            "id": 6079849453,
+            "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
+            "number": 21,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/8",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "FOS-000012 \u2014 Reconcile final logical items across recovery attempts",
+            "url": "https://github.com/robinwassen/Fossilize/issues/21"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/21"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    }
+  ],
   "publishing": {
     "ci_policy": "local",
     "stage": "none"
@@ -330,7 +660,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 9,
+  "revision": 10,
   "root_issue": {
     "id": 6079849453,
     "node_id": "I_kwDOVZpjbc8AAAABamMj7Q",
@@ -340,9 +670,17 @@
   },
   "run_id": "issue21-20261113",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-21",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/21",
   "verification": [],
-  "work_units": []
+  "work_units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/21",
+      "key": "https://github.com/robinwassen/Fossilize/issues/21",
+      "status": "ready"
+    }
+  ]
 }
