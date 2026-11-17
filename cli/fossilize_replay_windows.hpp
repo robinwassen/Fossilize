@@ -86,6 +86,18 @@ struct ProcessProgress
 	OVERLAPPED overlapped_pipe = {};
 	char async_pipe_buffer[1024];
 	Fossilize::ReplayEvent::Stream stream;
+	void feed(const char *bytes, size_t size)
+	{
+		stream.feed_frames(outcome.events, bytes, size, [this](const char *line) { parse(line); },
+		                   [this](const char *payload, size_t length) { outcome.accept_frame(payload, length); });
+	}
+
+	ReplayAssignment current_assignment() const
+	{
+		return {{{start_graphics_index, end_graphics_index}, {start_compute_index, end_compute_index},
+		         {start_raytracing_index, end_raytracing_index}}};
+	}
+
 
 	int compute_progress = -1;
 	int graphics_progress = -1;
@@ -146,8 +158,13 @@ void ProcessProgress::parse(const char *cmd)
 		outcome.failure_mask |= failure_mask;
 		outcome.orderly_drained = drained != 0;
 	}
-	else if (strncmp(cmd, "CRASH", 5) == 0)
+	else if (strcmp(cmd, "DEPENDENCY_CRASH") == 0)
 	{
+		outcome.dependency_crash = true;
+	}
+	else if (strcmp(cmd, "CRASH") == 0)
+	{
+		outcome.crash_reported = true;
 		// Repeated recovery notices cannot postpone this attempt's deadline.
 		if (cleanup_deadline.armed) return;
 		cleanup_deadline.arm(replay_monotonic_ns(), replay_seconds_ns(3));
@@ -195,11 +212,9 @@ void ProcessProgress::parse(const char *cmd)
 	}
 	else if (strncmp(cmd, "GRAPHICS", 8) == 0)
 	{
-		char *end = nullptr;
-		graphics_progress = int(strtol(cmd + 8, &end, 0));
-		if (end)
+		Hash graphics_pipeline;
+		if (replay_crash_cursor(cmd + 8, graphics_progress, graphics_pipeline))
 		{
-			Hash graphics_pipeline = strtoull(end, nullptr, 16);
 			outcome.culprit(0, graphics_progress, graphics_pipeline);
 			// graphics_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && graphics_progress > 0 && graphics_pipeline != 0)
@@ -217,11 +232,9 @@ void ProcessProgress::parse(const char *cmd)
 	}
 	else if (strncmp(cmd, "RAYTRACE", 8) == 0)
 	{
-		char *end = nullptr;
-		raytracing_progress = int(strtol(cmd + 8, &end, 0));
-		if (end)
+		Hash raytracing_pipeline;
+		if (replay_crash_cursor(cmd + 8, raytracing_progress, raytracing_pipeline))
 		{
-			Hash raytracing_pipeline = strtoull(end, nullptr, 16);
 			outcome.culprit(2, raytracing_progress, raytracing_pipeline);
 			// raytracing_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && raytracing_progress > 0 && raytracing_pipeline != 0)
@@ -239,11 +252,9 @@ void ProcessProgress::parse(const char *cmd)
 	}
 	else if (strncmp(cmd, "COMPUTE", 7) == 0)
 	{
-		char *end = nullptr;
-		compute_progress = int(strtol(cmd + 7, &end, 0));
-		if (end)
+		Hash compute_pipeline;
+		if (replay_crash_cursor(cmd + 7, compute_progress, compute_pipeline))
 		{
-			Hash compute_pipeline = strtoull(end, nullptr, 16);
 			outcome.culprit(1, compute_progress, compute_pipeline);
 			// compute_progress tells us where to start on next iteration, but -1 was actually the pipeline index that crashed.
 			if (Global::control_block && compute_progress > 0 && compute_pipeline)
@@ -304,7 +315,7 @@ bool ProcessProgress::process_once()
 	BOOL ok = GetOverlappedResult(crash_file_handle, &overlapped_pipe, &did_read, TRUE);
 	if (!ok && GetLastError() != ERROR_MORE_DATA) return false;
 	if (did_read)
-		stream.feed(outcome.events, async_pipe_buffer, size_t(did_read), [this](const char *line) { parse(line); });
+		feed(async_pipe_buffer, size_t(did_read));
 	return kick_overlapped_io();
 }
 
@@ -444,9 +455,8 @@ bool ProcessProgress::start_child_process()
 	compute_progress = -1;
 	raytracing_progress = -1;
 
-	outcome.attempts++;
-	outcome.timeout.begin(outcome.attempts);
-	outcome.begin_events(index);
+	if (!outcome.begin_attempt(index, current_assignment()))
+		return false;
 	stream = {};
 	cleanup_deadline = {};
 	expect_kill = false;
@@ -477,27 +487,19 @@ bool ProcessProgress::start_child_process()
 		cmdline += " --optional-database-index " + to_string(index);
 	cmdline += " --slave-process";
 	cmdline += " --num-threads 1";
-	if (Global::base_replayer_options.pipeline_hash)
-	{
-		char hash[32];
-		snprintf(hash, sizeof(hash), "%016" PRIx64, Global::base_replayer_options.pipeline_hash);
-		cmdline += " --pipeline-hash "; cmdline += hash;
-	}
-	else
-	{
-		cmdline += " --graphics-pipeline-range ";
-		cmdline += to_string(start_graphics_index);
-		cmdline += " ";
-		cmdline += to_string(end_graphics_index);
-		cmdline += " --compute-pipeline-range ";
-		cmdline += to_string(start_compute_index);
-		cmdline += " ";
-		cmdline += to_string(end_compute_index);
-		cmdline += " --raytracing-pipeline-range ";
-		cmdline += to_string(start_raytracing_index);
-		cmdline += " ";
-		cmdline += to_string(end_raytracing_index);
-	}
+	// The master has already resolved any hash selection to per-tag ranges.
+	cmdline += " --graphics-pipeline-range ";
+	cmdline += to_string(start_graphics_index);
+	cmdline += " ";
+	cmdline += to_string(end_graphics_index);
+	cmdline += " --compute-pipeline-range ";
+	cmdline += to_string(start_compute_index);
+	cmdline += " ";
+	cmdline += to_string(end_compute_index);
+	cmdline += " --raytracing-pipeline-range ";
+	cmdline += to_string(start_raytracing_index);
+	cmdline += " ";
+	cmdline += to_string(end_raytracing_index);
 
 	cmdline += " --device-index ";
 	cmdline += std::to_string(Global::device_options.device_index);
@@ -818,6 +820,7 @@ static bool open_shm(const char *shm_path, const char *shm_mutex_path)
 struct ControllerChildrenCleanup
 {
 	vector<ProcessProgress> &children;
+	ControllerReconciliationReport &report;
 	~ControllerChildrenCleanup()
 	{
 		for (auto &child : children)
@@ -830,6 +833,14 @@ struct ControllerChildrenCleanup
 				child.process_shutdown();
 				if (child.process) { CloseHandle(child.process); child.process = nullptr; }
 			}
+		}
+		report.workers = unsigned(children.size());
+		for (auto &child : children)
+		{
+			child.outcome.refresh_coverage();
+			report.attempts += child.outcome.attempts;
+			report.failed_attempts += child.outcome.failed_attempts + unsigned(child.outcome.controlled_failure);
+			report.omitted_attempts += child.outcome.omitted_attempts;
 		}
 #ifdef FOSSILIZE_REPLAY_TEST_OBSERVE
 		FOSSILIZE_REPLAY_TEST_OBSERVE(children);
@@ -845,6 +856,9 @@ static int run_master_process(const VulkanDevice::Options &opts,
 							  const char *whitelist_path, uint32_t whitelist_mask,
 							  bool quiet_slave, const char *shm_name, const char *shm_mutex_name)
 {
+	ReplayReconciliation reconciliation;
+	ControllerReconciliationReport report{reconciliation};
+
 	Global::quiet_slave = quiet_slave;
 	Global::device_options = opts;
 	Global::base_replayer_options = replayer_opts;
@@ -891,13 +905,6 @@ static int run_master_process(const VulkanDevice::Options &opts,
 		return EXIT_FAILURE;
 	}
 
-	size_t num_graphics_pipelines;
-	size_t num_compute_pipelines;
-	size_t num_raytracing_pipelines;
-
-	size_t graphics_pipeline_offset = 0;
-	size_t compute_pipeline_offset = 0;
-	unsigned raytracing_pipeline_offset = 0;
 
 	{
 		auto db = create_database(databases);
@@ -920,20 +927,18 @@ static int run_master_process(const VulkanDevice::Options &opts,
 		bool prepared = db->prepare();
 		unsigned starts[] = {replayer_opts.start_graphics_index, replayer_opts.start_compute_index, replayer_opts.start_raytracing_index};
 		unsigned ends[] = {replayer_opts.end_graphics_index, replayer_opts.end_compute_index, replayer_opts.end_raytracing_index};
-		auto scope = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash,
-		                                 replayer_opts.accept_recovered_prefix, nullptr, prepared);
-		if (!scope.scope_satisfied)
+		const auto selection = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash,
+		                                          replayer_opts.accept_recovered_prefix, nullptr, prepared);
+		reconciliation.initialize(selection);
+		if (!selection.scope_satisfied)
 		{
 			LOGE("Required database preparation/discovery is incomplete.\n");
 			return EXIT_FAILURE;
 		}
-		if (scope.optional_inputs_excluded)
-			return EXIT_SUCCESS;
-
-		// An explicitly requested missing item is not an empty successful
-		// assignment, even when enumeration would launch no children.
-		if (!validate_requested_pipeline_hash(*db, replayer_opts.pipeline_hash))
+		if (!validate_requested_pipeline_hash(selection))
 			return EXIT_FAILURE;
+		if (selection.optional_inputs_excluded)
+			return EXIT_SUCCESS;
 
 
 		DatabaseInterface::get_unique_os_export_name(Global::metadata_export_name, sizeof(Global::metadata_export_name));
@@ -946,18 +951,11 @@ static int run_master_process(const VulkanDevice::Options &opts,
 		}
 
 
-		num_graphics_pipelines = scope.stable_hashes[0].size();
-		graphics_pipeline_offset = scope.ranges[0].effective_begin;
-		num_compute_pipelines = scope.stable_hashes[1].size();
-		compute_pipeline_offset = scope.ranges[1].effective_begin;
-		num_raytracing_pipelines = scope.stable_hashes[2].size();
-		raytracing_pipeline_offset = scope.ranges[2].effective_begin;
-
 		if (Global::control_block)
 		{
-			Global::control_block->static_total_count_graphics = num_graphics_pipelines;
-			Global::control_block->static_total_count_compute = num_compute_pipelines;
-			Global::control_block->static_total_count_raytracing = num_raytracing_pipelines;
+			Global::control_block->static_total_count_graphics = selection.stable_hashes[0].size();
+			Global::control_block->static_total_count_compute = selection.stable_hashes[1].size();
+			Global::control_block->static_total_count_raytracing = selection.stable_hashes[2].size();
 		}
 	}
 
@@ -966,20 +964,27 @@ static int run_master_process(const VulkanDevice::Options &opts,
 
 	Global::active_processes = 0;
 	vector<ProcessProgress> child_processes(processes);
-	ControllerChildrenCleanup cleanup{child_processes};
+	ControllerChildrenCleanup cleanup{child_processes, report};
 	vector<HANDLE> wait_handles;
 
 	// CreateProcess for our children.
 	for (unsigned i = 0; i < processes; i++)
 	{
 		auto &progress = child_processes[i];
-		progress.start_graphics_index = graphics_pipeline_offset + (i * unsigned(num_graphics_pipelines)) / processes;
-		progress.end_graphics_index = graphics_pipeline_offset + ((i + 1) * unsigned(num_graphics_pipelines)) / processes;
-		progress.start_compute_index = compute_pipeline_offset + (i * unsigned(num_compute_pipelines)) / processes;
-		progress.end_compute_index = compute_pipeline_offset + ((i + 1) * unsigned(num_compute_pipelines)) / processes;
-		progress.start_raytracing_index = raytracing_pipeline_offset + (i * unsigned(num_raytracing_pipelines)) / processes;
-		progress.end_raytracing_index = raytracing_pipeline_offset + ((i + 1) * unsigned(num_raytracing_pipelines)) / processes;
+		auto ranges = reconciliation.assignment(i, processes);
+		progress.start_graphics_index = ranges[0].begin;
+		progress.end_graphics_index = ranges[0].end;
+		progress.start_compute_index = ranges[1].begin;
+		progress.end_compute_index = ranges[1].end;
+		progress.start_raytracing_index = ranges[2].begin;
+		progress.end_raytracing_index = ranges[2].end;
 		progress.index = i;
+		progress.outcome.reconciliation = &reconciliation;
+		progress.outcome.assign(ranges[0].begin, ranges[0].end, ranges[1].begin, ranges[1].end,
+		                        ranges[2].begin, ranges[2].end);
+	}
+	for (auto &progress : child_processes)
+	{
 		if (!progress.start_child_process())
 		{
 			LOGE("Failed to start child process.\n");
@@ -1213,6 +1218,9 @@ static void crash_handler(ThreadedReplayer &replayer, ThreadedReplayer::PerThrea
 	    per_thread.current_compute_pipeline ||
 	    per_thread.current_raytracing_pipeline)
 	{
+		if (!per_thread.selected_crash_cursor && !write_all(crash_handle, "DEPENDENCY_CRASH\n"))
+			ExitProcess(2);
+
 		// Report where we stopped, so we can continue.
 		sprintf(buffer, "GRAPHICS %d %" PRIx64 "\n", per_thread.current_graphics_index,
 		        per_thread.current_graphics_pipeline);
@@ -1406,6 +1414,7 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 	tmp_opts.on_validation_error_callback = validation_error_cb;
 	ThreadedReplayer replayer(opts, tmp_opts);
 	replayer.robustness = true;
+	replayer.report_locally = false;
 
 	// In slave mode, we can receive a list of shader module hashes we should ignore.
 	// This is to avoid trying to replay the same faulty shader modules again and again.
@@ -1443,6 +1452,11 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 	{
 		replayer.event_worker = event_worker; replayer.event_attempt = event_attempt;
 		replayer.event_writer = [](const char *frame) { return write_all(crash_handle, frame); };
+		replayer.terminal_writer = [](const char *frame) {
+			DWORD written = 0;
+			auto size = DWORD(strlen(frame));
+			return WriteFile(crash_handle, frame, size, &written, nullptr) && written == size;
+		};
 		char payload[96], frame[ReplayEvent::MaxFrame];
 		snprintf(payload,sizeof(payload),"1 HELLO %llu %llu",(unsigned long long)event_worker,(unsigned long long)event_attempt);
 		if (!ReplayEvent::frame(frame,sizeof(frame),payload) || !replayer.event_writer(frame)) return EXIT_FAILURE;
@@ -1464,8 +1478,9 @@ static int run_slave_process(const VulkanDevice::Options &opts,
 		unsigned ends[] = {replayer_opts.end_graphics_index, replayer_opts.end_compute_index, replayer_opts.end_raytracing_index};
 		replayer.selection_report = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash,
 		                                              replayer_opts.accept_recovered_prefix, nullptr, prepared);
-		replayer.work_drained = replayer.selection_report.scope_satisfied;
-		code = replayer.selection_report.scope_satisfied ? EXIT_SUCCESS : replayer.fail_run(ReplayFailure::Setup);
+		replayer.work_drained = replayer.selection_report.scope_satisfied &&
+		                        validate_requested_pipeline_hash(replayer.selection_report);
+		code = replayer.work_drained ? EXIT_SUCCESS : replayer.fail_run(ReplayFailure::Setup);
 	}
 	else
 		code = run_normal_process(replayer, databases, nullptr, 0, reinterpret_cast<intptr_t>(Global::metadata_handle));

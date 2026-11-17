@@ -3,6 +3,8 @@
 #include "../cli/replay_worker_outcome.hpp"
 #include <climits>
 
+using namespace Fossilize;
+
 static DiagnosticChecks checks;
 static void deadlines()
 {
@@ -54,8 +56,19 @@ static void unknown()
 	for (auto &t : r.timeout.current.triggers) checks.require(!t.present, "M16/external-kill-is-not-timeout-or-oom");
 	ReplayDeadline cleanup; cleanup.arm(100, replay_seconds_ns(3));
 	checks.require(!cleanup.expired(100 + replay_seconds_ns(2)), "M16/spontaneous-fault-no-timeout-before-cleanup-deadline");
-	ReplayWorkerOutcome known; known.assign(0, 2, 0, 0, 0, 0); known.culprit(0, 1, 0xabc);
-	checks.require(known.skipped() && known.assigned[0].skipped_hash == 0xabc, "M16/independent-item-evidence-retained");
+	ReplaySelectionReport selection;
+	selection.stable_hashes[0] = {0xabc, 0xdef};
+	ReplayReconciliation ledger;
+	ledger.initialize(selection);
+	ReplayWorkerOutcome known;
+	known.reconciliation = &ledger;
+	known.assign(0, 2, 0, 0, 0, 0);
+	known.begin_attempt(0, known.original);
+	known.crash_reported = true;
+	known.culprit(0, 1, 0xabc);
+	checks.require(known.finish(false, true, 1, -1, -1) == WorkerDisposition::Retry &&
+	               known.skipped() && known.assigned[0].skipped_hash == 0xabc,
+	               "M16/independent-item-evidence-retained");
 }
 static void protocol()
 {

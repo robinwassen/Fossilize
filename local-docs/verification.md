@@ -938,3 +938,43 @@ complete four Linux CPU configurations, focused ASan+UBSan cases and repeated
 concurrency; compile isolated lost-support-detail, lost-parent-identity and restored
 per-object-warning mutations and require their precise assertion failures.
 Native Windows remains user-waived and unverified for this issue.
+
+## Replay reconciliation (issue #21)
+
+The `replay-reconciliation-{properties,codec,stress}` cases check permutations,
+duplicates, conflicts, attempt ordering, invalid record and assignment
+boundaries, bounded history and exact results for 105,000 selected keys with
+warning collection enabled and disabled. The controller cases exercise real
+worker IPC, including clean FINAL with missing item reports, hard termination
+after a valid and a truncated record, reordered sibling harvest and successful
+retry after a failed attempt.
+
+On Linux, `replay-reconciliation-ordering-*` uses a synthetic FOZ and the actual
+scheduler, crash handler and controller. The null-device dispatch records
+actual creation calls and injects deterministic faults in a selected pipeline
+or an extra library. The ordinary crash fixture expects nine completed prefix
+items, ten completed tail items, one skipped culprit and one uncreated deferred
+item. It disables the work watchdog and core dumps. A separate worker can
+execute a selected key as a dependency while the worker owning the selection
+reports a different final outcome. Nested same-worker libraries exercise
+selected success, Vulkan failure and a blocked parent in the replacement path,
+including a parent in a different scheduler memory context. A hash selection
+from a generated archive with over 105,000 entries verifies the retained ledger
+and worker-slot capacity, observes release of large preparation allocations
+before the worker fork and checks a single actual creation. The shared old-caller
+compatibility check validates the three-item summary and retains the legacy
+checks for error, failed and unsupported diagnostics.
+
+The `replay-reconciliation-producer-*` and `replay-reconciliation-cli` cases cover
+standalone outcome sources, replay-v1 hints, incomplete input and accepted
+prefixes, overlapping archives, repeated iterations, and normal, quiet and
+progress controller modes. The real normal and master CLI checks assert a
+known zero and unsuccessful exit for an absent requested hash, preserve
+accepted-prefix and optional-input scope labels, and require unknown totals
+for missing or invalid required discovery. Run the full Linux CPU inventory in Debug/OFF,
+Release/OFF and Release/ON, then run model and ordinary producer cases under
+ASan+UBSan. The mutation control removes the successful creation publication
+and requires the isolated exact-baseline ordering test to fail its selected
+outcome assertion after a successful rebuild. These synthetic null-device
+checks do not establish Vulkan hardware, Steam runtime, driver cache or
+persistence behavior. The issue waived native Windows verification.

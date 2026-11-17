@@ -26,8 +26,9 @@ MUTATIONS = {
                      'database-discovery-sensitivity', 'truncated-zero', 'empty',
                      'D20/truncation-never-full-coverage'),
     'selection-exclusions': ('cli/replay_selection.hpp',
-                             'report.scope_satisfied &= report.hash_found;',
-                             'report.excluded.clear();\n\treport.scope_satisfied &= report.hash_found;', 1,
+                             'report.selected_total_known = report.scope_satisfied;\n\treturn report;',
+                             'report.excluded.clear();\n\t'
+                             'report.selected_total_known = report.scope_satisfied;\n\treturn report;', 1,
                              'replay-selection-sensitivity', 'ranges', 'healthy',
                              'D20/range-exact-selection-and-exclusions'),
     'metadata-import': ('fossilize_db.cpp',

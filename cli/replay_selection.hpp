@@ -23,6 +23,7 @@ struct ReplaySelectionReport
 	DatabasePreparationReport preparation;
 	bool recovered_prefix_requested = false;
 	bool preparation_succeeded = false;
+	// Scope eligibility and enumeration are independent of a requested hash match.
 	bool scope_satisfied = false;
 	bool hash_found = true;
 	bool selected_total_known = false;
@@ -88,9 +89,10 @@ inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const un
 		report.excluded.push_back({entry.key, policy});
 	}
 	// A failed optional-only backend is excluded as an input, including every
-	// known key observed before failure. Retained keys are never dispatched from
-	// an interface whose prepare() failed. Original discovery uncertainty survives.
-	if (!preparation_succeeded || replay_inputs_unavailable(report.preparation))
+	// known key observed before failure. Retained keys from a failed required
+	// backend may still describe part of the requested scope.
+	bool dispatchable = preparation_succeeded && !replay_inputs_unavailable(report.preparation);
+	if (!dispatchable)
 	{
 		bool has_source = false;
 		report.optional_inputs_excluded = true;
@@ -102,7 +104,7 @@ inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const un
 			report.optional_inputs_excluded &= !input.required;
 		}
 		report.optional_inputs_excluded &= has_source;
-		report.scope_satisfied &= report.optional_inputs_excluded && report.hash_found;
+		report.scope_satisfied &= report.optional_inputs_excluded;
 		if (report.optional_inputs_excluded)
 		{
 			report.optional_unavailable.clear();
@@ -117,23 +119,38 @@ inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const un
 			report.ranges[i].requested_begin = starts[i];
 			report.ranges[i].requested_end = ends[i];
 		}
-		report.selected_total_known = report.scope_satisfied;
-		return report;
+		if (report.optional_inputs_excluded)
+		{
+			report.selected_total_known = report.scope_satisfied;
+			return report;
+		}
 	}
 	for (unsigned i = 0; i < 3; i++)
 	{
 		auto tag = replay_pipeline_tags[i];
-		size_t count = 0;
-		if (!db.get_hash_list_for_resource_tag(tag, &count, nullptr) || count > std::numeric_limits<unsigned>::max())
+		std::vector<Hash> universe;
+		if (dispatchable)
 		{
-			report.scope_satisfied = false;
-			continue;
+			size_t count = 0;
+			if (!db.get_hash_list_for_resource_tag(tag, &count, nullptr) || count > std::numeric_limits<unsigned>::max())
+			{
+				report.scope_satisfied = false;
+				continue;
+			}
+			universe.resize(count);
+			if (!db.get_hash_list_for_resource_tag(tag, &count, universe.data()))
+			{
+				report.scope_satisfied = false;
+				continue;
+			}
 		}
-		std::vector<Hash> universe(count);
-		if (!db.get_hash_list_for_resource_tag(tag, &count, universe.data()))
+		else
 		{
-			report.scope_satisfied = false;
-			continue;
+			// Some backends retain a known prefix even when prepare failed.
+			// Keep those selected identities unknown and never dispatch them.
+			for (auto key : report.preparation.selected)
+				if (key.tag == tag)
+					universe.push_back(key.hash);
 		}
 		std::sort(universe.begin(), universe.end());
 		universe.erase(std::unique(universe.begin(), universe.end()), universe.end());
@@ -161,11 +178,10 @@ inline ReplaySelectionReport select_replay_scope(DatabaseInterface &db, const un
 			report.selected.push_back(key);
 			if (hints && hints[tag].count(key.hash))
 				report.excluded.push_back({key, ReplayExclusionPolicy::ReplayV1Hint});
-			else
+			else if (dispatchable)
 				report.dispatch.push_back(key);
 		}
 	}
-	report.scope_satisfied &= report.hash_found;
 	report.selected_total_known = report.scope_satisfied;
 	return report;
 }

@@ -34,7 +34,7 @@
 #include "file.hpp"
 #include "path.hpp"
 #include "fossilize_db.hpp"
-#include "replay_selection.hpp"
+#include "replay_reconciliation.hpp"
 #include "fossilize_external_replayer.hpp"
 #include "fossilize_external_replayer_control_block.hpp"
 #include "fossilize_errors.hpp"
@@ -276,11 +276,62 @@ static void heartbeat();
 #define heartbeat() ((void)0)
 #endif
 
+// Call only after the eligible scope has been enumerated.
+static bool validate_requested_pipeline_hash(const ReplaySelectionReport &selection)
+{
+	if (selection.hash_found)
+		return true;
+	LOGE("Specified pipeline hash %016" PRIx64 " not found in the selected replay scope.\n",
+	     selection.requested_hash);
+	return false;
+}
+
+static void log_reconciliation(const ReplayReconciliation &result, unsigned workers,
+                               uint64_t attempts, uint64_t failed_attempts, uint64_t omitted_attempts)
+{
+	auto counts = result.counts();
+	LOGI("Replay reconciliation scope=%s discovery=%s selected=%zu selected_total=%s "
+	     "created=%" PRIu64 " cache_hint=%" PRIu64 " unsupported=%" PRIu64 " dependency_blocked=%" PRIu64
+	     " read_failed=%" PRIu64 " parse_failed=%" PRIu64 " create_failed=%" PRIu64 " validation_failed=%" PRIu64
+	     " other_failed=%" PRIu64 " crash_skipped=%" PRIu64 " no_execution=%" PRIu64 " blacklisted=%" PRIu64
+	     " unknown=%" PRIu64 " conflicts=%zu workers=%u attempts=%" PRIu64 " failed_attempts=%" PRIu64
+	     " omitted_attempts=%" PRIu64 " items_with_omitted_history=%zu.\n",
+	     result.scope(), result.discovery_complete ? "complete" : "incomplete", result.item_capacity(),
+	     result.selected_total_known ? "known" : "unknown", counts[unsigned(ReplayTerminal::Created)],
+	     counts[unsigned(ReplayTerminal::CacheHint)], counts[unsigned(ReplayTerminal::Unsupported)],
+	     counts[unsigned(ReplayTerminal::Dependency)], counts[unsigned(ReplayTerminal::ReadFailed)],
+	     counts[unsigned(ReplayTerminal::ParseFailed)], counts[unsigned(ReplayTerminal::CreateFailed)],
+	     counts[unsigned(ReplayTerminal::ValidationFailed)], counts[unsigned(ReplayTerminal::OtherFailed)],
+	     counts[unsigned(ReplayTerminal::CrashSkipped)], counts[unsigned(ReplayTerminal::NoExecution)],
+	     counts[unsigned(ReplayTerminal::Blacklisted)], counts[unsigned(ReplayTerminal::Unknown)],
+	     result.conflicted_items(), workers, attempts, failed_attempts, omitted_attempts, result.omitted_item_histories());
+}
+
+#ifndef NO_ROBUST_REPLAYER
+struct ControllerReconciliationReport
+{
+	const ReplayReconciliation &reconciliation;
+	unsigned workers = 0;
+	uint64_t attempts = 0, failed_attempts = 0, omitted_attempts = 0;
+
+	~ControllerReconciliationReport()
+	{
+#ifdef FOSSILIZE_REPLAY_TEST_RECONCILIATION
+		FOSSILIZE_REPLAY_TEST_RECONCILIATION(reconciliation);
+#endif
+		log_reconciliation(reconciliation, workers, attempts, failed_attempts, omitted_attempts);
+	}
+};
+#endif
+
 struct PipelineWorkItem
 {
 	Hash hash = 0;
 	ResourceTag tag = RESOURCE_COUNT;
+	// A parent can borrow its consumer's recovery cursor, even when it
+	// replaces a selected pipeline at a different stable index.
 	unsigned index = 0;
+	unsigned selected_index = ~0u;
 	unsigned memory_context_index = 0;
 	bool parse_only = false;
 	bool dependency_blocked = false;
@@ -660,6 +711,36 @@ struct ThreadedReplayer : StateCreatorInterface
 	bool events_finished = false;
 	std::mutex finalization_mutex;
 	std::function<bool(const char *)> event_writer;
+	std::function<bool(const char *)> terminal_writer;
+	bool report_locally = true, terminal_delivery_failed = false;
+	std::mutex terminal_mutex;
+	ReplayReconciliation reconciliation;
+
+	void record_terminal(ResourceTag tag, Hash hash, unsigned index, ReplayTerminal status)
+	{
+		if (index == ~0u)
+			return;
+		std::lock_guard<std::mutex> hold(terminal_mutex);
+		ReplayTerminalFact fact{unsigned(event_worker), event_attempt ? unsigned(event_attempt) : 1u,
+		                        tag, index, hash, status};
+		if (terminal_writer)
+		{
+			char frame[128];
+			if (!replay_terminal_frame(frame, sizeof(frame), fact) || !terminal_writer(frame))
+				terminal_delivery_failed = true;
+		}
+		else if (report_locally)
+		{
+			const auto assignment = reconciliation.assignment();
+			reconciliation.accept(0, 1, assignment, assignment, fact);
+		}
+	}
+
+	void record_terminal(const PipelineWorkItem &item, ReplayTerminal status)
+	{
+		record_terminal(item.tag, item.hash, item.selected_index, status);
+	}
+
 	std::mutex event_mutex;
 	uint64_t event_worker = 0, event_attempt = 0, emitted_events = 0, omitted_events = 0;
 	struct Origin
@@ -915,6 +996,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		Hash source_base = 0;
 		bool derivative_parent_candidate = false;
 		ReplayDependency::Detail blocker;
+		unsigned selected_index = ~0u;
 
 		static ResourceTag get_tag() { return RESOURCE_GRAPHICS_PIPELINE; }
 	};
@@ -928,6 +1010,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		Hash source_base = 0;
 		bool derivative_parent_candidate = false;
 		ReplayDependency::Detail blocker;
+		unsigned selected_index = ~0u;
 
 		static ResourceTag get_tag() { return RESOURCE_COMPUTE_PIPELINE; }
 	};
@@ -941,6 +1024,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		Hash source_base = 0;
 		bool derivative_parent_candidate = false;
 		ReplayDependency::Detail blocker;
+		unsigned selected_index = ~0u;
 
 		static ResourceTag get_tag() { return RESOURCE_RAYTRACING_PIPELINE; }
 	};
@@ -963,6 +1047,9 @@ struct ThreadedReplayer : StateCreatorInterface
 		bool force_outside_range = false;
 		bool triggered_validation_error = false;
 		bool creation_succeeded = true;
+		unsigned selected_index = ~0u;
+		bool selected_crash_cursor = false;
+		ReplayTerminal creation_status = ReplayTerminal::OtherFailed;
 		uint64_t failure_generation = 0, warning_generation = 0;
 		ResourceTag active_tag = RESOURCE_COUNT;
 		Hash active_hash = 0;
@@ -1257,6 +1344,7 @@ struct ThreadedReplayer : StateCreatorInterface
 			if (work_item.tag == RESOURCE_SHADER_MODULE && opts.control_block)
 				opts.control_block->parsed_module_failures.fetch_add(1, std::memory_order_relaxed);
 			record_failure(ReplayFailure::Read, work_item.tag, work_item.hash);
+			record_terminal(work_item, ReplayTerminal::ReadFailed);
 			return false;
 		}
 
@@ -1267,6 +1355,7 @@ struct ThreadedReplayer : StateCreatorInterface
 			LOGW("Entry (%u: %016" PRIx64 ") does not exist, this might be benign depending on where the archive comes from.\n",
 			     unsigned(work_item.tag), work_item.hash);
 			record_failure(ReplayFailure::Read, work_item.tag, work_item.hash);
+			record_terminal(work_item, ReplayTerminal::ReadFailed);
 			return false;
 		}
 
@@ -1294,6 +1383,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		    !per_thread.acknowledge_parsing_work)
 		{
 			parsed = false;
+			record_terminal(work_item, dependencies.result.hash ? ReplayTerminal::Dependency : ReplayTerminal::ParseFailed);
 			if (dependencies.result.hash)
 			{
 				auto parent = dependencies.result;
@@ -1560,11 +1650,16 @@ struct ThreadedReplayer : StateCreatorInterface
 			{
 				auto parent = resolver.failure_parent;
 				record_failure(ReplayFailure::Create, ResourceTag(parent.tag), parent.hash, resolver.failure_result);
+				per_thread.creation_status = ReplayTerminal::Dependency;
 				record_dependency(work_item.tag, work_item.hash, parent);
 			}
 			else
-			record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
-			             work_item.tag, work_item.hash, resolver.failure_result);
+			{
+				if (resolver.failure_result != VK_SUCCESS)
+					per_thread.creation_status = ReplayTerminal::CreateFailed;
+				record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
+				               work_item.tag, work_item.hash, resolver.failure_result);
+			}
 			return false;
 		}
 
@@ -1572,6 +1667,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		    work_item.create_info.graphics_create_info->basePipelineHandle == VK_NULL_HANDLE)
 		{
 			// This pipeline failed for some reason, don't try to compile this one either.
+			per_thread.creation_status = ReplayTerminal::Dependency;
 			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			return false;
 		}
@@ -1581,6 +1677,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!device->get_feature_filter().graphics_pipeline_is_supported(work_item.create_info.graphics_create_info,
 																		 support))
 		{
+			per_thread.creation_status = support.kind == SupportKind::Malformed ?
+			                             ReplayTerminal::ParseFailed : ReplayTerminal::Unsupported;
 			record_unsupported(work_item.tag, work_item.hash, support);
 			return false;
 		}
@@ -1614,11 +1712,16 @@ struct ThreadedReplayer : StateCreatorInterface
 			{
 				auto parent = resolver.failure_parent;
 				record_failure(ReplayFailure::Create, ResourceTag(parent.tag), parent.hash, resolver.failure_result);
+				per_thread.creation_status = ReplayTerminal::Dependency;
 				record_dependency(work_item.tag, work_item.hash, parent);
 			}
 			else
-			record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
-			             work_item.tag, work_item.hash, resolver.failure_result);
+			{
+				if (resolver.failure_result != VK_SUCCESS)
+					per_thread.creation_status = ReplayTerminal::CreateFailed;
+				record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
+				               work_item.tag, work_item.hash, resolver.failure_result);
+			}
 			return false;
 		}
 
@@ -1626,6 +1729,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		    work_item.create_info.compute_create_info->basePipelineHandle == VK_NULL_HANDLE)
 		{
 			// This pipeline failed for some reason, don't try to compile this one either.
+			per_thread.creation_status = ReplayTerminal::Dependency;
 			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			return false;
 		}
@@ -1635,6 +1739,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!device->get_feature_filter().compute_pipeline_is_supported(work_item.create_info.compute_create_info,
 																		support))
 		{
+			per_thread.creation_status = support.kind == SupportKind::Malformed ?
+			                             ReplayTerminal::ParseFailed : ReplayTerminal::Unsupported;
 			record_unsupported(work_item.tag, work_item.hash, support);
 			return false;
 		}
@@ -1666,11 +1772,16 @@ struct ThreadedReplayer : StateCreatorInterface
 			{
 				auto parent = resolver.failure_parent;
 				record_failure(ReplayFailure::Create, ResourceTag(parent.tag), parent.hash, resolver.failure_result);
+				per_thread.creation_status = ReplayTerminal::Dependency;
 				record_dependency(work_item.tag, work_item.hash, parent);
 			}
 			else
-			record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
-			             work_item.tag, work_item.hash, resolver.failure_result);
+			{
+				if (resolver.failure_result != VK_SUCCESS)
+					per_thread.creation_status = ReplayTerminal::CreateFailed;
+				record_failure(resolver.failure_result == VK_SUCCESS ? ReplayFailure::Setup : ReplayFailure::Create,
+				               work_item.tag, work_item.hash, resolver.failure_result);
+			}
 			return false;
 		}
 
@@ -1678,6 +1789,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		    work_item.create_info.raytracing_create_info->basePipelineHandle == VK_NULL_HANDLE)
 		{
 			// This pipeline failed for some reason, don't try to compile this one either.
+			per_thread.creation_status = ReplayTerminal::Dependency;
 			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			return false;
 		}
@@ -1689,6 +1801,7 @@ struct ThreadedReplayer : StateCreatorInterface
 			{
 				if (pLibraryInfo->pLibraries[i] == VK_NULL_HANDLE)
 				{
+					per_thread.creation_status = ReplayTerminal::Dependency;
 					record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 					return false;
 				}
@@ -1700,6 +1813,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		if (!device->get_feature_filter().raytracing_pipeline_is_supported(work_item.create_info.raytracing_create_info,
 																		   support))
 		{
+			per_thread.creation_status = support.kind == SupportKind::Malformed ?
+			                             ReplayTerminal::ParseFailed : ReplayTerminal::Unsupported;
 			record_unsupported(work_item.tag, work_item.hash, support);
 			return false;
 		}
@@ -1719,12 +1834,17 @@ struct ThreadedReplayer : StateCreatorInterface
 		per_thread.active_hash = work_item.hash;
 		per_thread.triggered_validation_error = false;
 		per_thread.creation_succeeded = true;
+		per_thread.selected_index = work_item.selected_index;
+		per_thread.selected_crash_cursor = work_item.selected_index != ~0u &&
+		                                   work_item.memory_context_index != PARENT_PIPELINE_MEMORY_CONTEXT;
+		per_thread.creation_status = work_item.dependency_blocked ? ReplayTerminal::Dependency : ReplayTerminal::OtherFailed;
 		bool ret = !work_item.dependency_blocked;
 
 		// Don't bother replaying blacklisted objects.
 		if (resource_is_blacklisted(work_item.tag, work_item.hash))
 		{
 			LOGW("Resource is blacklisted, ignoring.\n");
+			per_thread.creation_status = ReplayTerminal::Blacklisted;
 			record_failure(ReplayFailure::Dependency, work_item.tag, work_item.hash);
 			ret = false;
 		}
@@ -2093,6 +2213,14 @@ struct ThreadedReplayer : StateCreatorInterface
 			resolver.flush(device.get());
 			auto &per_thread = get_per_thread_data();
 			per_thread.current_graphics_pipeline = per_thread.current_compute_pipeline = per_thread.current_raytracing_pipeline = 0;
+			auto status = per_thread.triggered_validation_error ?
+			              ReplayTerminal::ValidationFailed : per_thread.creation_status;
+			if (!loop_count && status == ReplayTerminal::Dependency &&
+			    work_item.blocker.tag == RESOURCE_SHADER_MODULE && work_item.blocker.hash &&
+			    !work_item.blocker.category && global_database &&
+			    global_database->has_entry(RESOURCE_SHADER_MODULE, work_item.blocker.hash))
+				status = ReplayTerminal::NoExecution;
+			record_terminal(work_item, status);
 			return;
 		}
 
@@ -2125,10 +2253,18 @@ struct ThreadedReplayer : StateCreatorInterface
 
 		auto &per_thread = get_per_thread_data();
 
+		auto status = ReplayTerminal::OtherFailed;
 		if (valid_type)
 		{
-			if (loop_count > 0 && !per_thread.triggered_validation_error && per_thread.creation_succeeded)
+			if (per_thread.triggered_validation_error)
+				status = ReplayTerminal::ValidationFailed;
+			else if (!per_thread.creation_succeeded)
+				status = ReplayTerminal::CreateFailed;
+			else if (!loop_count)
+				status = ReplayTerminal::NoExecution;
+			else
 			{
+				status = ReplayTerminal::Created;
 				whitelist_resource(work_item.tag, work_item.hash);
 				mark_replayed_resource(work_item.tag, work_item.hash);
 			}
@@ -2137,6 +2273,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		per_thread.current_compute_pipeline = 0;
 		per_thread.current_graphics_pipeline = 0;
 		per_thread.current_raytracing_pipeline = 0;
+
+		record_terminal(work_item, status);
 
 		// Destroy any objects we created during resolve.
 		resolver.flush(device.get());
@@ -3255,14 +3393,21 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_pipeline(Hash hash, const VkComputePipelineCreateInfo *create_info, VkPipeline *pipeline,
 						  unsigned index, unsigned memory_context_index, ReplayDependency::Detail blocker = {},
-						  bool derivative_parent_candidate = false)
+						  bool derivative_parent_candidate = false, unsigned selected_index = ~0u)
 	{
-		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_COMPUTE_PIPELINE, hash); *pipeline = VK_NULL_HANDLE; return false; }
+		if (!create_info)
+		{
+			record_failure(ReplayFailure::Setup, RESOURCE_COMPUTE_PIPELINE, hash);
+			record_terminal(RESOURCE_COMPUTE_PIPELINE, hash, selected_index, ReplayTerminal::OtherFailed);
+			*pipeline = VK_NULL_HANDLE;
+			return false;
+		}
 		PipelineWorkItem work_item = {};
 		work_item.hash = hash;
 		work_item.tag = RESOURCE_COMPUTE_PIPELINE;
 		work_item.output.pipeline = pipeline;
 		work_item.index = index;
+		work_item.selected_index = selected_index;
 		work_item.memory_context_index = memory_context_index;
 		work_item.blocker = blocker;
 		work_item.derivative_parent_candidate = derivative_parent_candidate;
@@ -3299,9 +3444,15 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_pipeline(Hash hash, const VkGraphicsPipelineCreateInfo *create_info, VkPipeline *pipeline,
 						  unsigned index, unsigned memory_context_index, ReplayDependency::Detail blocker = {},
-						  bool derivative_parent_candidate = false)
+						  bool derivative_parent_candidate = false, unsigned selected_index = ~0u)
 	{
-		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_GRAPHICS_PIPELINE, hash); *pipeline = VK_NULL_HANDLE; return false; }
+		if (!create_info)
+		{
+			record_failure(ReplayFailure::Setup, RESOURCE_GRAPHICS_PIPELINE, hash);
+			record_terminal(RESOURCE_GRAPHICS_PIPELINE, hash, selected_index, ReplayTerminal::OtherFailed);
+			*pipeline = VK_NULL_HANDLE;
+			return false;
+		}
 		bool valid_handles = true;
 		for (uint32_t i = 0; i < create_info->stageCount; i++)
 			if (create_info->pStages[i].module == VK_NULL_HANDLE)
@@ -3322,6 +3473,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		work_item.tag = RESOURCE_GRAPHICS_PIPELINE;
 		work_item.output.pipeline = pipeline;
 		work_item.index = index;
+		work_item.selected_index = selected_index;
 		work_item.memory_context_index = memory_context_index;
 		work_item.blocker = blocker;
 		work_item.derivative_parent_candidate = derivative_parent_candidate;
@@ -3348,9 +3500,15 @@ struct ThreadedReplayer : StateCreatorInterface
 
 	bool enqueue_pipeline(Hash hash, const VkRayTracingPipelineCreateInfoKHR *create_info, VkPipeline *pipeline,
 						  unsigned index, unsigned memory_context_index, ReplayDependency::Detail blocker = {},
-						  bool derivative_parent_candidate = false)
+						  bool derivative_parent_candidate = false, unsigned selected_index = ~0u)
 	{
-		if (!create_info) { record_failure(ReplayFailure::Setup, RESOURCE_RAYTRACING_PIPELINE, hash); *pipeline = VK_NULL_HANDLE; return false; }
+		if (!create_info)
+		{
+			record_failure(ReplayFailure::Setup, RESOURCE_RAYTRACING_PIPELINE, hash);
+			record_terminal(RESOURCE_RAYTRACING_PIPELINE, hash, selected_index, ReplayTerminal::OtherFailed);
+			*pipeline = VK_NULL_HANDLE;
+			return false;
+		}
 		bool valid_handles = true;
 		for (uint32_t i = 0; i < create_info->stageCount; i++)
 			if (create_info->pStages[i].module == VK_NULL_HANDLE)
@@ -3368,6 +3526,7 @@ struct ThreadedReplayer : StateCreatorInterface
 		work_item.tag = RESOURCE_RAYTRACING_PIPELINE;
 		work_item.output.pipeline = pipeline;
 		work_item.index = index;
+		work_item.selected_index = selected_index;
 		work_item.memory_context_index = memory_context_index;
 		work_item.blocker = blocker;
 		work_item.derivative_parent_candidate = derivative_parent_candidate;
@@ -3728,6 +3887,8 @@ struct ThreadedReplayer : StateCreatorInterface
 		};
 
 		auto parsed_parents = make_shared<unordered_set<Hash>>();
+		using DerivedContexts = std::array<std::shared_ptr<vector<DerivedInfo>>, NUM_PIPELINE_MEMORY_CONTEXTS>;
+		std::shared_ptr<DerivedContexts> derived_contexts;
 
 		for (unsigned hash_offset = 0; hash_offset < hashes.size(); hash_offset += NUM_PIPELINES_PER_CONTEXT, iteration++)
 		{
@@ -3736,10 +3897,13 @@ struct ThreadedReplayer : StateCreatorInterface
 
 			// State which is used between pipeline stages.
 			auto derived = make_shared<vector<DerivedInfo>>();
+			if (memory_index == 0)
+				derived_contexts = make_shared<DerivedContexts>();
+			(*derived_contexts)[memory_index] = derived;
 
 			// Submit pipelines to be parsed.
 			work.push_back({ get_order_index(PARSE_ENQUEUE_OFFSET),
-			                 [this, &hashes, deferred, memory_index, to_submit, hash_offset]() {
+			                 [this, &hashes, deferred, memory_index, to_submit, hash_offset, start_index]() {
 				                 // Drain old allocators.
 				                 sync_worker_memory_context(memory_index);
 				                 // Reset per memory-context allocators.
@@ -3765,6 +3929,7 @@ struct ThreadedReplayer : StateCreatorInterface
 					                 auto tag = DerivedInfo::get_tag();
 					                 if (cached_blobs[tag].count(hashes[index]) != 0)
 					                 {
+						                 record_terminal(tag, hashes[index], start_index + index, ReplayTerminal::CacheHint);
 						                 // Do not do anything with this pipeline.
 						                 // Need to check here which is not optimal, since we need to maintain a stable pipeline index
 						                 // for the robust replayer mechanism.
@@ -3798,6 +3963,7 @@ struct ThreadedReplayer : StateCreatorInterface
 						                 work_item.parse_only = true;
 						                 work_item.memory_context_index = memory_index;
 						                 work_item.index = index - hash_offset;
+						                 work_item.selected_index = start_index + index;
 
 						                 if (opts.control_block)
 						                 {
@@ -3890,9 +4056,9 @@ struct ThreadedReplayer : StateCreatorInterface
 					                 if (item.info)
 					                 {
 										 item.blocker = resolve_shader_modules(item.info);
-						                 enqueue_pipeline(item.hash, item.info, item.pipeline,
-														  item.index + hash_offset + start_index, memory_index,
-														  item.blocker, item.derivative_parent_candidate);
+						                 unsigned index = item.index + hash_offset + start_index;
+						                 enqueue_pipeline(item.hash, item.info, item.pipeline, index, memory_index,
+						                                  item.blocker, item.derivative_parent_candidate, index);
 					                 }
 				                 }
 			                 }});
@@ -3908,7 +4074,7 @@ struct ThreadedReplayer : StateCreatorInterface
 			{
 				// This is a join-like operation. We need to wait for all parent pipelines and all shader modules to have completed.
 				work.push_back({get_order_index(ENQUEUE_SHADER_MODULE_SECONDARY_OFFSET),
-				                [this, &pipelines, &parents, parsed_parents, hash_offset, start_index]()
+				                [this, &pipelines, &parents, parsed_parents, derived_contexts, hash_offset, start_index]()
 				                {
 					                unordered_set<Hash> dependencies;
 					                while (true)
@@ -3980,6 +4146,22 @@ struct ThreadedReplayer : StateCreatorInterface
 							                dependencies.insert((Hash)library->pLibraries[i]);
 					                }
 
+					                // Each group starts by clearing parents. These lists contain only
+					                // active, parsed derived work that the ordinary pass will suppress.
+					                for (unsigned context = 0; context < derived_contexts->size(); context++)
+					                {
+						                const auto &items = (*derived_contexts)[context];
+						                if (!items)
+							                continue;
+						                unsigned base = start_index + hash_offset + context * NUM_PIPELINES_PER_CONTEXT;
+						                for (const auto &item : *items)
+						                {
+							                auto parent = parents.find(item.hash);
+							                if (parent != parents.end())
+								                parent->second.selected_index = base + item.index;
+						                }
+					                }
+
 					                // Compute the depth of every pipeline library using a DFS starting at the top level libraries.
 					                vector<DerivedInfo> ordered_parents; 
 					                for (const auto &parent : parents)
@@ -4005,13 +4187,6 @@ struct ThreadedReplayer : StateCreatorInterface
 						                if (!parent.info)
 							                continue;
 
-						                if (!derived_work_item_is_satisfied(parent, pipelines))
-							                {
-												resolve_pipelines(parent, pipelines);
-												record_dependency(DerivedInfo::get_tag(), parent.hash, parent.blocker);
-								                continue;
-							                }
-
 						                uint32_t depth = parents_depth.at(parent.hash);
 						                if (prev_depth != depth)
 						                {
@@ -4019,12 +4194,21 @@ struct ThreadedReplayer : StateCreatorInterface
 							                sync_worker_memory_context(PARENT_PIPELINE_MEMORY_CONTEXT);
 						                }
 
+						                if (!derived_work_item_is_satisfied(parent, pipelines))
+						                {
+							                resolve_pipelines(parent, pipelines);
+							                record_dependency(DerivedInfo::get_tag(), parent.hash, parent.blocker);
+							                record_terminal(DerivedInfo::get_tag(), parent.hash, parent.selected_index,
+							                                ReplayTerminal::Dependency);
+							                continue;
+						                }
+
 										parent.blocker = resolve_shader_modules(parent.info);
 						                resolve_pipelines(parent, pipelines);
 										enqueue_pipeline(parent.hash, parent.info, parent.pipeline,
 						                                 parent.index + hash_offset + start_index,
 														 PARENT_PIPELINE_MEMORY_CONTEXT, parent.blocker,
-														 parent.derivative_parent_candidate);
+														 parent.derivative_parent_candidate, parent.selected_index);
 					                }
 				                }});
 			}
@@ -4040,6 +4224,8 @@ struct ThreadedReplayer : StateCreatorInterface
 										 auto blocked = info;
 										 resolve_pipelines(blocked, pipelines);
 										 record_dependency(DerivedInfo::get_tag(), info.hash, blocked.blocker);
+										 record_terminal(DerivedInfo::get_tag(), info.hash, start_index + hash_offset + info.index,
+										                 ReplayTerminal::Dependency);
 									 }
 					                 return satisfied;
 				                 });
@@ -4067,9 +4253,9 @@ struct ThreadedReplayer : StateCreatorInterface
 					                 {
 										 i->blocker = resolve_shader_modules(i->info);
 						                 resolve_pipelines(*i, pipelines);
-						                 enqueue_pipeline(i->hash, i->info, i->pipeline,
-														  i->index + hash_offset + start_index, memory_index,
-														  i->blocker, i->derivative_parent_candidate);
+						                 unsigned index = i->index + hash_offset + start_index;
+						                 enqueue_pipeline(i->hash, i->info, i->pipeline, index, memory_index,
+						                                  i->blocker, i->derivative_parent_candidate, index);
 					                 }
 				                 }
 
@@ -4503,7 +4689,7 @@ static int run_progress_process(const VulkanDevice::Options &device_opts,
 		unsigned starts[] = {opts.start_graphics_index, opts.start_compute_index, opts.start_raytracing_index};
 		unsigned ends[] = {opts.end_graphics_index, opts.end_compute_index, opts.end_raytracing_index};
 		auto scope = select_replay_scope(*db, starts, ends, replayer_opts.pipeline_hash, replayer_opts.accept_recovered_prefix, nullptr, prepared);
-		if (!scope.scope_satisfied)
+		if (!scope.scope_satisfied || !validate_requested_pipeline_hash(scope))
 			return EXIT_FAILURE;
 		unsigned *out_starts[] = {&opts.start_graphics_index, &opts.start_compute_index, &opts.start_raytracing_index};
 		unsigned *out_ends[] = {&opts.end_graphics_index, &opts.end_compute_index, &opts.end_raytracing_index};
@@ -4840,26 +5026,24 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 
 	auto start_prepare = chrono::steady_clock::now();
 	bool prepared = resolver->prepare();
-	replayer.selection_report.preparation_succeeded = prepared;
-	replayer.selection_report.preparation = resolver->get_preparation_report();
-	if (!prepared || replay_inputs_unavailable(replayer.selection_report.preparation))
-	{
-		unsigned starts[] = {replayer.opts.start_graphics_index, replayer.opts.start_compute_index, replayer.opts.start_raytracing_index};
-		unsigned ends[] = {replayer.opts.end_graphics_index, replayer.opts.end_compute_index, replayer.opts.end_raytracing_index};
-		replayer.selection_report = select_replay_scope(*resolver, starts, ends, replayer.opts.pipeline_hash,
-		                                               replayer.opts.accept_recovered_prefix, nullptr, prepared);
-		if (!replayer.selection_report.scope_satisfied)
-			return replayer.fail_run(ReplayFailure::Setup);
-		replayer.work_drained = true;
-		return EXIT_SUCCESS;
-	}
-	replayer.selection_report.recovered_prefix_requested = replayer.opts.accept_recovered_prefix;
-	replayer.selection_report.scope_satisfied =
-		replayer.selection_report.preparation.satisfies_required_scope(replayer.opts.accept_recovered_prefix);
+	unsigned starts[] = {replayer.opts.start_graphics_index, replayer.opts.start_compute_index, replayer.opts.start_raytracing_index};
+	unsigned ends[] = {replayer.opts.end_graphics_index, replayer.opts.end_compute_index, replayer.opts.end_raytracing_index};
+	replayer.selection_report = select_replay_scope(*resolver, starts, ends, replayer.opts.pipeline_hash,
+	                                               replayer.opts.accept_recovered_prefix, nullptr, prepared);
+	if (replayer.report_locally)
+		replayer.reconciliation.initialize(replayer.selection_report);
 	if (!replayer.selection_report.scope_satisfied)
 	{
+		replayer.selection_report.dispatch.clear();
 		LOGE("Required database discovery is incomplete (full scope or explicitly accepted recovered prefix).\n");
 		return replayer.fail_run(ReplayFailure::Setup);
+	}
+	if (!validate_requested_pipeline_hash(replayer.selection_report))
+		return replayer.fail_run(ReplayFailure::Setup);
+	if (replayer.selection_report.optional_inputs_excluded)
+	{
+		replayer.work_drained = true;
+		return EXIT_SUCCESS;
 	}
 	auto end_prepare = chrono::steady_clock::now();
 
@@ -5014,40 +5198,42 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 	// Now we've laid the initial ground work, kick off worker threads.
 	replayer.start_worker_threads();
 
-	vector<Hash> graphics_hashes;
-	vector<Hash> compute_hashes;
-	vector<Hash> raytracing_hashes;
-	unsigned graphics_start_index = 0;
-	unsigned compute_start_index = 0;
-	unsigned raytracing_start_index = 0;
+	auto &selection = replayer.selection_report;
+	const auto &graphics_hashes = selection.stable_hashes[0];
+	const auto &compute_hashes = selection.stable_hashes[1];
+	const auto &raytracing_hashes = selection.stable_hashes[2];
+	unsigned graphics_start_index = selection.ranges[0].effective_begin;
+	unsigned compute_start_index = selection.ranges[1].effective_begin;
+	unsigned raytracing_start_index = selection.ranges[2].effective_begin;
 
-	unsigned starts[] = {replayer.opts.start_graphics_index, replayer.opts.start_compute_index, replayer.opts.start_raytracing_index};
-	unsigned ends[] = {replayer.opts.end_graphics_index, replayer.opts.end_compute_index, replayer.opts.end_raytracing_index};
 	if (replayer.replayer_cache_db)
+	{
 		for (auto tag : replay_pipeline_tags)
 			populate_blob_hash_set(replayer.cached_blobs[tag], tag, *replayer.replayer_cache_db);
-	replayer.selection_report = select_replay_scope(*resolver, starts, ends, replayer.opts.pipeline_hash,
-	                                               replayer.opts.accept_recovered_prefix, replayer.cached_blobs);
-	if (!replayer.selection_report.scope_satisfied)
-		return replayer.fail_run(ReplayFailure::Read, RESOURCE_COUNT, replayer.opts.pipeline_hash);
-	graphics_hashes = replayer.selection_report.stable_hashes[0];
-	compute_hashes = replayer.selection_report.stable_hashes[1];
-	raytracing_hashes = replayer.selection_report.stable_hashes[2];
-	graphics_start_index = replayer.selection_report.ranges[0].effective_begin;
-	compute_start_index = replayer.selection_report.ranges[1].effective_begin;
-	raytracing_start_index = replayer.selection_report.ranges[2].effective_begin;
+		selection.dispatch.erase(std::remove_if(selection.dispatch.begin(), selection.dispatch.end(),
+		    [&](DiscoveryKey key) {
+			    if (!replayer.cached_blobs[key.tag].count(key.hash))
+				    return false;
+			    selection.excluded.push_back({key, ReplayExclusionPolicy::ReplayV1Hint});
+			    return true;
+		    }), selection.dispatch.end());
+	}
 
 	for (unsigned i = 0; i < 3; i++)
 	{
 		uint64_t raw = 0, compressed = 0;
-		for (auto hash : replayer.selection_report.stable_hashes[i])
+		for (size_t j = 0; j < selection.stable_hashes[i].size(); j++)
 		{
+			auto hash = selection.stable_hashes[i][j];
 			size_t size = 0;
 			auto tag = replay_pipeline_tags[i];
 			if (resolver->read_entry(tag, hash, &size, nullptr, PAYLOAD_READ_RAW_FOSSILIZE_DB_BIT))
 				compressed += size;
 			if (!resolver->read_entry(tag, hash, &size, nullptr, 0))
+			{
+				replayer.record_terminal(tag, hash, selection.ranges[i].effective_begin + unsigned(j), ReplayTerminal::ReadFailed);
 				return replayer.fail_run(ReplayFailure::Read, tag, hash);
+			}
 			raw += size;
 		}
 		LOGI("Total binary size for %s: %" PRIu64 " (%" PRIu64 " compressed)\n",
@@ -5177,23 +5363,14 @@ static int run_normal_process(ThreadedReplayer &replayer, const vector<const cha
 	LOGI("  raytracing pipelines:  %7lu\n", (unsigned long)replayer.raytracing_pipelines_cleared);
 
 	replayer.work_drained = true;
+	if (replayer.terminal_delivery_failed)
+		return replayer.fail_run(ReplayFailure::Setup);
 	return replayer.outcome.exit_status();
 }
 
 // The implementations are drastically different.
 // To simplify build system, just include implementation inline here.
 #ifndef NO_ROBUST_REPLAYER
-static bool validate_requested_pipeline_hash(DatabaseInterface &db, Hash hash)
-{
-	if (!hash) return true;
-	for (auto tag : {RESOURCE_GRAPHICS_PIPELINE, RESOURCE_COMPUTE_PIPELINE, RESOURCE_RAYTRACING_PIPELINE})
-	{
-		size_t size = 0;
-		if (db.read_entry(tag, hash, &size, nullptr, 0)) return true;
-	}
-	LOGE("Specified pipeline hash %016" PRIx64 " not found in database.\n", hash);
-	return false;
-}
 #ifdef __linux__
 #include "fossilize_replay_linux.hpp"
 #elif defined(_WIN32)
@@ -5453,6 +5630,15 @@ int main(int argc, char *argv[])
 		ret = run_normal_process(replayer, databases,
 		                         whitelist_path, whitelist_mask,
 		                         DatabaseInterface::invalid_metadata_handle());
+		const auto &result = replayer.reconciliation;
+		if (ret == EXIT_SUCCESS)
+		{
+			auto ranges = result.assignment();
+			for (unsigned i = 0; i < ranges.size(); i++)
+				if (!result.coverage(i, ranges[i]).satisfied)
+					ret = EXIT_FAILURE;
+		}
+		log_reconciliation(result, 1, 1, ret == EXIT_SUCCESS ? 0 : 1, 0);
 #ifndef NO_ROBUST_REPLAYER
 		if (log_memory)
 			log_process_memory();
