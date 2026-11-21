@@ -15,13 +15,14 @@
       "observations": [],
       "operation": "plan",
       "plan_version": 0,
+      "report": "runs/issue-48/auto48-20261121/reports/planner-1.json",
       "requested": {
         "effort": "high",
         "model": "gpt-6.1-sol"
       },
       "role": "planner",
       "started": 1795288473.2579074,
-      "status": "running",
+      "status": "complete",
       "work_unit": "https://github.com/robinwassen/Fossilize/issues/48",
       "worker_id": "/root/planner48"
     }
@@ -66,8 +67,8 @@
     "replans": 1,
     "started_at": 1795286456.876116
   },
-  "next_action": "launch once, then acknowledge worker identity; reconcile if response is lost",
-  "operation": "plan",
+  "next_action": "dispatch fresh implementer for first ready unit",
+  "operation": "implement",
   "original": [
     {
       "id": "AC1",
@@ -79,9 +80,397 @@
     "output_directory": "/tmp/fossilize-auto48-20261121/output",
     "source_worktree": "/tmp/fossilize-auto48-20261121/source"
   },
-  "phase": "planning",
-  "plan": null,
-  "provenance": [],
+  "phase": "implementing",
+  "plan": {
+    "cases": [
+      {
+        "assertions": [
+          "A real controlled child remains alive behind a pipe barrier, with a retained child-tree sentinel writer. Install a handled signal without SA_RESTART in the waiting owner.",
+          "Use a test-only read adapter and signal/barrier acknowledgements to establish that the real sentinel read returned -1/EINTR while the child was nonterminal; require actual handler execution and actual EINTR observation. Merely injecting errno or hoping a timer fires is insufficient for this case.",
+          "After interruption, wait has not reported successful completion, the owner still exposes the exact PID, and its cancellation/control descriptors remain usable. Observe owner state within the owner thread at the adapter/retry boundary, not via unsynchronized cross-thread API calls.",
+          "Release/cancel only after this observation: invoke the public kill() at a serialized test boundary using inherit_process_group=false, let wait collect -SIGKILL, require child reaped (waitpid yields ECHILD), invalidated handle and stable repeated cached status.",
+          "All helpers and process groups are accounted for and cleaned up even on failure. A finite watchdog bounds missing-event/deadlock failures; sleeps are not correctness barriers."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-sentinel-eintr",
+        "location": "test/external_replayer_wait_test.cpp; Linux-only CTest external-replayer-wait-<case> in test/CMakeLists.txt [sentinel-eintr]"
+      },
+      {
+        "assertions": [
+          "Arrange sentinel EOF while the direct helper child is still held alive (a deliberately closed sentinel is not proof of process death). Initial and subsequent real WNOHANG waitpid return 0 while kernel liveness remains demonstrable.",
+          "A live waitpid result never produces exit 0 or cached completion, and the exact PID remains owned. Drive the old bounded poll timeout deterministically with a narrow test-only waitpid/usleep adapter rather than sleeping for a correctness oracle.",
+          "The candidate continues waiting for an actual terminal status; then release child to a distinctive nonzero exit (e.g.37). Require exact37, one successful reap and stable cached37. Hold release until a candidate blocking-wait/continued-wait observation or, for the baseline, an erroneous return is captured."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-waitpid-live-zero",
+        "location": "test/external_replayer_wait_test.cpp; Linux-only CTest external-replayer-wait-<case> in test/CMakeLists.txt [live-zero]"
+      },
+      {
+        "assertions": [
+          "Inject waitpid -1/EINTR separately at the initial progress pump and at post-sentinel status collection; observe that each selected site was actually reached.",
+          "Neither retry changes the PID, consumes cancellation descriptors, caches -EINTR as terminal or creates success. Eventual distinctive normal exit or SIGKILL status is collected exactly once.",
+          "If the implementation touches is_process_complete to share EINTR handling, exercise its interrupted query as well and require false/not-complete with retained ownership, followed by normal completion."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-waitpid-eintr",
+        "location": "test/external_replayer_wait_test.cpp; Linux-only CTest external-replayer-wait-<case> in test/CMakeLists.txt [waitpid-eintr; subcases explicitly enumerated in runner output]"
+      },
+      {
+        "assertions": [
+          "Use public start on an exec-controlled helper and normal sentinel EOF; zero and distinctive nonzero child exits return their exact statuses.",
+          "Waiting genuinely blocks while the helper barrier is held; terminal release permits completion. Assert handle invalidation, owned descriptor closure and no remaining child after completion."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-normal-eof",
+        "location": "test/external_replayer_wait_test.cpp; Linux-only CTest external-replayer-wait-<case> in test/CMakeLists.txt [normal-eof]"
+      },
+      {
+        "assertions": [
+          "Use waitid(WEXITED|WNOWAIT) as a kernel terminal-state barrier without stealing the status. Exercise dead clean, nonzero and signaled child paths before wait.",
+          "The initial progress pump may reap the child; wait preserves that status without an erroneous second reap or overwrite with ECHILD."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-already-dead",
+        "location": "test/external_replayer_wait_test.cpp; Linux-only CTest external-replayer-wait-<case> in test/CMakeLists.txt [already-dead]"
+      },
+      {
+        "assertions": [
+          "For clean/nonzero/signaled outcomes, repeat wait and is_process_complete in both wait-first/query-first order, including already-terminal initialization.",
+          "Return exactly the original cached status; handle remains invalid; repeated calls neither touch a reused descriptor nor reap another child."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-cached-status",
+        "location": "test/external_replayer_wait_test.cpp; Linux-only CTest external-replayer-wait-<case> in test/CMakeLists.txt [cached-status]"
+      },
+      {
+        "assertions": [
+          "Inject a single nonretryable sentinel read error (EBADF or EIO), capture errno before diagnostics/cleanup can clobber it, and require documented negative errno rather than exit0.",
+          "A demonstrably live child remains owned with usable cancellation; no indefinite retry of a fatal error. Clear the injection, then cancel/wait and verify final -SIGKILL, descriptor cleanup and real reaping.",
+          "Unexpected positive sentinel data must not be treated as EOF/completion: continue to real EOF or return a documented truthful error while retaining ownership. Exercise that selected policy."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-fatal-read",
+        "location": "test/external_replayer_wait_test.cpp; Linux-only CTest external-replayer-wait-<case> in test/CMakeLists.txt [fatal-read; unexpected-data]"
+      },
+      {
+        "assertions": [
+          "Inject a nonretryable non-ECHILD waitpid error with a still-live owned PID, both at the initial progress pump and after sentinel handling; require a documented negative errno/error outcome and retained ownership, then successful cancellation/reaping after clearing the injection.",
+          "Separately externally reap a known-terminal child to produce real ECHILD, then require negative ECHILD with no invented success and stable cached terminal-error handling. Respect the documented external-reaping responsibility; do not label an externally reaped child as live.",
+          "Error tests verify bounded completion and selected fault counters, not just diagnostic output."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-fatal-waitpid",
+        "location": "test/external_replayer_wait_test.cpp; Linux-only CTest external-replayer-wait-<case> in test/CMakeLists.txt [fatal-waitpid; externally-reaped]"
+      },
+      {
+        "assertions": [
+          "Run existing registered fork-child-healthy, fork-child-healthy-recovery and fork-child-parent-death controls; retain their assertion-bearing real-kernel cleanup checks.",
+          "Run existing replay-controller-clean/recover/held-sibling/signal and replay-controller-cli-normal/master/progress/compatibility cases. Preserve successful work, known failure/cached status, stopped/held worker interpretation and group cancellation preconditions.",
+          "Run fossilize-system-test as the core library smoke control. A fixture intentionally holding a child or leaving a zombie before collection is never reported as an actively orphaned worker."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-healthy-lifecycle",
+        "location": "existing test/fork_child_setup_test.cpp, test/replay_controller_test.cpp, test/replay_controller_compatibility_test.cpp and registered CTests"
+      },
+      {
+        "assertions": [
+          "Compile an unchanged-public-header consumer against input headers from exact base1d4ebeed35435e05b22a08d8fd6dfb8a9f732ffc and link candidate library; run public start/wait/kill/get_process_handle/is_process_complete controls. Retain the baseline public declaration include precedence in the recorded command.",
+          "Preserve signatures, Options/layout, process handle type, shared progress layout/version, descriptor inheritance and worker protocol. Source inspection declares no new C++ binary ABI guarantee; no wire/file schema change is intended.",
+          "Preserve once-only start, Unix caller/library reaping roles and inherit_process_group=false kill precondition. Document new truthful negative-errno recoverable-error ownership behavior if required; no silent result-contract change."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-compatibility",
+        "location": "test/external_replayer_wait_compatibility_test.cpp or equivalent small public-only consumer; existing compatibility caller reused where suitable"
+      },
+      {
+        "assertions": [
+          "Build the same committed decisive fixture/caller against the unchanged base production implementation in an isolated external baseline build.",
+          "At least sentinel-eintr or live-zero must fail a concrete ownership/status assertion against the baseline and pass against the candidate; capture exact failed assertion IDs, exit status and identities. A crash, timeout, compile failure or research-run expected-defect zero exit alone is insufficient.",
+          "Run healthy normalEOF/cached status control against baseline and candidate to show the fixture is meaningful; always clean up baseline live children. If feasible both decisive cases should fail before the fix."
+        ],
+        "criteria": [
+          "AC1"
+        ],
+        "id": "W48-original-defect-control",
+        "location": "committed fixture plus external base build; reproducible documented compiler/CMake commands and bounded logs"
+      }
+    ],
+    "gates": [
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "<role-source: implementer source or exact detached checker candidate>",
+        "expected": "All planned W48 cases execute with nonzero discovered/executed unique IDs and explicit assertions active under NDEBUG in all four configurations; focused existing controls pass. Per-case timeouts30s (up to60s for a compound fixture) and cleanup watchdogs; no skipped required cases.",
+        "id": "linux-matrix",
+        "kind": "both",
+        "method": {
+          "build_argv": [
+            "/tmp/fossilize-h20/tools/cmake/data/bin/cmake",
+            "--build",
+            "<config-build>",
+            "--parallel",
+            "2",
+            "--target",
+            "external-replayer-wait-test",
+            "external-replayer-wait-compatibility-test",
+            "fossilize-test",
+            "fork-child-setup-test",
+            "replay-controller-test",
+            "replay-controller-compatibility-test",
+            "fossilize-replay"
+          ],
+          "configure_argv": [
+            "/tmp/fossilize-h20/tools/cmake/data/bin/cmake",
+            "-S",
+            "<role-source>",
+            "-B",
+            "<role-build>/<Debug-or-Release>-exceptions-<OFF-or-ON>",
+            "-DCMAKE_BUILD_TYPE=<Debug-or-Release>",
+            "-DFOSSILIZE_ENABLE_EXCEPTIONS=<OFF-or-ON>",
+            "-DFOSSILIZE_TESTS=ON",
+            "-DFOSSILIZE_CLI=ON",
+            "-DFOSSILIZE_VULKAN_LAYER=OFF",
+            "-DFOSSILIZE_REPLAYER_SPIRV_VAL=OFF",
+            "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+          ],
+          "discovery_argv": [
+            "/tmp/fossilize-h20/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "<config-build>",
+            "--show-only=json-v1",
+            "-R",
+            "^(external-replayer-wait-.*|fossilize-system-test|fork-child-(healthy|healthy-recovery|parent-death)|replay-controller-(clean|recover|held-sibling|signal)|replay-controller-cli-(normal|master|progress|compatibility))$"
+          ],
+          "environment": "Native Linux/GCC, C++14, isolated working directories, standard subprocess/pipe/signals, no GPU/Steam/driver workload. Verify effective NDEBUG and -fno-exceptions/exception-enabled flags cover changed owner code and new tests.",
+          "evidence": "Exact argv/cwd/configuration/compiler/candidate/base/plan/attempt, CTest discovered and executed names, subcase assertion IDs, exit status, bounded logs and wrapper receipt. Link each W48 case to actual executed IDs; builds/discovery alone are not acceptance.",
+          "execution_policy": "Every configure/build/discovery/test/probe/compiler command must first have a coordinator-published command-intent, then be a child of scripts/verification_lock.py --repo <role-source> --timeout 600 --intent-id <unique-id> --receipt <unique-path> -- <exact argv>. Coordinator settles each receipt before the next budget gate. Never nest wrappers. All artifacts/build/output outside source and isolated per role/configuration.",
+          "expected": "All planned W48 cases execute with nonzero discovered/executed unique IDs and explicit assertions active under NDEBUG in all four configurations; focused existing controls pass. Per-case timeouts30s (up to60s for a compound fixture) and cleanup watchdogs; no skipped required cases.",
+          "matrix": [
+            {
+              "build_type": "Debug",
+              "exceptions": "OFF"
+            },
+            {
+              "build_type": "Debug",
+              "exceptions": "ON"
+            },
+            {
+              "build_type": "Release",
+              "exceptions": "OFF"
+            },
+            {
+              "build_type": "Release",
+              "exceptions": "ON"
+            }
+          ],
+          "target_note": "Names of the new two targets are planned names; an equivalent committed registration may combine their executables while preserving every named case and explicit report mapping. Existing targets are inspected from current CMake. Split a build/test batch into bounded commands if needed; never enlarge600s or silently omit assertions.",
+          "test_argv": [
+            "/tmp/fossilize-h20/tools/cmake/data/bin/ctest",
+            "--test-dir",
+            "<config-build>",
+            "--output-on-failure",
+            "--no-tests=error",
+            "-V",
+            "-R",
+            "^(external-replayer-wait-.*|fossilize-system-test|fork-child-(healthy|healthy-recovery|parent-death)|replay-controller-(clean|recover|held-sibling|signal)|replay-controller-cli-(normal|master|progress|compatibility))$"
+          ]
+        },
+        "prerequisites": [
+          "Exact committed candidate/base and plan1; live issue48/parent46 materially unchanged",
+          "Populated source dependencies, GCC, supplied CMake/CTest; initialize required submodules if necessary",
+          "Committed production-bound registered assertion fixtures; coordinator-published command intents and verification lock wrapper"
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "<role-specific external baseline evidence directory>",
+        "expected": "A concrete assertion exposes the original lost-owner/false-success defect, healthy baseline control passes and candidate passes; no timeout/crash is substituted for the defect assertion.",
+        "id": "before-fix-sensitivity",
+        "kind": "both",
+        "method": {
+          "command": "Use exact recorded bounded CMake/compiler invocations to compile the same candidate fixture against an isolated exact-base owner library; run sentinel-eintr/live-zero and healthy normalEOF/cached controls. Copy only committed fixture sources into external baseline build; never edit the base or canonical source in place. Provide a reproducible command/script in test support if necessary. Independent unit and final checkers rerun at least one decisive original-defect control and its healthy control.",
+          "environment": "Linux/GCC Debug exceptions OFF is sufficient for baseline contrast; candidate behavior still requires full matrix.",
+          "evidence": "Baseline/candidate SHA, original failed assertion identity and actual nonzero exit, passing healthy baseline control, candidate pass, real cleanup and wrapper receipts."
+        },
+        "prerequisites": [
+          "Exact base input production code",
+          "Committed regression fixture and isolated baseline build",
+          "Published intent and wrapper for every compiler/build/run"
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "<role-source and external compatibility-output directory>",
+        "expected": "Source caller compiles/runs, signatures/layout/protocol and preconditions are preserved; intentional errno/ownership behavior is documented/tested; no general binary ABI/platform claim. Independent unit and separate final semantic review must confirm the same-PR changelog entry is accurate, one short sentence, includes practical benefit and the full issue48 link, and truthfully states platform/evidence limits; no automated prose test is required.",
+        "id": "compatibility-and-scope",
+        "kind": "both",
+        "method": {
+          "cases": [
+            "W48-compatibility"
+          ],
+          "command": "Review full base-to-candidate diff/public boundaries and CHANGELOG.md against guideline. Compile old-header public-only caller using base include directory before candidate include directory and link candidate fossilize/miniz plus -pthread -lrt; run relevant healthy wait/cached/cancellation controls. Record exact compiler argv as a wrapped published command. Runtime owner fixtures and CLI controls also establish preserved behavior.",
+          "evidence": "Exact include-order/compiler/link argv and status, runtime IDs, reviewed paths and no public/protocol layout change declaration.",
+          "mandatory_review_expectations": {
+            "assertions": [
+              "The exact candidate includes one short factual Unreleased CHANGELOG.md entry tagged [Worker lifecycle], with practical benefit and the full issue48 link per local-docs/changelog-guidelines.md.",
+              "Entry and verification documentation describe only delivered Linux owner behavior and actual evidence; Windows remains waived by user/not run, no GPU/Steam or general ABI claim."
+            ],
+            "location": "CHANGELOG.md, public wait contract comments and narrow local-docs/verification.md update",
+            "scope": "Both the fresh independent unit checker and the separate fresh final checker review the changelog in the exact candidate; this is semantic review evidence, not a runtime test or discovered/executed test-ID mapping."
+          }
+        },
+        "prerequisites": [
+          "Exact input headers and candidate library",
+          "Changelog entry and documented truthful error behavior",
+          "No silent scope expansion"
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "/tmp/fossilize-auto48-20261121/source",
+        "expected": "One real verified implementation PR; issue46 remains open because sibling obligations are incomplete; no attachment/publication/merge success invented. Original started_at/deadline and repair/replan limits remain retained.",
+        "id": "publication-binding",
+        "kind": "publication",
+        "method": "Coordinator uses supported selected-run harness operations after independent unit/final acceptance: re-read current root48 and shared parent46 inputs, fetch target master, verify exact candidate/base/plan1/source cleanliness and resolve all findings; journal ready/actual PR evidence and read it back, normal non-force source push and actual implementation PR with eligible Closes full issue48 URL only. Required artifact attachment and exact orphan-artifact publication must be actually confirmed. Automatic squash delivery is authorized only after these gates using supported wrap-up with exact accepted bindings.",
+        "prerequisites": [
+          "Independent unit acceptance and distinct fresh final acceptance at exact candidate/base/plan/live inputs",
+          "Required local gates passed with complete mapping and no unresolved findings",
+          "attach_artifact capability or explicitly reconciled applicable workflow requirement; currently absent is a separate incomplete publication limitation, not test acceptance"
+        ]
+      },
+      {
+        "criteria": [
+          "AC1"
+        ],
+        "cwd": "not applicable",
+        "expected": "Truthful explicit waived/not-run limitation only.",
+        "id": "native-windows-waiver",
+        "kind": "optional",
+        "method": "Record Windows verification: waived by user; not run. No Windows planned case, mapping or mandatory execution evidence. Linux owner fix cannot claim Windows execution.",
+        "prerequisites": [
+          "User waiver supplied in coordinator brief"
+        ]
+      }
+    ],
+    "implementation": [
+      {
+        "detail": "Keep one unsplit work unit for issue48. Re-read exact issue and shared parent before implementation; preserve original AC1 byte-for-byte and initial run started_at1795286456.876116/deadline1795372856.876116 (24h original), command600s, repairs3/replan1. Coordinator owns canonical state/external writes.",
+        "step": 1
+      },
+      {
+        "detail": "Make sentinel reads EINTR-safe without closing a still-needed descriptor on interruption. Treat only EOF as tree-completion evidence; unexpected data must continue to EOF or report an explicit truthful error retaining ownership. Capture errno immediately. On fatal read error return -errno with PID and cancellation ownership retained; subsequent kill/wait can complete. Document this recoverable-error result contract.",
+        "step": 2
+      },
+      {
+        "detail": "After sentinel EOF obtain an actual terminal wait status, using EINTR-safe blocking waitpid or equivalent wait-until-terminal logic. Remove synthesized zero on exhausted live WNOHANG polling. Status may be cached/reset only after terminal status or established ECHILD external reaping. Other waitpid errors produce truthful negative errno while retaining PID/cancellation state. Keep sentinel-first handling and terminal cached status semantics.",
+        "step": 3
+      },
+      {
+        "detail": "Audit initial poll_progress and any status query directly used by wait so waitpid EINTR cannot reset the owned live PID before reaching the sentinel. Use local status temporaries and explicit classifications where necessary; avoid unrelated progress field changes. If sharing code touches is_process_complete, add its interrupted/error query subcases and preserve its bool/cached-status contract. Fatal initial-pump errors must not be lost; return a truthful owner error rather than abandoning the child.",
+        "step": 4
+      },
+      {
+        "detail": "Add Linux-only registered public-API regression fixture(s) with narrow test-local GNU link wrapping (read/waitpid and only any needed polling-delay adapter) or an equally private compile-time adapter. Prefer linking the actual candidate library, not a copied algorithm. A controlled exec helper inherits the real production sentinel and supports barriers, distinctive exits and cancellation. Use real read EINTR with signal handler lacking SA_RESTART; use explicit retries/acknowledgements so sender scheduling cannot make coverage disappear. No concurrent unsynchronized owner calls. All checks survive Release and all children/fds are cleaned on failure.",
+        "step": 5
+      },
+      {
+        "detail": "Implement every W48 planned case and complete the four-config Linux focused gates, source compatibility and exact-base defect sensitivity. Record actual case mapping/assertions and wrapper receipts; all verification is implementer/checker work, not claimed by planner. Existing registration names and target flags guide integration; targeted builds avoid unrelated SPIR-V tools/layer/GPU work.",
+        "step": 6
+      },
+      {
+        "detail": "Add a short [Worker lifecycle] Unreleased entry with issue48 full URL in CHANGELOG.md per guideline; update narrow wait error comments/verification instructions accurately. Unit and separate final checker independently inspect candidate entry and scope. Coordinator publishes and delivers only after required gates and real attachment/publication; absent attach_artifact remains incomplete publication rather than a passing substitute.",
+        "step": 7
+      }
+    ],
+    "non_goals": [
+      "Steam scheduling/deployment/client replacement, GPU/driver/cache claims, broad scheduler rewrite, other lifecycle sibling deliverables, unrelated Vulkan/capture behavior.",
+      "General C++ binary ABI certification or protocol/schema redesign; native Windows execution is user-waived and remains not run.",
+      "Full unrelated harness-Python suite for this C++-only change; do not alter harness implementation. No broad all-target build or unrelated GPU integration is required."
+    ],
+    "original": [
+      {
+        "id": "AC1",
+        "requirement": "## Problem\n\nA handled signal without SA_RESTART interrupts the child-tree sentinel read in ExternalReplayer::wait(). The implementation logs the error, polls waitpid for about 100 ms, synthesizes success 0, and resets its PID while the child is still running.\n\n## Evidence level\n\nReproduced against the unmodified ExternalReplayer implementation; independently rebuilt and rerun.\n\n## Reproduction / verification status\n\nRun the shared runner and inspect `external wait-interrupt`. A controlled helper stays alive; SIGALRM interrupts wait. Observed `wait_status=0 child_alive=1 handle=-1`. The harness individually kills/reaps its child afterwards.\n\n[Probe source](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/external_probe.cpp)\n\n## Running the retained Linux evidence\n\nOn Linux with GCC, Python 3 and populated project submodules, check out evidence commit `c039c2b6c9997e78a6a4dd46df5ff1534eda7a62` from this fork and run:\n\n```sh\ngit submodule update --init --recursive\npython3 local-docs/reviews/worker-lifecycle-audit-evidence/reproduce.py --out /tmp/fresh-fossilize-lifecycle-evidence\n```\n\nThe output directory must not already exist. Inspect the named case in `results.json`; generated binaries also accept the case arguments shown there. No Steam or real GPU workload is started. The runner matches observed defects, so a successful research-run exit does not certify corrected behavior.\n\n## Required outcome and acceptance\n\n- Retry EINTR or return a truthful interruption outcome without forgetting the live child; never synthesize successful completion from a live waitpid result.\n- Use a deterministic signal/barrier test and assert process liveness, retained ownership, eventual cancellation/reaping and final status.\n- Cover already-dead children, normal EOF, repeated wait after completion and fatal/nonretryable errors. Preserve the documented wait contract or explicitly document/test an intentional change.\n\n## Scope and references\n\nFix/investigate the lifecycle boundary described above, including its regression coverage. Do not expand this into Steam scheduling policy, automatic deployment, a general scheduler rewrite or unrelated Vulkan behavior.\n\n[fossilize_external_replayer_linux.hpp:408](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize_external_replayer_linux.hpp#L408)\n\n## Shared acceptance and evidence\n\nThis is a child of the worker lifecycle epic through GitHub's native hierarchy. Its shared verification/compatibility gates apply. Add deterministic assertion-bearing regression coverage that fails before the fix where feasible; retain healthy controls. These research probes expose defects and are not passing product tests.\n\nAudit source: `556da9ff7d7616704dda515756219ab1dab693ec`; local audit baseline `2325a40846cceb9e053cc5b26aad4c030e07e1a2`. The relevant platform supervisor/owner headers remain unchanged in fork master `5eb2c496dde819c868fa3d7d1e52c51047d9adb8`. No claim is made about Steam's installed version, report frequency, or hardware cache behavior.\n\n[Checked audit](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit.md) \u00b7 [Evidence and independent checker reports](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/README.md)\n\n<!-- fossilize-worker-lifecycle-audit-2026-10-29:wait-interrupt -->\n"
+      }
+    ],
+    "scope": {
+      "assumptions": [
+        "Once-only start and no concurrent external access to an ExternalReplayer remain its current usage contract.",
+        "Cancellation fixtures set inherit_process_group=false. External consumers may reap children as documented; ECHILD must remain an honest error.",
+        "Input/base exact1d4ebeed35435e05b22a08d8fd6dfb8a9f732ffc; planner inspected production code and existing tests only, executed no verification.",
+        "The original init.json 24-hour wall deadline is an absolute ceiling; measured lock-wait accounting cannot extend that ceiling. Remaining wall time bounds every child command."
+      ],
+      "boundaries": [
+        "Linux ExternalReplayer owner wait and directly invoked status-poll helpers, test-only adapters/fixtures and CMake registration, narrow public-contract documentation and same-PR changelog.",
+        "Shared parent46 lifecycle/compatibility gates apply where relevant to this boundary; Linux-only defect evidence, user-waived native Windows verification."
+      ],
+      "expected_behavior": "Retry transient EINTR and retain ownership until a real terminal status or established loss of reaping authority; no live WNOHANG0 is successful completion. Preserve blocking wait and cached real exit/signal semantics on healthy paths.",
+      "issue": "https://github.com/robinwassen/Fossilize/issues/48",
+      "problem": "Linux ExternalReplayer::wait loses its still-live child and returns synthesized exit0 when the sentinel read is interrupted or status collection remains nonterminal.",
+      "risks": [
+        "The legacy wait code cites historical blocking-wait stability concerns without a reproducible current contract; retain sentinel-first behavior, but use truthful blocking status collection/retry after EOF instead of polling to fabricated success. Document rationale and test external-reaping/ECHILD explicitly.",
+        "poll_progress invoked at wait entry can independently misclassify waitpid EINTR; fixing only sentinel read is insufficient. Keep changes narrow to status/ownership classification.",
+        "Test wrappers must target only the selected owner syscall/PID/phase, call real syscalls for liveness/reaping and stay out of shipped production library symbols/options."
+      ]
+    },
+    "version": 1,
+    "work_units": []
+  },
+  "provenance": [
+    {
+      "prior_issue_snapshot": {
+        "deliverables": [
+          "https://github.com/robinwassen/Fossilize/issues/48"
+        ],
+        "digest": "2a6890cf405781de23d54e4f1a0d500949f52c5b4a3828efaedac59eb9367071",
+        "nodes": {
+          "https://github.com/robinwassen/Fossilize/issues/48": {
+            "blocked_by": [],
+            "body": "## Problem\n\nA handled signal without SA_RESTART interrupts the child-tree sentinel read in ExternalReplayer::wait(). The implementation logs the error, polls waitpid for about 100 ms, synthesizes success 0, and resets its PID while the child is still running.\n\n## Evidence level\n\nReproduced against the unmodified ExternalReplayer implementation; independently rebuilt and rerun.\n\n## Reproduction / verification status\n\nRun the shared runner and inspect `external wait-interrupt`. A controlled helper stays alive; SIGALRM interrupts wait. Observed `wait_status=0 child_alive=1 handle=-1`. The harness individually kills/reaps its child afterwards.\n\n[Probe source](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/external_probe.cpp)\n\n## Running the retained Linux evidence\n\nOn Linux with GCC, Python 3 and populated project submodules, check out evidence commit `c039c2b6c9997e78a6a4dd46df5ff1534eda7a62` from this fork and run:\n\n```sh\ngit submodule update --init --recursive\npython3 local-docs/reviews/worker-lifecycle-audit-evidence/reproduce.py --out /tmp/fresh-fossilize-lifecycle-evidence\n```\n\nThe output directory must not already exist. Inspect the named case in `results.json`; generated binaries also accept the case arguments shown there. No Steam or real GPU workload is started. The runner matches observed defects, so a successful research-run exit does not certify corrected behavior.\n\n## Required outcome and acceptance\n\n- Retry EINTR or return a truthful interruption outcome without forgetting the live child; never synthesize successful completion from a live waitpid result.\n- Use a deterministic signal/barrier test and assert process liveness, retained ownership, eventual cancellation/reaping and final status.\n- Cover already-dead children, normal EOF, repeated wait after completion and fatal/nonretryable errors. Preserve the documented wait contract or explicitly document/test an intentional change.\n\n## Scope and references\n\nFix/investigate the lifecycle boundary described above, including its regression coverage. Do not expand this into Steam scheduling policy, automatic deployment, a general scheduler rewrite or unrelated Vulkan behavior.\n\n[fossilize_external_replayer_linux.hpp:408](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize_external_replayer_linux.hpp#L408)\n\n## Shared acceptance and evidence\n\nThis is a child of the worker lifecycle epic through GitHub's native hierarchy. Its shared verification/compatibility gates apply. Add deterministic assertion-bearing regression coverage that fails before the fix where feasible; retain healthy controls. These research probes expose defects and are not passing product tests.\n\nAudit source: `556da9ff7d7616704dda515756219ab1dab693ec`; local audit baseline `2325a40846cceb9e053cc5b26aad4c030e07e1a2`. The relevant platform supervisor/owner headers remain unchanged in fork master `5eb2c496dde819c868fa3d7d1e52c51047d9adb8`. No claim is made about Steam's installed version, report frequency, or hardware cache behavior.\n\n[Checked audit](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit.md) \u00b7 [Evidence and independent checker reports](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/README.md)\n\n<!-- fossilize-worker-lifecycle-audit-2026-10-29:wait-interrupt -->\n",
+            "children": [],
+            "id": 6099036027,
+            "node_id": "I_kwDOVZpjbc8AAAABa4fnew",
+            "number": 48,
+            "parent": "https://github.com/robinwassen/Fossilize/issues/46",
+            "repository": "robinwassen/Fossilize",
+            "state": "open",
+            "state_reason": null,
+            "title": "Keep ownership of a live replayer when wait is interrupted",
+            "url": "https://github.com/robinwassen/Fossilize/issues/48"
+          }
+        },
+        "root": "https://github.com/robinwassen/Fossilize/issues/48"
+      },
+      "snapshot_reason": "validated plan deliverables and native relationships"
+    }
+  ],
   "publishing": {
     "ci_policy": "local",
     "stage": "none"
@@ -97,7 +486,7 @@
     "target_remote": "origin",
     "target_repository": "robinwassen/Fossilize"
   },
-  "revision": 3,
+  "revision": 4,
   "root_issue": {
     "id": 6099036027,
     "node_id": "I_kwDOVZpjbc8AAAABa4fnew",
@@ -107,9 +496,17 @@
   },
   "run_id": "auto48-20261121",
   "schema_version": 3,
-  "status": "running",
+  "status": "ready",
   "task_key": "issue-48",
   "task_location": "https://github.com/robinwassen/Fossilize/issues/48",
   "verification": [],
-  "work_units": []
+  "work_units": [
+    {
+      "accepted": null,
+      "dependencies": [],
+      "issue": "https://github.com/robinwassen/Fossilize/issues/48",
+      "key": "https://github.com/robinwassen/Fossilize/issues/48",
+      "status": "ready"
+    }
+  ]
 }
