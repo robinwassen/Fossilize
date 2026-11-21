@@ -1,0 +1,87 @@
+{
+  "active_work_unit": "https://github.com/robinwassen/Fossilize/issues/48",
+  "attempts": [],
+  "final_acceptance": null,
+  "findings": [],
+  "issue_snapshot": {
+    "deliverables": [
+      "https://github.com/robinwassen/Fossilize/issues/48"
+    ],
+    "digest": "2a6890cf405781de23d54e4f1a0d500949f52c5b4a3828efaedac59eb9367071",
+    "nodes": {
+      "https://github.com/robinwassen/Fossilize/issues/48": {
+        "blocked_by": [],
+        "body": "## Problem\n\nA handled signal without SA_RESTART interrupts the child-tree sentinel read in ExternalReplayer::wait(). The implementation logs the error, polls waitpid for about 100 ms, synthesizes success 0, and resets its PID while the child is still running.\n\n## Evidence level\n\nReproduced against the unmodified ExternalReplayer implementation; independently rebuilt and rerun.\n\n## Reproduction / verification status\n\nRun the shared runner and inspect `external wait-interrupt`. A controlled helper stays alive; SIGALRM interrupts wait. Observed `wait_status=0 child_alive=1 handle=-1`. The harness individually kills/reaps its child afterwards.\n\n[Probe source](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/external_probe.cpp)\n\n## Running the retained Linux evidence\n\nOn Linux with GCC, Python 3 and populated project submodules, check out evidence commit `c039c2b6c9997e78a6a4dd46df5ff1534eda7a62` from this fork and run:\n\n```sh\ngit submodule update --init --recursive\npython3 local-docs/reviews/worker-lifecycle-audit-evidence/reproduce.py --out /tmp/fresh-fossilize-lifecycle-evidence\n```\n\nThe output directory must not already exist. Inspect the named case in `results.json`; generated binaries also accept the case arguments shown there. No Steam or real GPU workload is started. The runner matches observed defects, so a successful research-run exit does not certify corrected behavior.\n\n## Required outcome and acceptance\n\n- Retry EINTR or return a truthful interruption outcome without forgetting the live child; never synthesize successful completion from a live waitpid result.\n- Use a deterministic signal/barrier test and assert process liveness, retained ownership, eventual cancellation/reaping and final status.\n- Cover already-dead children, normal EOF, repeated wait after completion and fatal/nonretryable errors. Preserve the documented wait contract or explicitly document/test an intentional change.\n\n## Scope and references\n\nFix/investigate the lifecycle boundary described above, including its regression coverage. Do not expand this into Steam scheduling policy, automatic deployment, a general scheduler rewrite or unrelated Vulkan behavior.\n\n[fossilize_external_replayer_linux.hpp:408](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize_external_replayer_linux.hpp#L408)\n\n## Shared acceptance and evidence\n\nThis is a child of the worker lifecycle epic through GitHub's native hierarchy. Its shared verification/compatibility gates apply. Add deterministic assertion-bearing regression coverage that fails before the fix where feasible; retain healthy controls. These research probes expose defects and are not passing product tests.\n\nAudit source: `556da9ff7d7616704dda515756219ab1dab693ec`; local audit baseline `2325a40846cceb9e053cc5b26aad4c030e07e1a2`. The relevant platform supervisor/owner headers remain unchanged in fork master `5eb2c496dde819c868fa3d7d1e52c51047d9adb8`. No claim is made about Steam's installed version, report frequency, or hardware cache behavior.\n\n[Checked audit](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit.md) \u00b7 [Evidence and independent checker reports](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/README.md)\n\n<!-- fossilize-worker-lifecycle-audit-2026-10-29:wait-interrupt -->\n",
+        "children": [],
+        "id": 6099036027,
+        "node_id": "I_kwDOVZpjbc8AAAABa4fnew",
+        "number": 48,
+        "parent": "https://github.com/robinwassen/Fossilize/issues/46",
+        "repository": "robinwassen/Fossilize",
+        "state": "open",
+        "state_reason": null,
+        "title": "Keep ownership of a live replayer when wait is interrupted",
+        "url": "https://github.com/robinwassen/Fossilize/issues/48"
+      }
+    },
+    "root": "https://github.com/robinwassen/Fossilize/issues/48"
+  },
+  "limits": {
+    "command_timeout": 600,
+    "commands": [],
+    "deadline": 1795372856.876116,
+    "exhausted": false,
+    "extensions": [],
+    "implementation_counts": {},
+    "repairs": 3,
+    "replan_count": 0,
+    "replans": 1,
+    "started_at": 1795286456.876116
+  },
+  "next_action": "dispatch fresh planner",
+  "operation": "plan",
+  "original": [
+    {
+      "id": "AC1",
+      "requirement": "## Problem\n\nA handled signal without SA_RESTART interrupts the child-tree sentinel read in ExternalReplayer::wait(). The implementation logs the error, polls waitpid for about 100 ms, synthesizes success 0, and resets its PID while the child is still running.\n\n## Evidence level\n\nReproduced against the unmodified ExternalReplayer implementation; independently rebuilt and rerun.\n\n## Reproduction / verification status\n\nRun the shared runner and inspect `external wait-interrupt`. A controlled helper stays alive; SIGALRM interrupts wait. Observed `wait_status=0 child_alive=1 handle=-1`. The harness individually kills/reaps its child afterwards.\n\n[Probe source](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/external_probe.cpp)\n\n## Running the retained Linux evidence\n\nOn Linux with GCC, Python 3 and populated project submodules, check out evidence commit `c039c2b6c9997e78a6a4dd46df5ff1534eda7a62` from this fork and run:\n\n```sh\ngit submodule update --init --recursive\npython3 local-docs/reviews/worker-lifecycle-audit-evidence/reproduce.py --out /tmp/fresh-fossilize-lifecycle-evidence\n```\n\nThe output directory must not already exist. Inspect the named case in `results.json`; generated binaries also accept the case arguments shown there. No Steam or real GPU workload is started. The runner matches observed defects, so a successful research-run exit does not certify corrected behavior.\n\n## Required outcome and acceptance\n\n- Retry EINTR or return a truthful interruption outcome without forgetting the live child; never synthesize successful completion from a live waitpid result.\n- Use a deterministic signal/barrier test and assert process liveness, retained ownership, eventual cancellation/reaping and final status.\n- Cover already-dead children, normal EOF, repeated wait after completion and fatal/nonretryable errors. Preserve the documented wait contract or explicitly document/test an intentional change.\n\n## Scope and references\n\nFix/investigate the lifecycle boundary described above, including its regression coverage. Do not expand this into Steam scheduling policy, automatic deployment, a general scheduler rewrite or unrelated Vulkan behavior.\n\n[fossilize_external_replayer_linux.hpp:408](https://github.com/ValveSoftware/Fossilize/blob/556da9ff7d7616704dda515756219ab1dab693ec/fossilize_external_replayer_linux.hpp#L408)\n\n## Shared acceptance and evidence\n\nThis is a child of the worker lifecycle epic through GitHub's native hierarchy. Its shared verification/compatibility gates apply. Add deterministic assertion-bearing regression coverage that fails before the fix where feasible; retain healthy controls. These research probes expose defects and are not passing product tests.\n\nAudit source: `556da9ff7d7616704dda515756219ab1dab693ec`; local audit baseline `2325a40846cceb9e053cc5b26aad4c030e07e1a2`. The relevant platform supervisor/owner headers remain unchanged in fork master `5eb2c496dde819c868fa3d7d1e52c51047d9adb8`. No claim is made about Steam's installed version, report frequency, or hardware cache behavior.\n\n[Checked audit](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit.md) \u00b7 [Evidence and independent checker reports](https://github.com/robinwassen/Fossilize/blob/c039c2b6c9997e78a6a4dd46df5ff1534eda7a62/local-docs/reviews/worker-lifecycle-audit-evidence/README.md)\n\n<!-- fossilize-worker-lifecycle-audit-2026-10-29:wait-interrupt -->\n"
+    }
+  ],
+  "paths": {
+    "build_directory": "/tmp/fossilize-auto48-20261121/build",
+    "output_directory": "/tmp/fossilize-auto48-20261121/output",
+    "source_worktree": "/tmp/fossilize-auto48-20261121/source"
+  },
+  "phase": "planning",
+  "plan": null,
+  "provenance": [],
+  "publishing": {
+    "ci_policy": "local",
+    "stage": "none"
+  },
+  "repository": {
+    "base_sha": "1d4ebeed35435e05b22a08d8fd6dfb8a9f732ffc",
+    "branch": "codex/issue-48-interrupted-wait",
+    "candidate_sha": null,
+    "common_dir": "/home/robin/dev/fossilize/.git",
+    "implementation_worktree": "/tmp/fossilize-auto48-20261121/source",
+    "input_sha": "1d4ebeed35435e05b22a08d8fd6dfb8a9f732ffc",
+    "target_branch": "master",
+    "target_remote": "origin",
+    "target_repository": "robinwassen/Fossilize"
+  },
+  "revision": 1,
+  "root_issue": {
+    "id": 6099036027,
+    "node_id": "I_kwDOVZpjbc8AAAABa4fnew",
+    "number": 48,
+    "repository": "robinwassen/Fossilize",
+    "url": "https://github.com/robinwassen/Fossilize/issues/48"
+  },
+  "run_id": "auto48-20261121",
+  "schema_version": 3,
+  "status": "ready",
+  "task_key": "issue-48",
+  "task_location": "https://github.com/robinwassen/Fossilize/issues/48",
+  "verification": [],
+  "work_units": []
+}
